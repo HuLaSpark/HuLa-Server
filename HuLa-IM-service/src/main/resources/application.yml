@@ -1,0 +1,69 @@
+server:
+  port: 9190
+logging:
+  level:
+    root: ${HuLa-IM.LOGGING_LEVEL} # 设置日志类型
+
+spring:
+  # 使用的配置文件
+  profiles:
+    active: dev
+  #数据库连接配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${HuLa-IM.HOST}:3306/${HuLa-IM.DATABASE_NAME}?serverTimezone=GMT%2b8
+    username: ${HuLa-IM.MYSQL_USER_NAME}
+    password: ${HuLa-IM.MYSQL_PASSWORD}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari: # 配置(毫秒)
+      auto-commit: true #是否默认提交事务 (默认值：true)
+      idle-timeout: 10000 #控制连接在池中允许空闲的最长时间
+      connection-timeout: 30000 #请求连接的超时时间
+      maximum-pool-size: 20 #最大连接数
+      minimum-idle: 5 #最小空闲连接数量
+      max-lifetime: 1800000 #连接的最长生命周期
+      keepalive-time: 1750000 #尝试保持连接的频率
+      connection-test-query: select 1 #连接验证sql
+      pool-name: HikariCP-yao
+
+  #redis配置
+  data:
+    redis:
+      # Redis数据库索引（默认为0）
+      database: 0
+      # Redis服务器地址
+      host: ${HuLa-IM.HOST}
+      # Redis服务器连接端口
+      port: 6379
+      # Redis服务器连接密码（默认为空）
+      password: ${HuLa-IM.REDIS.PAW}
+      # 连接超时时间
+      timeout: 10s
+      lettuce:
+        pool:
+          # 连接池最大连接数
+          max-active: 8
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1ms
+          # 连接池中的最大空闲连接
+          max-idle: 8
+          # 连接池中的最小空闲连接
+          min-idle: 0
+
+  # jackson配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss # 日期格式化
+
+
+#mybatis-plus 配置
+mybatis-plus:
+  # 设置日志打印类型
+  configuration:
+    log-impl: ${HuLa-IM.MP_LOG_IMPL}
+  global-config:
+    banner: false # 关闭MP图案打印
+    db-config:
+      # 主键类型：自增
+      id-type: auto
+  # mapper xml文件路径
+  mapper-locations: classpath*:mapper/*.xml
