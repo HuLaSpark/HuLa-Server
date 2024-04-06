@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>HuLa-IM-service</module>
-        <module>HuLa-IM-framework</module>
+        <module>hula-im-service</module>
+        <module>hula-im-framework</module>
     </modules>
 
     <parent>
@@ -34,6 +34,7 @@
         <lombok.version>1.18.30</lombok.version>
         <netty-all.version>4.1.86.Final</netty-all.version>
         <weixin-java-mp.version>4.4.0</weixin-java-mp.version>
+        <mybatis.version>3.5.15</mybatis.version>
         <mybatis-plus-boot-starter.version>3.5.5</mybatis-plus-boot-starter.version>
         <mybatis-plus-generator.version>3.4.1</mybatis-plus-generator.version>
         <jsoup.version>1.15.3</jsoup.version>
@@ -46,7 +47,7 @@
             <!--管理其他模块版本-->
             <dependency>
                 <groupId>com.HuLa</groupId>
-                <artifactId>HuLa-IM-common-starter</artifactId>
+                <artifactId>hula-im-common-starter</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -108,6 +109,12 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-generator</artifactId>
                 <version>${mybatis-plus-generator.version}</version>
+            </dependency>
+            <!-- MyBatis-->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
             </dependency>
             <!--Mysql数据库驱动-->
             <dependency>
