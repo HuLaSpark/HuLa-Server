@@ -1,9 +1,0 @@
-HuLa-IM:
-  HOST: 192.168.1.7 #域名
-  DATABASE_NAME: hula-im #数据库名
-  MYSQL_USER_NAME: root #数据库用户名
-  MYSQL_PASSWORD: 123456 #数据库密码
-  MP_LOG_IMPL: org.apache.ibatis.logging.nologging.NoLoggingImpl # 不打印sql语句到后台
-  LOGGING_LEVEL: error # 日志打印类型
-  REDIS:
-    PAW: null #redis密码

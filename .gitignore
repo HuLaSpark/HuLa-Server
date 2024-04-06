@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 环境配置文件 ###
+application-prod.yml
