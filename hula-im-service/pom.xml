@@ -33,5 +33,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--微信-->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+        </dependency>
     </dependencies>
 </project>
