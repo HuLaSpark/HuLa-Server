@@ -71,10 +71,12 @@ mybatis-plus:
 # 微信扫码配置
 wx:
   mp:
-    #    callback: http://f4cd-113-92-129-127.ngrok.io
-    callback: https://468ov9ww8878.vicp.fun
+    callback: ${HuLa-IM.WX.CALLBACK}
     configs:
-      - appId: wxb28a0fd6d1cae6ba
-        secret: 9c215f8d078422805218221144b9095b
-        token: nongyehong
-        aesKey: 7iNecFLZ8nbtCaMntHYEruSHP1Mk8FmGvrkHwnJzwug
+      - appId: ${HuLa-IM.WX.APPID}
+        secret: ${HuLa-IM.WX.SECRET}
+        token: ${HuLa-IM.WX.TOKEN}
+        aesKey: ${HuLa-IM.WX.AESKEY}
+# JWT
+jwt:
+  secret: ${HuLa-IM.JWT.SECRET}

@@ -1,5 +1,8 @@
 package com.hula.common.user.service.handler;
 
+import com.hula.common.user.service.WXMsgService;
+import com.hula.common.user.service.adapter.TextBuilder;
+import jakarta.annotation.Resource;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -9,8 +12,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * @author nyh
+ */
 @Component
 public class SubscribeHandler extends AbstractHandler {
+
+    @Resource
+    private WXMsgService wxMsgService;
 
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
@@ -21,7 +30,7 @@ public class SubscribeHandler extends AbstractHandler {
 
         WxMpXmlOutMessage responseResult = null;
         try {
-            responseResult = this.handleSpecial(weixinService, wxMessage);
+            responseResult = wxMsgService.scan(wxMessage);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
@@ -30,13 +39,7 @@ public class SubscribeHandler extends AbstractHandler {
             return responseResult;
         }
 
-        try {
-            return null;
-        } catch (Exception e) {
-            this.logger.error(e.getMessage(), e);
-        }
-
-        return null;
+        return TextBuilder.build("感谢关注", wxMessage);
     }
 
     /**

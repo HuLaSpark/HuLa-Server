@@ -1,7 +1,6 @@
 package com.hula.common.user.service;
 
 import com.hula.common.user.domain.entity.User;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
@@ -11,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author nyh
  * @since 2024-04-06
  */
-public interface IUserService extends IService<User> {
+public interface UserService {
 
+    Long register(User insert);
 }
