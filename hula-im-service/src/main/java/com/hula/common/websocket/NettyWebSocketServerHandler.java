@@ -1,8 +1,11 @@
 package com.hula.common.websocket;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import com.hula.common.websocket.domain.enums.WSReqTypeEnum;
+import com.hula.common.websocket.domain.service.WebSocketService;
 import com.hula.common.websocket.domain.vo.req.WSBaseReq;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -20,6 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 @Sharable
 public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
+    private WebSocketService webSocketService;
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        webSocketService = SpringUtil.getBean(WebSocketService.class);
+        webSocketService.connect(ctx.channel());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        userOffline(ctx.channel());
+    }
+
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
@@ -34,6 +50,14 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
         }
     }
 
+    /**
+     * 用户下线统一处理
+     **/
+    private void userOffline(Channel channel) {
+        webSocketService.remove(channel);
+        channel.close();
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         String text = msg.text();
@@ -44,8 +68,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
             case HEARTBEAT:
                 break;
             case LOGIN:
-                System.out.println("请求二维码");
-                ctx.channel().writeAndFlush(new TextWebSocketFrame("123"));
+                webSocketService.handleLoginReq(ctx.channel());
         }
     }
 }
