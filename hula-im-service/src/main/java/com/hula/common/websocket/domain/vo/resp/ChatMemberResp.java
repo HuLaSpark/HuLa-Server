@@ -8,10 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+
 /**
- * Description: 群成员列表的成员信息
- * Author: <a href="https://github.com/zongzibinbin">abin</a>
- * Date: 2023-03-23
+ * @author nyh
  */
 @Data
 @Builder
@@ -20,9 +19,6 @@ import java.util.Date;
 public class ChatMemberResp {
     @ApiModelProperty("uid")
     private Long uid;
-    /**
-     * @see com.abin.mallchat.common.user.domain.enums.ChatActiveStatusEnum
-     */
     @ApiModelProperty("在线状态 1在线 2离线")
     private Integer activeStatus;
 

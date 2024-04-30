@@ -34,24 +34,16 @@ spring:
       # Redis服务器地址
       host: ${HuLa-IM.HOST}
       # Redis服务器连接端口
-      port: 6379
+      port: ${HuLa-IM.REDIS.PORT}
       # Redis服务器连接密码（默认为空）
       password: ${HuLa-IM.REDIS.PAW}
       # 连接超时时间
-      timeout: 10s
-      lettuce:
-        pool:
-          # 连接池最大连接数
-          max-active: 8
-          # 连接池最大阻塞等待时间（使用负值表示没有限制）
-          max-wait: -1ms
-          # 连接池中的最大空闲连接
-          max-idle: 8
-          # 连接池中的最小空闲连接
-          min-idle: 0
+      timeout: 1800000
 
   # jackson配置
   jackson:
+    serialization:
+      write-dates-as-timestamps: true # 序列化
     date-format: yyyy-MM-dd HH:mm:ss # 日期格式化
 
 

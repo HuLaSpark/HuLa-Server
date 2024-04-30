@@ -13,16 +13,10 @@
         <module>hula-im-framework</module>
     </modules>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.1</version>
-        <relativePath/>
-    </parent>
-
     <properties>
         <revision>v1.0.0-alpha</revision>
         <java.version>21</java.version>
+        <spring-boot.version>3.2.1</spring-boot.version>
         <hutool.version>5.8.24</hutool.version>
         <springfox-swagger.version>3.0.0</springfox-swagger.version>
         <swagger-models.version>1.6.0</swagger-models.version>
@@ -39,7 +33,7 @@
         <mybatis-plus-generator.version>3.4.1</mybatis-plus-generator.version>
         <jsoup.version>1.15.3</jsoup.version>
         <okhttp.version>4.8.1</okhttp.version>
-        <redisson-spring-boot-starter.version>3.17.1</redisson-spring-boot-starter.version>
+        <redisson-spring-boot-starter.version>3.24.1</redisson-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
@@ -50,7 +44,15 @@
                 <artifactId>hula-im-common-starter</artifactId>
                 <version>${revision}</version>
             </dependency>
-
+            <!--    SpringBoot    -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- okhttp3 -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
@@ -160,6 +162,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <!--suppress UnresolvedMavenProperty -->
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>

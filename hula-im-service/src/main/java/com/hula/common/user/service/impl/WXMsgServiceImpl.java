@@ -1,12 +1,12 @@
 package com.hula.common.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.hula.common.user.service.WXMsgService;
+import com.hula.common.user.service.adapter.UserAdapter;
 import com.hula.common.user.dao.UserDao;
 import com.hula.common.user.domain.entity.User;
 import com.hula.common.user.service.UserService;
-import com.hula.common.user.service.WXMsgService;
 import com.hula.common.user.service.adapter.TextBuilder;
-import com.hula.common.user.service.adapter.UserAdapter;
 import com.hula.common.websocket.domain.service.WebSocketService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
