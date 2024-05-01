@@ -9,4 +9,5 @@ ${AnsiColor.BLUE}::HuLa 版本:: ${AnsiColor.MAGENTA}(${version})
 ${AnsiColor.CYAN}::Spring Boot 版本:: ${AnsiColor.MAGENTA}(${spring-boot.version})
 ${AnsiColor.GREEN}::Server Port 端口:: ${AnsiColor.YELLOW}(${AnsiColor.YELLOW}${server.port}${AnsiColor.YELLOW})
 ${AnsiColor.YELLOW}::JDK 版本:: ${AnsiColor.MAGENTA}(${java.version})
+${AnsiColor.BLUE}::Spring Doc 地址:: ${AnsiColor.BLUE}("http://${HuLa-IM.HOST}:${server.port}/doc.html")
 ${AnsiColor.WHITE}

@@ -1,6 +1,7 @@
 package com.hula.common.user.controller;
 
 import com.hula.common.user.service.WXMsgService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
@@ -16,10 +17,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * 微信api交互接口
- *
  * @author nyh
  */
 @Slf4j
+@Hidden
 @AllArgsConstructor
 @RestController
 @RequestMapping("wx/portal/public")

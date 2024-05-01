@@ -72,3 +72,21 @@ wx:
 # JWT
 jwt:
   secret: ${HuLa-IM.JWT.SECRET}
+
+# doc配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'common'
+      paths-to-match: '/**'
+      packages-to-scan: com.hula.common
+knife4j:
+  # 开启增强配置
+  enable: true
+  setting:
+    language: zh_cn

@@ -18,8 +18,6 @@
         <java.version>21</java.version>
         <spring-boot.version>3.2.1</spring-boot.version>
         <hutool.version>5.8.24</hutool.version>
-        <springfox-swagger.version>3.0.0</springfox-swagger.version>
-        <swagger-models.version>1.6.0</swagger-models.version>
         <mysql-connector.version>8.2.0</mysql-connector.version>
         <jjwt.version>0.9.1</jjwt.version>
         <logstash-logback.version>7.2</logstash-logback.version>
@@ -33,6 +31,7 @@
         <mybatis-plus-generator.version>3.4.1</mybatis-plus-generator.version>
         <jsoup.version>1.15.3</jsoup.version>
         <okhttp.version>4.8.1</okhttp.version>
+        <maven-model.version>3.9.6</maven-model.version>
         <redisson-spring-boot-starter.version>3.24.1</redisson-spring-boot-starter.version>
     </properties>
 
@@ -141,6 +140,12 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
                 <version>${redisson-spring-boot-starter.version}</version>
+            </dependency>
+            <!--   maven模块版本     -->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-model</artifactId>
+                <version>${maven-model.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
