@@ -4,7 +4,11 @@ import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisConnectionUtils;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 
@@ -12,6 +16,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * @author nyh
+ */
 @Slf4j
 public class RedisUtils {
 
@@ -227,7 +234,7 @@ public class RedisUtils {
      * @param key 键
      * @return 值
      */
-    public static String get(String key) {
+    private static String get(String key) {
         return key == null ? null : stringRedisTemplate.opsForValue().get(key);
     }
 
@@ -798,7 +805,7 @@ public class RedisUtils {
      * @param values
      * @return
      */
-    public Long zAdd(String key, Set<ZSetOperations.TypedTuple<String>> values) {
+    public Long zAdd(String key, Set<TypedTuple<String>> values) {
         return stringRedisTemplate.opsForZSet().add(key, values);
     }
 
@@ -877,8 +884,8 @@ public class RedisUtils {
      * @param end
      * @return
      */
-    public static Set<ZSetOperations.TypedTuple<String>> zRangeWithScores(String key, long start,
-                                                                          long end) {
+    public static Set<TypedTuple<String>> zRangeWithScores(String key, long start,
+                                                           long end) {
         return stringRedisTemplate.opsForZSet().rangeWithScores(key, start, end);
     }
 
@@ -902,8 +909,8 @@ public class RedisUtils {
      * @param max 最大值
      * @return
      */
-    public static Set<ZSetOperations.TypedTuple<String>> zRangeByScoreWithScores(String key,
-                                                                                 Double min, Double max) {
+    public static Set<TypedTuple<String>> zRangeByScoreWithScores(String key,
+                                                                  Double min, Double max) {
         if (Objects.isNull(min)) {
             min = Double.MIN_VALUE;
         }
@@ -921,8 +928,8 @@ public class RedisUtils {
      * @param end
      * @return
      */
-    public static Set<ZSetOperations.TypedTuple<String>> zRangeByScoreWithScores(String key,
-                                                                                 double min, double max, long start, long end) {
+    public static Set<TypedTuple<String>> zRangeByScoreWithScores(String key,
+                                                                  double min, double max, long start, long end) {
         return stringRedisTemplate.opsForZSet().rangeByScoreWithScores(key, min, max,
                 start, end);
     }
@@ -960,8 +967,8 @@ public class RedisUtils {
      * @param pageSize
      * @return
      */
-    public static Set<ZSetOperations.TypedTuple<String>> zReverseRangeWithScores(String key,
-                                                                                 long pageSize) {
+    public static Set<TypedTuple<String>> zReverseRangeWithScores(String key,
+                                                                  long pageSize) {
         return stringRedisTemplate.opsForZSet().reverseRangeByScoreWithScores(key, Double.MIN_VALUE,
                 Double.MAX_VALUE, 0, pageSize);
     }
@@ -972,8 +979,8 @@ public class RedisUtils {
      * @param pageSize
      * @return
      */
-    public static Set<ZSetOperations.TypedTuple<String>> zReverseRangeByScoreWithScores(String key,
-                                                                                        double max, long pageSize) {
+    public static Set<TypedTuple<String>> zReverseRangeByScoreWithScores(String key,
+                                                                         double max, long pageSize) {
         return stringRedisTemplate.opsForZSet().reverseRangeByScoreWithScores(key, Double.MIN_VALUE, max,
                 1, pageSize);
     }

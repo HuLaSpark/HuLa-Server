@@ -35,6 +35,8 @@ public class ThreadPoolConfig implements AsyncConfigurer {
     @Primary
     public ThreadPoolTaskExecutor hulaExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        // 线程池优雅停机
+        executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(200);

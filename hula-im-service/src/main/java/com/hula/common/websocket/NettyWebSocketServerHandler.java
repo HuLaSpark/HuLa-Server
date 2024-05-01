@@ -1,5 +1,6 @@
 package com.hula.common.websocket;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import com.hula.common.websocket.domain.enums.WSReqTypeEnum;
@@ -39,13 +40,15 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            System.out.println("握手完成");
+            String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
+            if (StrUtil.isNotBlank(token)) {
+                webSocketService.authorize(ctx.channel(), token);
+            }
         } else if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent)evt;
             if (event.state() == IdleState.READER_IDLE) {
-                System.out.println("读空闲");
-                // TODO 用户下线 (nyh -> 2024-04-06 22:34:58)
                 ctx.channel().close();
+                userOffline(ctx.channel());
             }
         }
     }
@@ -64,7 +67,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
         WSBaseReq wsBaseReq = JSONUtil.toBean(text, WSBaseReq.class);
         switch (WSReqTypeEnum.of(wsBaseReq.getType())) {
             case AUTHORIZE:
-                break;
+                webSocketService.authorize(ctx.channel(), wsBaseReq.getData());
             case HEARTBEAT:
                 break;
             case LOGIN:

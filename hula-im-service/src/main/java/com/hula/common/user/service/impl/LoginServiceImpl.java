@@ -30,21 +30,25 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Async
     public void renewalTokenIfNecessary(String token) {
-        Long uid = getValidUid(token);
-        String userTokenKey = getUserTokenKey(uid);
-        Long expireDays = RedisUtils.getExpire(userTokenKey, TimeUnit.DAYS);
+        Long uid = jwtUtils.getUidOrNull(token);
+        if (Objects.isNull(uid)) {
+            return;
+        }
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        Long expireDays = RedisUtils.getExpire(key, TimeUnit.DAYS);
         if (expireDays == -2) {
             return;
         }
         if (expireDays < TOKEN_RENEWAL_DAYS) {
-            RedisUtils.expire(RedisKey.getKey(getUserTokenKey(uid)), TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+            RedisUtils.expire(key, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
         }
     }
 
     @Override
     public String login(Long uid) {
         String token = jwtUtils.createToken(uid);
-        RedisUtils.set(RedisKey.getKey(getUserTokenKey(uid)), token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
         return token;
     }
 
@@ -54,11 +58,8 @@ public class LoginServiceImpl implements LoginService {
         if (Objects.isNull(uid)) {
             return null;
         }
-        String oldToken = RedisUtils.get(getUserTokenKey(uid));
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        String oldToken = RedisUtils.getStr(key);
         return Objects.equals(oldToken, token) ? uid : null;
-    }
-
-    private String getUserTokenKey(Long uid) {
-        return RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
     }
 }
