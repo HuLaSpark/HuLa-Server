@@ -6,6 +6,8 @@ import com.hula.core.user.domain.entity.UserBackpack;
 import com.hula.core.user.mapper.UserBackpackMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户背包表 服务实现类
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpack> {
 
-    // TODO Long类型 (nyh -> 2024-05-03 01:03:21)
     public Integer getCountByValidItemId(Long uid, Long itemId) {
         return Math.toIntExact(lambdaQuery()
                 .eq(UserBackpack::getUid, uid)
@@ -42,5 +43,13 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
                 .set(UserBackpack::getStatus, YesOrNoEnum.YES.getStatus())
                 .update();
+    }
+
+    public List<UserBackpack> getByItemIds(Long uid, List<Long> itemId) {
+        return lambdaQuery()
+                .eq(UserBackpack::getUid, uid)
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
+                .in(UserBackpack::getItemId, itemId)
+                .list();
     }
 }

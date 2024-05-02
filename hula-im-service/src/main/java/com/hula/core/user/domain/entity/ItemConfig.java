@@ -45,10 +45,11 @@ public class ItemConfig implements Serializable {
 
     /**
      * 物品功能描述
+     * 注意：字段名为"describe"可能与Java关键字冲突，建议修改为"itemDescription"或其他非关键字名称
      */
-    @TableField("describe")
+    @TableField("`describe`")
     @Schema(description = "对物品功能的详细描述")
-    private String describe; // 注意：字段名为"describe"可能与Java关键字冲突，建议修改为"itemDescription"或其他非关键字名称
+    private String describe;
 
     /**
      * 创建时间
