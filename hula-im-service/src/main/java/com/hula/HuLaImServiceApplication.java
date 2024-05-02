@@ -8,7 +8,7 @@ import org.mybatis.spring.annotation.MapperScan;
  * @author nyh
  */
 @SpringBootApplication(scanBasePackages = {"com.hula"})
-@MapperScan({"com.hula.common.**.mapper"})
+@MapperScan({"com.hula.core.**.mapper"})
 public class HuLaImServiceApplication {
 
     public static void main(String[] args) {

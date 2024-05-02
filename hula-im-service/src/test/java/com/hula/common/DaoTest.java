@@ -1,7 +1,7 @@
 package com.hula.common;
 
 import com.hula.HuLaImCommonStarterApplication;
-import com.hula.common.user.service.LoginService;
+import com.hula.core.user.service.LoginService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

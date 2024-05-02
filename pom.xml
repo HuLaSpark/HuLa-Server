@@ -17,7 +17,7 @@
         <revision>v1.0.0-alpha</revision>
         <java.version>21</java.version>
         <spring-boot.version>3.2.1</spring-boot.version>
-        <hutool.version>5.8.24</hutool.version>
+        <hutool.version>5.8.27</hutool.version>
         <mysql-connector.version>8.2.0</mysql-connector.version>
         <jjwt.version>0.9.1</jjwt.version>
         <logstash-logback.version>7.2</logstash-logback.version>
@@ -33,6 +33,7 @@
         <okhttp.version>4.8.1</okhttp.version>
         <maven-model.version>3.9.6</maven-model.version>
         <redisson-spring-boot-starter.version>3.24.1</redisson-spring-boot-starter.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
     </properties>
 
     <dependencyManagement>
@@ -85,6 +86,13 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <!-- Servlet 容器管理 -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+                <scope>provided</scope>
             </dependency>
             <!-- mybatis plus 集成Spring Boot启动器 -->
             <dependency>
