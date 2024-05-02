@@ -1,6 +1,6 @@
 package com.hula.common.interceptor;
 
-import com.hula.common.domain.vo.dto.RequestInfo;
+import com.hula.common.domain.dto.RequestInfo;
 import com.hula.common.utils.RequestHolder;
 import com.hula.common.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class CollectorInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         RequestInfo info = new RequestInfo();
         info.setUid(Optional.ofNullable(request.getAttribute(TokenInterceptor.ATTRIBUTE_UID)).map(Object::toString).map(Long::parseLong).orElse(null));
-        /**! 使用自定义的ServletUtils获取客户端ip地址，hutool的ServletUtil不支持jakarta.servlet类型 */
+        /*! 使用自定义的ServletUtils获取客户端ip地址，hutool的ServletUtil不支持jakarta.servlet类型 */
         info.setIp(ServletUtils.getClientIp());
         RequestHolder.set(info);
         return true;

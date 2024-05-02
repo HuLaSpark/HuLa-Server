@@ -1,4 +1,4 @@
-package com.hula.core.user.domain.entity.vo.resp;
+package com.hula.core.user.domain.vo.resp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

@@ -1,6 +1,7 @@
 package com.hula.core.user.service;
 
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.resp.UserInfoResp;
 
 /**
  * <p>
@@ -13,4 +14,8 @@ import com.hula.core.user.domain.entity.User;
 public interface UserService {
 
     Long register(User insert);
+
+    UserInfoResp getUserInfo(Long uid);
+
+    void modifyName(Long uid, String name);
 }

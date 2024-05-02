@@ -1,7 +1,7 @@
 package com.hula.common.utils;
 
 
-import com.hula.common.domain.vo.dto.RequestInfo;
+import com.hula.common.domain.dto.RequestInfo;
 
 /**
  * 请求上下文

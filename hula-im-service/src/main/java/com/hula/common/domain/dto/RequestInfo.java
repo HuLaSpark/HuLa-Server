@@ -1,4 +1,4 @@
-package com.hula.common.domain.vo.dto;
+package com.hula.common.domain.dto;
 
 import lombok.Data;
 

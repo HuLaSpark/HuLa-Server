@@ -1,5 +1,6 @@
 package com.hula.common.domain.vo.resp;
 
+import com.hula.common.exception.ErrorEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -41,13 +42,13 @@ public class ApiResult<T> {
         return result;
     }
 
-//    public static <T> ApiResult<T> fail(ErrorEnum errorEnum) {
-//        ApiResult<T> result = new ApiResult<T>();
-//        result.setSuccess(Boolean.FALSE);
-//        result.setErrCode(errorEnum.getErrorCode());
-//        result.setErrMsg(errorEnum.getErrorMsg());
-//        return result;
-//    }
+    public static <T> ApiResult<T> fail(ErrorEnum errorEnum) {
+        ApiResult<T> result = new ApiResult<T>();
+        result.setSuccess(Boolean.FALSE);
+        result.setErrCode(errorEnum.getErrorCode());
+        result.setErrMsg(errorEnum.getErrorMsg());
+        return result;
+    }
 
     public boolean isSuccess() {
         return this.success;
