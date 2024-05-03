@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
  * @author nyh
  */
 @Controller
-@RequestMapping("/itemConfig")
+@RequestMapping("/api/itemConfig")
 @Tag(name = "功能物品配置")
 public class ItemConfigController {
 

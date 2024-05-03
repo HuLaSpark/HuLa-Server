@@ -1,5 +1,6 @@
 package com.hula.core.user.service.impl;
 
+import com.hula.common.event.UserRegisterEvent;
 import com.hula.common.utils.AssertUtil;
 import com.hula.core.user.dao.ItemConfigDao;
 import com.hula.core.user.dao.UserBackpackDao;
@@ -15,6 +16,7 @@ import com.hula.core.user.service.UserService;
 import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.core.user.service.cache.ItemCache;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +34,13 @@ public class UserServiceImpl implements UserService {
     private UserBackpackDao userBackpackDao;
     private ItemCache itemCache;
     private ItemConfigDao itemConfigDao;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    @Transactional
-    public Long register(User insert) {
-        userDao.save(insert);
-        // TODO 用户注册事件 (nyh -> 2024-04-10 00:31:06)
-        return insert.getId();
+    public Long register(User user) {
+        userDao.save(user);
+        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, user));
+        return user.getId();
     }
 
     @Override

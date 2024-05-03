@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,6 +18,9 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @TableName("user_backpack")
 @Schema(description = "用户背包表")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserBackpack implements Serializable {
 
     private static final long serialVersionUID = 1L;

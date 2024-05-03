@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
  * @author nyh
  */
 @Controller
-@RequestMapping("/userBackpack")
+@RequestMapping("/api/userBackpack")
 @Tag(name = "用户背包管理")
 public class UserBackpackController {
 

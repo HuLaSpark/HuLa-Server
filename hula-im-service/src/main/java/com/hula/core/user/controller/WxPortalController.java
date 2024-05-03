@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
-import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
@@ -51,10 +50,14 @@ public class WxPortalController {
     }
 
     @GetMapping("/callBack")
-    public RedirectView callBack(@RequestParam String code) throws WxErrorException {
-        WxOAuth2AccessToken accessToken = wxService.getOAuth2Service().getAccessToken(code);
-        WxOAuth2UserInfo userInfo = wxService.getOAuth2Service().getUserInfo(accessToken, "zh_CN");
-        wxMsgService.authorize(userInfo);
+    public RedirectView callBack(@RequestParam String code) {
+        try {
+            WxOAuth2AccessToken accessToken = wxService.getOAuth2Service().getAccessToken(code);
+            WxOAuth2UserInfo userInfo = wxService.getOAuth2Service().getUserInfo(accessToken, "zh_CN");
+            wxMsgService.authorize(userInfo);
+        } catch (Exception e) {
+            log.error("callBack error", e);
+        }
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl("https://gitee.com/nongyehong");
         return redirectView;

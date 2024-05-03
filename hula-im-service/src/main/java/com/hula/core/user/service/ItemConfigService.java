@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author nyh
  * @since 2024-05-01
  */
-public interface IItemConfigService extends IService<ItemConfig> {
+public interface ItemConfigService extends IService<ItemConfig> {
 
 }

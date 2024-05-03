@@ -79,6 +79,7 @@ public class WXMsgServiceImpl implements WXMsgService {
 
     @Override
     public void authorize(WxOAuth2UserInfo userInfo) {
+        // TODO 这里还有问题需要修复 (nyh -> 2024-05-03 22:22:48)
         String openid = userInfo.getOpenid();
         User user = userDao.getByOpenId(openid);
         // 如果没有报空指针就是代表该用户是非法授权
