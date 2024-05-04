@@ -4,9 +4,11 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.hula.common.event.UserOnlineEvent;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.LoginService;
+import com.hula.core.websocket.NettyUtil;
 import com.hula.core.websocket.domain.dto.WSChannelExtraDTO;
 import com.hula.core.websocket.domain.enums.WSBaseResp;
 import com.hula.core.websocket.domain.service.WebSocketService;
@@ -17,10 +19,12 @@ import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +41,8 @@ public class WebSocketServiceImpl implements WebSocketService {
     private UserDao userDao;
     @Resource
     private LoginService loginService;
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
 
     public static final Duration DURATION = Duration.ofHours(1);
     public static final int MAXIMUM_SIZE = 1000;
@@ -116,9 +122,12 @@ public class WebSocketServiceImpl implements WebSocketService {
         //保存channel对应得uid
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
-        // TODO: 2024/5/1 用户上线成功的事件
         //推送成功消息
         sendMsg(channel, WebSocketAdapter.buildResp(user, token));
+        //用户上线成功的事件
+        user.setLastOptTime(new Date());
+        user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
+        applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
     }
 
     private void sendMsg(Channel channel, WSBaseResp<?> resp) {

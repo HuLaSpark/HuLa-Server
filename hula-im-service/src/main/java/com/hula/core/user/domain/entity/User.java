@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -16,7 +17,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("user")
+@TableName(value = "user", autoResultMap = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -77,9 +78,9 @@ public class User implements Serializable {
     /**
      * ip信息
      */
-    @TableField("ip_info")
+    @TableField(value = "ip_info", typeHandler = JacksonTypeHandler.class)
     @Schema(description = "ip信息")
-    private String ipInfo;
+    private IpInfo ipInfo;
 
     /**
      * 佩戴的徽章id
@@ -109,5 +110,14 @@ public class User implements Serializable {
     @Schema(description = "修改时间")
     private Date updateTime;
 
-
+    /**
+     * 刷新ip
+     * @param ip ip
+     **/
+    public void refreshIp(String ip) {
+        if (ipInfo == null) {
+            ipInfo = new IpInfo();
+        }
+        ipInfo.refreshIp(ip);
+    }
 }
