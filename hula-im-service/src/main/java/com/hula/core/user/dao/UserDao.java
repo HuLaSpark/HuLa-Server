@@ -1,6 +1,7 @@
 package com.hula.core.user.dao;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hula.common.domain.enums.YesOrNoEnum;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,13 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
         lambdaUpdate()
                 .eq(User::getId, uid)
                 .set(User::getItemId, itemId)
+                .update();
+    }
+
+    public void invalidUid(Long id) {
+        lambdaUpdate()
+                .eq(User::getId, id)
+                .set(User::getStatus, YesOrNoEnum.YES.getStatus())
                 .update();
     }
 }

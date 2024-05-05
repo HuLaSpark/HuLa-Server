@@ -1,12 +1,11 @@
-package com.hula.core.websocket.domain.enums;
+package com.hula.core.user.domain.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Description: 物品枚举
- * Author: <a href="https://github.com/zongzibinbin">abin</a>
- * Date: 2023-03-19
+ * 物品枚举
+ * @author nyh
  */
 @AllArgsConstructor
 @Getter

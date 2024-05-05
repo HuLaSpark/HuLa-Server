@@ -7,7 +7,9 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.enums.RoleEnum;
 import com.hula.core.user.service.LoginService;
+import com.hula.core.user.service.RoleService;
 import com.hula.core.websocket.NettyUtil;
 import com.hula.core.websocket.domain.dto.WSChannelExtraDTO;
 import com.hula.core.websocket.domain.enums.WSBaseResp;
@@ -21,6 +23,7 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -43,6 +46,10 @@ public class WebSocketServiceImpl implements WebSocketService {
     private LoginService loginService;
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
+    @Resource
+    private RoleService roleService;
+    @Resource
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     public static final Duration DURATION = Duration.ofHours(1);
     public static final int MAXIMUM_SIZE = 1000;
@@ -118,12 +125,19 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
+    @Override
+    public void sendMsgToAll(WSBaseResp<?> msg) {
+        ONLINE_WS_MAP.forEach(((channel, ext) -> {
+            threadPoolTaskExecutor.execute(() -> sendMsg(channel, msg));
+        }));
+    }
+
     private void loginSuccess(Channel channel, User user, String token) {
         //保存channel对应得uid
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
         //推送成功消息
-        sendMsg(channel, WebSocketAdapter.buildResp(user, token));
+        sendMsg(channel, WebSocketAdapter.buildResp(user, token, roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER)));
         //用户上线成功的事件
         user.setLastOptTime(new Date());
         user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));

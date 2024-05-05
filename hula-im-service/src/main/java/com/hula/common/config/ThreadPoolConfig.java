@@ -1,5 +1,6 @@
 package com.hula.common.config;
 
+import com.hula.common.thread.MyThreadFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -43,6 +44,22 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setThreadNamePrefix("hula-executor-");
         //满了调用线程执行，认为重要任务
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setThreadFactory(new MyThreadFactory(executor));
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(WS_EXECUTOR)
+    public ThreadPoolTaskExecutor websocketExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        // 线程池优雅停机
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setCorePoolSize(16);
+        executor.setMaxPoolSize(16);
+        executor.setQueueCapacity(1000);//支持同时推送1000人
+        executor.setThreadNamePrefix("websocket-executor-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());//满了直接丢弃，默认为不重要消息推送
+        executor.setThreadFactory(new MyThreadFactory(executor));
         executor.initialize();
         return executor;
     }

@@ -15,6 +15,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private TokenInterceptor tokenInterceptor;
     @Resource
     private CollectorInterceptor collectorInterceptor;
+    @Resource
+    private BlackInterceptor blackInterceptor;
 
     /** 添加拦截器 */
     @Override
@@ -22,6 +24,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**");
         registry.addInterceptor(collectorInterceptor)
+                .addPathPatterns("/**");
+        registry.addInterceptor(blackInterceptor)
                 .addPathPatterns("/**");
     }
 }

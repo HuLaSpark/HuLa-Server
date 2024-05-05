@@ -1,5 +1,6 @@
 package com.hula.core.websocket.domain.service;
 
+import com.hula.core.websocket.domain.enums.WSBaseResp;
 import io.netty.channel.Channel;
 
 /**
@@ -17,4 +18,6 @@ public interface WebSocketService {
     void waitAuthorize(Integer code);
 
     void authorize(Channel channel, String token);
+
+    void sendMsgToAll(WSBaseResp<?> msg);
 }
