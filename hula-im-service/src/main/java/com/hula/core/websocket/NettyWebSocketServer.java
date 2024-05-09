@@ -21,6 +21,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
+
 /**
  * @author nyh
  */
@@ -60,8 +61,7 @@ public class NettyWebSocketServer {
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                // 为 bossGroup 添加 日志处理器
-                .handler(new LoggingHandler(LogLevel.INFO))
+                .handler(new LoggingHandler(LogLevel.INFO)) // 为 bossGroup 添加 日志处理器
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -79,7 +79,7 @@ public class NettyWebSocketServer {
                          */
                         pipeline.addLast(new HttpObjectAggregator(8192));
                         //保存用户ip
-//                        pipeline.addLast(new HttpHeadersHandler());
+                        pipeline.addLast(new HttpHeadersHandler());
                         /**
                          * 说明：
                          *  1. 对于 WebSocket，它的数据是以帧frame 的形式传递的；

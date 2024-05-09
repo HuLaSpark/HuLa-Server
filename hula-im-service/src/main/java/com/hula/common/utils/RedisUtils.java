@@ -1,6 +1,7 @@
 package com.hula.common.utils;
 
 import cn.hutool.extra.spring.SpringUtil;
+import com.hula.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -16,9 +17,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * @author nyh
- */
 @Slf4j
 public class RedisUtils {
 

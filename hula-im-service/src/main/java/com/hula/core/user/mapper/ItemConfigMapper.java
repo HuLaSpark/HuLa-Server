@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author nyh
- * @since 2024-05-01
  */
 public interface ItemConfigMapper extends BaseMapper<ItemConfig> {
 

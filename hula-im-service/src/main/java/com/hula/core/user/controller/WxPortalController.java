@@ -1,6 +1,6 @@
 package com.hula.core.user.controller;
 
-import com.hula.core.user.service.WXMsgService;
+import com.hula.core.user.service.WxMsgService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class WxPortalController {
 
     private final WxMpService wxService;
     private final WxMpMessageRouter messageRouter;
-    private final WXMsgService wxMsgService;
+    private final WxMsgService wxMsgService;
 
     @GetMapping(produces = "text/plain;charset=utf-8")
     public String authGet(@RequestParam(name = "signature", required = false) String signature,

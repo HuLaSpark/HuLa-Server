@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author nyh
- * @since 2024-05-05
  */
 @Service
 public class RoleDao extends ServiceImpl<RoleMapper, Role> {

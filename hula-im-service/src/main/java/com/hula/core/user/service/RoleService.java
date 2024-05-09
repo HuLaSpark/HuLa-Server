@@ -8,7 +8,6 @@ import com.hula.core.user.domain.enums.RoleEnum;
  * </p>
  *
  * @author nyh
- * @since 2024-05-05
  */
 public interface RoleService {
     /**

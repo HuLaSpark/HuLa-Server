@@ -3,7 +3,7 @@ package com.hula.common.aspect;
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.service.LockService;
-import com.hula.common.utils.SpElUtils;
+import com.hula.utils.SpElUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

@@ -3,8 +3,6 @@ HuLa-IM:
   DATABASE_NAME: hula-im #数据库名
   MYSQL_USER_NAME: root #数据库用户名
   MYSQL_PASSWORD: 123456 #数据库密码
-  MP_LOG_IMPL: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句到后台
-  LOGGING_LEVEL: info # 日志打印类型
   REDIS:
     PAW: null #redis密码
     PORT: 6379 # redis端口号
@@ -16,3 +14,7 @@ HuLa-IM:
     AESKEY: 7iNecFLZ8nbtCaMntHYEruSHP1Mk8FmGvrkHwnJzwug
   JWT: #JWT配置
     SECRET: dsfsdfsdfsdfsd
+  ROCKETMQ: #rocketmq配置
+    NAME-SERVER: 127.0.0.1:9876
+    ACCESS-KEY: nongyehong
+    SECRET-KEY: 919919919

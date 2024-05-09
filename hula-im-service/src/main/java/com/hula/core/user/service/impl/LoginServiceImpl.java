@@ -1,9 +1,9 @@
 package com.hula.core.user.service.impl;
 
 import com.hula.common.constant.RedisKey;
-import com.hula.core.user.service.LoginService;
 import com.hula.common.utils.JwtUtils;
 import com.hula.common.utils.RedisUtils;
+import com.hula.core.user.service.LoginService;
 import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

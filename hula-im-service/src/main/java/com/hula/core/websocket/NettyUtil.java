@@ -6,9 +6,8 @@ import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 
 /**
- * Description: netty工具类
- * Author: <a href="https://github.com/zongzibinbin">abin</a>
- * Date: 2023-04-18
+ * netty工具类
+ * @author nyh
  */
 
 public class NettyUtil {

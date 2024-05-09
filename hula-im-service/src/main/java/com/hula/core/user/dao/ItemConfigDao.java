@@ -13,7 +13,6 @@ import java.util.List;
  * </p>
  *
  * @author nyh
- * @since 2024-05-01
  */
 @Service
 public class ItemConfigDao extends ServiceImpl<ItemConfigMapper, ItemConfig> {

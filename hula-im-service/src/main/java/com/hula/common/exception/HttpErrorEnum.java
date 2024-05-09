@@ -2,7 +2,7 @@ package com.hula.common.exception;
 
 import cn.hutool.http.ContentType;
 import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.utils.JsonUtils;
+import com.hula.utils.JsonUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

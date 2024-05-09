@@ -10,6 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
+/**
+ * @author nyh
+ */
 public class HttpHeadersHandler extends ChannelInboundHandlerAdapter {
 
     @Override

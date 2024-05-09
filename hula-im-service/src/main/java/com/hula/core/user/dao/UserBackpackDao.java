@@ -1,5 +1,7 @@
 package com.hula.core.user.dao;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.domain.enums.YesOrNoEnum;
 import com.hula.core.user.domain.entity.UserBackpack;
@@ -14,48 +16,48 @@ import java.util.List;
  * </p>
  *
  * @author nyh
- * @since 2024-05-01
  */
 @Service
 public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpack> {
 
     public Integer getCountByValidItemId(Long uid, Long itemId) {
-        return Math.toIntExact(lambdaQuery()
-                .eq(UserBackpack::getUid, uid)
+        return Math.toIntExact(lambdaQuery().eq(UserBackpack::getUid, uid)
                 .eq(UserBackpack::getItemId, itemId)
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
                 .count());
     }
 
     public UserBackpack getFirstValidItem(Long uid, Long itemId) {
-        return lambdaQuery()
+        LambdaQueryWrapper<UserBackpack> wrapper = new QueryWrapper<UserBackpack>().lambda()
                 .eq(UserBackpack::getUid, uid)
                 .eq(UserBackpack::getItemId, itemId)
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
-                .orderByAsc(UserBackpack::getId)
-                .last("limit 1")
-                .one();
+                .last("limit 1");
+        return getOne(wrapper);
     }
 
-    public boolean useItem(UserBackpack item) {
-        return lambdaUpdate()
-                .eq(UserBackpack::getId, item.getId())
-                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
-                .set(UserBackpack::getStatus, YesOrNoEnum.YES.getStatus())
-                .update();
+    public boolean invalidItem(Long id) {
+        UserBackpack update = new UserBackpack();
+        update.setId(id);
+        update.setStatus(YesOrNoEnum.YES.getStatus());
+        return updateById(update);
     }
 
-    public List<UserBackpack> getByItemIds(Long uid, List<Long> itemId) {
-        return lambdaQuery()
-                .eq(UserBackpack::getUid, uid)
+    public List<UserBackpack> getByItemIds(Long uid, List<Long> itemIds) {
+        return lambdaQuery().eq(UserBackpack::getUid, uid)
+                .in(UserBackpack::getItemId, itemIds)
                 .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
-                .in(UserBackpack::getItemId, itemId)
                 .list();
     }
 
-    public UserBackpack getByIdempotent(String idempotent) {
-        return lambdaQuery()
-                .eq(UserBackpack::getIdempotent, idempotent)
-                .one();
+    public List<UserBackpack> getByItemIds(List<Long> uids, List<Long> itemIds) {
+        return lambdaQuery().in(UserBackpack::getUid, uids)
+                .in(UserBackpack::getItemId, itemIds)
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus())
+                .list();
+    }
+
+    public UserBackpack getByIdp(String idempotent) {
+        return lambdaQuery().eq(UserBackpack::getIdempotent, idempotent).one();
     }
 }

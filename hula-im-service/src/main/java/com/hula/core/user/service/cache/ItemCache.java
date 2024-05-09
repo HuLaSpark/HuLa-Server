@@ -3,7 +3,6 @@ package com.hula.core.user.service.cache;
 import com.hula.core.user.dao.ItemConfigDao;
 import com.hula.core.user.domain.entity.ItemConfig;
 import jakarta.annotation.Resource;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +23,6 @@ public class ItemCache {
     @Cacheable(cacheNames = "item", key = "'itemsByType:'+#type")
     public List<ItemConfig> getByType(Integer type) {
         return itemConfigDao.getByType(type);
-    }
-
-    @CacheEvict(cacheNames = "item", key = "'itemsByType:'+#type")
-    public void evictByType(Integer type) {
     }
 
     @Cacheable(cacheNames = "item", key = "'item:'+#itemId")

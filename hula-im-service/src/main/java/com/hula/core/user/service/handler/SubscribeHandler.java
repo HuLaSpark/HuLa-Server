@@ -1,6 +1,6 @@
 package com.hula.core.user.service.handler;
 
-import com.hula.core.user.service.WXMsgService;
+import com.hula.core.user.service.WxMsgService;
 import com.hula.core.user.service.adapter.TextBuilder;
 import jakarta.annotation.Resource;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class SubscribeHandler extends AbstractHandler {
 
     @Resource
-    private WXMsgService wxMsgService;
+    private WxMsgService wxMsgService;
 
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
@@ -30,7 +30,7 @@ public class SubscribeHandler extends AbstractHandler {
 
         WxMpXmlOutMessage responseResult = null;
         try {
-            responseResult = wxMsgService.scan(wxMessage);
+            responseResult = this.handleSpecial(weixinService, wxMessage);
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
         }
@@ -39,7 +39,13 @@ public class SubscribeHandler extends AbstractHandler {
             return responseResult;
         }
 
-        return TextBuilder.build("感谢关注", wxMessage);
+        try {
+            return new TextBuilder().build("感谢关注", wxMessage, weixinService);
+        } catch (Exception e) {
+            this.logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 
     /**
@@ -47,7 +53,7 @@ public class SubscribeHandler extends AbstractHandler {
      */
     private WxMpXmlOutMessage handleSpecial(WxMpService weixinService, WxMpXmlMessage wxMessage)
             throws Exception {
-        return null;
+        return wxMsgService.scan(weixinService, wxMessage);
     }
 
 }

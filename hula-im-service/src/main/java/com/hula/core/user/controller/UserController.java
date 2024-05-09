@@ -4,12 +4,12 @@ package com.hula.core.user.controller;
 import com.hula.common.domain.vo.resp.ApiResult;
 import com.hula.common.utils.AssertUtil;
 import com.hula.common.utils.RequestHolder;
+import com.hula.core.user.domain.dto.ItemInfoDTO;
+import com.hula.core.user.domain.dto.SummeryInfoDTO;
 import com.hula.core.user.domain.enums.RoleEnum;
-import com.hula.core.user.domain.vo.req.BlackReq;
-import com.hula.core.user.domain.vo.req.ModifyNameReq;
-import com.hula.core.user.domain.vo.req.WearingBadgeReq;
-import com.hula.core.user.domain.vo.resp.BadgeResp;
-import com.hula.core.user.domain.vo.resp.UserInfoResp;
+import com.hula.core.user.domain.vo.req.user.*;
+import com.hula.core.user.domain.vo.resp.user.BadgeResp;
+import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,34 +35,46 @@ public class UserController {
     private RoleService roleService;
 
     @GetMapping("/userInfo")
-    @Operation(summary = "获取用户信息")
+    @Operation(summary ="用户详情")
     public ApiResult<UserInfoResp> getUserInfo() {
         return ApiResult.success(userService.getUserInfo(RequestHolder.get().getUid()));
     }
 
+    @PostMapping("/public/summary/userInfo/batch")
+    @Operation(summary ="用户聚合信息-返回的代表需要刷新的")
+    public ApiResult<List<SummeryInfoDTO>> getSummeryUserInfo(@Valid @RequestBody SummeryInfoReq req) {
+        return ApiResult.success(userService.getSummeryUserInfo(req));
+    }
+
+    @PostMapping("/public/badges/batch")
+    @Operation(summary ="徽章聚合信息-返回的代表需要刷新的")
+    public ApiResult<List<ItemInfoDTO>> getItemInfo(@Valid @RequestBody ItemInfoReq req) {
+        return ApiResult.success(userService.getItemInfo(req));
+    }
+
     @PutMapping("/name")
-    @Operation(summary = "修改用户名")
+    @Operation(summary ="修改用户名")
     public ApiResult<Void> modifyName(@Valid @RequestBody ModifyNameReq req) {
-        userService.modifyName(RequestHolder.get().getUid(), req.getName());
+        userService.modifyName(RequestHolder.get().getUid(), req);
         return ApiResult.success();
     }
 
     @GetMapping("/badges")
-    @Operation(summary = "可选徽章预览")
+    @Operation(summary ="可选徽章预览")
     public ApiResult<List<BadgeResp>> badges() {
         return ApiResult.success(userService.badges(RequestHolder.get().getUid()));
     }
 
     @PutMapping("/badge")
-    @Operation(summary = "佩戴徽章")
+    @Operation(summary ="佩戴徽章")
     public ApiResult<Void> wearingBadge(@Valid @RequestBody WearingBadgeReq req) {
-        userService.wearingBadge(RequestHolder.get().getUid(), req.getBadgeId());
+        userService.wearingBadge(RequestHolder.get().getUid(), req);
         return ApiResult.success();
     }
 
     @PutMapping("/black")
-    @Operation(summary = "拉黑用户")
-    public ApiResult<Void> black(@javax.validation.Valid @RequestBody BlackReq req) {
+    @Operation(summary ="拉黑用户")
+    public ApiResult<Void> black(@Valid @RequestBody BlackReq req) {
         Long uid = RequestHolder.get().getUid();
         boolean hasPower = roleService.hasPower(uid, RoleEnum.ADMIN);
         AssertUtil.isTrue(hasPower, "没有权限");

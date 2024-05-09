@@ -1,6 +1,6 @@
 package com.hula.common.config;
 
-import com.hula.common.thread.MyThreadFactory;
+import com.hula.common.factory.MyThreadFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -26,6 +26,11 @@ public class ThreadPoolConfig implements AsyncConfigurer {
      * websocket通信线程池
      */
     public static final String WS_EXECUTOR = "websocketExecutor";
+
+    /**
+     * ai聊天机器人线程池
+     **/
+    public static final String AICHAT_EXECUTOR = "aichatExecutor";
 
     @Override
     public Executor getAsyncExecutor() {
@@ -61,6 +66,18 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());//满了直接丢弃，默认为不重要消息推送
         executor.setThreadFactory(new MyThreadFactory(executor));
         executor.initialize();
+        return executor;
+    }
+
+    @Bean(AICHAT_EXECUTOR)
+    public ThreadPoolTaskExecutor chatAiExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(15);
+        executor.setThreadNamePrefix("aichat-executor-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());//满了直接丢弃，默认为不重要消息推送
+        executor.setThreadFactory(new MyThreadFactory(executor));
         return executor;
     }
 }

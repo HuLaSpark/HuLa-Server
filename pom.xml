@@ -14,7 +14,7 @@
     </modules>
 
     <properties>
-        <revision>v1.0.0-alpha</revision>
+        <revision>v1.5.0</revision>
         <java.version>21</java.version>
         <spring-boot.version>3.2.1</spring-boot.version>
         <hutool.version>5.8.27</hutool.version>

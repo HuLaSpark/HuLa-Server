@@ -6,10 +6,9 @@ import com.hula.common.exception.HttpErrorEnum;
 import com.hula.common.utils.RequestHolder;
 import com.hula.core.user.domain.enums.BlackTypeEnum;
 import com.hula.core.user.service.cache.UserCache;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
@@ -19,11 +18,10 @@ import java.util.Set;
 /**
  * @author nyh
  */
-@Component
+@RequiredArgsConstructor
 public class BlackInterceptor implements HandlerInterceptor {
 
-    @Resource
-    private UserCache userCache;
+    private final UserCache userCache;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

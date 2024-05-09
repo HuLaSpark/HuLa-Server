@@ -8,7 +8,6 @@ import com.hula.common.domain.enums.IdempotentEnum;
  * </p>
  *
  * @author nyh
- * @since 2024-05-01
  */
 public interface UserBackpackService {
     /**

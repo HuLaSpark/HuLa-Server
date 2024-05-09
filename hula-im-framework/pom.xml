@@ -15,6 +15,9 @@
 
     <modules>
         <module>hula-im-common-starter</module>
+        <module>hula-im-transaction</module>
+        <module>hula-im-oss-starter</module>
+        <module>hula-im-frequency-control</module>
     </modules>
 
 </project>
