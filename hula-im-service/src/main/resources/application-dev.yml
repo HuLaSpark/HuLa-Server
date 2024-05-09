@@ -1,0 +1,20 @@
+HuLa-IM:
+  HOST: localhost #域名
+  DATABASE_NAME: hula-im #数据库名
+  MYSQL_USER_NAME: root #数据库用户名
+  MYSQL_PASSWORD: 123456 #数据库密码
+  REDIS:
+    PAW: null #redis密码
+    PORT: 6379 # redis端口号
+  WX: # 微信配置
+    CALLBACK: https://468ov9ww8878.vicp.fun
+    APPID: wxb28a0fd6d1cae6ba
+    SECRET: 9c215f8d078422805218221144b9095b
+    TOKEN: nongyehong
+    AESKEY: 7iNecFLZ8nbtCaMntHYEruSHP1Mk8FmGvrkHwnJzwug
+  JWT: #JWT配置
+    SECRET: dsfsdfsdfsdfsd
+  ROCKETMQ: #rocketmq配置
+    NAME-SERVER: 127.0.0.1:9876
+    ACCESS-KEY: nongyehong
+    SECRET-KEY: 919919919
