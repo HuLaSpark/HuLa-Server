@@ -46,8 +46,6 @@ public class GroupMember implements Serializable {
 
     /**
      * 成员角色1群主(可撤回，可移除，可解散) 2管理员(可撤回，可移除) 3普通成员
-     *
-     * @see com.abin.mallchat.common.chat.domain.enums.GroupRoleEnum
      */
     @TableField("role")
     private Integer role;
