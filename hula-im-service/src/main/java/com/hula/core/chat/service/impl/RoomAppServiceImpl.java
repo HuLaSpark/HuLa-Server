@@ -314,7 +314,12 @@ public class RoomAppServiceImpl implements RoomAppService {
                     Message message = msgMap.get(room.getLastMsgId());
                     if (Objects.nonNull(message)) {
                         AbstractMsgHandler strategyNoNull = MsgHandlerFactory.getStrategyNoNull(message.getType());
-                        resp.setText(lastMsgUidMap.get(message.getFromUid()).getName() + ":" + strategyNoNull.showContactMsg(message));
+                        // 判断是群聊还是单聊
+                        if (Objects.equals(roomBaseInfo.getType(), RoomTypeEnum.GROUP.getType())) {
+                            resp.setText(lastMsgUidMap.get(message.getFromUid()).getName() + ":" + strategyNoNull.showContactMsg(message));
+                        } else {
+                            resp.setText(strategyNoNull.showContactMsg(message));
+                        }
                     }
                     resp.setUnreadCount(unReadCountMap.getOrDefault(room.getRoomId(), 0));
                     return resp;

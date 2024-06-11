@@ -58,10 +58,6 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
 
     /**
      * 心跳检查
-     *
-     * @param ctx
-     * @param evt
-     * @throws Exception
      */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

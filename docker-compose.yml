@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/mysql/data:/var/lib/mysql
+    environment: #指定root密码
+      - MYSQL_ROOT_PASSWORD=123456
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - /home/redis/myredis/data:/data
+      - /home/redis/myredis/myredis.conf:/etc/redis/redis.conf
+
+
+  rocketmq-namesrv:
+    image: foxiswho/rocketmq:4.8.0
+    container_name: rocketmq-namesrv
+    restart: always
+    ports:
+      - 9876:9876
+    volumes:
+      - ./namesrv/logs:/home/rocketmq/logs
+      - ./namesrv/store:/home/rocketmq/store
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms128M -Xmx128M -Xmn128m"
+    command: [ "sh","mqnamesrv" ]
+    networks:
+      rocketmq_net:
+        aliases:
+          - rocketmq-namesrv
+
+
+  rocketmq-broker:
+    image: foxiswho/rocketmq:4.8.0
+    container_name: rocketmq-broker
+    restart: always
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ./broker/logs:/home/rocketmq/logs
+      - ./broker/store:/home/rocketmq/store
+      - ./broker/conf/plain_acl.yml:/home/rocketmq/rocketmq-4.8.0/conf/plain_acl.yml
+      - ./broker/conf/broker.conf:/etc/rocketmq/broker.conf
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms128m -Xmx128m -Xmn128m"
+    command: [ "sh","mqbroker","-c","/etc/rocketmq/broker.conf" ]
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      rocketmq_net:
+        aliases:
+          - rocketmq-broker
+
+
+  rocketmq-console:
+    image: iamverygood/rocketmq-console:4.7.1
+    container_name: rocketmq-console
+    restart: always
+    ports:
+      - 8180:8080
+    volumes:
+      - ./console/data:/tmp/rocketmq-console/data
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Drocketmq.config.loginRequired=true -Drocketmq.config.aclEnabled=true -Drocketmq.config.accessKey=mallchat -Drocketmq.config.secretKey=12345678"
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      rocketmq_net:
+        aliases:
+          - rocketmq-console
+
+  minio:
+    image: "quay.io/minio/minio:RELEASE.2022-08-02T23-59-16Z"
+    container_name: minio
+    ports:
+      - "9000:9000" # api 端口
+      - "9001:9001" # 控制台端口
+    environment:
+      MINIO_ROOT_USER: admin # 管理后台用户名
+      MINIO_ROOT_PASSWORD: 12345678 # 管理后台密码，最小8个字符
+      MINIO_COMPRESS: "off" # 开启压缩 on 开启 off 关闭
+      MINIO_COMPRESS_EXTENSIONS: "" # 扩展名 .pdf,.doc 为空 所有类型均压缩
+      MINIO_COMPRESS_MIME_TYPES: "" # mime 类型 application/pdf 为空 所有类型均压缩
+    volumes:
+      - /data/minio/data:/data/ # 映射当前目录下的data目录至容器内/data目录
+      - /data/minio/config:/root/.minio/ # 映射配置目录
+    command: server --address ':9000' --console-address ':9001' /data  # 指定容器中的目录 /data
+    privileged: true
+
+  hula-im-server:
+    image: hula-im-server:v1.5.0
+    ports:
+      - "9190:9190"
+    depends_on:
+      - mysql
+      - redis
+      - rocketmq-namesrv
+      - rocketmq-broker
+      - rocketmq-console
+      - minio
