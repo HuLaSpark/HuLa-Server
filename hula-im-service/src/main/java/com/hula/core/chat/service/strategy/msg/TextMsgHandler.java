@@ -15,6 +15,7 @@ import com.hula.core.chat.domain.vo.request.msg.TextMsgReq;
 import com.hula.core.chat.domain.vo.response.msg.TextMsgResp;
 import com.hula.core.chat.service.adapter.MessageAdapter;
 import com.hula.core.chat.service.cache.MsgCache;
+import com.hula.core.chat.service.cache.MsgPlusCache;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleEnum;
 import com.hula.core.user.service.RoleService;
@@ -42,6 +43,7 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
     private UserInfoCache userInfoCache;
     private RoleService roleService;
     private SensitiveWordBs sensitiveWordBs;
+    private MsgPlusCache msgPlusCache;
 
     private static final PrioritizedUrlDiscover URL_TITLE_DISCOVER = new PrioritizedUrlDiscover();
 
@@ -106,8 +108,9 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
         resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));
         //回复消息
         Optional<Message> reply = Optional.ofNullable(msg.getReplyMsgId())
-                .map(msgCache::getMsg)
+                .map(msgPlusCache::get)
                 .filter(a -> Objects.equals(a.getStatus(), MessageStatusEnum.NORMAL.getStatus()));
+        // TODO 这里的缓存不会立即删除，导致撤回消息后回复的信息还有 (nyh -> 2024-07-14 03:46:34)
         if (reply.isPresent()) {
             Message replyMessage = reply.get();
             TextMsgResp.ReplyMsg replyMsgVO = new TextMsgResp.ReplyMsg();

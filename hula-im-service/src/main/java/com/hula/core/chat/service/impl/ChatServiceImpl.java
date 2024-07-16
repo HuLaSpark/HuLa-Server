@@ -294,7 +294,7 @@ public class ChatServiceImpl implements ChatService {
         boolean self = Objects.equals(uid, message.getFromUid());
         AssertUtil.isTrue(self, "抱歉,您没有权限");
         long between = DateUtil.between(message.getCreateTime(), new Date(), DateUnit.MINUTE);
-        AssertUtil.isTrue(between < 2, "覆水难收，超过2分钟的消息不能撤回哦~~");
+        AssertUtil.isTrue(between < 2, "超过2分钟的消息不能撤回");
     }
 
     public List<ChatMessageResp> getMsgRespBatch(List<Message> messages, Long receiveUid) {
