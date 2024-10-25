@@ -22,8 +22,11 @@ public class RedissonConfig {
         Config config = new Config();
         config.useSingleServer()
                 .setAddress("redis://" + redisProperties.getHost() + ":" + redisProperties.getPort())
-//                .setPassword(redisProperties.getPassword())
-                .setPassword(null)
+                // redis 6.x 需要设置用户名
+                .setUsername("default")
+                // 记得打开密码设置
+                .setPassword(redisProperties.getPassword())
+                // .setPassword(null)
                 .setDatabase(redisProperties.getDatabase());
         return Redisson.create(config);
     }
