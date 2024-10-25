@@ -99,6 +99,7 @@ services:
     image: hula-im-server:v1.5.0
     ports:
       - "9190:9190"
+      - "8090:8090"
     depends_on:
       - mysql
       - redis
@@ -106,3 +107,8 @@ services:
       - rocketmq-broker
       - rocketmq-console
       - minio
+
+networks:
+  rocketmq_net:
+    name: rocketmq_net
+    driver: bridge

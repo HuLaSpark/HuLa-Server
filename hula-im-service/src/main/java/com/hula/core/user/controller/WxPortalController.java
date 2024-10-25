@@ -50,7 +50,7 @@ public class WxPortalController {
     }
 
     @GetMapping("/callBack")
-    public RedirectView callBack(@RequestParam String code) {
+    public RedirectView callBack(@RequestParam(name = "code") String code) {
         try {
             WxOAuth2AccessToken accessToken = wxService.getOAuth2Service().getAccessToken(code);
             WxOAuth2UserInfo userInfo = wxService.getOAuth2Service().getUserInfo(accessToken, "zh_CN");
@@ -65,10 +65,10 @@ public class WxPortalController {
 
     @PostMapping(produces = "application/xml; charset=UTF-8")
     public String post(@RequestBody String requestBody,
-                       @RequestParam("signature") String signature,
-                       @RequestParam("timestamp") String timestamp,
-                       @RequestParam("nonce") String nonce,
-                       @RequestParam("openid") String openid,
+                       @RequestParam(name ="signature") String signature,
+                       @RequestParam(name ="timestamp") String timestamp,
+                       @RequestParam(name ="nonce") String nonce,
+                       @RequestParam(name ="openid") String openid,
                        @RequestParam(name = "encrypt_type", required = false) String encType,
                        @RequestParam(name = "msg_signature", required = false) String msgSignature) {
         log.info("\n接收微信请求：[openid=[{}], [signature=[{}], encType=[{}], msgSignature=[{}],"

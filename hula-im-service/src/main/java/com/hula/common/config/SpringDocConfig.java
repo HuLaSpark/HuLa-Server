@@ -1,12 +1,10 @@
 package com.hula.common.config;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.FileReader;
@@ -31,9 +29,9 @@ public class SpringDocConfig {
                 .version(revision);
     }
 
-    @Bean
-    public OpenAPI springShopOpenAPI() throws XmlPullParserException, IOException {
-        return new OpenAPI()
-                .info(info());
-    }
+//    @Bean
+//    public OpenAPI springShopOpenAPI() throws XmlPullParserException, IOException {
+//        return new OpenAPI()
+//                .info(info());
+//    }
 }

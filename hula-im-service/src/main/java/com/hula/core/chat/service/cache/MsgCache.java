@@ -7,7 +7,6 @@ import com.hula.core.user.dao.RoleDao;
 import com.hula.core.user.dao.UserDao;
 import jakarta.annotation.Resource;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,7 +25,7 @@ public class MsgCache {
     @Resource
     private MessageDao messageDao;
 
-    @Cacheable(cacheNames = "msg", key = "'msg'+#msgId")
+//    @Cacheable(cacheNames = "msg", key = "'msg'+#msgId")
     public Message getMsg(Long msgId) {
         return messageDao.getById(msgId);
     }

@@ -4,6 +4,7 @@ import com.hula.common.event.MessageRecallEvent;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.cache.MsgCache;
+import com.hula.core.chat.service.cache.MsgPlusCache;
 import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WSAdapter;
 import com.hula.core.user.service.impl.PushService;
@@ -28,13 +29,16 @@ public class MessageRecallListener {
     @Resource
     private MsgCache msgCache;
     @Resource
+    private MsgPlusCache msgPlusCache;
+    @Resource
     private PushService pushService;
 
     @Async
     @TransactionalEventListener(classes = MessageRecallEvent.class, fallbackExecution = true)
     public void evictMsg(MessageRecallEvent event) {
         ChatMsgRecallDTO recallDTO = event.getRecallDTO();
-        msgCache.evictMsg(recallDTO.getMsgId());
+//        msgCache.evictMsg(recallDTO.getMsgId());
+        msgPlusCache.delete(recallDTO.getMsgId());
     }
 
     @Async
