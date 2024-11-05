@@ -85,9 +85,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
         String body = HttpUtil.get("https://ip.taobao.com/outGetIpInfo?ip=" + ip + "&accessKey=alibaba-inc");
         try {
             ApiResult<IpDetail> result = JsonUtils.toObj(body, new TypeReference<ApiResult<IpDetail>>() {});
-            if (result.isSuccess()) {
-                return result.getData();
-            }
+            return result.getData();
         } catch (Exception ignored) {
         }
         return null;
