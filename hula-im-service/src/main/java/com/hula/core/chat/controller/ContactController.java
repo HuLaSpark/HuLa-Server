@@ -3,13 +3,13 @@ package com.hula.core.chat.controller;
 
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.IdReqVO;
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
-import com.hula.common.utils.RequestHolder;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.utils.RequestHolder;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.RoomAppService;
+import com.hula.domain.vo.res.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;

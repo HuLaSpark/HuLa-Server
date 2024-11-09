@@ -66,7 +66,7 @@ public class WxMpConfiguration {
         newRouter.rule().handler(this.logHandler).next();
 
         // 关注事件
-        newRouter.rule().async(false).msgType(EVENT).event(SUBSCRIBE).handler(this.subscribeHandler).end();
+        newRouter.rule().async(false).msgType(EVENT).event(EventType.SUBSCRIBE).handler(this.subscribeHandler).end();
 
         // 扫码事件
         newRouter.rule().async(false).msgType(EVENT).event(EventType.SCAN).handler(this.scanHandler).end();
@@ -76,5 +76,4 @@ public class WxMpConfiguration {
 
         return newRouter;
     }
-
 }

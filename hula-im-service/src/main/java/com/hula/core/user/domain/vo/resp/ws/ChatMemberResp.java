@@ -17,6 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMemberResp {
+
     @Schema(description ="uid")
     private Long uid;
 

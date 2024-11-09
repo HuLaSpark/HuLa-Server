@@ -2,8 +2,8 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.constant.RedisKey;
-import com.hula.common.utils.JwtUtils;
-import com.hula.common.utils.RedisUtils;
+import com.hula.utils.JwtUtils;
+import com.hula.utils.RedisUtils;
 import com.hula.core.user.service.LoginService;
 import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
@@ -37,7 +37,8 @@ public class LoginServiceImpl implements LoginService {
         }
         String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
         String realToken = RedisUtils.getStr(key);
-        return Objects.equals(token, realToken);//有可能token失效了，需要校验是不是和最新token一致
+        // 有可能token失效了，需要校验是不是和最新token一致
+        return Objects.equals(token, realToken);
     }
 
     @Async

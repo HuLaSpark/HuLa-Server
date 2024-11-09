@@ -6,10 +6,10 @@ import com.google.common.collect.Lists;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
-import com.hula.common.domain.vo.resp.PageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.UserApplyEvent;
-import com.hula.common.utils.AssertUtil;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.RoomFriendDao;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.service.ChatService;
@@ -134,10 +134,10 @@ public class FriendServiceImpl implements FriendService {
         return PageBaseResp.init(userApplyIPage, FriendAdapter.buildFriendApplyList(userApplyIPage.getRecords()));
     }
 
-    private void readApples(Long uid, IPage<UserApply> userApplyIPage) {
-        List<Long> applyIds = userApplyIPage.getRecords()
+    private void readApples(Long uid, IPage<UserApply> userApplyIpage) {
+        List<Long> applyIds = userApplyIpage.getRecords()
                 .stream().map(UserApply::getId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());;
         userApplyDao.readApples(uid, applyIds);
     }
 

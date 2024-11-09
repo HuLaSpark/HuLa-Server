@@ -2,7 +2,7 @@ package com.hula.core.user.service;
 
 
 import com.hula.core.user.domain.vo.req.oss.UploadUrlReq;
-import com.hula.domain.OssResp;
+import com.hula.domain.vo.res.OssResp;
 
 /**
  * <p>

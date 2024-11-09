@@ -1,7 +1,7 @@
 package com.hula.common.interceptor;
 
-import com.hula.common.exception.HttpErrorEnum;
 import com.hula.core.user.service.LoginService;
+import com.hula.enums.HttpErrorEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

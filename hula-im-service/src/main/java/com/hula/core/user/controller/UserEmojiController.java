@@ -1,12 +1,12 @@
 package com.hula.core.user.controller;
 
 import com.hula.common.domain.vo.req.IdReqVO;
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.domain.vo.resp.IdRespVO;
-import com.hula.common.utils.RequestHolder;
+import com.hula.common.domain.vo.res.IdRespVO;
+import com.hula.utils.RequestHolder;
 import com.hula.core.user.domain.vo.req.user.UserEmojiReq;
 import com.hula.core.user.domain.vo.resp.user.UserEmojiResp;
 import com.hula.core.user.service.UserEmojiService;
+import com.hula.domain.vo.res.ApiResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;

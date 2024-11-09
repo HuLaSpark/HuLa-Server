@@ -1,9 +1,8 @@
 package com.hula.core.chat.service.impl;
 
-
-import com.hula.common.exception.CommonErrorEnum;
-import com.hula.common.exception.GroupErrorEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.enums.CommonErrorEnum;
+import com.hula.enums.GroupErrorEnum;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.*;
 import com.hula.core.chat.domain.entity.Room;
 import com.hula.core.chat.domain.entity.RoomGroup;

@@ -1,10 +1,12 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.event.UserRegisterEvent;
-import com.hula.common.utils.AssertUtil;
-import com.hula.common.utils.sensitiveWord.SensitiveWordBs;
+import com.hula.utils.AssertUtil;
+import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.user.dao.BlackDao;
 import com.hula.core.user.dao.ItemConfigDao;
 import com.hula.core.user.dao.UserBackpackDao;
@@ -32,10 +34,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.Wrapper;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -154,6 +154,13 @@ public class UserServiceImpl implements UserService {
             dto.setDescribe(itemConfig.getDescribe());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public User login(LoginReq loginReq) {
+        User user = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getName, loginReq.getName()));
+        AssertUtil.isNotEmpty(user, "账号或密码错误");
+        return user;
     }
 
     private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {

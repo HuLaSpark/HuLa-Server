@@ -6,6 +6,7 @@ import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -68,4 +69,11 @@ public interface UserService {
     List<SummeryInfoDTO> getSummeryUserInfo(SummeryInfoReq req);
 
     List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
+
+    /**
+     * 账号密码登录
+     * @param loginReq 请求参数
+     * @return {@link User }
+     */
+    User login(LoginReq loginReq);
 }

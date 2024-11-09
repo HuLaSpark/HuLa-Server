@@ -2,8 +2,8 @@ package com.hula.common.interceptor;
 
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.json.JSONUtil;
-import com.hula.common.domain.dto.RequestInfo;
-import com.hula.common.utils.RequestHolder;
+import com.hula.domain.dto.RequestInfo;
+import com.hula.utils.RequestHolder;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;

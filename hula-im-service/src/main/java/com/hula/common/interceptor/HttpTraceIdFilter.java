@@ -1,6 +1,6 @@
 package com.hula.common.interceptor;
 
-import com.hula.common.constant.MDCKey;
+import com.hula.common.MDCKey;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import lombok.extern.slf4j.Slf4j;

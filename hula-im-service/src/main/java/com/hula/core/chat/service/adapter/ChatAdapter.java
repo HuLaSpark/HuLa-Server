@@ -7,7 +7,7 @@ import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.enums.HotFlagEnum;
 import com.hula.core.chat.domain.enums.RoomTypeEnum;
-import com.hula.common.domain.enums.NormalOrNoEnum;
+import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.core.user.domain.entity.User;
 
 import java.util.Collection;

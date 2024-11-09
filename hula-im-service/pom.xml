@@ -20,12 +20,15 @@
         <dependency>
             <groupId>com.HuLa</groupId>
             <artifactId>hula-im-transaction</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.HuLa</groupId>
             <artifactId>hula-im-oss-starter</artifactId>
-            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.HuLa</groupId>
+            <artifactId>hula-im-frequency-control</artifactId>
         </dependency>
 
         <dependency>
@@ -59,6 +62,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

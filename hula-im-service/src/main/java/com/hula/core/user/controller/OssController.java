@@ -1,10 +1,10 @@
 package com.hula.core.user.controller;
 
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.utils.RequestHolder;
+import com.hula.utils.RequestHolder;
 import com.hula.core.user.domain.vo.req.oss.UploadUrlReq;
 import com.hula.core.user.service.OssService;
-import com.hula.domain.OssResp;
+import com.hula.domain.vo.res.ApiResult;
+import com.hula.domain.vo.res.OssResp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;

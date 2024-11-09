@@ -4,9 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Pair;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.utils.CursorUtils;
-import com.hula.common.utils.RedisUtils;
+import com.hula.utils.RedisUtils;
 import com.hula.core.user.dao.BlackDao;
 import com.hula.core.user.dao.RoleDao;
 import com.hula.core.user.dao.UserDao;
@@ -103,7 +103,7 @@ public class UserCache {
 
     public List<Long> getUserModifyTime(List<Long> uidList) {
         List<String> keys = uidList.stream().map(uid -> RedisKey.getKey(RedisKey.USER_MODIFY_STRING, uid)).collect(Collectors.toList());
-        return RedisUtils.mget(keys, Long.class);
+        return RedisUtils.multiGet(keys, Long.class);
     }
 
     public void refreshUserModifyTime(Long uid) {
@@ -125,7 +125,7 @@ public class UserCache {
         //批量组装key
         List<String> keys = uids.stream().map(a -> RedisKey.getKey(RedisKey.USER_INFO_STRING, a)).collect(Collectors.toList());
         //批量get
-        List<User> mget = RedisUtils.mget(keys, User.class);
+        List<User> mget = RedisUtils.multiGet(keys, User.class);
         Map<Long, User> map = mget.stream().filter(Objects::nonNull).collect(Collectors.toMap(User::getId, Function.identity()));
         //发现差集——还需要load更新的uid
         List<Long> needLoadUidList = uids.stream().filter(a -> !map.containsKey(a)).collect(Collectors.toList());
@@ -133,7 +133,7 @@ public class UserCache {
             //批量load
             List<User> needLoadUserList = userDao.listByIds(needLoadUidList);
             Map<String, User> redisMap = needLoadUserList.stream().collect(Collectors.toMap(a -> RedisKey.getKey(RedisKey.USER_INFO_STRING, a.getId()), Function.identity()));
-            RedisUtils.mset(redisMap, 5 * 60);
+            RedisUtils.multiSet(redisMap, 5 * 60);
             //加载回redis
             map.putAll(needLoadUserList.stream().collect(Collectors.toMap(User::getId, Function.identity())));
         }

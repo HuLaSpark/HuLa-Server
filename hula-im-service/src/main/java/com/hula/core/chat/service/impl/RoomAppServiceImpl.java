@@ -4,10 +4,10 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.event.GroupMemberAddEvent;
-import com.hula.common.exception.GroupErrorEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.enums.GroupErrorEnum;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
@@ -185,18 +185,18 @@ public class RoomAppServiceImpl implements RoomAppService {
         RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
         AssertUtil.isNotEmpty(roomGroup, "房间号有误");
         GroupMember self = groupMemberDao.getMember(roomGroup.getId(), uid);
-        AssertUtil.isNotEmpty(self, GroupErrorEnum.USER_NOT_IN_GROUP);
+        AssertUtil.isNotEmpty(self, GroupErrorEnum.USER_NOT_IN_GROUP, null);
         // 1. 判断被移除的人是否是群主或者管理员  （群主不可以被移除，管理员只能被群主移除）
         Long removedUid = request.getUid();
         // 1.1 群主 非法操作
-        AssertUtil.isFalse(groupMemberDao.isLord(roomGroup.getId(), removedUid), GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE);
+        AssertUtil.isFalse(groupMemberDao.isLord(roomGroup.getId(), removedUid), GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE, "");
         // 1.2 管理员 判断是否是群主操作
         if (groupMemberDao.isManager(roomGroup.getId(), removedUid)) {
             Boolean isLord = groupMemberDao.isLord(roomGroup.getId(), uid);
-            AssertUtil.isTrue(isLord, GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE);
+            AssertUtil.isTrue(isLord, GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE, "");
         }
         // 1.3 普通成员 判断是否有权限操作
-        AssertUtil.isTrue(hasPower(self), GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE);
+        AssertUtil.isTrue(hasPower(self), GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE, "");
         GroupMember member = groupMemberDao.getMember(roomGroup.getId(), removedUid);
         AssertUtil.isNotEmpty(member, "用户已经移除");
         groupMemberDao.removeById(member.getId());
@@ -246,7 +246,6 @@ public class RoomAppServiceImpl implements RoomAppService {
         return Objects.equals(self.getRole(), GroupRoleEnum.LEADER.getType())
                 || Objects.equals(self.getRole(), GroupRoleEnum.MANAGER.getType())
                 || roleService.hasPower(self.getUid(), RoleEnum.ADMIN);
-
     }
 
     private GroupRoleAPPEnum getGroupRole(Long uid, RoomGroup roomGroup, Room room) {

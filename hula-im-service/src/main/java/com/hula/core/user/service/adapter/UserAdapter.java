@@ -3,7 +3,7 @@ package com.hula.core.user.service.adapter;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.hula.common.domain.enums.YesOrNoEnum;
+import com.hula.common.enums.YesOrNoEnum;
 import com.hula.core.user.domain.entity.ItemConfig;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.entity.UserBackpack;

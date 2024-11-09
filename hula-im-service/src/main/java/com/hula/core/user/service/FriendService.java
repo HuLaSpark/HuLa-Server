@@ -2,8 +2,8 @@ package com.hula.core.user.service;
 
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
-import com.hula.common.domain.vo.resp.PageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;

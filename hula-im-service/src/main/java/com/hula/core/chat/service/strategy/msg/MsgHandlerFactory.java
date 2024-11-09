@@ -1,7 +1,7 @@
 package com.hula.core.chat.service.strategy.msg;
 
-import com.hula.common.exception.CommonErrorEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.enums.CommonErrorEnum;
+import com.hula.utils.AssertUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class MsgHandlerFactory {
 
     public static AbstractMsgHandler getStrategyNoNull(Integer code) {
         AbstractMsgHandler strategy = STRATEGY_MAP.get(code);
-        AssertUtil.isNotEmpty(strategy, CommonErrorEnum.PARAM_VALID);
+        AssertUtil.isNotEmpty(strategy, CommonErrorEnum.PARAM_VALID.getMsg());
         return strategy;
     }
 }

@@ -2,7 +2,7 @@ package com.hula.common.utils.discover;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import com.hula.common.utils.FutureUtils;
+import com.hula.utils.FutureUtils;
 import com.hula.common.utils.discover.domain.UrlInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;

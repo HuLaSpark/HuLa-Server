@@ -1,12 +1,12 @@
 package com.hula.core.user.service.impl;
 
-import com.hula.MinIOTemplate;
-import com.hula.common.utils.AssertUtil;
+import com.hula.domain.MinIOTemplate;
 import com.hula.core.user.domain.enums.OssSceneEnum;
 import com.hula.core.user.domain.vo.req.oss.UploadUrlReq;
 import com.hula.core.user.service.OssService;
-import com.hula.domain.OssReq;
-import com.hula.domain.OssResp;
+import com.hula.domain.vo.req.OssReq;
+import com.hula.domain.vo.res.OssResp;
+import com.hula.utils.AssertUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

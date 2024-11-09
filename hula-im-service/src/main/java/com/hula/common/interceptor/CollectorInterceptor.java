@@ -1,8 +1,8 @@
 package com.hula.common.interceptor;
 
-import com.hula.common.domain.dto.RequestInfo;
-import com.hula.common.utils.RequestHolder;
-import com.hula.common.utils.ServletUtils;
+import com.hula.domain.dto.RequestInfo;
+import com.hula.utils.RequestHolder;
+import com.hula.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,6 @@ import java.util.Optional;
 
 /**
  * 信息收集的拦截器
- * @author nyh
  */
 @Order(1)
 @Slf4j
@@ -35,4 +34,5 @@ public class CollectorInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         RequestHolder.remove();
     }
+
 }

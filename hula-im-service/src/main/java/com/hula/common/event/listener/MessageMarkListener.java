@@ -1,6 +1,6 @@
 package com.hula.common.event.listener;
 
-import com.hula.common.domain.enums.IdempotentEnum;
+import com.hula.common.enums.IdempotentEnum;
 import com.hula.common.event.MessageMarkEvent;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.dao.MessageMarkDao;

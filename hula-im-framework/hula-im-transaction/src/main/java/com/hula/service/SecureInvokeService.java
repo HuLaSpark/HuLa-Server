@@ -8,6 +8,7 @@ import com.hula.dao.SecureInvokeRecordDao;
 import com.hula.domain.dto.SecureInvokeDTO;
 import com.hula.domain.entity.SecureInvokeRecord;
 import com.hula.utils.JsonUtils;
+import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * 安全执行处理器
+ *
  * @author nyh
  **/
 @Slf4j
@@ -32,6 +34,7 @@ public class SecureInvokeService {
 
     public static final double RETRY_INTERVAL_MINUTES = 2D;
 
+    @Resource
     private final SecureInvokeRecordDao secureInvokeRecordDao;
 
     private final Executor executor;

@@ -1,11 +1,11 @@
 package com.hula.common.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.hula.common.domain.dto.RequestInfo;
-import com.hula.common.exception.HttpErrorEnum;
-import com.hula.common.utils.RequestHolder;
+import com.hula.domain.dto.RequestInfo;
+import com.hula.utils.RequestHolder;
 import com.hula.core.user.domain.enums.BlackTypeEnum;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.enums.HttpErrorEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

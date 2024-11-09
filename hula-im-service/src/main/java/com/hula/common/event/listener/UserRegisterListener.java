@@ -1,7 +1,7 @@
 package com.hula.common.event.listener;
 
 
-import com.hula.common.domain.enums.IdempotentEnum;
+import com.hula.common.enums.IdempotentEnum;
 import com.hula.common.event.UserRegisterEvent;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;

@@ -2,7 +2,7 @@ package com.hula.core.user.dao;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.utils.CursorUtils;
 import com.hula.core.user.domain.entity.UserFriend;
 import com.hula.core.user.mapper.UserFriendMapper;

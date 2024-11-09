@@ -1,13 +1,14 @@
 package com.hula.core.chat.service.impl;
 
 import cn.hutool.core.thread.NamedThreadFactory;
-import com.hula.common.domain.dto.FrequencyControlDTO;
-import com.hula.common.exception.FrequencyControlException;
 import com.hula.common.handler.GlobalUncaughtExceptionHandler;
-import com.hula.common.service.frequencycontrol.FrequencyControlUtil;
+import com.hula.constant.FrequencyControlConstant;
 import com.hula.core.chat.service.WeChatMsgOperationService;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.domain.dto.FrequencyControlDTO;
+import com.hula.exception.FrequencyControlException;
+import com.hula.util.FrequencyControlUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -20,8 +21,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import static com.hula.common.service.frequencycontrol.FrequencyControlStrategyFactory.TOTAL_COUNT_WITH_IN_FIX_TIME_FREQUENCY_CONTROLLER;
 
 /**
  * @author nyh
@@ -70,7 +69,7 @@ public class WeChatMsgOperationServiceImpl implements WeChatMsgOperationService 
             frequencyControlDTO.setUnit(TimeUnit.HOURS);
             frequencyControlDTO.setCount(1);
             frequencyControlDTO.setTime(1);
-            FrequencyControlUtil.executeWithFrequencyControl(TOTAL_COUNT_WITH_IN_FIX_TIME_FREQUENCY_CONTROLLER, frequencyControlDTO,
+            FrequencyControlUtil.executeWithFrequencyControl(FrequencyControlConstant.TOTAL_COUNT_WITH_IN_FIX_TIME, frequencyControlDTO,
                     () -> publishTemplateMsg(msgTemplate));
         } catch (FrequencyControlException e) {
             log.info("wx push limit openid:{}", msgTemplate.getToUser());

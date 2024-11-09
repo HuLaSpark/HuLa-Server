@@ -1,6 +1,6 @@
 package com.hula.core.chat.service;
 
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.vo.request.*;
@@ -29,7 +29,7 @@ public interface ChatService {
     /**
      * 根据消息获取消息前端展示的物料
      *
-     * @param message
+     * @param message 消息
      * @param receiveUid 接受消息的uid，可null
      */
     ChatMessageResp getMsgResp(Message message, Long receiveUid);
@@ -37,7 +37,7 @@ public interface ChatService {
     /**
      * 根据消息获取消息前端展示的物料
      *
-     * @param msgId
+     * @param msgId 消息id
      * @param receiveUid 接受消息的uid，可null
      */
     ChatMessageResp getMsgResp(Long msgId, Long receiveUid);
@@ -45,8 +45,9 @@ public interface ChatService {
     /**
      * 获取群成员列表
      *
-     * @param memberUidList
-     * @param request
+     * @param memberUidList 成员id集和
+     * @param request 参数
+     * @return {@link CursorPageBaseResp }<{@link ChatMemberResp }>
      */
     CursorPageBaseResp<ChatMemberResp> getMemberPage(List<Long> memberUidList, MemberReq request);
 

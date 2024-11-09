@@ -55,6 +55,7 @@ public class TransactionAutoConfiguration {
         executor = Optional.ofNullable(configurer.get()).map(SecureInvokeConfigurer::getSecureInvokeExecutor).orElse(ForkJoinPool.commonPool());
     }
 
+
     @Bean
     public SecureInvokeService getSecureInvokeService(SecureInvokeRecordDao dao) {
         return new SecureInvokeService(dao, executor);
