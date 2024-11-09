@@ -5,12 +5,12 @@ import com.hula.common.constant.MQConstant;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.domain.dto.LoginMessageDTO;
 import com.hula.common.domain.dto.ScanSuccessMessageDTO;
-import com.hula.utils.RedisUtils;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.adapter.TextBuilder;
 import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.service.MQProducer;
+import com.hula.utils.RedisUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
@@ -23,7 +23,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 

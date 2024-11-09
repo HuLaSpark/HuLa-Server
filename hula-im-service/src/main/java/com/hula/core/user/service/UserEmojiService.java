@@ -20,7 +20,7 @@ public interface UserEmojiService {
      *
      * @return 表情包列表
      * @author WuShiJie
-     * @createTime 2023/7/3 14:46
+     * @date 2023/7/3 14:46
      **/
     List<UserEmojiResp> list(Long uid);
 
@@ -31,7 +31,7 @@ public interface UserEmojiService {
      * @param uid    用户ID
      * @return 表情包
      * @author WuShiJie
-     * @createTime 2023/7/3 14:46
+     * @date 2023/7/3 14:46
      **/
     ApiResult<IdRespVO> insert(UserEmojiReq emojis, Long uid);
 

@@ -3,6 +3,8 @@ package com.hula.exception;
 import com.hula.enums.ErrorEnum;
 import lombok.Data;
 
+import java.io.Serial;
+
 /**
  * 自定义限流异常
  * @author nyh
@@ -10,6 +12,7 @@ import lombok.Data;
 @Data
 public class FrequencyControlException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

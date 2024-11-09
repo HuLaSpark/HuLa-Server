@@ -1,11 +1,9 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.event.UserRegisterEvent;
-import com.hula.utils.AssertUtil;
 import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.user.dao.BlackDao;
 import com.hula.core.user.dao.ItemConfigDao;
@@ -28,14 +26,17 @@ import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.core.user.service.cache.ItemCache;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserSummaryCache;
+import com.hula.utils.AssertUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Wrapper;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**

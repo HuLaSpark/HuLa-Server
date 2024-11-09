@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)//确保最先执行
 @Component
 public class SecureInvokeAspect {
-    //@Resource
+    @Resource
     private SecureInvokeService secureInvokeService;
 
     @Around("@annotation(secureInvoke)")

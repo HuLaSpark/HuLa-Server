@@ -3,11 +3,14 @@ package com.hula.exception;
 import com.hula.enums.ErrorEnum;
 import lombok.Data;
 
+import java.io.Serial;
+
 /**
  * @author nyh
  */
 @Data
 public class BusinessException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

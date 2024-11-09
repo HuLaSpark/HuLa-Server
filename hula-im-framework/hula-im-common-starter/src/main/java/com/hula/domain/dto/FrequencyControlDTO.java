@@ -18,21 +18,20 @@ public class FrequencyControlDTO {
     /**
      * 频控时间单位，默认秒
      *
-     * @return 单位
+     * 单位
      */
     private TimeUnit unit;
 
     /**
      * 单位时间内最大访问次数
-     *
-     * @return 次数
+     * 次数
      */
     private Integer count;
 
     /**
      * 单位时间
      *
-     * @return 单位时间
+     * 单位时间
      */
     private Integer time;
 

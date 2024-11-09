@@ -6,7 +6,6 @@ import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public interface UserService {
      * 获取前端展示信息
      *
      * @param uid
-     * @return
+     *
      */
     UserInfoResp getUserInfo(Long uid);
 
