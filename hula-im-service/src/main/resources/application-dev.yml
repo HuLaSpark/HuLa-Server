@@ -1,9 +1,9 @@
 version: 2.5.3
 HuLa-IM:
   HOST: localhost #域名
-  DATABASE_NAME: zole #数据库名
-  MYSQL_USER_NAME: zole #数据库用户名
-  MYSQL_PASSWORD: zole #数据库密码
+  DATABASE_NAME: hula-im #数据库名
+  MYSQL_USER_NAME: root #数据库用户名
+  MYSQL_PASSWORD: 123456 #数据库密码
   REDIS:
     PAW: "123456" #redis密码, 如果是数字密码最好用引号包裹起来
     PORT: 6379 # redis端口号
