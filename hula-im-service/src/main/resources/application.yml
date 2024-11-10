@@ -119,3 +119,16 @@ rocketmq:
     listeners: # 配置某个消费分组，是否监听指定 Topic 。结构为 Map<消费者分组, <Topic, Boolean>> 。默认情况下，不配置表示监听。
       erbadagang-consumer-group:
         topic1: false # 关闭 test-consumer-group 对 topic1 的监听消费
+
+public:
+  urls:
+    - /api/chat/public/contact/page
+    - /api/chat/public/contact/detail
+    - /api/chat/public/contact/detail/friend
+    - /api/chat/public/msg/page
+    - /api/room/public/group
+    - /api/room/public/group/member/page
+    - /api/user/public/summary/userInfo/batch
+    - /api/user/public/badges/batch
+    - /wx/portal/public/
+    - /wx/portal/public/callBack

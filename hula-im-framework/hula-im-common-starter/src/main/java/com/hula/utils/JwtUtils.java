@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,7 +57,7 @@ public class JwtUtils {
      */
     public Map<String, Claim> verifyToken(String token) {
         if (StringUtils.isEmpty(token)) {
-            return new HashMap<>();
+            return null;
         }
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)).build();
@@ -67,7 +66,7 @@ public class JwtUtils {
         } catch (Exception e) {
             log.error("decode error,token:{}", token, e);
         }
-        return new HashMap<>();
+        return null;
     }
 
 

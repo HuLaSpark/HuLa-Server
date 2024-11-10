@@ -1,4 +1,4 @@
-package com.hula.common.interceptor;
+package com.hula.common.filter;
 
 import com.hula.common.MDCKey;
 import jakarta.servlet.*;

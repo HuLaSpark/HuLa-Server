@@ -1,4 +1,4 @@
-package com.hula.handler;
+package com.hula.common.handler;
 
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.exception.BusinessException;

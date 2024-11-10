@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -20,6 +22,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SoundMsgDTO extends BaseFileDTO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Schema(description ="时长（秒）")

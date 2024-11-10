@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -21,6 +22,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoMsgDTO extends BaseFileDTO implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Schema(description ="缩略图宽度（像素）")

@@ -3,9 +3,7 @@ package com.hula.common.config;
 import com.hula.common.interceptor.BlackInterceptor;
 import com.hula.common.interceptor.CollectorInterceptor;
 import com.hula.common.interceptor.TokenInterceptor;
-import com.hula.core.user.service.cache.UserCache;
-import jakarta.annotation.Resource;
-import org.springframework.context.annotation.Bean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -14,15 +12,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author nyh
  */
 @Configuration
+@RequiredArgsConstructor
 public class InterceptorConfig implements WebMvcConfigurer {
 
-    @Resource
-    private TokenInterceptor tokenInterceptor;
-    @Resource
-    private CollectorInterceptor collectorInterceptor;
-
-    @Resource
-    private UserCache userCache;
+    private final TokenInterceptor tokenInterceptor;
+    private final CollectorInterceptor collectorInterceptor;
+    private final BlackInterceptor blackInterceptor;
 
     /** 添加拦截器 */
     @Override
@@ -31,12 +26,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**");
         registry.addInterceptor(collectorInterceptor)
                 .addPathPatterns("/api/**");
-        registry.addInterceptor(blackInterceptor(userCache))
+        registry.addInterceptor(blackInterceptor)
                 .addPathPatterns("/api/**");
     }
 
-    @Bean
-    public BlackInterceptor blackInterceptor(UserCache userCache) {
-        return new BlackInterceptor(userCache);
-    }
 }

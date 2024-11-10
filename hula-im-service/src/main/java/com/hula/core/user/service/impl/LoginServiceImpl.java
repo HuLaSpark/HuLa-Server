@@ -2,9 +2,9 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.constant.RedisKey;
+import com.hula.core.user.service.LoginService;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
-import com.hula.core.user.service.LoginService;
 import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,12 +19,12 @@ import java.util.concurrent.TimeUnit;
 public class LoginServiceImpl implements LoginService {
 
 
+    // token过期时间
+    private static final Integer TOKEN_EXPIRE_DAYS = 5;
+    // token续期时间
+    private static final Integer TOKEN_RENEWAL_DAYS = 2;
     @Resource
     private JwtUtils jwtUtils;
-    //token过期时间
-    private static final Integer TOKEN_EXPIRE_DAYS = 5;
-    //token续期时间
-    private static final Integer TOKEN_RENEWAL_DAYS = 2;
 
     /**
      * 校验token是不是有效

@@ -9,6 +9,7 @@ import com.hula.enums.HttpErrorEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Set;
 /**
  * @author nyh
  */
+@Component
 @RequiredArgsConstructor
 public class BlackInterceptor implements HandlerInterceptor {
 
