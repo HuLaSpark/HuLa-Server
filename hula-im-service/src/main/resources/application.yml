@@ -52,6 +52,8 @@ spring:
     serialization:
       write-dates-as-timestamps: true # 序列化
     date-format: yyyy-MM-dd HH:mm:ss # 日期格式化
+    deserialization:
+      fail-on-unknown-properties: false # false表示处理多余字段不抛异常
 
 
 #mybatis-plus 配置

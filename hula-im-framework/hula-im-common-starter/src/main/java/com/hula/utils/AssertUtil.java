@@ -2,16 +2,19 @@ package com.hula.utils;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.hula.enums.BusinessErrorEnum;
-import com.hula.exception.BusinessException;
 import com.hula.enums.CommonErrorEnum;
 import com.hula.enums.ErrorEnum;
+import com.hula.exception.BusinessException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.hibernate.validator.HibernateValidator;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * 校验工具类
@@ -40,7 +43,7 @@ public class AssertUtil {
      */
     public static <T> void fastFailValidate(T obj) {
         Set<ConstraintViolation<T>> constraintViolations = failFastValidator.validate(obj);
-        if (constraintViolations.size() > 0) {
+        if (!constraintViolations.isEmpty()) {
             throwException(CommonErrorEnum.PARAM_VALID, constraintViolations.iterator().next().getMessage());
         }
     }
@@ -52,11 +55,9 @@ public class AssertUtil {
      */
     public static <T> void allCheckValidateThrow(T obj) {
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(obj);
-        if (constraintViolations.size() > 0) {
+        if (!constraintViolations.isEmpty()) {
             StringBuilder errorMsg = new StringBuilder();
-            Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator();
-            while (iterator.hasNext()) {
-                ConstraintViolation<T> violation = iterator.next();
+            for (ConstraintViolation<T> violation : constraintViolations) {
                 //拼接异常信息
                 errorMsg.append(violation.getPropertyPath().toString()).append(":").append(violation.getMessage()).append(",");
             }
@@ -73,11 +74,9 @@ public class AssertUtil {
      */
     public static <T> Map<String, String> allCheckValidate(T obj) {
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(obj);
-        if (constraintViolations.size() > 0) {
+        if (!constraintViolations.isEmpty()) {
             Map<String, String> errorMessages = new HashMap<>();
-            Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator();
-            while (iterator.hasNext()) {
-                ConstraintViolation<T> violation = iterator.next();
+            for (ConstraintViolation<T> violation : constraintViolations) {
                 errorMessages.put(violation.getPropertyPath().toString(), violation.getMessage());
             }
             return errorMessages;

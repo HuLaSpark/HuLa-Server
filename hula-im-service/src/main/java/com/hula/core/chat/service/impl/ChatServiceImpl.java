@@ -6,9 +6,9 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Pair;
 import com.hula.common.annotation.RedissonLock;
-import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.common.event.MessageSendEvent;
 import com.hula.core.chat.dao.*;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
@@ -42,6 +42,7 @@ import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.utils.AssertUtil;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -50,7 +51,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 

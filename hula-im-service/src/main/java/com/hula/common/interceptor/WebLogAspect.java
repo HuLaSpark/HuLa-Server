@@ -52,7 +52,7 @@ public class WebLogAspect {
                 .filter(args -> !(args instanceof ServletRequest))
                 .filter(args -> !(args instanceof ServletResponse))
                 .collect(Collectors.toList());
-        String printParamStr = paramList.size() == 1 ? JSONUtil.toJsonStr(paramList.get(0)) : JSONUtil.toJsonStr(paramList);
+        String printParamStr = paramList.size() == 1 ? JSONUtil.toJsonStr(paramList.getFirst()) : JSONUtil.toJsonStr(paramList);
         RequestInfo requestInfo = RequestHolder.get();
         String userHeaderStr = JSONUtil.toJsonStr(requestInfo);
         if (log.isInfoEnabled()) {

@@ -4,7 +4,6 @@ package com.hula.core.chat.controller;
 import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.IdRespVO;
-import com.hula.utils.RequestHolder;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.admin.AdminAddReq;
@@ -19,13 +18,14 @@ import com.hula.core.chat.service.IGroupMemberService;
 import com.hula.core.chat.service.RoomAppService;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.domain.vo.res.ApiResult;
+import com.hula.utils.RequestHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

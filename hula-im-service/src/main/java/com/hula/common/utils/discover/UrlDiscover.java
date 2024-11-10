@@ -2,9 +2,9 @@ package com.hula.common.utils.discover;
 
 import cn.hutool.core.date.StopWatch;
 import com.hula.common.utils.discover.domain.UrlInfo;
+import jakarta.annotation.Nullable;
 import org.jsoup.nodes.Document;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

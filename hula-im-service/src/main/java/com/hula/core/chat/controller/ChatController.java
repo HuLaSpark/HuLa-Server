@@ -2,7 +2,6 @@ package com.hula.core.chat.controller;
 
 
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
-import com.hula.utils.RequestHolder;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.vo.request.*;
 import com.hula.core.chat.domain.vo.response.ChatMessageReadResp;
@@ -11,13 +10,14 @@ import com.hula.core.chat.service.ChatService;
 import com.hula.core.user.domain.enums.BlackTypeEnum;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.domain.vo.res.ApiResult;
+import com.hula.utils.RequestHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

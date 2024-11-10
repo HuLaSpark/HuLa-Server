@@ -20,7 +20,7 @@ public class MsgMarkFactory {
 
     public static AbstractMsgMarkStrategy getStrategyNoNull(Integer markType) {
         AbstractMsgMarkStrategy strategy = STRATEGY_MAP.get(markType);
-        AssertUtil.isNotEmpty(strategy, CommonErrorEnum.PARAM_VALID);
+        AssertUtil.isNotEmpty(strategy, CommonErrorEnum.PARAM_VALID, "strategy");
         return strategy;
     }
 }

@@ -10,8 +10,8 @@ import com.hula.core.chat.domain.vo.response.ChatMemberStatisticResp;
 import com.hula.core.chat.domain.vo.response.ChatMessageReadResp;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
+import jakarta.annotation.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
