@@ -290,6 +290,8 @@ INSERT INTO `sensitive_word` VALUES ('tmd');
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户id',
+  `account` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户账号',
+  `password` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户密码',
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户昵称',
   `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户头像',
   `sex` int NULL DEFAULT NULL COMMENT '性别 1为男性，2为女性',
@@ -302,8 +304,7 @@ CREATE TABLE `user`  (
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uniq_open_id`(`open_id` ASC) USING BTREE,
-  UNIQUE INDEX `uniq_name`(`name` ASC) USING BTREE,
+  UNIQUE INDEX `uniq_account`(`account` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE,
   INDEX `idx_active_status_last_opt_time`(`active_status` ASC, `last_opt_time` ASC) USING BTREE
@@ -312,10 +313,10 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, '系统消息', 'http://mms1.baidu.com/it/u=1979830414,2984779047&fm=253&app=138&f=JPEG&fmt=auto&q=75?w=500&h=500', NULL, '0', 2, '2023-07-01 11:58:24.605', NULL, NULL, 0, '2023-07-01 11:58:24.605', '2023-07-01 12:02:56.900');
-INSERT INTO `user` VALUES (10001, 'ChatGPT', 'https://img1.baidu.com/it/u=3613958228,3522035000&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500', 0, '??', 2, '2023-06-29 17:03:03.357', NULL, NULL, 0, '2023-06-29 17:03:03.357', '2023-07-01 14:56:10.271');
-INSERT INTO `user` VALUES (10002, 'ChatGLM2', 'http://mms1.baidu.com/it/u=1979830414,2984779047&fm=253&app=138&f=JPEG&fmt=auto&q=75?w=500&h=500', NULL, '450', 2, '2023-07-01 11:58:24.605', NULL, NULL, 0, '2023-07-01 11:58:24.605', '2023-07-01 12:02:56.900');
-INSERT INTO `user` VALUES (20000, 'Dawn', 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEL7OpdTZYkEeE9oTmZFKL4gIzCr1ibf38OiaPqqcmqlLxTxvw3gskZV5uTma7NSQzCk8yVbIiaN6FV3kmicBWg2CLOKicysib6mDFGEPprQxfUYEupA/132', 0, 'obxlc6xY1EsMyHbbRAAgWDCnOFHE', 1, '2024-07-10 15:09:09.086', '{\"createIp\": \"127.0.0.1\", \"updateIp\": \"127.0.0.1\", \"createIpDetail\": null, \"updateIpDetail\": null}', NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096');
+INSERT INTO `user` VALUES (1, 'admin','admin','系统消息', 'http://mms1.baidu.com/it/u=1979830414,2984779047&fm=253&app=138&f=JPEG&fmt=auto&q=75?w=500&h=500', NULL, '0', 2, '2023-07-01 11:58:24.605', NULL, NULL, 0, '2023-07-01 11:58:24.605', '2023-07-01 12:02:56.900');
+INSERT INTO `user` VALUES (10001,'hula1','hula1', 'ChatGPT', 'https://img1.baidu.com/it/u=3613958228,3522035000&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500', 0, '??', 2, '2023-06-29 17:03:03.357', NULL, NULL, 0, '2023-06-29 17:03:03.357', '2023-07-01 14:56:10.271');
+INSERT INTO `user` VALUES (10002,'hula2','hula2', 'ChatGLM2', 'http://mms1.baidu.com/it/u=1979830414,2984779047&fm=253&app=138&f=JPEG&fmt=auto&q=75?w=500&h=500', NULL, '450', 2, '2023-07-01 11:58:24.605', NULL, NULL, 0, '2023-07-01 11:58:24.605', '2023-07-01 12:02:56.900');
+INSERT INTO `user` VALUES (20000,'hula3','hula3', 'Dawn', 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEL7OpdTZYkEeE9oTmZFKL4gIzCr1ibf38OiaPqqcmqlLxTxvw3gskZV5uTma7NSQzCk8yVbIiaN6FV3kmicBWg2CLOKicysib6mDFGEPprQxfUYEupA/132', 0, 'obxlc6xY1EsMyHbbRAAgWDCnOFHE', 1, '2024-07-10 15:09:09.086', '{\"createIp\": \"127.0.0.1\", \"updateIp\": \"127.0.0.1\", \"createIpDetail\": null, \"updateIpDetail\": null}', NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096');
 
 -- ----------------------------
 -- Table structure for user_apply

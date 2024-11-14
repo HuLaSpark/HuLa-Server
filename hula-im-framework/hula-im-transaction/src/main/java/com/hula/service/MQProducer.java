@@ -1,9 +1,9 @@
 package com.hula.service;
 
 import com.hula.annotation.SecureInvoke;
-import org.springframework.messaging.Message;
 import jakarta.annotation.Resource;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 /**

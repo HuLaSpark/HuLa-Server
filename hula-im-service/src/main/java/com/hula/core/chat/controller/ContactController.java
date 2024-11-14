@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/chat")
 @Tag(name = "聊天室相关接口")
 @Slf4j
 public class ContactController {

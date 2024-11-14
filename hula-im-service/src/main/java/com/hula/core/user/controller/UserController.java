@@ -25,7 +25,7 @@ import java.util.List;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @Tag(name = "用户管理")
 public class UserController {
 

@@ -4,14 +4,27 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
- * @author nyh
+ * @author ZOL
  */
 @Data
-public class LoginReq {
+public class RegisterReq {
 
+    /**
+     * 用户昵称
+     */
+    @NotNull
+    private String name;
+
+    /**
+     * 用户账号
+     */
     @NotNull
     private String account;
 
+    /**
+     * 用户密码
+     */
     @NotNull
     private String password;
+
 }

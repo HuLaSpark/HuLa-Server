@@ -21,7 +21,7 @@ public enum WSPushTypeEnum {
     private final Integer type;
     private final String desc;
 
-    private static Map<Integer, WSPushTypeEnum> cache;
+    private static final Map<Integer, WSPushTypeEnum> cache;
 
     static {
         cache = Arrays.stream(WSPushTypeEnum.values()).collect(Collectors.toMap(WSPushTypeEnum::getType, Function.identity()));

@@ -20,7 +20,7 @@ import java.util.List;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/user/emoji")
+@RequestMapping("/user/emoji")
 @Api(tags = "用户表情包管理相关接口")
 public class UserEmojiController {
 

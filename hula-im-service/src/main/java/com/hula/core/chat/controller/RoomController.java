@@ -33,7 +33,7 @@ import java.util.List;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/room")
+@RequestMapping("/room")
 @Tag(name = "聊天室相关接口")
 @Slf4j
 public class RoomController {

@@ -5,6 +5,7 @@ import com.hula.common.constant.RedisKey;
 import com.hula.core.user.service.LoginService;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
+import com.hula.utils.RequestHolder;
 import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -75,5 +76,15 @@ public class LoginServiceImpl implements LoginService {
     public Long getValidUid(String token) {
         boolean verify = verify(token);
         return verify ? jwtUtils.getUidOrNull(token) : null;
+    }
+
+    @Override
+    public void refreshToken() {
+        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_STRING, RequestHolder.get().getUid()), TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+    }
+
+    @Override
+    public void logout() {
+        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_STRING, RequestHolder.get().getUid()));
     }
 }

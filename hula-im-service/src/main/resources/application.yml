@@ -1,10 +1,6 @@
 server:
   port: 9190
-logging:
-  level:
-    org.springframework.web: INFO
-    com.github.binarywang.demo.wx.mp: DEBUG
-    me.chanjar.weixin: DEBUG
+
 
 spring:
   # 使用的配置文件
@@ -122,13 +118,5 @@ rocketmq:
 
 public:
   urls:
-    - /api/chat/public/contact/page
-    - /api/chat/public/contact/detail
-    - /api/chat/public/contact/detail/friend
-    - /api/chat/public/msg/page
-    - /api/room/public/group
-    - /api/room/public/group/member/page
-    - /api/user/public/summary/userInfo/batch
-    - /api/user/public/badges/batch
-    - /wx/portal/public/
-    - /wx/portal/public/callBack
+    - /token/login
+    - /token/register

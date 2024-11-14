@@ -27,7 +27,7 @@ import java.util.Set;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/chat")
 @Tag(name = "聊天室相关接口")
 @Slf4j
 public class ChatController {
@@ -56,6 +56,7 @@ public class ChatController {
 
     @PostMapping("/msg")
     @Operation(summary ="发送消息")
+    //@FrequencyControl(target = FrequencyControl.Target.UID, time = 1, count = 2)
     public ApiResult<ChatMessageResp> sendMsg(@Valid @RequestBody ChatMessageReq request) {
         Long msgId = chatService.sendMsg(request, RequestHolder.get().getUid());
         //返回完整消息格式，方便前端展示

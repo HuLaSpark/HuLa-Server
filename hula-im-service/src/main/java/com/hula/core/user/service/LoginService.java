@@ -24,4 +24,14 @@ public interface LoginService {
      * 如果token有效，返回uid
      */
     Long getValidUid(String token);
+
+    /**
+     * 延长token有效期
+     */
+    void refreshToken();
+
+    /**
+     * 退出登录
+     */
+    void logout();
 }

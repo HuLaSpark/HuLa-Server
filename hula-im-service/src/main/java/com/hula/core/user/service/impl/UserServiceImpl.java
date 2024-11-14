@@ -111,9 +111,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void register(User user) {
-        userDao.save(user);
-        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, user));
+
+        if (Objects.nonNull(user.getAccount())) {
+            AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
+                            .eq(User::getAccount, user.getAccount())) <= 0, "账号已注册");
+        } else if(Objects.nonNull(user.getOpenId())) {
+            AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
+                            .eq(User::getOpenId, user.getOpenId())) <= 0, "微信号已绑定其他账号");
+        }
+        final User newUser = User.builder()
+                .account(user.getAccount())
+                .password(user.getPassword())
+                .name(user.getName())
+                .openId(user.getOpenId())
+                .build();
+        userDao.save(newUser);
+        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
     }
 
     @Override
@@ -159,7 +174,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(LoginReq loginReq) {
-        User user = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getName, loginReq.getName()));
+        User user = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getAccount, loginReq.getAccount()).eq(User::getPassword, loginReq.getPassword()));
         AssertUtil.isNotEmpty(user, "账号或密码错误");
         return user;
     }

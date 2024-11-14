@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/oss")
+@RequestMapping("/oss")
 @Api(tags = "oss相关接口")
 public class OssController {
     @Resource

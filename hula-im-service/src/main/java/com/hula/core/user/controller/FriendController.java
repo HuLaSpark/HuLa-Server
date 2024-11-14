@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/user/friend")
+@RequestMapping("/user/friend")
 @Tag(name = "好友相关接口")
 @Slf4j
 public class FriendController {
