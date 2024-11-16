@@ -63,12 +63,14 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
+            log.info("空闲");
             // 读空闲
             if (idleStateEvent.state() == IdleState.READER_IDLE) {
                 // 关闭用户的连接
                 userOffLine(ctx);
             }
         } else if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
+            log.info("握手成功");
             this.webSocketService.connect(ctx.channel());
             String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
             if (StrUtil.isNotBlank(token)) {
@@ -100,6 +102,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
                 log.info("请求二维码 = " + msg.text());
                 break;
             case HEARTBEAT:
+                log.info("{},{}",NettyUtil.getAttr(ctx.channel(), NettyUtil.IP), "心跳检测");
+                this.webSocketService.connect(ctx.channel());
                 break;
             default:
                 log.info("未知类型");

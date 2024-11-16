@@ -32,6 +32,9 @@ public class PushMessageDTO implements Serializable {
      */
     private Integer pushType;
 
+    /**
+     * 操作人uid
+     */
     private Long uid;
 
     public PushMessageDTO(Long uid, WSBaseResp<?> wsBaseMsg, Long cuid) {

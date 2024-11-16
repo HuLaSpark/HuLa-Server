@@ -145,7 +145,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             // 4.7 发送移除事件告知群成员
             List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
             WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
-            pushService.sendPushMsg(ws, memberUidList, null);
+            pushService.sendPushMsg(ws, memberUidList, uid);
             groupMemberCache.evictMemberUidList(room.getId());
         }
     }

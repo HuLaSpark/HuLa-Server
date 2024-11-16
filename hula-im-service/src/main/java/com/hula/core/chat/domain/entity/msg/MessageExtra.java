@@ -1,19 +1,20 @@
 package com.hula.core.chat.domain.entity.msg;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hula.common.utils.discover.domain.UrlInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 消息扩展属性
+ *
  * @author nyh
  */
 @Data
@@ -21,8 +22,8 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageExtra implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     //url跳转链接
     private Map<String, UrlInfo> urlContentMap;

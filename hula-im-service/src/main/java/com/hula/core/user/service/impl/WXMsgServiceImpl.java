@@ -174,8 +174,7 @@ public class WXMsgServiceImpl implements WebSocketService {
         //发送给对应的用户
         sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token, hasPower));
         //发送用户上线事件
-        boolean online = userCache.isOnline(user.getId());
-        if (!online) {
+        if (userCache.isOnline(user.getId())) {
             user.setLastOptTime(new Date());
             user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));

@@ -204,7 +204,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         // 发送移除事件告知群成员
         List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
         WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
-        pushService.sendPushMsg(ws, memberUidList, null);
+        pushService.sendPushMsg(ws, memberUidList, uid);
         groupMemberCache.evictMemberUidList(room.getId());
     }
 

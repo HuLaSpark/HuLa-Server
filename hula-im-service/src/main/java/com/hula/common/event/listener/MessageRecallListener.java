@@ -44,7 +44,7 @@ public class MessageRecallListener {
     @Async
     @TransactionalEventListener(classes = MessageRecallEvent.class, fallbackExecution = true)
     public void sendToAll(MessageRecallEvent event) {
-        pushService.sendPushMsg(WSAdapter.buildMsgRecall(event.getRecallDTO()), null);
+        pushService.sendPushMsg(WSAdapter.buildMsgRecall(event.getRecallDTO()), event.getRecallDTO().getRecallUid());
     }
 
 }
