@@ -268,7 +268,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    @RedissonLock(key = "#uid")
+    //@RedissonLock(key = "#uid")
     public void msgRead(Long uid, ChatMessageMemberReq request) {
         Contact contact = contactDao.get(uid, request.getRoomId());
         if (Objects.nonNull(contact)) {

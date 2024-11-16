@@ -1,6 +1,7 @@
 package com.hula.core.chat.controller;
 
 
+import com.hula.annotation.FrequencyControl;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.vo.request.*;
@@ -93,6 +94,7 @@ public class ChatController {
 
     @PutMapping("/msg/read")
     @Operation(summary ="消息阅读上报")
+    @FrequencyControl(target = FrequencyControl.Target.UID, time = 1, count = 5)
     public ApiResult<Void> msgRead(@Valid @RequestBody ChatMessageMemberReq request) {
         Long uid = RequestHolder.get().getUid();
         chatService.msgRead(uid, request);
