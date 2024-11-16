@@ -1,6 +1,10 @@
 server:
   port: 9190
-
+logging:
+  level:
+    org.springframework.web: INFO
+    com.github.binarywang.demo.wx.mp: DEBUG
+    me.chanjar.weixin: DEBUG
 
 spring:
   # 使用的配置文件

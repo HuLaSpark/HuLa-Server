@@ -67,13 +67,13 @@ public class MessageSendListener {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT, classes = MessageSendEvent.class, fallbackExecution = true)
     public void messageRoute(MessageSendEvent event) {
-        Long msgId = event.getMsgId();
-        mqProducer.sendSecureMsg(MQConstant.SEND_MSG_TOPIC, new MsgSendMessageDTO(msgId), msgId);
+        Long msgId = event.getChatMsgSendDto().getMsgId();
+        mqProducer.sendSecureMsg(MQConstant.SEND_MSG_TOPIC, new MsgSendMessageDTO(msgId, event.getChatMsgSendDto().getUid()), msgId);
     }
 
     @TransactionalEventListener(classes = MessageSendEvent.class, fallbackExecution = true)
     public void handlerMsg(@NotNull MessageSendEvent event) {
-        Message message = messageDao.getById(event.getMsgId());
+        Message message = messageDao.getById(event.getChatMsgSendDto().getMsgId());
         Room room = roomCache.get(message.getRoomId());
         if (isHotRoom(room)) {
 //            openAIService.chat(message);
@@ -90,7 +90,7 @@ public class MessageSendListener {
      */
     @TransactionalEventListener(classes = MessageSendEvent.class, fallbackExecution = true)
     public void publishChatToWechat(@NotNull MessageSendEvent event) {
-        Message message = messageDao.getById(event.getMsgId());
+        Message message = messageDao.getById(event.getChatMsgSendDto().getMsgId());
         if (Objects.nonNull(message.getExtra().getAtUidList())) {
             weChatMsgOperationService.publishChatMsgToWeChatUser(message.getFromUid(), message.getExtra().getAtUidList(),
                     message.getContent());

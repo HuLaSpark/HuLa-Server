@@ -4,7 +4,6 @@ import com.hula.common.constant.MQConstant;
 import com.hula.common.domain.dto.PushMessageDTO;
 import com.hula.core.user.domain.enums.WSPushTypeEnum;
 import com.hula.core.user.service.WebSocketService;
-import com.hula.utils.RequestHolder;
 import jakarta.annotation.Resource;
 import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -31,7 +30,7 @@ public class PushConsumer implements RocketMQListener<PushMessageDTO> {
                 });
                 break;
             case ALL:
-                webSocketService.sendToAllOnline(message.getWsBaseMsg(), RequestHolder.get().getUid());
+                webSocketService.sendToAllOnline(message.getWsBaseMsg(), message.getUid());
                 break;
         }
     }

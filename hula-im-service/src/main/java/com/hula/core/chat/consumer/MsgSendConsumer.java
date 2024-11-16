@@ -66,7 +66,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             //更新热门群聊时间-redis
             hotRoomCache.refreshActiveTime(room.getId(), message.getCreateTime());
             //推送所有人
-            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp));
+            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), dto.getUid());
         } else {
             List<Long> memberUidList = new ArrayList<>();
             if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
@@ -81,7 +81,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             //更新所有群成员的会话时间
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
             //推送房间成员
-            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), memberUidList);
+            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), memberUidList, null);
         }
     }
 

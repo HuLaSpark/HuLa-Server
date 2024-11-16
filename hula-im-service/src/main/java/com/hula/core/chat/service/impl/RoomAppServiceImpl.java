@@ -46,6 +46,7 @@ import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import org.codehaus.plexus.util.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -203,7 +204,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         // 发送移除事件告知群成员
         List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
         WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
-        pushService.sendPushMsg(ws, memberUidList);
+        pushService.sendPushMsg(ws, memberUidList, null);
         groupMemberCache.evictMemberUidList(room.getId());
     }
 
@@ -287,7 +288,10 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
     private Double getCursorOrNull(String cursor) {
-        return Optional.ofNullable(cursor).map(Double::parseDouble).orElse(null);
+        if (StringUtils.isEmpty(cursor)) {
+            return null;
+        }
+        return Optional.of(cursor).map(Double::parseDouble).orElse(null);
     }
 
     @NotNull

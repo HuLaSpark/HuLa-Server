@@ -1,24 +1,28 @@
-package com.hula.common.domain.dto;
+package com.hula.core.chat.domain.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 /**
+ * 消息撤回的推送类
  * @author nyh
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MsgSendMessageDTO implements Serializable {
+public class ChatMsgSendDto {
+
     /**
      * 消息id
      */
     private Long msgId;
+
     /**
-     * 操作人uid
+     * 操作人id
      */
     private Long uid;
+
 }

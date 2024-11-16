@@ -1,5 +1,6 @@
 package com.hula.common.event;
 
+import com.hula.core.chat.domain.dto.ChatMsgSendDto;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -8,10 +9,10 @@ import org.springframework.context.ApplicationEvent;
  */
 @Getter
 public class MessageSendEvent extends ApplicationEvent {
-    private final Long msgId;
+    private final ChatMsgSendDto chatMsgSendDto;
 
-    public MessageSendEvent(Object source, Long msgId) {
+    public MessageSendEvent(Object source, ChatMsgSendDto chatMsgSendDto) {
         super(source);
-        this.msgId = msgId;
+        this.chatMsgSendDto = chatMsgSendDto;
     }
 }

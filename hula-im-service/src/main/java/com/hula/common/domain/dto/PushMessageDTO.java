@@ -32,20 +32,25 @@ public class PushMessageDTO implements Serializable {
      */
     private Integer pushType;
 
-    public PushMessageDTO(Long uid, WSBaseResp<?> wsBaseMsg) {
+    private Long uid;
+
+    public PushMessageDTO(Long uid, WSBaseResp<?> wsBaseMsg, Long cuid) {
         this.uidList = Collections.singletonList(uid);
         this.wsBaseMsg = wsBaseMsg;
         this.pushType = WSPushTypeEnum.USER.getType();
+        this.uid = cuid;
     }
 
-    public PushMessageDTO(List<Long> uidList, WSBaseResp<?> wsBaseMsg) {
+    public PushMessageDTO(List<Long> uidList, WSBaseResp<?> wsBaseMsg, Long uid) {
         this.uidList = uidList;
         this.wsBaseMsg = wsBaseMsg;
         this.pushType = WSPushTypeEnum.USER.getType();
+        this.uid = uid;
     }
 
-    public PushMessageDTO(WSBaseResp<?> wsBaseMsg) {
+    public PushMessageDTO(WSBaseResp<?> wsBaseMsg, Long uid) {
         this.wsBaseMsg = wsBaseMsg;
         this.pushType = WSPushTypeEnum.ALL.getType();
+        this.uid = uid;
     }
 }

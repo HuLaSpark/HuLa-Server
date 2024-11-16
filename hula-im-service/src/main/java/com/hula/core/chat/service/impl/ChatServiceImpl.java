@@ -11,6 +11,7 @@ import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.common.event.MessageSendEvent;
 import com.hula.core.chat.dao.*;
+import com.hula.core.chat.domain.dto.ChatMsgSendDto;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.entity.*;
 import com.hula.core.chat.domain.enums.MessageMarkActTypeEnum;
@@ -92,7 +93,7 @@ public class ChatServiceImpl implements ChatService {
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(request.getMsgType());
         Long msgId = msgHandler.checkAndSaveMsg(request, uid);
         // 发布消息发送事件
-        applicationEventPublisher.publishEvent(new MessageSendEvent(this, msgId));
+        applicationEventPublisher.publishEvent(new MessageSendEvent(this, new ChatMsgSendDto(msgId, uid)));
         return msgId;
     }
 
