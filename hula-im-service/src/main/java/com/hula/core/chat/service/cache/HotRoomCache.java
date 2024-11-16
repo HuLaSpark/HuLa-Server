@@ -3,7 +3,7 @@ package com.hula.core.chat.service.cache;
 import cn.hutool.core.lang.Pair;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.utils.CursorUtils;
 import com.hula.utils.RedisUtils;
 import org.springframework.data.redis.core.ZSetOperations;

@@ -1,9 +1,7 @@
 package com.hula.core.chat.controller;
 
 
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
-import com.hula.common.utils.RequestHolder;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.vo.request.*;
 import com.hula.core.chat.domain.vo.response.ChatMessageReadResp;
@@ -11,13 +9,15 @@ import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.user.domain.enums.BlackTypeEnum;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.domain.vo.res.ApiResult;
+import com.hula.utils.RequestHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +27,7 @@ import java.util.Set;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/chat")
 @Tag(name = "聊天室相关接口")
 @Slf4j
 public class ChatController {
@@ -56,6 +56,7 @@ public class ChatController {
 
     @PostMapping("/msg")
     @Operation(summary ="发送消息")
+    //@FrequencyControl(target = FrequencyControl.Target.UID, time = 1, count = 2)
     public ApiResult<ChatMessageResp> sendMsg(@Valid @RequestBody ChatMessageReq request) {
         Long msgId = chatService.sendMsg(request, RequestHolder.get().getUid());
         //返回完整消息格式，方便前端展示

@@ -3,13 +3,13 @@ package com.hula.aspect;
 
 import cn.hutool.core.util.StrUtil;
 import com.hula.annotation.FrequencyControl;
-import com.hula.common.FrequencyControlConstant;
+import com.hula.constant.FrequencyControlConstant;
 import com.hula.domain.dto.FixedWindowDTO;
 import com.hula.domain.dto.FrequencyControlDTO;
 import com.hula.domain.dto.SlidingWindowDTO;
 import com.hula.domain.dto.TokenBucketDTO;
-import com.hula.frequencycontrol.FrequencyControlUtil;
-import com.hula.util.RequestHolder;
+import com.hula.util.FrequencyControlUtil;
+import com.hula.utils.RequestHolder;
 import com.hula.utils.SpElUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,13 +26,15 @@ import java.util.stream.Collectors;
 
 /**
  * 频控实现
+ *
  * @author nyh
  */
 @Slf4j
 @Aspect
 @Component
 public class FrequencyControlAspect {
-    @Around("@annotation(com.hula.annotation.FrequencyControl)||@annotation(com.hula.annotation.FrequencyControlContainer)")
+
+    @Around("@annotation(com.hula.annotation.FrequencyControl) || @annotation(com.hula.annotation.FrequencyControlContainer)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
         FrequencyControl[] annotationsByType = method.getAnnotationsByType(FrequencyControl.class);
@@ -41,7 +43,8 @@ public class FrequencyControlAspect {
         for (int i = 0; i < annotationsByType.length; i++) {
             // 获取频控注解
             FrequencyControl frequencyControl = annotationsByType[i];
-            String prefix = StrUtil.isBlank(frequencyControl.prefixKey()) ? /* 默认方法限定名 + 注解排名（可能多个）*/method.toGenericString() + ":index:" + i : frequencyControl.prefixKey();
+            /* 默认方法限定名 + 注解排名（可能多个）*/
+            String prefix = StrUtil.isBlank(frequencyControl.prefixKey()) ? method.toGenericString() + ":index:" + i : frequencyControl.prefixKey();
             String key = "";
             switch (frequencyControl.target()) {
                 case EL:
@@ -118,4 +121,5 @@ public class FrequencyControlAspect {
         fixedWindowDTO.setKey(key);
         return fixedWindowDTO;
     }
+
 }

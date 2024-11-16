@@ -1,11 +1,11 @@
 package com.hula.core.chat.service.strategy.msg;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.hula.common.domain.enums.YesOrNoEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.common.enums.YesOrNoEnum;
+import com.hula.utils.AssertUtil;
 import com.hula.common.utils.discover.PrioritizedUrlDiscover;
 import com.hula.common.utils.discover.domain.UrlInfo;
-import com.hula.common.utils.sensitiveWord.SensitiveWordBs;
+import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.msg.MessageExtra;
@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 /**
  * 普通文本消息
+ * @author nyh
  */
 @Component
 @AllArgsConstructor

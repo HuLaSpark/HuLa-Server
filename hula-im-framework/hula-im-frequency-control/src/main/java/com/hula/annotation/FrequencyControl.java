@@ -1,6 +1,6 @@
 package com.hula.annotation;
 
-import com.hula.common.FrequencyControlConstant;
+import com.hula.constant.FrequencyControlConstant;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;

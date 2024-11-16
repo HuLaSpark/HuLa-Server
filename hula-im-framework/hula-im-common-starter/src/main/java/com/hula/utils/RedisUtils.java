@@ -40,16 +40,21 @@ public class RedisUtils {
         return stringRedisTemplate.execute(redisScript, Collections.singletonList(key), String.valueOf(unit.toSeconds(time)));
     }
 
-    public static Long ZSetGet(String key) {
-        return stringRedisTemplate.opsForZSet().zCard(key);
-    }
-
-    public static void ZSetAddAndExpire(String key, long startTime, long expireTime, long currentTime) {
-        stringRedisTemplate.opsForZSet().add(key, String.valueOf(currentTime), currentTime);
-        // 删除周期之前的数据
-        stringRedisTemplate.opsForZSet().removeRangeByScore(key, 0, startTime);
-        // 过期时间窗口长度+时间间隔
-        stringRedisTemplate.expire(key, expireTime, TimeUnit.MILLISECONDS);
+    /**
+     * 自增int
+     *
+     * @param key  键
+     * @param time 时间(秒)
+     */
+    public static Integer integerInc(String key, int time, TimeUnit unit) {
+        RedisScript<Long> redisScript = new DefaultRedisScript<>(LUA_INCR_EXPIRE, Long.class);
+        Long result = stringRedisTemplate.execute(redisScript, Collections.singletonList(key), String.valueOf(unit.toSeconds(time)));
+        try {
+            return Integer.parseInt(result.toString());
+        } catch (Exception e) {
+            RedisUtils.del(key);
+            throw e;
+        }
     }
 
     /**
@@ -189,7 +194,7 @@ public class RedisUtils {
     /**
      * 删除缓存
      *
-     * @param keys
+     * @param keys 键名
      */
     public static void del(String... keys) {
         if (keys != null && keys.length > 0) {
@@ -256,7 +261,7 @@ public class RedisUtils {
         return toBeanOrNull(s, tClass);
     }
 
-    public static <T> List<T> mget(Collection<String> keys, Class<T> tClass) {
+    public static <T> List<T> multiGet(Collection<String> keys, Class<T> tClass) {
         List<String> list = stringRedisTemplate.opsForValue().multiGet(keys);
         if (Objects.isNull(list)) {
             return new ArrayList<>();
@@ -272,7 +277,7 @@ public class RedisUtils {
         return JsonUtils.toStr(o);
     }
 
-    public static <T> void mset(Map<String, T> map, long time) {
+    public static <T> void multiSet(Map<String, T> map, long time) {
         Map<String, String> collect = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, (e) -> objToStr(e.getValue())));
         stringRedisTemplate.opsForValue().multiSet(collect);
         map.forEach((key, value) -> {
@@ -787,6 +792,19 @@ public class RedisUtils {
     public static Boolean zAdd(String key, Object value, double score) {
         return zAdd(key, value.toString(), score);
     }
+
+    public static Long ZSetGet(String key) {
+        return stringRedisTemplate.opsForZSet().zCard(key);
+    }
+
+    public static void ZSetAddAndExpire(String key, long startTime, long expireTime, long currentTime) {
+        stringRedisTemplate.opsForZSet().add(key, String.valueOf(currentTime), currentTime);
+        // 删除周期之前的数据
+        stringRedisTemplate.opsForZSet().removeRangeByScore(key, 0, startTime);
+        // 过期时间窗口长度+时间间隔
+        stringRedisTemplate.expire(key, expireTime, TimeUnit.MILLISECONDS);
+    }
+
 
     public static Boolean zIsMember(String key, Object value) {
         return Objects.nonNull(stringRedisTemplate.opsForZSet().score(key, value.toString()));

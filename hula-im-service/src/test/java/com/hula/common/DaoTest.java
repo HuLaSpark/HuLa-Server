@@ -9,7 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,6 +27,8 @@ public class DaoTest {
     private LoginService loginService;
     @Resource
     private RocketMQTemplate rocketMQTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Test
     public void sendMQ() {
@@ -38,6 +42,11 @@ public class DaoTest {
         lock.lock();
         System.out.println("触发");
         lock.unlock();
+    }
+
+    @Test
+    public void redis1() {
+        stringRedisTemplate.opsForValue().set("hula:userToken:uid_20000","eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjIwMDAwLCJjcmVhdGVUaW1lIjoxNzI4Nzk3MTQzfQ.dH8Xc53n4T4Uq0TNueQZ1lf9rD2iC90T4HkK4ULfj4U");
     }
 
     @Test

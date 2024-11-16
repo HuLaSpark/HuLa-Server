@@ -6,12 +6,12 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Pair;
 import com.hula.common.annotation.RedissonLock;
-import com.hula.common.domain.enums.NormalOrNoEnum;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.common.event.MessageSendEvent;
-import com.hula.common.utils.AssertUtil;
 import com.hula.core.chat.dao.*;
+import com.hula.core.chat.domain.dto.ChatMsgSendDto;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.entity.*;
 import com.hula.core.chat.domain.enums.MessageMarkActTypeEnum;
@@ -42,6 +42,8 @@ import com.hula.core.user.domain.enums.RoleEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.utils.AssertUtil;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -50,7 +52,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -91,8 +92,8 @@ public class ChatServiceImpl implements ChatService {
         check(request, uid);
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(request.getMsgType());
         Long msgId = msgHandler.checkAndSaveMsg(request, uid);
-        //发布消息发送事件
-        applicationEventPublisher.publishEvent(new MessageSendEvent(this, msgId));
+        // 发布消息发送事件
+        applicationEventPublisher.publishEvent(new MessageSendEvent(this, new ChatMsgSendDto(msgId, uid)));
         return msgId;
     }
 

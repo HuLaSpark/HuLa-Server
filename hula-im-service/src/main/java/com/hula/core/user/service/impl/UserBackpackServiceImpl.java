@@ -1,8 +1,8 @@
 package com.hula.core.user.service.impl;
 
 import com.hula.common.annotation.RedissonLock;
-import com.hula.common.domain.enums.IdempotentEnum;
-import com.hula.common.domain.enums.YesOrNoEnum;
+import com.hula.common.enums.IdempotentEnum;
+import com.hula.common.enums.YesOrNoEnum;
 import com.hula.common.event.ItemReceiveEvent;
 import com.hula.core.user.dao.UserBackpackDao;
 import com.hula.core.user.domain.entity.ItemConfig;

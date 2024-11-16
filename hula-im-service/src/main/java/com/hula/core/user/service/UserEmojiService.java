@@ -1,10 +1,10 @@
 package com.hula.core.user.service;
 
 
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.domain.vo.resp.IdRespVO;
+import com.hula.common.domain.vo.res.IdRespVO;
 import com.hula.core.user.domain.vo.req.user.UserEmojiReq;
 import com.hula.core.user.domain.vo.resp.user.UserEmojiResp;
+import com.hula.domain.vo.res.ApiResult;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public interface UserEmojiService {
      *
      * @return 表情包列表
      * @author WuShiJie
-     * @createTime 2023/7/3 14:46
+     * @date 2023/7/3 14:46
      **/
     List<UserEmojiResp> list(Long uid);
 
@@ -31,7 +31,7 @@ public interface UserEmojiService {
      * @param uid    用户ID
      * @return 表情包
      * @author WuShiJie
-     * @createTime 2023/7/3 14:46
+     * @date 2023/7/3 14:46
      **/
     ApiResult<IdRespVO> insert(UserEmojiReq emojis, Long uid);
 

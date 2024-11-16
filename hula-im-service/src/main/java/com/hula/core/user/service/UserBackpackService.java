@@ -1,6 +1,6 @@
 package com.hula.core.user.service;
 
-import com.hula.common.domain.enums.IdempotentEnum;
+import com.hula.common.enums.IdempotentEnum;
 
 /**
  * <p>

@@ -1,8 +1,8 @@
 package com.hula.core.chat.service.strategy.mark;
 
 
-import com.hula.common.exception.CommonErrorEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.enums.CommonErrorEnum;
+import com.hula.utils.AssertUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class MsgMarkFactory {
 
     public static AbstractMsgMarkStrategy getStrategyNoNull(Integer markType) {
         AbstractMsgMarkStrategy strategy = STRATEGY_MAP.get(markType);
-        AssertUtil.isNotEmpty(strategy, CommonErrorEnum.PARAM_VALID);
+        AssertUtil.isNotEmpty(strategy, CommonErrorEnum.PARAM_VALID, "strategy");
         return strategy;
     }
 }

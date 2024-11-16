@@ -1,7 +1,7 @@
 package com.hula.core.chat.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.hula.common.domain.enums.YesOrNoEnum;
+import com.hula.common.enums.YesOrNoEnum;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.MessageMark;
 import com.hula.core.chat.domain.enums.MessageMarkTypeEnum;

@@ -1,14 +1,15 @@
 package com.hula.common.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.hula.common.domain.dto.RequestInfo;
-import com.hula.common.exception.HttpErrorEnum;
-import com.hula.common.utils.RequestHolder;
 import com.hula.core.user.domain.enums.BlackTypeEnum;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.domain.dto.RequestInfo;
+import com.hula.enums.HttpErrorEnum;
+import com.hula.utils.RequestHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Set;
 /**
  * @author nyh
  */
+@Component
 @RequiredArgsConstructor
 public class BlackInterceptor implements HandlerInterceptor {
 

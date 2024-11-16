@@ -17,4 +17,5 @@ import java.util.List;
 public interface ContactMapper extends BaseMapper<Contact> {
 
     void refreshOrCreateActiveTime(@Param("roomId") Long roomId, @Param("memberUidList") List<Long> memberUidList, @Param("msgId") Long msgId, @Param("activeTime") Date activeTime);
+
 }

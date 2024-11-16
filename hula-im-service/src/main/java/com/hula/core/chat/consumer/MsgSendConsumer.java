@@ -18,7 +18,9 @@ import com.hula.core.chat.service.cache.HotRoomCache;
 import com.hula.core.chat.service.cache.RoomCache;
 import com.hula.core.user.service.adapter.WSAdapter;
 import com.hula.core.user.service.impl.PushService;
+import com.hula.utils.RequestHolder;
 import lombok.AllArgsConstructor;
+import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
@@ -32,14 +34,14 @@ import java.util.Objects;
  * 发送消息更新房间收信箱，并同步给房间成员信箱
  * @author nyh
  */
-@RocketMQMessageListener(consumerGroup = MQConstant.SEND_MSG_GROUP, topic = MQConstant.SEND_MSG_TOPIC)
+@RocketMQMessageListener(consumerGroup = MQConstant.SEND_MSG_GROUP, topic = MQConstant.SEND_MSG_TOPIC, messageModel = MessageModel.BROADCASTING)
 @Component
 @AllArgsConstructor
 public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
 
     private ChatService chatService;
     private MessageDao messageDao;
-    WeChatMsgOperationService weChatMsgOperationService;
+    private WeChatMsgOperationService weChatMsgOperationService;
     private RoomCache roomCache;
     private RoomDao roomDao;
     private GroupMemberCache groupMemberCache;
@@ -51,6 +53,9 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
     @Override
     public void onMessage(MsgSendMessageDTO dto) {
         Message message = messageDao.getById(dto.getMsgId());
+        if (Objects.isNull(message)) {
+            return;
+        }
         Room room = roomCache.get(message.getRoomId());
         ChatMessageResp msgResp = chatService.getMsgResp(message, null);
         //所有房间更新房间最新消息
@@ -61,12 +66,12 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             //更新热门群聊时间-redis
             hotRoomCache.refreshActiveTime(room.getId(), message.getCreateTime());
             //推送所有人
-            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp));
+            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), dto.getUid());
         } else {
             List<Long> memberUidList = new ArrayList<>();
             if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
-                //普通群聊推送所有群成员
-                memberUidList = groupMemberCache.getMemberUidList(room.getId());
+                // 普通群聊推送所有群成员，过滤掉当前用户
+                memberUidList = groupMemberCache.getMemberUidList(room.getId()).stream().filter(uid->!RequestHolder.get().getUid().equals(uid)).toList();
             } else if (Objects.equals(room.getType(), RoomTypeEnum.FRIEND.getType())) {
                 //单聊对象
                 //对单人推送
@@ -76,7 +81,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             //更新所有群成员的会话时间
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
             //推送房间成员
-            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), memberUidList);
+            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), memberUidList, null);
         }
     }
 

@@ -1,9 +1,9 @@
 package com.hula.core.user.controller;
 
 
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.utils.AssertUtil;
-import com.hula.common.utils.RequestHolder;
+import com.hula.domain.vo.res.ApiResult;
+import com.hula.utils.AssertUtil;
+import com.hula.utils.RequestHolder;
 import com.hula.core.user.domain.dto.ItemInfoDTO;
 import com.hula.core.user.domain.dto.SummeryInfoDTO;
 import com.hula.core.user.domain.enums.RoleEnum;
@@ -25,7 +25,7 @@ import java.util.List;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @Tag(name = "用户管理")
 public class UserController {
 

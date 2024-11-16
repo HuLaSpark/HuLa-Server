@@ -9,7 +9,7 @@ import com.hula.common.config.ThreadPoolConfig;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
-import com.hula.common.utils.RedisUtils;
+import com.hula.utils.RedisUtils;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.dto.WSChannelExtraDTO;
 import com.hula.core.user.domain.entity.User;

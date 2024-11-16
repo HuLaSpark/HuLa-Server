@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 @Slf4j
 @Aspect
 @Component
-@Order(0)//确保比事务注解先执行，分布式锁在事务外
+@Order(0) //确保比事务注解先执行，分布式锁在事务外
 public class RedissonLockAspect {
 
     @Resource
@@ -33,7 +33,7 @@ public class RedissonLockAspect {
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
         RedissonLock redissonLock = method.getAnnotation(RedissonLock.class);
-        //默认方法限定名+注解排名（可能多个）
+        // 默认方法限定名+注解排名（可能多个）
         String prefix = StrUtil.isBlank(redissonLock.prefixKey()) ? SpElUtils.getMethodKey(method) : redissonLock.prefixKey();
         String key = SpElUtils.parseSpEl(method, joinPoint.getArgs(), redissonLock.key());
         return lockService.executeWithLockThrows(prefix + ":" + key, redissonLock.waitTime(), redissonLock.unit(), joinPoint::proceed);

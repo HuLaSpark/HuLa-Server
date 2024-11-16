@@ -2,8 +2,8 @@ package com.hula.common.interceptor;
 
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.json.JSONUtil;
-import com.hula.common.domain.dto.RequestInfo;
-import com.hula.common.utils.RequestHolder;
+import com.hula.domain.dto.RequestInfo;
+import com.hula.utils.RequestHolder;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,7 +52,7 @@ public class WebLogAspect {
                 .filter(args -> !(args instanceof ServletRequest))
                 .filter(args -> !(args instanceof ServletResponse))
                 .collect(Collectors.toList());
-        String printParamStr = paramList.size() == 1 ? JSONUtil.toJsonStr(paramList.get(0)) : JSONUtil.toJsonStr(paramList);
+        String printParamStr = paramList.size() == 1 ? JSONUtil.toJsonStr(paramList.getFirst()) : JSONUtil.toJsonStr(paramList);
         RequestInfo requestInfo = RequestHolder.get();
         String userHeaderStr = JSONUtil.toJsonStr(requestInfo);
         if (log.isInfoEnabled()) {

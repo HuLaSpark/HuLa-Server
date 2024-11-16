@@ -30,7 +30,7 @@ public class PushConsumer implements RocketMQListener<PushMessageDTO> {
                 });
                 break;
             case ALL:
-                webSocketService.sendToAllOnline(message.getWsBaseMsg(), null);
+                webSocketService.sendToAllOnline(message.getWsBaseMsg(), message.getUid());
                 break;
         }
     }

@@ -3,7 +3,7 @@ package com.hula.core.user.dao;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hula.common.domain.enums.YesOrNoEnum;
+import com.hula.common.enums.YesOrNoEnum;
 import com.hula.core.user.domain.entity.UserBackpack;
 import com.hula.core.user.mapper.UserBackpackMapper;
 import org.springframework.stereotype.Service;

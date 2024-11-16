@@ -1,7 +1,7 @@
 package com.hula.common.config;
 
-import com.hula.common.utils.sensitiveWord.DFAFilter;
-import com.hula.common.utils.sensitiveWord.SensitiveWordBs;
+import com.hula.common.utils.sensitiveword.DFAFilter;
+import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.sensitive.MyWordFactory;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;

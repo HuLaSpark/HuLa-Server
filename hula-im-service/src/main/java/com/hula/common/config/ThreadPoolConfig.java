@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 自定义线程池配置
+ *
  * @author nyh
  */
 @Configuration
@@ -61,9 +62,11 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setCorePoolSize(16);
         executor.setMaxPoolSize(16);
-        executor.setQueueCapacity(1000);//支持同时推送1000人
+        // 支持同时推送1000人
+        executor.setQueueCapacity(1000);
         executor.setThreadNamePrefix("websocket-executor-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());//满了直接丢弃，默认为不重要消息推送
+        // 满了直接丢弃，默认为不重要消息推送
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         executor.setThreadFactory(new MyThreadFactory(executor));
         executor.initialize();
         return executor;
@@ -76,7 +79,8 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(15);
         executor.setThreadNamePrefix("aichat-executor-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());//满了直接丢弃，默认为不重要消息推送
+        // 满了直接丢弃，默认为不重要消息推送
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         executor.setThreadFactory(new MyThreadFactory(executor));
         return executor;
     }

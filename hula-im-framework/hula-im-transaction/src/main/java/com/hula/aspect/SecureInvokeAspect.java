@@ -52,12 +52,12 @@ public class SecureInvokeAspect {
                 .methodName(method.getName())
                 .parameterTypes(JsonUtils.toStr(parameters))
                 .build();
-        SecureInvokeRecord record = SecureInvokeRecord.builder()
+        SecureInvokeRecord secureInvokeRecord = SecureInvokeRecord.builder()
                 .secureInvokeDTO(dto)
                 .maxRetryTimes(secureInvoke.maxRetryTimes())
                 .nextRetryTime(DateUtil.offsetMinute(new Date(), (int) SecureInvokeService.RETRY_INTERVAL_MINUTES))
                 .build();
-        secureInvokeService.invoke(record, async);
+        secureInvokeService.invoke(secureInvokeRecord, async);
         return null;
     }
 }

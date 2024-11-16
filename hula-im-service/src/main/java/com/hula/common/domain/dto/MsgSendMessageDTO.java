@@ -13,5 +13,12 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MsgSendMessageDTO implements Serializable {
+    /**
+     * 消息id
+     */
     private Long msgId;
+    /**
+     * 操作人uid
+     */
+    private Long uid;
 }

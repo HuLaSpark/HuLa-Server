@@ -70,7 +70,7 @@ public class GroupMemberAddListener {
         List<User> users = userDao.listByIds(uidList);
         users.forEach(user -> {
             WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberAddWS(roomGroup.getRoomId(), user);
-            pushService.sendPushMsg(ws, memberUidList);
+            pushService.sendPushMsg(ws, memberUidList, null);
         });
         //移除缓存
         groupMemberCache.evictMemberUidList(roomGroup.getRoomId());

@@ -1,7 +1,7 @@
 package com.hula.core.chat.service.strategy.msg;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.hula.common.utils.AssertUtil;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;

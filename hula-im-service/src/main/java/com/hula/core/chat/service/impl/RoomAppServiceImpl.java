@@ -4,10 +4,10 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.event.GroupMemberAddEvent;
-import com.hula.common.exception.GroupErrorEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.enums.GroupErrorEnum;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
@@ -46,6 +46,7 @@ import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import org.codehaus.plexus.util.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -119,7 +120,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     public ChatRoomResp getContactDetailByFriend(Long uid, Long friendUid) {
         RoomFriend friendRoom = roomService.getFriendRoom(uid, friendUid);
         AssertUtil.isNotEmpty(friendRoom, "他不是您的好友");
-        return buildContactResp(uid, Collections.singletonList(friendRoom.getRoomId())).get(0);
+        return buildContactResp(uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
     }
 
     @Override
@@ -185,11 +186,11 @@ public class RoomAppServiceImpl implements RoomAppService {
         RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
         AssertUtil.isNotEmpty(roomGroup, "房间号有误");
         GroupMember self = groupMemberDao.getMember(roomGroup.getId(), uid);
-        AssertUtil.isNotEmpty(self, GroupErrorEnum.USER_NOT_IN_GROUP);
+        AssertUtil.isNotEmpty(self, GroupErrorEnum.USER_NOT_IN_GROUP, "groupMember");
         // 1. 判断被移除的人是否是群主或者管理员  （群主不可以被移除，管理员只能被群主移除）
         Long removedUid = request.getUid();
         // 1.1 群主 非法操作
-        AssertUtil.isFalse(groupMemberDao.isLord(roomGroup.getId(), removedUid), GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE);
+        AssertUtil.isFalse(groupMemberDao.isLord(roomGroup.getId(), removedUid), GroupErrorEnum.NOT_ALLOWED_FOR_REMOVE, "");
         // 1.2 管理员 判断是否是群主操作
         if (groupMemberDao.isManager(roomGroup.getId(), removedUid)) {
             Boolean isLord = groupMemberDao.isLord(roomGroup.getId(), uid);
@@ -203,7 +204,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         // 发送移除事件告知群成员
         List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
         WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
-        pushService.sendPushMsg(ws, memberUidList);
+        pushService.sendPushMsg(ws, memberUidList, null);
         groupMemberCache.evictMemberUidList(room.getId());
     }
 
@@ -246,7 +247,6 @@ public class RoomAppServiceImpl implements RoomAppService {
         return Objects.equals(self.getRole(), GroupRoleEnum.LEADER.getType())
                 || Objects.equals(self.getRole(), GroupRoleEnum.MANAGER.getType())
                 || roleService.hasPower(self.getUid(), RoleEnum.ADMIN);
-
     }
 
     private GroupRoleAPPEnum getGroupRole(Long uid, RoomGroup roomGroup, Room room) {
@@ -288,7 +288,10 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
     private Double getCursorOrNull(String cursor) {
-        return Optional.ofNullable(cursor).map(Double::parseDouble).orElse(null);
+        if (StringUtils.isEmpty(cursor)) {
+            return null;
+        }
+        return Optional.of(cursor).map(Double::parseDouble).orElse(null);
     }
 
     @NotNull

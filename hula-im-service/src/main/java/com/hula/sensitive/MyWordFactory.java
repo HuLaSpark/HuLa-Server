@@ -1,6 +1,6 @@
 package com.hula.sensitive;
 
-import com.hula.common.utils.sensitiveWord.IWordFactory;
+import com.hula.common.utils.sensitiveword.IWordFactory;
 import com.hula.sensitive.dao.SensitiveWordDao;
 import com.hula.sensitive.domain.SensitiveWord;
 import jakarta.annotation.Resource;

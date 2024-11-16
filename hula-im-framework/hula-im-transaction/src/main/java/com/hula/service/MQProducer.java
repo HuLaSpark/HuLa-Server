@@ -1,9 +1,9 @@
 package com.hula.service;
 
 import com.hula.annotation.SecureInvoke;
-import org.springframework.messaging.Message;
 import jakarta.annotation.Resource;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 /**
@@ -23,8 +23,8 @@ public class MQProducer {
     /**
      * 发送可靠消息，在事务提交后保证发送成功
      *
-     * @param topic
-     * @param body
+     * @param topic 主题
+     * @param body 消息体
      */
     @SecureInvoke
     public void sendSecureMsg(String topic, Object body, Object key) {

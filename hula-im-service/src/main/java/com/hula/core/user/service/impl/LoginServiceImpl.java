@@ -2,9 +2,10 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.constant.RedisKey;
-import com.hula.common.utils.JwtUtils;
-import com.hula.common.utils.RedisUtils;
 import com.hula.core.user.service.LoginService;
+import com.hula.utils.JwtUtils;
+import com.hula.utils.RedisUtils;
+import com.hula.utils.RequestHolder;
 import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 public class LoginServiceImpl implements LoginService {
 
 
+    // token过期时间
+    private static final Integer TOKEN_EXPIRE_DAYS = 5;
+    // token续期时间
+    private static final Integer TOKEN_RENEWAL_DAYS = 2;
     @Resource
     private JwtUtils jwtUtils;
-    //token过期时间
-    private static final Integer TOKEN_EXPIRE_DAYS = 5;
-    //token续期时间
-    private static final Integer TOKEN_RENEWAL_DAYS = 2;
 
     /**
      * 校验token是不是有效
@@ -37,7 +38,8 @@ public class LoginServiceImpl implements LoginService {
         }
         String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
         String realToken = RedisUtils.getStr(key);
-        return Objects.equals(token, realToken);//有可能token失效了，需要校验是不是和最新token一致
+        // 有可能token失效了，需要校验是不是和最新token一致
+        return Objects.equals(token, realToken);
     }
 
     @Async
@@ -74,5 +76,15 @@ public class LoginServiceImpl implements LoginService {
     public Long getValidUid(String token) {
         boolean verify = verify(token);
         return verify ? jwtUtils.getUidOrNull(token) : null;
+    }
+
+    @Override
+    public void refreshToken() {
+        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_STRING, RequestHolder.get().getUid()), TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+    }
+
+    @Override
+    public void logout() {
+        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_STRING, RequestHolder.get().getUid()));
     }
 }

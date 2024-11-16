@@ -35,6 +35,14 @@
         <maven-model.version>3.9.6</maven-model.version>
         <redisson-spring-boot-starter.version>3.24.1</redisson-spring-boot-starter.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <rocketmq-spring-boot-starter.version>2.2.2</rocketmq-spring-boot-starter.version>
+        <knife4j-openapi3-jakarta-spring-boot-starter.version>4.4.0</knife4j-openapi3-jakarta-spring-boot-starter.version>
+        <springdoc-openapi-starter-webmvc-api.version>2.2.0</springdoc-openapi-starter-webmvc-api.version>
+        <swagger-annotations.version>1.6.2</swagger-annotations.version>
+        <java-jwt.version>3.19.0</java-jwt.version>
+        <p6spy.version>3.9.1</p6spy.version>
+        <jtokkit.version>0.6.1</jtokkit.version>
+        <velocity-engine-core.version>2.3</velocity-engine-core.version>
     </properties>
 
     <dependencyManagement>
@@ -53,6 +61,11 @@
             <dependency>
                 <groupId>com.HuLa</groupId>
                 <artifactId>hula-im-transaction</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.HuLa</groupId>
+                <artifactId>hula-im-frequency-control</artifactId>
                 <version>${version}</version>
             </dependency>
             <!--    SpringBoot    -->
@@ -165,6 +178,47 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-model</artifactId>
                 <version>${maven-model.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq-spring-boot-starter.version}</version>
+            </dependency>
+            <!-- 生成接口文档 -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j-openapi3-jakarta-spring-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+                <version>${springdoc-openapi-starter-webmvc-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${java-jwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knuddels</groupId>
+                <artifactId>jtokkit</artifactId>
+                <version>${jtokkit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity-engine-core.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

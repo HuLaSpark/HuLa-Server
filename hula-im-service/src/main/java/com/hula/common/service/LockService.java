@@ -1,7 +1,7 @@
 package com.hula.common.service;
 
-import com.hula.common.exception.BusinessException;
-import com.hula.common.exception.CommonErrorEnum;
+import com.hula.enums.CommonErrorEnum;
+import com.hula.exception.BusinessException;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

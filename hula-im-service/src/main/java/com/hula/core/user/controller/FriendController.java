@@ -3,10 +3,8 @@ package com.hula.core.user.controller;
 
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
-import com.hula.common.domain.vo.resp.PageBaseResp;
-import com.hula.common.utils.RequestHolder;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
@@ -16,13 +14,15 @@ import com.hula.core.user.domain.vo.resp.friend.FriendCheckResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendUnreadResp;
 import com.hula.core.user.service.FriendService;
+import com.hula.domain.vo.res.ApiResult;
+import com.hula.utils.RequestHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 
 /**
@@ -30,7 +30,7 @@ import javax.validation.Valid;
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/user/friend")
+@RequestMapping("/user/friend")
 @Tag(name = "好友相关接口")
 @Slf4j
 public class FriendController {

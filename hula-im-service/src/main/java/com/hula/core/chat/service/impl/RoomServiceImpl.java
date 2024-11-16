@@ -1,7 +1,7 @@
 package com.hula.core.chat.service.impl;
 
-import com.hula.common.domain.enums.NormalOrNoEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.common.enums.NormalOrNoEnum;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.RoomDao;
 import com.hula.core.chat.dao.RoomFriendDao;

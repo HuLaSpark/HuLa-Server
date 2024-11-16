@@ -1,12 +1,12 @@
 package com.hula.core.user.domain.vo.req.user;
 
 import io.swagger.annotations.ApiModelProperty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Size;
 import java.util.List;
 
 

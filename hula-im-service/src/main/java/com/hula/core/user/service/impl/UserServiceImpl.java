@@ -1,10 +1,10 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.event.UserRegisterEvent;
-import com.hula.common.utils.AssertUtil;
-import com.hula.common.utils.sensitiveWord.SensitiveWordBs;
+import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.user.dao.BlackDao;
 import com.hula.core.user.dao.ItemConfigDao;
 import com.hula.core.user.dao.UserBackpackDao;
@@ -26,6 +26,7 @@ import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.core.user.service.cache.ItemCache;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserSummaryCache;
+import com.hula.utils.AssertUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -110,9 +111,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void register(User user) {
-        userDao.save(user);
-        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, user));
+
+        if (Objects.nonNull(user.getAccount())) {
+            AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
+                            .eq(User::getAccount, user.getAccount())) <= 0, "账号已注册");
+        } else if(Objects.nonNull(user.getOpenId())) {
+            AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
+                            .eq(User::getOpenId, user.getOpenId())) <= 0, "微信号已绑定其他账号");
+        }
+        final User newUser = User.builder()
+                .account(user.getAccount())
+                .password(user.getPassword())
+                .name(user.getName())
+                .openId(user.getOpenId())
+                .build();
+        userDao.save(newUser);
+        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
     }
 
     @Override
@@ -154,6 +170,13 @@ public class UserServiceImpl implements UserService {
             dto.setDescribe(itemConfig.getDescribe());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public User login(LoginReq loginReq) {
+        User user = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getAccount, loginReq.getAccount()).eq(User::getPassword, loginReq.getPassword()));
+        AssertUtil.isNotEmpty(user, "账号或密码错误");
+        return user;
     }
 
     private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {

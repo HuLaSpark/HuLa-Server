@@ -23,7 +23,7 @@ public interface UserService {
      * 获取前端展示信息
      *
      * @param uid
-     * @return
+     *
      */
     UserInfoResp getUserInfo(Long uid);
 
@@ -68,4 +68,11 @@ public interface UserService {
     List<SummeryInfoDTO> getSummeryUserInfo(SummeryInfoReq req);
 
     List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
+
+    /**
+     * 账号密码登录
+     * @param loginReq 请求参数
+     * @return {@link User }
+     */
+    User login(LoginReq loginReq);
 }

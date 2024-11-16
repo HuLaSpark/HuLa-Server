@@ -1,9 +1,8 @@
 package com.hula.core.chat.service.impl;
 
-
-import com.hula.common.exception.CommonErrorEnum;
-import com.hula.common.exception.GroupErrorEnum;
-import com.hula.common.utils.AssertUtil;
+import com.hula.enums.CommonErrorEnum;
+import com.hula.enums.GroupErrorEnum;
+import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.*;
 import com.hula.core.chat.domain.entity.Room;
 import com.hula.core.chat.domain.entity.RoomGroup;
@@ -146,7 +145,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             // 4.7 发送移除事件告知群成员
             List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
             WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
-            pushService.sendPushMsg(ws, memberUidList);
+            pushService.sendPushMsg(ws, memberUidList, null);
             groupMemberCache.evictMemberUidList(room.getId());
         }
     }

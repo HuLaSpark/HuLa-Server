@@ -1,7 +1,7 @@
 package com.hula.core.chat.service;
 
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
-import com.hula.common.domain.vo.resp.CursorPageBaseResp;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
@@ -41,4 +41,5 @@ public interface RoomAppService {
     ChatRoomResp getContactDetail(Long uid, Long roomId);
 
     ChatRoomResp getContactDetailByFriend(Long uid, Long friendUid);
+
 }

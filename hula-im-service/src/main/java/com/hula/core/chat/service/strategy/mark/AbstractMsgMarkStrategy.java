@@ -1,13 +1,13 @@
 package com.hula.core.chat.service.strategy.mark;
 
-import com.hula.common.domain.enums.YesOrNoEnum;
+import com.hula.common.enums.YesOrNoEnum;
 import com.hula.common.event.MessageMarkEvent;
-import com.hula.common.exception.BusinessException;
 import com.hula.core.chat.dao.MessageMarkDao;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.entity.MessageMark;
 import com.hula.core.chat.domain.enums.MessageMarkActTypeEnum;
 import com.hula.core.chat.domain.enums.MessageMarkTypeEnum;
+import com.hula.exception.BusinessException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationEventPublisher;

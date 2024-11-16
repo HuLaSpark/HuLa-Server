@@ -1,25 +1,25 @@
 package com.hula.core.user.controller;
 
-import com.hula.common.domain.vo.resp.ApiResult;
-import com.hula.common.utils.RequestHolder;
 import com.hula.core.user.domain.vo.req.oss.UploadUrlReq;
 import com.hula.core.user.service.OssService;
-import com.hula.domain.OssResp;
+import com.hula.domain.vo.res.ApiResult;
+import com.hula.domain.vo.res.OssResp;
+import com.hula.utils.RequestHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 
 /**
  * oss控制层
  * @author nyh
  */
 @RestController
-@RequestMapping("/api/oss")
+@RequestMapping("/oss")
 @Api(tags = "oss相关接口")
 public class OssController {
     @Resource

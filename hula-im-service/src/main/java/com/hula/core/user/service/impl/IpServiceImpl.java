@@ -4,12 +4,12 @@ import cn.hutool.core.thread.NamedThreadFactory;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.hula.common.domain.vo.resp.ApiResult;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.IpDetail;
 import com.hula.core.user.domain.entity.IpInfo;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.IpService;
+import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.JsonUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -85,9 +85,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
         String body = HttpUtil.get("https://ip.taobao.com/outGetIpInfo?ip=" + ip + "&accessKey=alibaba-inc");
         try {
             ApiResult<IpDetail> result = JsonUtils.toObj(body, new TypeReference<ApiResult<IpDetail>>() {});
-            if (result.isSuccess()) {
-                return result.getData();
-            }
+            return result.getData();
         } catch (Exception ignored) {
         }
         return null;

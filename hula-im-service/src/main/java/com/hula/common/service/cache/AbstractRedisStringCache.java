@@ -41,7 +41,7 @@ public abstract class AbstractRedisStringCache<IN, OUT> implements BatchCache<IN
         //组装key
         List<String> keys = req.stream().map(this::getKey).collect(Collectors.toList());
         //批量get
-        List<OUT> valueList = RedisUtils.mget(keys, outClass);
+        List<OUT> valueList = RedisUtils.multiGet(keys, outClass);
         //差集计算
         List<IN> loadReqs = new ArrayList<>();
         for (int i = 0; i < valueList.size(); i++) {
@@ -57,7 +57,7 @@ public abstract class AbstractRedisStringCache<IN, OUT> implements BatchCache<IN
             Map<String, OUT> loadMap = load.entrySet().stream()
                     .map(a -> Pair.of(getKey(a.getKey()), a.getValue()))
                     .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-            RedisUtils.mset(loadMap, getExpireSeconds());
+            RedisUtils.multiSet(loadMap, getExpireSeconds());
         }
 
         //组装最后的结果

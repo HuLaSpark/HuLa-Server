@@ -20,37 +20,38 @@
         <dependency>
             <groupId>com.HuLa</groupId>
             <artifactId>hula-im-transaction</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.HuLa</groupId>
             <artifactId>hula-im-oss-starter</artifactId>
-            <version>${revision}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.HuLa</groupId>
+            <artifactId>hula-im-frequency-control</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.knuddels</groupId>
             <artifactId>jtokkit</artifactId>
-            <version>0.6.1</version>
         </dependency>
         <dependency>
             <groupId>p6spy</groupId>
             <artifactId>p6spy</artifactId>
-            <version>3.9.1</version>
         </dependency>
-
         <!-- 测试所需依赖 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -59,6 +60,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

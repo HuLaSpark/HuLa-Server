@@ -52,6 +52,8 @@ spring:
     serialization:
       write-dates-as-timestamps: true # 序列化
     date-format: yyyy-MM-dd HH:mm:ss # 日期格式化
+    deserialization:
+      fail-on-unknown-properties: false # false表示处理多余字段不抛异常
 
 
 #mybatis-plus 配置
@@ -117,3 +119,8 @@ rocketmq:
     listeners: # 配置某个消费分组，是否监听指定 Topic 。结构为 Map<消费者分组, <Topic, Boolean>> 。默认情况下，不配置表示监听。
       erbadagang-consumer-group:
         topic1: false # 关闭 test-consumer-group 对 topic1 的监听消费
+
+public:
+  urls:
+    - /token/login
+    - /token/register

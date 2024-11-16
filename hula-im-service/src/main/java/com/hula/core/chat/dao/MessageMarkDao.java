@@ -1,7 +1,7 @@
 package com.hula.core.chat.dao;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hula.common.domain.enums.NormalOrNoEnum;
+import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.core.chat.domain.entity.MessageMark;
 import com.hula.core.chat.mapper.MessageMarkMapper;
 import org.springframework.stereotype.Service;

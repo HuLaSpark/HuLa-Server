@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -24,6 +25,7 @@ import java.util.Date;
 @Schema(description = "用户表")
 public class User implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static Long UID_SYSTEM = 1L;//系统uid
@@ -33,6 +35,18 @@ public class User implements Serializable {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    /**
+     * 用户账号
+     */
+    @TableField("account")
+    private String account;
+
+    /**
+     * 用户密码
+     */
+    @TableField("password")
+    private String password;
 
     /**
      * 用户昵称
