@@ -16,4 +16,9 @@ public class RequestInfo {
      * ip地址
      */
     private String ip;
+
+    /**
+     * 令牌
+     */
+    private String token;
 }

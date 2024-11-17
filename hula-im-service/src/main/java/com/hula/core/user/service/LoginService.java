@@ -21,6 +21,12 @@ public interface LoginService {
     String login(Long uid);
 
     /**
+     * @param id 用户id
+     * @return {@link String } token
+     */
+    String mobileLogin(Long id);
+
+    /**
      * 如果token有效，返回uid
      */
     Long getValidUid(String token);
@@ -34,4 +40,6 @@ public interface LoginService {
      * 退出登录
      */
     void logout();
+
+
 }

@@ -29,6 +29,7 @@ public class JwtUtils {
     private String secret;
 
     private static final String UID_CLAIM = "uid";
+    private static final String LOGIN_TYPE_CLAIM = "loginType";
     private static final String CREATE_TIME = "createTime";
 
     /**
@@ -36,13 +37,14 @@ public class JwtUtils {
      * JWT构成: header, payload, signature
      *
      * @param uid 用户id
-     * @return {@link String }
+     * @return {@link String } token
      */
-    public String createToken(Long uid) {
+    public String createToken(Long uid, String loginType) {
         // build token
         return JWT.create()
                 // 只存一个uid信息，其他的自己去redis查
                 .withClaim(UID_CLAIM, uid)
+                .withClaim(LOGIN_TYPE_CLAIM, loginType)
                 .withClaim(CREATE_TIME, new Date())
                 .withExpiresAt(DateUtil.addDays(new Date(), 7))
                 // signature
@@ -80,6 +82,19 @@ public class JwtUtils {
         return Optional.ofNullable(verifyToken(token))
                 .map(map -> map.get(UID_CLAIM))
                 .map(Claim::asLong)
+                .orElse(null);
+    }
+
+    /**
+     * 根据Token获取uid
+     *
+     * @param token 令牌
+     * @return {@link Long }
+     */
+    public String getLoginType(String token) {
+        return Optional.ofNullable(verifyToken(token))
+                .map(map -> map.get(LOGIN_TYPE_CLAIM))
+                .map(Claim::asString)
                 .orElse(null);
     }
 

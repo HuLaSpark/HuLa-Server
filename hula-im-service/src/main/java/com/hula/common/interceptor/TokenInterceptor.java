@@ -25,6 +25,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     public static final String HEADER_AUTHORIZATION = "Authorization";
     public static final String AUTHORIZATION_SCHEMA = "Bearer ";
     public static final String ATTRIBUTE_UID = "uid";
+    public static final String ATTRIBUTE_TOKEN = "token";
     private final LoginService loginService;
     private final PublicUrlProperties publicUrlProperties;
 
@@ -40,6 +41,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         Long validUid = loginService.getValidUid(token);
         if (Objects.nonNull(validUid)) {
             request.setAttribute(ATTRIBUTE_UID, validUid);
+            request.setAttribute(ATTRIBUTE_TOKEN, token);
             return true;
         } else {
             HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);

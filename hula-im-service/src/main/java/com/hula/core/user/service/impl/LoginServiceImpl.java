@@ -2,6 +2,7 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.constant.RedisKey;
+import com.hula.common.enums.LoginTypeEnum;
 import com.hula.core.user.service.LoginService;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
@@ -33,10 +34,11 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public boolean verify(String token) {
         Long uid = jwtUtils.getUidOrNull(token);
+        String loginType = jwtUtils.getLoginType(token);
         if (Objects.isNull(uid)) {
             return false;
         }
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, loginType, uid);
         String realToken = RedisUtils.getStr(key);
         // 有可能token失效了，需要校验是不是和最新token一致
         return Objects.equals(token, realToken);
@@ -46,10 +48,11 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public void renewalTokenIfNecessary(String token) {
         Long uid = jwtUtils.getUidOrNull(token);
+        String loginType = jwtUtils.getLoginType(token);
         if (Objects.isNull(uid)) {
             return;
         }
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, loginType, uid);
         long expireDays = RedisUtils.getExpire(key, TimeUnit.DAYS);
         if (expireDays == -2) {//不存在的key
             return;
@@ -61,13 +64,26 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String login(Long uid) {
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, LoginTypeEnum.PC.getType(), uid);
         String token = RedisUtils.getStr(key);
         if (StrUtil.isNotBlank(token)) {
             return token;
         }
         //获取用户token
-        token = jwtUtils.createToken(uid);
+        token = jwtUtils.createToken(uid, LoginTypeEnum.PC.getType());
+        RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);//token过期用redis中心化控制，初期采用5天过期，剩1天自动续期的方案。后续可以用双token实现
+        return token;
+    }
+
+    @Override
+    public String mobileLogin(Long uid) {
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, LoginTypeEnum.MOBILE.getType(), uid);
+        String token = RedisUtils.getStr(key);
+        if (StrUtil.isNotBlank(token)) {
+            return token;
+        }
+        //获取用户token
+        token = jwtUtils.createToken(uid, LoginTypeEnum.MOBILE.getType());
         RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);//token过期用redis中心化控制，初期采用5天过期，剩1天自动续期的方案。后续可以用双token实现
         return token;
     }
@@ -80,11 +96,15 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public void refreshToken() {
-        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_STRING, RequestHolder.get().getUid()), TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_STRING,
+                jwtUtils.getLoginType(RequestHolder.get().getToken()), RequestHolder.get().getUid()),
+                TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
     }
 
     @Override
     public void logout() {
-        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_STRING, RequestHolder.get().getUid()));
+        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_STRING,
+                jwtUtils.getLoginType(RequestHolder.get().getToken()),
+                RequestHolder.get().getUid()));
     }
 }

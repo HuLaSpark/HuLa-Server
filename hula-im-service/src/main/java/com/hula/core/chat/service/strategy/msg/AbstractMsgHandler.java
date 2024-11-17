@@ -21,7 +21,6 @@ public abstract class AbstractMsgHandler<T> {
 
     @PostConstruct
     private void init() {
-        System.out.println(" ZOL ");
         ParameterizedType genericSuperclass = (ParameterizedType) this.getClass().getGenericSuperclass();
         this.bodyClass = (Class<T>) genericSuperclass.getActualTypeArguments()[0];
         MsgHandlerFactory.register(getMsgTypeEnum().getType(), this);

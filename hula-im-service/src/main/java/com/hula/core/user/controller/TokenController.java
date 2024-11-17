@@ -39,6 +39,14 @@ public class TokenController {
         return ApiResult.success(token);
     }
 
+    @PostMapping("/mobileLogin")
+    @Operation(summary ="移动端用户登录")
+    public ApiResult<String> mobileLogin(@Valid @RequestBody LoginReq loginReq) {
+        User user = userService.login(loginReq);
+        String token = loginService.mobileLogin(user.getId());
+        return ApiResult.success(token);
+    }
+
     @PostMapping("/logout")
     @Operation(summary ="用户登录")
     public ApiResult<Boolean> logout() {
@@ -63,7 +71,6 @@ public class TokenController {
         loginService.refreshToken();
         return ApiResult.success(Boolean.TRUE);
     }
-
 
 }
 

@@ -41,7 +41,7 @@ public class RedisKey {
     /**
      * 用户token存放
      */
-    public static final String USER_TOKEN_STRING = "userToken:uid_%d";
+    public static final String USER_TOKEN_STRING = "userToken:%s:uid_%d";
 
     /**
      * 用户的信息更新时间
