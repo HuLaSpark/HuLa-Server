@@ -27,7 +27,6 @@ public class ThreadPoolConfig implements AsyncConfigurer {
      * websocket通信线程池
      */
     public static final String WS_EXECUTOR = "websocketExecutor";
-
     /**
      * ai聊天机器人线程池
      **/
@@ -48,7 +47,7 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(200);
         executor.setThreadNamePrefix("hula-executor-");
-        //满了调用线程执行，认为重要任务
+        // 满了调用线程执行，认为重要任务
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setThreadFactory(new MyThreadFactory(executor));
         executor.initialize();

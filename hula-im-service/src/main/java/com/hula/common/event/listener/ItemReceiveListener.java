@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 用户收到物品监听器
  *
@@ -34,9 +36,9 @@ public class ItemReceiveListener {
     /**
      * 徽章类型，帮忙默认佩戴
      *
-     * @param event
+     * @param event 事件
      */
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = ItemReceiveEvent.class)
     public void wear(ItemReceiveEvent event) {
         UserBackpack userBackpack = event.getUserBackpack();

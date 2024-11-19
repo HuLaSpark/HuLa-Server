@@ -98,15 +98,15 @@ public class RoomAppServiceImpl implements RoomAppService {
             List<Long> hotRoomIds = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).filter(Objects::nonNull).map(Long::parseLong).collect(Collectors.toList());
             baseRoomIds.addAll(hotRoomIds);
             // 基础会话和热门房间合并
-            page = CursorPageBaseResp.init(contactPage, baseRoomIds);
+            page = CursorPageBaseResp.init(contactPage, baseRoomIds, 0L);
         } else {// 用户未登录，只查全局房间
             CursorPageBaseResp<Pair<Long, Double>> roomCursorPage = hotRoomCache.getRoomCursorPage(request);
             List<Long> roomIds = roomCursorPage.getList().stream().map(Pair::getKey).collect(Collectors.toList());
-            page = CursorPageBaseResp.init(roomCursorPage, roomIds);
+            page = CursorPageBaseResp.init(roomCursorPage, roomIds,0L);
         }
         // 最后组装会话信息（名称，头像，未读数等）
         List<ChatRoomResp> result = buildContactResp(uid, page.getList());
-        return CursorPageBaseResp.init(page, result);
+        return CursorPageBaseResp.init(page, result,0L);
     }
 
     @Override

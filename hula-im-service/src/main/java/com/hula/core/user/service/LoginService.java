@@ -1,40 +1,25 @@
 package com.hula.core.user.service;
 
+import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.req.user.LoginReq;
+
 /**
  * @author nyh
  */
 public interface LoginService {
 
     /**
-     * 校验token是不是有效
-     */
-    boolean verify(String token);
-
-    /**
-     * 刷新token有效期
-     */
-    void renewalTokenIfNecessary(String token);
-
-    /**
      * 登录成功，获取token
      */
-    String login(Long uid);
+    String login(LoginReq loginReq);
 
     /**
-     * @param id 用户id
+     * @param loginReq 用户
      * @return {@link String } token
      */
-    String mobileLogin(Long id);
+    String mobileLogin(LoginReq loginReq);
 
-    /**
-     * 如果token有效，返回uid
-     */
-    Long getValidUid(String token);
-
-    /**
-     * 延长token有效期
-     */
-    void refreshToken();
+    void register(User user);
 
     /**
      * 退出登录

@@ -13,6 +13,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 用户拉黑监听器
  *
@@ -29,20 +31,20 @@ public class UserBlackListener {
     @Resource
     private UserCache userCache;
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = UserBlackEvent.class)
     public void refreshRedis(UserBlackEvent event) {
         userCache.evictBlackMap();
         userCache.remove(event.getUser().getId());
     }
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = UserBlackEvent.class)
     public void deleteMsg(UserBlackEvent event) {
         messageDao.invalidByUid(event.getUser().getId());
     }
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = UserBlackEvent.class)
     public void sendPush(UserBlackEvent event) {
         Long uid = event.getUser().getId();

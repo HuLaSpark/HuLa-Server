@@ -2,7 +2,6 @@ package com.hula.core.user.service;
 
 import com.hula.core.user.domain.dto.ItemInfoDTO;
 import com.hula.core.user.domain.dto.SummeryInfoDTO;
-import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
@@ -50,13 +49,6 @@ public interface UserService {
      */
     void wearingBadge(Long uid, WearingBadgeReq req);
 
-    /**
-     * 用户注册，需要获得id
-     *
-     * @param user
-     */
-    void register(User user);
-
     void black(BlackReq req);
 
     /**
@@ -69,10 +61,4 @@ public interface UserService {
 
     List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
 
-    /**
-     * 账号密码登录
-     * @param loginReq 请求参数
-     * @return {@link User }
-     */
-    User login(LoginReq loginReq);
 }

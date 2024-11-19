@@ -1,5 +1,6 @@
 package com.hula.utils;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
@@ -7,8 +8,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
@@ -19,14 +18,15 @@ import java.util.Optional;
  * @author nyh
  */
 @Slf4j
-@Component
+//Component
 public class JwtUtils {
 
     /**
      * token秘钥，请勿泄露，请勿随便修改
      */
-    @Value("${HuLa-IM.JWT.SECRET}")
-    private String secret;
+//    @Value("${HuLa-IM.JWT.SECRET}")
+//    private String secret;
+    private final static String SECRET_KEY = "HuLa-IM.JWT.SECRET";
 
     private static final String UID_CLAIM = "uid";
     private static final String LOGIN_TYPE_CLAIM = "loginType";
@@ -39,7 +39,7 @@ public class JwtUtils {
      * @param uid 用户id
      * @return {@link String } token
      */
-    public String createToken(Long uid, String loginType) {
+    public static String createToken(Long uid, String loginType) {
         // build token
         return JWT.create()
                 // 只存一个uid信息，其他的自己去redis查
@@ -48,7 +48,7 @@ public class JwtUtils {
                 .withClaim(CREATE_TIME, new Date())
                 .withExpiresAt(DateUtil.addDays(new Date(), 7))
                 // signature
-                .sign(Algorithm.HMAC256(secret));
+                .sign(Algorithm.HMAC256(SpringUtil.getProperty(SECRET_KEY)));
     }
 
     /**
@@ -57,12 +57,12 @@ public class JwtUtils {
      * @param token 令牌
      * @return {@link Map }<{@link String }, {@link Claim }>
      */
-    public Map<String, Claim> verifyToken(String token) {
+    public static Map<String, Claim> verifyToken(String token) {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
         try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SpringUtil.getProperty(SECRET_KEY))).build();
             DecodedJWT jwt = verifier.verify(token);
             return jwt.getClaims();
         } catch (Exception e) {
@@ -78,7 +78,7 @@ public class JwtUtils {
      * @param token 令牌
      * @return {@link Long }
      */
-    public Long getUidOrNull(String token) {
+    public static Long getUidOrNull(String token) {
         return Optional.ofNullable(verifyToken(token))
                 .map(map -> map.get(UID_CLAIM))
                 .map(Claim::asLong)
@@ -91,7 +91,7 @@ public class JwtUtils {
      * @param token 令牌
      * @return {@link Long }
      */
-    public String getLoginType(String token) {
+    public static String getLoginType(String token) {
         return Optional.ofNullable(verifyToken(token))
                 .map(map -> map.get(LOGIN_TYPE_CLAIM))
                 .map(Claim::asString)
@@ -100,7 +100,6 @@ public class JwtUtils {
 
 
     public static void main(String[] args) {
-        JwtUtils jwtUtils = new JwtUtils();
         String dsfsdfsdfsdfsd = JWT.create()
                 // 只存一个uid信息，其他的自己去redis查
                 .withClaim(UID_CLAIM, 20000)

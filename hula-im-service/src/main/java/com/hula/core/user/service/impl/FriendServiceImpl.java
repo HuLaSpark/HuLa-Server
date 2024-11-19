@@ -200,7 +200,7 @@ public class FriendServiceImpl implements FriendService {
                 .stream().map(UserFriend::getFriendUid)
                 .collect(Collectors.toList());
         List<User> userList = userDao.getFriendList(friendUids);
-        return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), userList));
+        return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), userList),0L);
     }
 
     private void createFriend(Long uid, Long targetUid) {

@@ -3,6 +3,7 @@ package com.hula.common.interceptor;
 import com.hula.common.config.PublicUrlProperties;
 import com.hula.core.user.service.LoginService;
 import com.hula.enums.HttpErrorEnum;
+import com.hula.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,6 @@ public class TokenInterceptor implements HandlerInterceptor {
     public static final String AUTHORIZATION_SCHEMA = "Bearer ";
     public static final String ATTRIBUTE_UID = "uid";
     public static final String ATTRIBUTE_TOKEN = "token";
-    private final LoginService loginService;
     private final PublicUrlProperties publicUrlProperties;
 
     /**
@@ -38,7 +38,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = getToken(request);
-        Long validUid = loginService.getValidUid(token);
+        Long validUid = JwtUtils.getUidOrNull(token);
         if (Objects.nonNull(validUid)) {
             request.setAttribute(ATTRIBUTE_UID, validUid);
             request.setAttribute(ATTRIBUTE_TOKEN, token);

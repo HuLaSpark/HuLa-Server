@@ -14,6 +14,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 用户上线监听器
  * @author nyh
@@ -27,7 +29,7 @@ public class UserRegisterListener {
     @Lazy
     private UserBackpackService userBackpackService;
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = UserRegisterEvent.class)
     public void sendCard(UserRegisterEvent event) {
         User user = event.getUser();
@@ -35,7 +37,7 @@ public class UserRegisterListener {
         userBackpackService.acquireItem(user.getId(), ItemEnum.MODIFY_NAME_CARD.getId(), IdempotentEnum.UID, user.getId().toString());
     }
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = UserRegisterEvent.class)
     public void sendBadge(UserRegisterEvent event) {
         User user = event.getUser();

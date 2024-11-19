@@ -29,7 +29,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     // 当web客户端连接后，触发该方法
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        this.webSocketService = getService();
+        this.webSocketService = SpringUtil.getBean(WebSocketService.class);
     }
 
     // 客户端离线
@@ -83,12 +83,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     // 处理异常
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.warn("异常发生，异常消息 ={}", cause);
+        log.warn("异常发生，异常消息 = {}", cause);
         ctx.channel().close();
-    }
-
-    private WebSocketService getService() {
-        return SpringUtil.getBean(WebSocketService.class);
     }
 
     // 读取客户端发送的请求报文

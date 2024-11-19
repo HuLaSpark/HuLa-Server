@@ -20,6 +20,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Objects;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 消息标记监听器
  *
@@ -35,7 +37,7 @@ public class MessageMarkListener {
     private UserBackpackService userBackpackService;
     private PushService pushService;
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = MessageMarkEvent.class, fallbackExecution = true)
     public void changeMsgType(MessageMarkEvent event) {
         ChatMessageMarkDTO dto = event.getDto();
@@ -56,7 +58,7 @@ public class MessageMarkListener {
         }
     }
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = MessageMarkEvent.class, fallbackExecution = true)
     public void notifyAll(MessageMarkEvent event) {//后续可做合并查询，目前异步影响不大
         ChatMessageMarkDTO dto = event.getDto();

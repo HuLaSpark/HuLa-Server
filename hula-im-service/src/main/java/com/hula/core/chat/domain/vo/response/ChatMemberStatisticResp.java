@@ -18,6 +18,7 @@ public class ChatMemberStatisticResp {
 
     @Schema(description ="在线人数")
     private Long onlineNum;//在线人数
+
     @Schema(description ="总人数")
     @Deprecated
     private Long totalNum;//总人数
