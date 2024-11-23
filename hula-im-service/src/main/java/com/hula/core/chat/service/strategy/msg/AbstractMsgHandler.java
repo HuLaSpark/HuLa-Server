@@ -1,12 +1,12 @@
 package com.hula.core.chat.service.strategy.msg;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
 import com.hula.core.chat.service.adapter.MessageAdapter;
+import com.hula.utils.AssertUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.ParameterizedType;
 
 
-public abstract class AbstractMsgHandler<Req> {
+public abstract class AbstractMsgHandler<T> {
     @Resource
     private MessageDao messageDao;
-    private Class<Req> bodyClass;
+    private Class<T> bodyClass;
 
     @PostConstruct
     private void init() {
         ParameterizedType genericSuperclass = (ParameterizedType) this.getClass().getGenericSuperclass();
-        this.bodyClass = (Class<Req>) genericSuperclass.getActualTypeArguments()[0];
+        this.bodyClass = (Class<T>) genericSuperclass.getActualTypeArguments()[0];
         MsgHandlerFactory.register(getMsgTypeEnum().getType(), this);
     }
 
@@ -31,13 +31,13 @@ public abstract class AbstractMsgHandler<Req> {
      */
     abstract MessageTypeEnum getMsgTypeEnum();
 
-    protected void checkMsg(Req body, Long roomId, Long uid) {
+    protected void checkMsg(T body, Long roomId, Long uid) {
 
     }
 
     @Transactional
     public Long checkAndSaveMsg(ChatMessageReq request, Long uid) {
-        Req body = this.toBean(request.getBody());
+        T body = this.toBean(request.getBody());
         //统一校验
         AssertUtil.allCheckValidateThrow(body);
         //子类扩展校验
@@ -50,14 +50,11 @@ public abstract class AbstractMsgHandler<Req> {
         return insert.getId();
     }
 
-    private Req toBean(Object body) {
-        if (bodyClass.isAssignableFrom(body.getClass())) {
-            return (Req) body;
-        }
-        return BeanUtil.toBean(body, bodyClass);
+    private T toBean(Object body) {
+        return bodyClass.isAssignableFrom(body.getClass()) ? (T) body : BeanUtil.toBean(body, bodyClass);
     }
 
-    protected abstract void saveMsg(Message message, Req body);
+    protected abstract void saveMsg(Message message, T body);
 
     /**
      * 展示消息

@@ -13,6 +13,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 用户下线监听器
  *
@@ -30,24 +32,24 @@ public class UserOfflineListener {
     @Resource
     private WSAdapter wsAdapter;
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @EventListener(classes = UserOfflineEvent.class)
     public void saveRedisAndPush(UserOfflineEvent event) {
-        User user = event.getUser();
-        userCache.offline(user.getId(), user.getLastOptTime());
-        //推送给所有在线用户，该用户下线
-        webSocketService.sendToAllOnline(wsAdapter.buildOfflineNotifyResp(event.getUser()), event.getUser().getId());
-    }
-
-    @Async
-    @EventListener(classes = UserOfflineEvent.class)
-    public void saveDB(UserOfflineEvent event) {
         User user = event.getUser();
         User update = new User();
         update.setId(user.getId());
         update.setLastOptTime(user.getLastOptTime());
         update.setActiveStatus(ChatActiveStatusEnum.OFFLINE.getStatus());
         userDao.updateById(update);
+        userCache.offline(user.getId(), user.getLastOptTime());
+        //推送给所有在线用户，该用户下线
+        webSocketService.sendToAllOnline(wsAdapter.buildOfflineNotifyResp(event.getUser()), event.getUser().getId());
+    }
+
+    @Async(HULA_EXECUTOR)
+    @EventListener(classes = UserOfflineEvent.class)
+    public void saveDB(UserOfflineEvent event) {
+
     }
 
 }

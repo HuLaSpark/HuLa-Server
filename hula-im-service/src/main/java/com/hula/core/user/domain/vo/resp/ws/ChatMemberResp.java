@@ -10,6 +10,7 @@ import java.util.Date;
 
 /**
  * 成员列表的成员信息
+ *
  * @author nyh
  */
 @Data
@@ -18,17 +19,16 @@ import java.util.Date;
 @NoArgsConstructor
 public class ChatMemberResp {
 
-    @Schema(description ="uid")
+    @Schema(description = "uid")
     private Long uid;
 
-    @Schema(description ="在线状态 1在线 2离线")
+    @Schema(description = "在线状态 1在线 2离线")
     private Integer activeStatus;
 
-    /**
-     * 角色ID
-     */
+    @Schema(description = "角色ID")
     private Integer roleId;
 
-    @Schema(description ="最后一次上下线时间")
+    @Schema(description = "最后一次上下线时间")
     private Date lastOptTime;
+
 }

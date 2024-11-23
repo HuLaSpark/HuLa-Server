@@ -14,6 +14,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 消息撤回监听器
  *
@@ -33,7 +35,7 @@ public class MessageRecallListener {
     @Resource
     private PushService pushService;
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = MessageRecallEvent.class, fallbackExecution = true)
     public void evictMsg(MessageRecallEvent event) {
         ChatMsgRecallDTO recallDTO = event.getRecallDTO();
@@ -41,10 +43,10 @@ public class MessageRecallListener {
         msgPlusCache.delete(recallDTO.getMsgId());
     }
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = MessageRecallEvent.class, fallbackExecution = true)
     public void sendToAll(MessageRecallEvent event) {
-        pushService.sendPushMsg(WSAdapter.buildMsgRecall(event.getRecallDTO()), null);
+        pushService.sendPushMsg(WSAdapter.buildMsgRecall(event.getRecallDTO()), event.getRecallDTO().getRecallUid());
     }
 
 }

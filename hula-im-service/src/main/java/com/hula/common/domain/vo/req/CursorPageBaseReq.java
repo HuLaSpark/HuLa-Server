@@ -30,7 +30,7 @@ public class CursorPageBaseReq {
     private String cursor;
 
     public Page plusPage() {
-        return new Page(1, this.pageSize, false);
+        return new Page(1, this.pageSize);
     }
 
     @JsonIgnore

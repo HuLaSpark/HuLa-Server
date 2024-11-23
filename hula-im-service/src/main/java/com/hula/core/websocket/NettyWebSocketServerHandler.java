@@ -29,7 +29,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     // 当web客户端连接后，触发该方法
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        this.webSocketService = getService();
+        this.webSocketService = SpringUtil.getBean(WebSocketService.class);
     }
 
     // 客户端离线
@@ -63,12 +63,14 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
+            log.info("空闲");
             // 读空闲
             if (idleStateEvent.state() == IdleState.READER_IDLE) {
                 // 关闭用户的连接
                 userOffLine(ctx);
             }
         } else if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
+            log.info("握手成功");
             this.webSocketService.connect(ctx.channel());
             String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
             if (StrUtil.isNotBlank(token)) {
@@ -81,12 +83,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     // 处理异常
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.warn("异常发生，异常消息 ={}", cause);
+        log.warn("异常发生，异常消息 = {}", cause);
         ctx.channel().close();
-    }
-
-    private WebSocketService getService() {
-        return SpringUtil.getBean(WebSocketService.class);
     }
 
     // 读取客户端发送的请求报文
@@ -100,6 +98,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
                 log.info("请求二维码 = " + msg.text());
                 break;
             case HEARTBEAT:
+                log.info("{},{}",NettyUtil.getAttr(ctx.channel(), NettyUtil.IP), "心跳检测");
+                this.webSocketService.connect(ctx.channel());
                 break;
             default:
                 log.info("未知类型");

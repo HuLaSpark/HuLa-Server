@@ -32,20 +32,25 @@ public interface WebSocketService {
     /**
      * 主动认证登录
      *
-     * @param channel
-     * @param wsAuthorize
+     * @param channel 通道
+     * @param wsAuthorize 认证
      */
     void authorize(Channel channel, WSAuthorize wsAuthorize);
 
     /**
      * 扫码用户登录成功通知,清除本地Cache中的loginCode和channel的关系
+     *
+     * @param loginCode code
+     * @param uid       用户id
+     * @return {@link Boolean } 结果
      */
     Boolean scanLoginSuccess(Integer loginCode, Long uid);
 
     /**
      * 通知用户扫码成功
      *
-     * @param loginCode
+     * @param loginCode code
+     * @return {@link Boolean }
      */
     Boolean scanSuccess(Integer loginCode);
 

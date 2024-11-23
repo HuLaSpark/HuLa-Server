@@ -24,6 +24,7 @@ public class CollectorInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         RequestInfo info = new RequestInfo();
         info.setUid(Optional.ofNullable(request.getAttribute(TokenInterceptor.ATTRIBUTE_UID)).map(Object::toString).map(Long::parseLong).orElse(null));
+        info.setToken(Optional.ofNullable(request.getAttribute(TokenInterceptor.ATTRIBUTE_TOKEN)).map(Object::toString).orElse(null));
         /*! 使用自定义的ServletUtils获取客户端ip地址，hutool的ServletUtil不支持jakarta.servlet类型 */
         info.setIp(ServletUtils.getClientIp());
         RequestHolder.set(info);

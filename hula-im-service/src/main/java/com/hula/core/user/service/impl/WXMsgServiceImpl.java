@@ -7,9 +7,9 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hula.common.config.ThreadPoolConfig;
 import com.hula.common.constant.RedisKey;
+import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
-import com.hula.utils.RedisUtils;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.dto.WSChannelExtraDTO;
 import com.hula.core.user.domain.entity.User;
@@ -18,11 +18,14 @@ import com.hula.core.user.domain.enums.WSBaseResp;
 import com.hula.core.user.domain.vo.req.ws.WSAuthorize;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.RoleService;
+import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WSAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.websocket.NettyUtil;
 import com.hula.service.MQProducer;
+import com.hula.utils.JwtUtils;
+import com.hula.utils.RedisUtils;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import jakarta.annotation.Resource;
@@ -81,6 +84,8 @@ public class WXMsgServiceImpl implements WebSocketService {
     @Resource
     private LoginService loginService;
     @Resource
+    private TokenService tokenService;
+    @Resource
     private UserDao userDao;
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
@@ -97,16 +102,16 @@ public class WXMsgServiceImpl implements WebSocketService {
     /**
      * 处理用户登录请求，需要返回一张带code的二维码
      *
-     * @param channel
+     * @param channel 通道
      */
     @SneakyThrows
     @Override
     public void handleLoginReq(Channel channel) {
-        //生成随机不重复的登录码,并将channel存在本地cache中
+        // 生成随机不重复的登录码,并将channel存在本地cache中
         Integer code = generateLoginCode(channel);
-        //请求微信接口，获取登录码地址
+        // 请求微信接口，获取登录码地址
         WxMpQrCodeTicket wxMpQrCodeTicket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(code, (int) EXPIRE_TIME.getSeconds());
-        //返回给前端（channel必在本地）
+        // 返回给前端（channel必在本地）
         sendMsg(channel, WSAdapter.buildLoginResp(wxMpQrCodeTicket));
     }
 
@@ -114,15 +119,15 @@ public class WXMsgServiceImpl implements WebSocketService {
      * 获取不重复的登录的code，微信要求最大不超过int的存储极限
      * 防止并发，可以给方法加上synchronize，也可以使用cas乐观锁
      *
-     * @return
+     * @return code
      */
     private Integer generateLoginCode(Channel channel) {
         int inc;
         do {
-            //本地cache时间必须比redis key过期时间短，否则会出现并发问题
+            // 本地cache时间必须比redis key过期时间短，否则会出现并发问题
             inc = RedisUtils.integerInc(RedisKey.getKey(LOGIN_CODE), (int) EXPIRE_TIME.toMinutes(), TimeUnit.MINUTES);
         } while (WAIT_LOGIN_MAP.asMap().containsKey(inc));
-        //储存一份在本地
+        // 储存一份在本地
         WAIT_LOGIN_MAP.put(inc, channel);
         return inc;
     }
@@ -130,7 +135,7 @@ public class WXMsgServiceImpl implements WebSocketService {
     /**
      * 处理所有ws连接的事件
      *
-     * @param channel
+     * @param channel 通道
      */
     @Override
     public void connect(Channel channel) {
@@ -154,9 +159,9 @@ public class WXMsgServiceImpl implements WebSocketService {
     @Override
     public void authorize(Channel channel, WSAuthorize wsAuthorize) {
         //校验token
-        boolean verifySuccess = loginService.verify(wsAuthorize.getToken());
+        boolean verifySuccess = tokenService.verify(wsAuthorize.getToken());
         if (verifySuccess) {//用户校验成功给用户登录
-            User user = userDao.getById(loginService.getValidUid(wsAuthorize.getToken()));
+            User user = userDao.getById(JwtUtils.getUidOrNull(wsAuthorize.getToken()));
             loginSuccess(channel, user, wsAuthorize.getToken());
         } else { //让前端的token失效
             sendMsg(channel, WSAdapter.buildInvalidateTokenResp());
@@ -167,15 +172,14 @@ public class WXMsgServiceImpl implements WebSocketService {
      * (channel必在本地)登录成功，并更新状态
      */
     private void loginSuccess(Channel channel, User user, String token) {
-        //更新上线列表
+        // 更新上线列表
         online(channel, user.getId());
-        //返回给用户登录成功
+        // 返回给用户登录成功
         boolean hasPower = roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER);
-        //发送给对应的用户
+        // 发送给对应的用户
         sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token, hasPower));
-        //发送用户上线事件
-        boolean online = userCache.isOnline(user.getId());
-        if (!online) {
+        // 发送用户上线事件
+        if (userCache.isOnline(user.getId())) {
             user.setLastOptTime(new Date());
             user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
@@ -210,17 +214,18 @@ public class WXMsgServiceImpl implements WebSocketService {
 
     @Override
     public Boolean scanLoginSuccess(Integer loginCode, Long uid) {
-        //确认连接在该机器
+        // 确认连接在该机器
         Channel channel = WAIT_LOGIN_MAP.getIfPresent(loginCode);
         if (Objects.isNull(channel)) {
             return Boolean.FALSE;
         }
         User user = userDao.getById(uid);
-        //移除code
+        // 移除code
         WAIT_LOGIN_MAP.invalidate(loginCode);
-        //调用用户登录模块
-        String token = loginService.login(uid);
-        //用户登录
+        // 创建token
+        // TODO 登录类型待处理
+        String token = tokenService.createToken(uid, LoginTypeEnum.PC);
+        // 用户登录
         loginSuccess(channel, user, token);
         return Boolean.TRUE;
     }
@@ -239,7 +244,7 @@ public class WXMsgServiceImpl implements WebSocketService {
     /**
      * 如果在线列表不存在，就先把该channel放进在线列表
      *
-     * @param channel
+     * @param channel 通道
      * @return
      */
     private WSChannelExtraDTO getOrInitChannelExt(Channel channel) {
@@ -249,7 +254,7 @@ public class WXMsgServiceImpl implements WebSocketService {
         return ObjectUtil.isNull(old) ? wsChannelExtraDTO : old;
     }
 
-    //entrySet的值不是快照数据,但是它支持遍历，所以无所谓了，不用快照也行。
+    // entrySet的值不是快照数据,但是它支持遍历，所以无所谓了，不用快照也行。
     @Override
     public void sendToAllOnline(WSBaseResp<?> wsBaseResp, Long skipUid) {
         ONLINE_WS_MAP.forEach((channel, ext) -> {
@@ -281,8 +286,8 @@ public class WXMsgServiceImpl implements WebSocketService {
     /**
      * 给本地channel发送消息
      *
-     * @param channel
-     * @param wsBaseResp
+     * @param channel 通道
+     * @param wsBaseResp 消息
      */
     private void sendMsg(Channel channel, WSBaseResp<?> wsBaseResp) {
         channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(wsBaseResp)));

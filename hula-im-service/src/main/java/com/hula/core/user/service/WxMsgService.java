@@ -44,6 +44,8 @@ public class WxMsgService {
     @Resource
     private UserService userService;
     @Resource
+    private LoginService loginService;
+    @Resource
     private MQProducer mqProducer;
 
     public WxMpXmlOutMessage scan(WxMpService wxMpService, WxMpXmlMessage wxMpXmlMessage) {
@@ -59,7 +61,7 @@ public class WxMsgService {
         //user为空先注册,手动生成,以保存uid
         if (Objects.isNull(user)) {
             user = User.builder().openId(openid).build();
-            userService.register(user);
+            loginService.register(user);
         }
         //在redis中保存openid和场景code的关系，后续才能通知到前端,旧版数据没有清除,这里设置了过期时间
         RedisUtils.set(RedisKey.getKey(RedisKey.OPEN_ID_STRING, openid), loginCode, 60, TimeUnit.MINUTES);
@@ -82,13 +84,13 @@ public class WxMsgService {
      */
     public void authorize(WxOAuth2UserInfo userInfo) {
         User user = userDao.getByOpenId(userInfo.getOpenid());
-        //更新用户信息
+        // 更新用户信息
         if (StringUtils.isEmpty(user.getName())) {
             fillUserInfo(user.getId(), userInfo);
         }
-        //找到对应的code
+        // 找到对应的code
         Integer code = RedisUtils.get(RedisKey.getKey(RedisKey.OPEN_ID_STRING, userInfo.getOpenid()), Integer.class);
-        //发送登录成功事件
+        // 发送登录成功事件
         mqProducer.sendMsg(MQConstant.LOGIN_MSG_TOPIC, new LoginMessageDTO(user.getId(), code));
     }
 
@@ -103,7 +105,8 @@ public class WxMsgService {
             } catch (Exception e) {
                 log.error("fill userInfo fail uid:{},info:{}", uid, userInfo);
             }
-            update.setName("名字重置" + RandomUtil.randomInt(100000));
+            update.setAccount(userInfo.getNickname() + RandomUtil.randomInt(100000));
+            update.setPassword(userInfo.getNickname() + RandomUtil.randomInt(100000));
         }
     }
 }

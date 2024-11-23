@@ -27,6 +27,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 添加群成员监听器
  *
@@ -48,7 +50,7 @@ public class GroupMemberAddListener {
     private PushService pushService;
 
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = GroupMemberAddEvent.class, fallbackExecution = true)
     public void sendAddMsg(GroupMemberAddEvent event) {
         List<GroupMember> memberList = event.getMemberList();
@@ -60,7 +62,7 @@ public class GroupMemberAddListener {
         chatService.sendMsg(chatMessageReq, User.UID_SYSTEM);
     }
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = GroupMemberAddEvent.class, fallbackExecution = true)
     public void sendChangePush(GroupMemberAddEvent event) {
         List<GroupMember> memberList = event.getMemberList();
@@ -70,7 +72,7 @@ public class GroupMemberAddListener {
         List<User> users = userDao.listByIds(uidList);
         users.forEach(user -> {
             WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberAddWS(roomGroup.getRoomId(), user);
-            pushService.sendPushMsg(ws, memberUidList, null);
+            pushService.sendPushMsg(ws, memberUidList, event.getInviteUid());
         });
         //移除缓存
         groupMemberCache.evictMemberUidList(roomGroup.getRoomId());

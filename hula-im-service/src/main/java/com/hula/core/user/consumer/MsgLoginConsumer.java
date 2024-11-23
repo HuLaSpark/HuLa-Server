@@ -21,7 +21,7 @@ public class MsgLoginConsumer implements RocketMQListener<LoginMessageDTO> {
 
     @Override
     public void onMessage(LoginMessageDTO loginMessageDTO) {
-        //尝试登录登录
+        // 尝试登录
         webSocketService.scanLoginSuccess(loginMessageDTO.getCode(), loginMessageDTO.getUid());
     }
 

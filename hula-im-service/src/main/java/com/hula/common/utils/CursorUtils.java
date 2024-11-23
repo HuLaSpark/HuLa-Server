@@ -45,31 +45,31 @@ public class CursorUtils {
                 .map(String::valueOf)
                 .orElse(null);
         Boolean isLast = result.size() != cursorPageBaseReq.getPageSize();
-        return new CursorPageBaseResp<>(cursor, isLast, result);
+        return new CursorPageBaseResp<>(cursor, isLast, result, 0L);
     }
 
     public static <T> CursorPageBaseResp<T> getCursorPageByMysql(IService<T> mapper, CursorPageBaseReq request, Consumer<LambdaQueryWrapper<T>> initWrapper, SFunction<T, ?> cursorColumn) {
-        //游标字段类型
+        // 游标字段类型
         Class<?> cursorType = LambdaUtils.getReturnType(cursorColumn);
         LambdaQueryWrapper<T> wrapper = new LambdaQueryWrapper<>();
-        //额外条件
+        // 额外条件
         initWrapper.accept(wrapper);
-        //游标条件
+        // 游标条件
         if (StrUtil.isNotBlank(request.getCursor())) {
             wrapper.lt(cursorColumn, parseCursor(request.getCursor(), cursorType));
         }
-        //游标方向
+        // 游标方向
         wrapper.orderByDesc(cursorColumn);
 
         Page<T> page = mapper.page(request.plusPage(), wrapper);
-        //取出游标
+        // 取出游标
         String cursor = Optional.ofNullable(CollectionUtil.getLast(page.getRecords()))
                 .map(cursorColumn)
                 .map(CursorUtils::toCursor)
                 .orElse(null);
-        //判断是否最后一页
+        // 判断是否最后一页
         Boolean isLast = page.getRecords().size() != request.getPageSize();
-        return new CursorPageBaseResp<>(cursor, isLast, page.getRecords());
+        return new CursorPageBaseResp<>(cursor, isLast, page.getRecords(), page.getTotal());
     }
 
     private static String toCursor(Object o) {

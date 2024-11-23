@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 /**
  * 好友申请监听器
  *
@@ -29,7 +31,7 @@ public class UserApplyListener {
     @Resource
     private PushService pushService;
 
-    @Async
+    @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = UserApplyEvent.class, fallbackExecution = true)
     public void notifyFriend(UserApplyEvent event) {
         UserApply userApply = event.getUserApply();

@@ -49,15 +49,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
+
 
 /**
  * 消息处理类
+ *
  * @author nyh
  */
 @Service
@@ -132,28 +136,28 @@ public class ChatServiceImpl implements ChatService {
         Pair<ChatActiveStatusEnum, String> pair = ChatMemberHelper.getCursorPair(request.getCursor());
         ChatActiveStatusEnum activeStatusEnum = pair.getKey();
         String timeCursor = pair.getValue();
-        //最终列表
+        // 最终列表
         List<ChatMemberResp> resultList = new ArrayList<>();
         Boolean isLast = Boolean.FALSE;
         if (activeStatusEnum == ChatActiveStatusEnum.ONLINE) {
-            //在线列表
+            // 在线列表
             CursorPageBaseResp<User> cursorPage = userDao.getCursorPage(memberUidList, new CursorPageBaseReq(request.getPageSize(), timeCursor), ChatActiveStatusEnum.ONLINE);
-            //添加在线列表
+            // 添加在线列表
             resultList.addAll(MemberAdapter.buildMember(cursorPage.getList()));
             if (cursorPage.getIsLast()) {
-                //如果是最后一页,从离线列表再补点数据
+                // 如果是最后一页,从离线列表再补点数据
                 activeStatusEnum = ChatActiveStatusEnum.OFFLINE;
                 Integer leftSize = request.getPageSize() - cursorPage.getList().size();
                 cursorPage = userDao.getCursorPage(memberUidList, new CursorPageBaseReq(leftSize, null), ChatActiveStatusEnum.OFFLINE);
-                //添加离线线列表
+                // 添加离线线列表
                 resultList.addAll(MemberAdapter.buildMember(cursorPage.getList()));
             }
             timeCursor = cursorPage.getCursor();
             isLast = cursorPage.getIsLast();
         } else if (activeStatusEnum == ChatActiveStatusEnum.OFFLINE) {
-            //离线列表
+            // 离线列表
             CursorPageBaseResp<User> cursorPage = userDao.getCursorPage(memberUidList, new CursorPageBaseReq(request.getPageSize(), timeCursor), ChatActiveStatusEnum.OFFLINE);
-            //添加离线线列表
+            // 添加离线线列表
             resultList.addAll(MemberAdapter.buildMember(cursorPage.getList()));
             timeCursor = cursorPage.getCursor();
             isLast = cursorPage.getIsLast();
@@ -163,19 +167,20 @@ public class ChatServiceImpl implements ChatService {
         RoomGroup roomGroup = roomGroupDao.getByRoomId(request.getRoomId());
         Map<Long, Integer> uidMapRole = groupMemberDao.getMemberMapRole(roomGroup.getId(), uidList);
         resultList.forEach(member -> member.setRoleId(uidMapRole.get(member.getUid())));
-        //组装结果
-        return new CursorPageBaseResp<>(ChatMemberHelper.generateCursor(activeStatusEnum, timeCursor), isLast, resultList);
+        // 组装结果
+        return new CursorPageBaseResp<>(ChatMemberHelper.generateCursor(activeStatusEnum, timeCursor),
+                isLast, resultList, groupMemberDao.lambdaQuery().eq(GroupMember::getGroupId, roomGroup.getId()).count());
     }
 
     @Override
     public CursorPageBaseResp<ChatMessageResp> getMsgPage(ChatMessagePageReq request, Long receiveUid) {
-        //用最后一条消息id，来限制被踢出的人能看见的最大一条消息
+        // 用最后一条消息id，来限制被踢出的人能看见的最大一条消息
         Long lastMsgId = getLastMsgId(request.getRoomId(), receiveUid);
         CursorPageBaseResp<Message> cursorPage = messageDao.getCursorPage(request.getRoomId(), request, lastMsgId);
         if (cursorPage.isEmpty()) {
             return CursorPageBaseResp.empty();
         }
-        return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(cursorPage.getList(), receiveUid));
+        return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(cursorPage.getList(), receiveUid), cursorPage.getTotal());
     }
 
     private Long getLastMsgId(Long roomId, Long receiveUid) {
@@ -264,11 +269,12 @@ public class ChatServiceImpl implements ChatService {
         if (CollectionUtil.isEmpty(page.getList())) {
             return CursorPageBaseResp.empty();
         }
-        return CursorPageBaseResp.init(page, RoomAdapter.buildReadResp(page.getList()));
+        return CursorPageBaseResp.init(page, RoomAdapter.buildReadResp(page.getList()), 0L);
     }
 
+    @Async(HULA_EXECUTOR)
     @Override
-    @RedissonLock(key = "#uid")
+    //@RedissonLock(key = "#uid")
     public void msgRead(Long uid, ChatMessageMemberReq request) {
         Contact contact = contactDao.get(uid, request.getRoomId());
         if (Objects.nonNull(contact)) {
@@ -302,7 +308,7 @@ public class ChatServiceImpl implements ChatService {
         if (CollectionUtil.isEmpty(messages)) {
             return new ArrayList<>();
         }
-        //查询消息标志
+        // 查询消息标志
         List<MessageMark> msgMark = messageMarkDao.getValidMarkByMsgIdBatch(messages.stream().map(Message::getId).collect(Collectors.toList()));
         return MessageAdapter.buildMsgResp(messages, msgMark, receiveUid);
     }

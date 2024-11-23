@@ -28,6 +28,8 @@ public class UserAdapter {
         User user = new User();
         user.setId(id);
         user.setAvatar(userInfo.getHeadImgUrl());
+        user.setAccount(userInfo.getNickname());
+        user.setPassword(userInfo.getNickname());
         user.setName(userInfo.getNickname());
         user.setSex(userInfo.getSex());
         if (userInfo.getNickname().length() > 6) {

@@ -30,11 +30,15 @@ public class CursorPageBaseResp<T> {
     @Schema(description = "数据列表")
     private List<T> list;
 
-    public static <T> CursorPageBaseResp<T> init(CursorPageBaseResp cursorPage, List<T> list) {
+    @Schema(description = "总数")
+    private Long total;
+
+    public static <T> CursorPageBaseResp<T> init(CursorPageBaseResp cursorPage, List<T> list, Long total) {
         CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
         cursorPageBaseResp.setIsLast(cursorPage.getIsLast());
         cursorPageBaseResp.setList(list);
         cursorPageBaseResp.setCursor(cursorPage.getCursor());
+        cursorPageBaseResp.setTotal(total);
         return cursorPageBaseResp;
     }
 
@@ -47,6 +51,7 @@ public class CursorPageBaseResp<T> {
         CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
         cursorPageBaseResp.setIsLast(true);
         cursorPageBaseResp.setList(new ArrayList<T>());
+        cursorPageBaseResp.setTotal(0L);
         return cursorPageBaseResp;
     }
 
