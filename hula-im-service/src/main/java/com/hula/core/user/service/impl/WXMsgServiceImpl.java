@@ -148,7 +148,8 @@ public class WXMsgServiceImpl implements WebSocketService {
         Optional<Long> uidOptional = Optional.ofNullable(wsChannelExtraDTO)
                 .map(WSChannelExtraDTO::getUid);
         boolean offlineAll = offline(channel, uidOptional);
-        if (uidOptional.isPresent() && offlineAll) {//已登录用户断连,并且全下线成功
+        // 已登录用户断连,并且全下线成功
+        if (uidOptional.isPresent() && offlineAll) {
             User user = new User();
             user.setId(uidOptional.get());
             user.setLastOptTime(new Date());

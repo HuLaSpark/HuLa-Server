@@ -42,14 +42,8 @@ public class UserOfflineListener {
         update.setActiveStatus(ChatActiveStatusEnum.OFFLINE.getStatus());
         userDao.updateById(update);
         userCache.offline(user.getId(), user.getLastOptTime());
-        //推送给所有在线用户，该用户下线
+        // 推送给所有在线用户，该用户下线
         webSocketService.sendToAllOnline(wsAdapter.buildOfflineNotifyResp(event.getUser()), event.getUser().getId());
-    }
-
-    @Async(HULA_EXECUTOR)
-    @EventListener(classes = UserOfflineEvent.class)
-    public void saveDB(UserOfflineEvent event) {
-
     }
 
 }
