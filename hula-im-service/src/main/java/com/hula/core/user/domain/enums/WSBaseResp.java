@@ -13,6 +13,6 @@ public class WSBaseResp<T> {
      *
      * @see WSRespTypeEnum
      */
-    private Integer type;
+    private String type;
     private T data;
 }

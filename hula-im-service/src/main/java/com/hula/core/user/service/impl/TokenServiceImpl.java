@@ -3,10 +3,14 @@ package com.hula.core.user.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.enums.LoginTypeEnum;
+import com.hula.common.event.TokenExpireEvent;
+import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.TokenService;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
 import com.hula.utils.RequestHolder;
+import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +23,15 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
  * @author nyh
  */
 @Service
+@AllArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
     // token过期时间
     private static final Integer TOKEN_EXPIRE_DAYS = 5;
     // token续期时间
     private static final Integer TOKEN_RENEWAL_DAYS = 2;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * 校验token是不是有效
@@ -64,9 +71,14 @@ public class TokenServiceImpl implements TokenService {
         String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, loginTypeEnum.getType(), uid);
         String token = RedisUtils.getStr(key);
         if (StrUtil.isNotBlank(token)) {
-            return token;
+            // 旧token删除
+            RedisUtils.del(key);
+            User user = User.builder().id(RequestHolder.get().getUid()).build();
+            user.refreshIp(RequestHolder.get().getIp());
+            // 旧设备下线
+            applicationEventPublisher.publishEvent(new TokenExpireEvent(this, user));
         }
-        //获取用户token
+        // 获取用户token
         token = JwtUtils.createToken(uid, loginTypeEnum.getType());
         RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);//token过期用redis中心化控制，初期采用5天过期，剩1天自动续期的方案。后续可以用双token实现
         return token;

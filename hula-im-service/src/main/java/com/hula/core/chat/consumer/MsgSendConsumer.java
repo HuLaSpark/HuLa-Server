@@ -58,7 +58,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
         }
         Room room = roomCache.get(message.getRoomId());
         ChatMessageResp msgResp = chatService.getMsgResp(message, null);
-        //所有房间更新房间最新消息
+        // 所有房间更新房间最新消息
         roomDao.refreshActiveTime(room.getId(), message.getId(), message.getCreateTime());
         roomCache.delete(room.getId());
         if (room.isHotRoom()) {

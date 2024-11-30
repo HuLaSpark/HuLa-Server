@@ -60,7 +60,7 @@ public class ChatController {
     //@FrequencyControl(target = FrequencyControl.Target.UID, time = 1, count = 2)
     public ApiResult<ChatMessageResp> sendMsg(@Valid @RequestBody ChatMessageReq request) {
         Long msgId = chatService.sendMsg(request, RequestHolder.get().getUid());
-        //返回完整消息格式，方便前端展示
+        // 返回完整消息格式，方便前端展示
         return ApiResult.success(chatService.getMsgResp(msgId, RequestHolder.get().getUid()));
     }
 

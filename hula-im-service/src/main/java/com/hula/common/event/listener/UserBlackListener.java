@@ -51,7 +51,7 @@ public class UserBlackListener {
         WSBaseResp<WSBlack> resp = new WSBaseResp<>();
         WSBlack black = new WSBlack(uid);
         resp.setData(black);
-        resp.setType(WSRespTypeEnum.BLACK.getType());
+        resp.setType(WSRespTypeEnum.INVALID_USER.getType());
         webSocketService.sendToAllOnline(resp, uid);
     }
 }

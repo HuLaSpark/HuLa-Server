@@ -85,7 +85,7 @@ public class MemberAdapter {
 
     public static WSBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, User user) {
         WSBaseResp<WSMemberChange> wsBaseResp = new WSBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.MEMBER_CHANGE.getType());
+        wsBaseResp.setType(WSRespTypeEnum.NEW_FRIEND_SESSION.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
         wsMemberChange.setActiveStatus(user.getActiveStatus());
         wsMemberChange.setLastOptTime(user.getLastOptTime());
@@ -98,7 +98,7 @@ public class MemberAdapter {
 
     public static WSBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, Long uid) {
         WSBaseResp<WSMemberChange> wsBaseResp = new WSBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.MEMBER_CHANGE.getType());
+        wsBaseResp.setType(WSRespTypeEnum.NEW_FRIEND_SESSION.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
         wsMemberChange.setUid(uid);
         wsMemberChange.setRoomId(roomId);

@@ -159,13 +159,13 @@ public class WXMsgServiceImpl implements WebSocketService {
 
     @Override
     public void authorize(Channel channel, WSAuthorize wsAuthorize) {
-        //校验token
+        // 校验token
         boolean verifySuccess = tokenService.verify(wsAuthorize.getToken());
         if (verifySuccess) {//用户校验成功给用户登录
             User user = userDao.getById(JwtUtils.getUidOrNull(wsAuthorize.getToken()));
             loginSuccess(channel, user, wsAuthorize.getToken());
-        } else { //让前端的token失效
-            sendMsg(channel, WSAdapter.buildInvalidateTokenResp());
+        } else { // 让前端的token失效
+            sendMsg(channel, WSAdapter.buildInvalidateTokenResp(null));
         }
     }
 
@@ -179,12 +179,6 @@ public class WXMsgServiceImpl implements WebSocketService {
         boolean hasPower = roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER);
         // 发送给对应的用户
         sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token, hasPower));
-        // 发送用户上线事件
-        if (userCache.isOnline(user.getId())) {
-            user.setLastOptTime(new Date());
-            user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
-            applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
-        }
     }
 
     /**
@@ -193,6 +187,9 @@ public class WXMsgServiceImpl implements WebSocketService {
     private void online(Channel channel, Long uid) {
         getOrInitChannelExt(channel).setUid(uid);
         ONLINE_UID_MAP.putIfAbsent(uid, new CopyOnWriteArrayList<>());
+        if (!ONLINE_UID_MAP.get(uid).isEmpty()) {
+            ONLINE_UID_MAP.get(uid).clear();
+        }
         ONLINE_UID_MAP.get(uid).add(channel);
         NettyUtil.setAttr(channel, NettyUtil.UID, uid);
     }
@@ -228,6 +225,12 @@ public class WXMsgServiceImpl implements WebSocketService {
         String token = tokenService.createToken(uid, LoginTypeEnum.PC);
         // 用户登录
         loginSuccess(channel, user, token);
+        // 发送用户上线事件
+        if (userCache.isOnline(user.getId())) {
+            user.setLastOptTime(new Date());
+            user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
+            applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
+        }
         return Boolean.TRUE;
     }
 

@@ -1,7 +1,7 @@
 package com.hula.common.interceptor;
 
 import com.hula.common.config.PublicUrlProperties;
-import com.hula.core.user.service.LoginService;
+import com.hula.core.user.service.TokenService;
 import com.hula.enums.HttpErrorEnum;
 import com.hula.utils.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +28,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     public static final String ATTRIBUTE_UID = "uid";
     public static final String ATTRIBUTE_TOKEN = "token";
     private final PublicUrlProperties publicUrlProperties;
+    private final TokenService tokenService;
 
     /**
      * 前置拦截
@@ -38,6 +39,9 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = getToken(request);
+        if (!tokenService.verify(token)){
+            return false;
+        }
         Long validUid = JwtUtils.getUidOrNull(token);
         if (Objects.nonNull(validUid)) {
             request.setAttribute(ATTRIBUTE_UID, validUid);

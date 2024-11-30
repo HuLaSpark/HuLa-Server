@@ -46,7 +46,7 @@ public class UserOnlineListener {
         // 更新用户ip详情
         ipService.refreshIpDetailAsync(user.getId());
         userCache.online(user.getId(), DateUtil.date());
-        //推送给所有在线用户，该用户上线
+        // 推送给所有在线用户，该用户上线
         webSocketService.sendToAllOnline(wsAdapter.buildOnlineNotifyResp(event.getUser()), event.getUser().getId());
     }
 
