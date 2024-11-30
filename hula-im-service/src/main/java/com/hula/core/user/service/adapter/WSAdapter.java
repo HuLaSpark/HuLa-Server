@@ -111,6 +111,7 @@ public class WSAdapter {
         WSBaseResp<WsTokenExpire> wsBaseResp = new WSBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.TOKEN_EXPIRED.getType());
         WsTokenExpire wsTokenExpire = new WsTokenExpire();
+        wsTokenExpire.setUid(user.getId());
         wsTokenExpire.setIp(Objects.nonNull(user)?user.getIpInfo().getCreateIp():null);
         wsBaseResp.setData(wsTokenExpire);
         return wsBaseResp;

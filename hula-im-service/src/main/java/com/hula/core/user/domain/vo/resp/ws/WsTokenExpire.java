@@ -14,6 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WsTokenExpire {
+    /**
+     * 用户id
+     */
+    private Long uid;
     // 新IP
     private String ip;
 }
