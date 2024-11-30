@@ -17,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.Objects;
 
 /**
  * ws消息适配器
@@ -112,7 +111,7 @@ public class WSAdapter {
         wsBaseResp.setType(WSRespTypeEnum.TOKEN_EXPIRED.getType());
         WsTokenExpire wsTokenExpire = new WsTokenExpire();
         wsTokenExpire.setUid(user.getId());
-        wsTokenExpire.setIp(Objects.nonNull(user)?user.getIpInfo().getCreateIp():null);
+        wsTokenExpire.setIp(user.getIpInfo().getCreateIp());
         wsBaseResp.setData(wsTokenExpire);
         return wsBaseResp;
     }

@@ -165,7 +165,10 @@ public class WXMsgServiceImpl implements WebSocketService {
             User user = userDao.getById(JwtUtils.getUidOrNull(wsAuthorize.getToken()));
             loginSuccess(channel, user, wsAuthorize.getToken());
         } else { // 让前端的token失效
-            sendMsg(channel, WSAdapter.buildInvalidateTokenResp(null));
+            Long uid = JwtUtils.getUidOrNull(wsAuthorize.getToken());
+            User user = User.builder().id(uid).build();
+            user.refreshIp(null);
+            sendMsg(channel, WSAdapter.buildInvalidateTokenResp(user));
         }
     }
 
