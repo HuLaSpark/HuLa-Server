@@ -104,7 +104,7 @@ public class ChatServiceImpl implements ChatService {
     private void check(ChatMessageReq request, Long uid) {
         Room room = roomCache.get(request.getRoomId());
         if (room.isHotRoom()) {
-            //全员群跳过校验
+            // 全员群跳过校验
             return;
         }
         if (room.isRoomFriend()) {

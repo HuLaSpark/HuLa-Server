@@ -94,7 +94,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public void logout() {
-        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_STRING,
+        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
                 JwtUtils.getLoginType(RequestHolder.get().getToken()),
                 RequestHolder.get().getUid()));
         applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder()

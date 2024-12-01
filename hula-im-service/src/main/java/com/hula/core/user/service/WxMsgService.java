@@ -64,7 +64,7 @@ public class WxMsgService {
             loginService.register(user);
         }
         //在redis中保存openid和场景code的关系，后续才能通知到前端,旧版数据没有清除,这里设置了过期时间
-        RedisUtils.set(RedisKey.getKey(RedisKey.OPEN_ID_STRING, openid), loginCode, 60, TimeUnit.MINUTES);
+        RedisUtils.set(RedisKey.getKey(RedisKey.OPEN_ID_FORMAT, openid), loginCode, 60, TimeUnit.MINUTES);
         //授权流程,给用户发送授权消息，并且异步通知前端扫码成功,等待授权
         mqProducer.sendMsg(MQConstant.SCAN_MSG_TOPIC, new ScanSuccessMessageDTO(loginCode));
         String skipUrl = String.format(URL, wxMpService.getWxMpConfigStorage().getAppId(), URLEncoder.encode(callback + "/wx/portal/public/callBack"));
@@ -89,7 +89,7 @@ public class WxMsgService {
             fillUserInfo(user.getId(), userInfo);
         }
         // 找到对应的code
-        Integer code = RedisUtils.get(RedisKey.getKey(RedisKey.OPEN_ID_STRING, userInfo.getOpenid()), Integer.class);
+        Integer code = RedisUtils.get(RedisKey.getKey(RedisKey.OPEN_ID_FORMAT, userInfo.getOpenid()), Integer.class);
         // 发送登录成功事件
         mqProducer.sendMsg(MQConstant.LOGIN_MSG_TOPIC, new LoginMessageDTO(user.getId(), code));
     }

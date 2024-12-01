@@ -18,7 +18,6 @@ import com.hula.core.chat.service.cache.HotRoomCache;
 import com.hula.core.chat.service.cache.RoomCache;
 import com.hula.core.user.service.adapter.WSAdapter;
 import com.hula.core.user.service.impl.PushService;
-import com.hula.utils.RequestHolder;
 import lombok.AllArgsConstructor;
 import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -71,14 +70,14 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             List<Long> memberUidList = new ArrayList<>();
             if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
                 // 普通群聊推送所有群成员，过滤掉当前用户
-                memberUidList = groupMemberCache.getMemberUidList(room.getId()).stream().filter(uid->!RequestHolder.get().getUid().equals(uid)).toList();
+                memberUidList = groupMemberCache.getMemberUidList(room.getId()).stream().filter(uid->!dto.getUid().equals(uid)).toList();
             } else if (Objects.equals(room.getType(), RoomTypeEnum.FRIEND.getType())) {
                 //单聊对象
                 //对单人推送
                 RoomFriend roomFriend = roomFriendDao.getByRoomId(room.getId());
                 memberUidList = Arrays.asList(roomFriend.getUid1(), roomFriend.getUid2());
             }
-            //更新所有群成员的会话时间
+            // 更新所有群成员的会话时间
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
             //推送房间成员
             pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), memberUidList, dto.getUid());

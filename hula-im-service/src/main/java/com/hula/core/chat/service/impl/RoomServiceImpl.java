@@ -75,10 +75,10 @@ public class RoomServiceImpl implements RoomService {
         AssertUtil.isEmpty(selfGroup, "每个人只能创建一个群");
         User user = userInfoCache.get(uid);
         Room room = createRoom(RoomTypeEnum.GROUP);
-        //插入群
+        // 插入群
         RoomGroup roomGroup = ChatAdapter.buildGroupRoom(user, room.getId());
         roomGroupDao.save(roomGroup);
-        //插入群主
+        // 插入群主
         GroupMember leader = GroupMember.builder()
                 .role(GroupRoleEnum.LEADER.getType())
                 .groupId(roomGroup.getId())

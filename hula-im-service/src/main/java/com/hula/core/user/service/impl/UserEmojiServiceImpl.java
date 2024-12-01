@@ -60,7 +60,7 @@ public class UserEmojiServiceImpl implements UserEmojiService {
         AssertUtil.isFalse(existsCount > 0, "当前表情已存在哦~~");
         UserEmoji insert = UserEmoji.builder().uid(uid).expressionUrl(req.getExpressionUrl()).build();
         userEmojiDao.save(insert);
-        return ApiResult.success(IdRespVO.id(insert.getId()));
+        return ApiResult.success(IdRespVO.builder().id(insert.getId()).build());
     }
 
     @Override

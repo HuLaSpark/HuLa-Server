@@ -23,7 +23,7 @@ public class UserInfoCache extends AbstractRedisStringCache<Long, User> {
 
     @Override
     protected String getKey(Long uid) {
-        return RedisKey.getKey(RedisKey.USER_INFO_STRING, uid);
+        return RedisKey.getKey(RedisKey.USER_INFO_FORMAT, uid);
     }
 
     @Override

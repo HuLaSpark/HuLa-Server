@@ -42,17 +42,15 @@ public interface WebSocketService {
      *
      * @param loginCode code
      * @param uid       用户id
-     * @return {@link Boolean } 结果
      */
-    Boolean scanLoginSuccess(Integer loginCode, Long uid);
+    void scanLoginSuccess(Integer loginCode, Long uid);
 
     /**
      * 通知用户扫码成功
      *
      * @param loginCode code
-     * @return {@link Boolean }
      */
-    Boolean scanSuccess(Integer loginCode);
+    void scanSuccess(Integer loginCode);
 
     /**
      * 推动消息给所有在线的人

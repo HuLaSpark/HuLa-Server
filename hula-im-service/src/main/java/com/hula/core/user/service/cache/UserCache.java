@@ -102,12 +102,12 @@ public class UserCache {
     }
 
     public List<Long> getUserModifyTime(List<Long> uidList) {
-        List<String> keys = uidList.stream().map(uid -> RedisKey.getKey(RedisKey.USER_MODIFY_STRING, uid)).collect(Collectors.toList());
+        List<String> keys = uidList.stream().map(uid -> RedisKey.getKey(RedisKey.USER_MODIFY_FORMAT, uid)).collect(Collectors.toList());
         return RedisUtils.multiGet(keys, Long.class);
     }
 
     public void refreshUserModifyTime(Long uid) {
-        String key = RedisKey.getKey(RedisKey.USER_MODIFY_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_MODIFY_FORMAT, uid);
         RedisUtils.set(key, new Date().getTime());
     }
 
@@ -123,7 +123,7 @@ public class UserCache {
      */
     public Map<Long, User> getUserInfoBatch(Set<Long> uids) {
         //批量组装key
-        List<String> keys = uids.stream().map(a -> RedisKey.getKey(RedisKey.USER_INFO_STRING, a)).collect(Collectors.toList());
+        List<String> keys = uids.stream().map(a -> RedisKey.getKey(RedisKey.USER_INFO_FORMAT, a)).collect(Collectors.toList());
         //批量get
         List<User> mget = RedisUtils.multiGet(keys, User.class);
         Map<Long, User> map = mget.stream().filter(Objects::nonNull).collect(Collectors.toMap(User::getId, Function.identity()));
@@ -132,7 +132,7 @@ public class UserCache {
         if (CollUtil.isNotEmpty(needLoadUidList)) {
             //批量load
             List<User> needLoadUserList = userDao.listByIds(needLoadUidList);
-            Map<String, User> redisMap = needLoadUserList.stream().collect(Collectors.toMap(a -> RedisKey.getKey(RedisKey.USER_INFO_STRING, a.getId()), Function.identity()));
+            Map<String, User> redisMap = needLoadUserList.stream().collect(Collectors.toMap(a -> RedisKey.getKey(RedisKey.USER_INFO_FORMAT, a.getId()), Function.identity()));
             RedisUtils.multiSet(redisMap, 5 * 60);
             //加载回redis
             map.putAll(needLoadUserList.stream().collect(Collectors.toMap(User::getId, Function.identity())));
@@ -148,7 +148,7 @@ public class UserCache {
     }
 
     public void delUserInfo(Long uid) {
-        String key = RedisKey.getKey(RedisKey.USER_INFO_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_INFO_FORMAT, uid);
         RedisUtils.del(key);
     }
 

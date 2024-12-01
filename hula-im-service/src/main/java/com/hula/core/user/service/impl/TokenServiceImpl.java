@@ -42,10 +42,9 @@ public class TokenServiceImpl implements TokenService {
         if (Objects.isNull(uid)) {
             return false;
         }
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, JwtUtils.getLoginType(token), uid);
-        String realToken = RedisUtils.getStr(key);
         // 有可能token失效了，需要校验是不是和最新token一致
-        return Objects.equals(token, realToken);
+        return Objects.equals(token, RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
+                JwtUtils.getLoginType(token), uid)));
     }
 
     @Async(HULA_EXECUTOR)
@@ -55,7 +54,7 @@ public class TokenServiceImpl implements TokenService {
         if (Objects.isNull(uid)) {
             return;
         }
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, JwtUtils.getLoginType(token), uid);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), uid);
         long expireDays = RedisUtils.getExpire(key, TimeUnit.DAYS);
         // 不存在的key
         if (expireDays == -2) {
@@ -68,7 +67,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public String createToken(Long uid, LoginTypeEnum loginTypeEnum) {
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, loginTypeEnum.getType(), uid);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginTypeEnum.getType(), uid);
         String token = RedisUtils.getStr(key);
         if (StrUtil.isNotBlank(token)) {
             // 旧token删除
@@ -87,7 +86,7 @@ public class TokenServiceImpl implements TokenService {
     @Async(HULA_EXECUTOR)
     @Override
     public void refreshToken() {
-        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_STRING,
+        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
                         JwtUtils.getLoginType(RequestHolder.get().getToken()),
                         RequestHolder.get().getUid()),
                 TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);

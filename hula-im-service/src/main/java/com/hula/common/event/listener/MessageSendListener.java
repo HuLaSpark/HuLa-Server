@@ -91,9 +91,9 @@ public class MessageSendListener {
     @TransactionalEventListener(classes = MessageSendEvent.class, fallbackExecution = true)
     public void publishChatToWechat(@NotNull MessageSendEvent event) {
         Message message = messageDao.getById(event.getChatMsgSendDto().getMsgId());
-        if (Objects.nonNull(message.getExtra().getAtUidList())) {
-            weChatMsgOperationService.publishChatMsgToWeChatUser(message.getFromUid(), message.getExtra().getAtUidList(),
-                    message.getContent());
-        }
+//        if (Objects.nonNull(message.getExtra().getAtUidList())) {
+//            weChatMsgOperationService.publishChatMsgToWeChatUser(message.getFromUid(), message.getExtra().getAtUidList(),
+//                    message.getContent());
+//        }
     }
 }

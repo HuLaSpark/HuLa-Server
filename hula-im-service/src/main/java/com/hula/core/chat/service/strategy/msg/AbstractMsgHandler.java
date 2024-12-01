@@ -38,14 +38,14 @@ public abstract class AbstractMsgHandler<T> {
     @Transactional
     public Long checkAndSaveMsg(ChatMessageReq request, Long uid) {
         T body = this.toBean(request.getBody());
-        //统一校验
+        // 统一校验
         AssertUtil.allCheckValidateThrow(body);
-        //子类扩展校验
+        // 子类扩展校验
         checkMsg(body, request.getRoomId(), uid);
         Message insert = MessageAdapter.buildMsgSave(request, uid);
-        //统一保存
+        // 统一保存
         messageDao.save(insert);
-        //子类扩展保存
+        // 子类扩展保存
         saveMsg(insert, body);
         return insert.getId();
     }

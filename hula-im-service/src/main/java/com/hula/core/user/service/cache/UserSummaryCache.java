@@ -28,7 +28,7 @@ public class UserSummaryCache extends AbstractRedisStringCache<Long, SummeryInfo
 
     @Override
     protected String getKey(Long uid) {
-        return RedisKey.getKey(RedisKey.USER_SUMMARY_STRING, uid);
+        return RedisKey.getKey(RedisKey.USER_SUMMARY_FORMAT, uid);
     }
 
     @Override

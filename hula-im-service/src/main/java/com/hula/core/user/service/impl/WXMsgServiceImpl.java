@@ -1,7 +1,6 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -11,7 +10,6 @@ import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.core.user.dao.UserDao;
-import com.hula.core.user.domain.dto.WSChannelExtraDTO;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleEnum;
 import com.hula.core.user.domain.enums.WSBaseResp;
@@ -40,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,13 +64,14 @@ public class WXMsgServiceImpl implements WebSocketService {
     /**
      * 所有已连接的websocket连接列表和一些额外参数
      */
-    private static final ConcurrentHashMap<Channel, WSChannelExtraDTO> ONLINE_WS_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Channel> ONLINE_WS_MAP = new ConcurrentHashMap<>();
+
     /**
      * 所有在线的用户和对应的socket
      */
     private static final ConcurrentHashMap<Long, CopyOnWriteArrayList<Channel>> ONLINE_UID_MAP = new ConcurrentHashMap<>();
 
-    public static ConcurrentHashMap<Channel, WSChannelExtraDTO> getOnlineMap() {
+    public static ConcurrentHashMap<String, Channel> getOnlineMap() {
         return ONLINE_WS_MAP;
     }
 
@@ -79,6 +79,7 @@ public class WXMsgServiceImpl implements WebSocketService {
      * redis保存loginCode的key
      */
     private static final String LOGIN_CODE = "loginCode";
+
     @Resource
     private WxMpService wxMpService;
     @Resource
@@ -139,19 +140,24 @@ public class WXMsgServiceImpl implements WebSocketService {
      */
     @Override
     public void connect(Channel channel) {
-        ONLINE_WS_MAP.put(channel, new WSChannelExtraDTO());
+        // 保证每个IP只有一个连接
+        String ip = NettyUtil.getAttr(channel, NettyUtil.IP);
+        Channel oldChannel = ONLINE_WS_MAP.get(ip);
+        if(Objects.nonNull(oldChannel)) {
+            oldChannel.close();
+            ONLINE_WS_MAP.remove(ip);
+        }
+        ONLINE_WS_MAP.put(ip, channel);
     }
 
     @Override
     public void removed(Channel channel) {
-        WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);
-        Optional<Long> uidOptional = Optional.ofNullable(wsChannelExtraDTO)
-                .map(WSChannelExtraDTO::getUid);
-        boolean offlineAll = offline(channel, uidOptional);
+        Optional<Long> uid = Optional.ofNullable(NettyUtil.getAttr(channel, NettyUtil.UID));
+        boolean offlineAll = offline(channel, uid);
         // 已登录用户断连,并且全下线成功
-        if (uidOptional.isPresent() && offlineAll) {
+        if (uid.isPresent() && offlineAll) {
             User user = new User();
-            user.setId(uidOptional.get());
+            user.setId(uid.get());
             user.setLastOptTime(new Date());
             applicationEventPublisher.publishEvent(new UserOfflineEvent(this, user));
         }
@@ -188,13 +194,19 @@ public class WXMsgServiceImpl implements WebSocketService {
      * 用户上线
      */
     private void online(Channel channel, Long uid) {
-        getOrInitChannelExt(channel).setUid(uid);
+        NettyUtil.setAttr(channel, NettyUtil.UID, uid);
         ONLINE_UID_MAP.putIfAbsent(uid, new CopyOnWriteArrayList<>());
+        // 如果存在相同设备的连接，则先清空
         if (!ONLINE_UID_MAP.get(uid).isEmpty()) {
-            ONLINE_UID_MAP.get(uid).clear();
+            String loginType = NettyUtil.getAttr(channel, NettyUtil.LOGIN_TYPE);
+            CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uid);
+            List<Channel> list = channels.stream().filter(c ->
+                    NettyUtil.getAttr(c, NettyUtil.LOGIN_TYPE).equals(loginType)).toList();
+            if(!list.isEmpty()) {
+               channels.remove(list.getFirst());
+            }
         }
         ONLINE_UID_MAP.get(uid).add(channel);
-        NettyUtil.setAttr(channel, NettyUtil.UID, uid);
     }
 
     /**
@@ -202,7 +214,7 @@ public class WXMsgServiceImpl implements WebSocketService {
      * return 是否全下线成功
      */
     private boolean offline(Channel channel, Optional<Long> uidOptional) {
-        ONLINE_WS_MAP.remove(channel);
+        ONLINE_WS_MAP.remove((String)NettyUtil.getAttr(channel, NettyUtil.IP));
         if (uidOptional.isPresent()) {
             CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uidOptional.get());
             if (CollectionUtil.isNotEmpty(channels)) {
@@ -214,11 +226,11 @@ public class WXMsgServiceImpl implements WebSocketService {
     }
 
     @Override
-    public Boolean scanLoginSuccess(Integer loginCode, Long uid) {
+    public void scanLoginSuccess(Integer loginCode, Long uid) {
         // 确认连接在该机器
         Channel channel = WAIT_LOGIN_MAP.getIfPresent(loginCode);
         if (Objects.isNull(channel)) {
-            return Boolean.FALSE;
+            return;
         }
         User user = userDao.getById(uid);
         // 移除code
@@ -234,38 +246,21 @@ public class WXMsgServiceImpl implements WebSocketService {
             user.refreshIp(NettyUtil.getAttr(channel, NettyUtil.IP));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, user));
         }
-        return Boolean.TRUE;
     }
 
     @Override
-    public Boolean scanSuccess(Integer loginCode) {
+    public void scanSuccess(Integer loginCode) {
         Channel channel = WAIT_LOGIN_MAP.getIfPresent(loginCode);
         if (Objects.nonNull(channel)) {
             sendMsg(channel, WSAdapter.buildScanSuccessResp());
-            return Boolean.TRUE;
         }
-        return Boolean.FALSE;
-    }
-
-
-    /**
-     * 如果在线列表不存在，就先把该channel放进在线列表
-     *
-     * @param channel 通道
-     * @return
-     */
-    private WSChannelExtraDTO getOrInitChannelExt(Channel channel) {
-        WSChannelExtraDTO wsChannelExtraDTO =
-                ONLINE_WS_MAP.getOrDefault(channel, new WSChannelExtraDTO());
-        WSChannelExtraDTO old = ONLINE_WS_MAP.putIfAbsent(channel, wsChannelExtraDTO);
-        return ObjectUtil.isNull(old) ? wsChannelExtraDTO : old;
     }
 
     // entrySet的值不是快照数据,但是它支持遍历，所以无所谓了，不用快照也行。
     @Override
     public void sendToAllOnline(WSBaseResp<?> wsBaseResp, Long skipUid) {
-        ONLINE_WS_MAP.forEach((channel, ext) -> {
-            if (Objects.nonNull(skipUid) && Objects.equals(ext.getUid(), skipUid)) {
+        ONLINE_WS_MAP.forEach((ip, channel) -> {
+            if (Objects.equals(NettyUtil.getAttr(channel, NettyUtil.UID), skipUid)) {
                 return;
             }
             threadPoolTaskExecutor.execute(() -> sendMsg(channel, wsBaseResp));
