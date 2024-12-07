@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.ws;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WSMemberChange {
+public class WSMemberChange extends BaseEntity {
     public static final Integer CHANGE_TYPE_ADD = 1;
     public static final Integer CHANGE_TYPE_REMOVE = 2;
     @Schema(description ="群组id")

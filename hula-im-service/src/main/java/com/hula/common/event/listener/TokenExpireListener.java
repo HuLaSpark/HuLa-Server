@@ -4,7 +4,7 @@ import com.hula.common.event.TokenExpireEvent;
 import com.hula.core.user.dao.UserApplyDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.WebSocketService;
-import com.hula.core.user.service.adapter.WSAdapter;
+import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class TokenExpireListener {
     @TransactionalEventListener(classes = TokenExpireEvent.class, fallbackExecution = true)
     public void forceOffline(TokenExpireEvent event) {
         User user = event.getUser();
-        pushService.sendPushMsg(WSAdapter.buildInvalidateTokenResp(user), user.getId());
+        pushService.sendPushMsg(WsAdapter.buildInvalidateTokenResp(user), user.getId());
     }
 
 }

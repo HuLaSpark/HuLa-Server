@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.ws;
 
+import com.hula.domain.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WSLoginSuccess {
+public class WSLoginSuccess extends BaseEntity {
     private Long uid;
     private String avatar;
     private String token;

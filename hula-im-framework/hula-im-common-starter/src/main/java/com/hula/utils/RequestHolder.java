@@ -9,17 +9,17 @@ import com.hula.domain.dto.RequestInfo;
  */
 public class RequestHolder {
 
-    private static final ThreadLocal<RequestInfo> threadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<RequestInfo> THREAD_LOCAL = new ThreadLocal<>();
 
     public static void set(RequestInfo requestInfo) {
-        threadLocal.set(requestInfo);
+        THREAD_LOCAL.set(requestInfo);
     }
 
     public static RequestInfo get() {
-        return threadLocal.get();
+        return THREAD_LOCAL.get();
     }
 
     public static void remove() {
-        threadLocal.remove();
+        THREAD_LOCAL.remove();
     }
 }

@@ -30,4 +30,8 @@ public interface TokenService {
     void refreshToken();
 
 
+    /**
+     * 下线
+     */
+    void offline();
 }

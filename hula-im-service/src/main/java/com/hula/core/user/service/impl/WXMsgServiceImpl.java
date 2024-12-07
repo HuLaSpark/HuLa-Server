@@ -6,19 +6,20 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.hula.common.config.ThreadPoolConfig;
 import com.hula.common.constant.RedisKey;
+import com.hula.common.domain.dto.LoginMessageDTO;
+import com.hula.common.domain.dto.ScanSuccessMessageDTO;
 import com.hula.common.enums.LoginTypeEnum;
-import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.enums.RoleEnum;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.ws.WSAuthorize;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.WebSocketService;
-import com.hula.core.user.service.adapter.WSAdapter;
+import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.websocket.NettyUtil;
 import com.hula.service.MQProducer;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class WXMsgServiceImpl implements WebSocketService {
 
+    // 缓存过期时间
     private static final Duration EXPIRE_TIME = Duration.ofHours(1);
     private static final Long MAX_MUM_SIZE = 10000L;
     /**
@@ -107,13 +109,14 @@ public class WXMsgServiceImpl implements WebSocketService {
      */
     @SneakyThrows
     @Override
-    public void handleLoginReq(Channel channel) {
+    public void handleLogin(Channel channel) {
         // 生成随机不重复的登录码,并将channel存在本地cache中
         Integer code = generateLoginCode(channel);
         // 请求微信接口，获取登录码地址
-        WxMpQrCodeTicket wxMpQrCodeTicket = wxMpService.getQrcodeService().qrCodeCreateTmpTicket(code, (int) EXPIRE_TIME.getSeconds());
+        WxMpQrCodeTicket wxMpQrCodeTicket = wxMpService.getQrcodeService()
+                .qrCodeCreateTmpTicket(code, (int) EXPIRE_TIME.getSeconds());
         // 返回给前端（channel必在本地）
-        sendMsg(channel, WSAdapter.buildLoginResp(wxMpQrCodeTicket));
+        sendMsg(channel, WsAdapter.buildLoginResp(wxMpQrCodeTicket));
     }
 
     /**
@@ -147,34 +150,40 @@ public class WXMsgServiceImpl implements WebSocketService {
             oldChannel.close();
             ONLINE_WS_MAP.remove(ip);
         }
-        ONLINE_WS_MAP.put(ip, channel);
+        ONLINE_WS_MAP.put(ip , channel);
     }
 
     @Override
-    public void removed(Channel channel) {
+    public void remove(Channel channel) {
         Optional<Long> uid = Optional.ofNullable(NettyUtil.getAttr(channel, NettyUtil.UID));
-        boolean offlineAll = offline(channel, uid);
-        // 已登录用户断连,并且全下线成功
-        if (uid.isPresent() && offlineAll) {
-            User user = new User();
-            user.setId(uid.get());
-            user.setLastOptTime(new Date());
-            applicationEventPublisher.publishEvent(new UserOfflineEvent(this, user));
-        }
+        // 移除连接
+        ONLINE_WS_MAP.remove((String)NettyUtil.getAttr(channel, NettyUtil.IP));
+        // 已登录用户更新
+        uid.ifPresent(id -> {
+            CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uid.get());
+            if (CollectionUtil.isNotEmpty(channels)) {
+                channels.removeIf(ch -> Objects.equals(ch.id(), channel.id()));
+            }
+            // 发布下线通知
+            // 下线通知改为应用关闭或者切换账号时
+//            applicationEventPublisher
+//                    .publishEvent(new UserOfflineEvent(this,
+//                            User.builder().id(id).lastOptTime(new Date()).build()));
+        });
     }
 
     @Override
     public void authorize(Channel channel, WSAuthorize wsAuthorize) {
-        // 校验token
-        boolean verifySuccess = tokenService.verify(wsAuthorize.getToken());
-        if (verifySuccess) {//用户校验成功给用户登录
+        // 用户校验成功给用户登录
+        if (tokenService.verify(wsAuthorize.getToken())) {
             User user = userDao.getById(JwtUtils.getUidOrNull(wsAuthorize.getToken()));
             loginSuccess(channel, user, wsAuthorize.getToken());
-        } else { // 让前端的token失效
-            Long uid = JwtUtils.getUidOrNull(wsAuthorize.getToken());
-            User user = User.builder().id(uid).build();
+        }
+        // 让前端的token失效
+        else {
+            User user = User.builder().id(JwtUtils.getUidOrNull(wsAuthorize.getToken())).build();
             user.refreshIp(null);
-            sendMsg(channel, WSAdapter.buildInvalidateTokenResp(user));
+            sendMsg(channel, WsAdapter.buildInvalidateTokenResp(user));
         }
     }
 
@@ -183,61 +192,37 @@ public class WXMsgServiceImpl implements WebSocketService {
      */
     private void loginSuccess(Channel channel, User user, String token) {
         // 更新上线列表
-        online(channel, user.getId());
-        // 返回给用户登录成功
-        boolean hasPower = roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER);
-        // 发送给对应的用户
-        sendMsg(channel, WSAdapter.buildLoginSuccessResp(user, token, hasPower));
-    }
-
-    /**
-     * 用户上线
-     */
-    private void online(Channel channel, Long uid) {
-        NettyUtil.setAttr(channel, NettyUtil.UID, uid);
-        ONLINE_UID_MAP.putIfAbsent(uid, new CopyOnWriteArrayList<>());
+        NettyUtil.setAttr(channel, NettyUtil.UID, user.getId());
+        ONLINE_UID_MAP.putIfAbsent(user.getId(), new CopyOnWriteArrayList<>());
         // 如果存在相同设备的连接，则先清空
-        if (!ONLINE_UID_MAP.get(uid).isEmpty()) {
+        if (!ONLINE_UID_MAP.get(user.getId()).isEmpty()) {
             String loginType = NettyUtil.getAttr(channel, NettyUtil.LOGIN_TYPE);
-            CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uid);
+            CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(user.getId());
             List<Channel> list = channels.stream().filter(c ->
-                    NettyUtil.getAttr(c, NettyUtil.LOGIN_TYPE).equals(loginType)).toList();
+                    Objects.equals(NettyUtil.getAttr(c, NettyUtil.LOGIN_TYPE), loginType)).toList();
             if(!list.isEmpty()) {
-               channels.remove(list.getFirst());
+                channels.remove(list.getFirst());
             }
         }
-        ONLINE_UID_MAP.get(uid).add(channel);
-    }
-
-    /**
-     * 用户下线
-     * return 是否全下线成功
-     */
-    private boolean offline(Channel channel, Optional<Long> uidOptional) {
-        ONLINE_WS_MAP.remove((String)NettyUtil.getAttr(channel, NettyUtil.IP));
-        if (uidOptional.isPresent()) {
-            CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uidOptional.get());
-            if (CollectionUtil.isNotEmpty(channels)) {
-                channels.removeIf(ch -> Objects.equals(ch, channel));
-            }
-            return CollectionUtil.isEmpty(ONLINE_UID_MAP.get(uidOptional.get()));
-        }
-        return true;
+        ONLINE_UID_MAP.get(user.getId()).add(channel);
+        // 发送给对应的用户
+        sendMsg(channel, WsAdapter.buildLoginSuccessResp(user, token,
+                roleService.hasRole(user.getId(), RoleTypeEnum.CHAT_MANAGER)));
     }
 
     @Override
-    public void scanLoginSuccess(Integer loginCode, Long uid) {
+    public void scanLoginSuccess(LoginMessageDTO loginMessageDTO) {
         // 确认连接在该机器
-        Channel channel = WAIT_LOGIN_MAP.getIfPresent(loginCode);
+        Channel channel = WAIT_LOGIN_MAP.getIfPresent(loginMessageDTO.getCode());
         if (Objects.isNull(channel)) {
             return;
         }
-        User user = userDao.getById(uid);
+        User user = userDao.getById(loginMessageDTO.getCode());
         // 移除code
-        WAIT_LOGIN_MAP.invalidate(loginCode);
+        WAIT_LOGIN_MAP.invalidate(loginMessageDTO.getCode());
         // 创建token
-        // TODO 登录类型待处理
-        String token = tokenService.createToken(uid, LoginTypeEnum.PC);
+        // 登录类型默认为PC
+        String token = tokenService.createToken(loginMessageDTO.getUid(), LoginTypeEnum.PC);
         // 用户登录
         loginSuccess(channel, user, token);
         // 发送用户上线事件
@@ -249,16 +234,16 @@ public class WXMsgServiceImpl implements WebSocketService {
     }
 
     @Override
-    public void scanSuccess(Integer loginCode) {
-        Channel channel = WAIT_LOGIN_MAP.getIfPresent(loginCode);
+    public void scanSuccess(ScanSuccessMessageDTO scanSuccessMessageDTO) {
+        Channel channel = WAIT_LOGIN_MAP.getIfPresent(scanSuccessMessageDTO.getCode());
         if (Objects.nonNull(channel)) {
-            sendMsg(channel, WSAdapter.buildScanSuccessResp());
+            sendMsg(channel, WsAdapter.buildScanSuccessResp());
         }
     }
 
     // entrySet的值不是快照数据,但是它支持遍历，所以无所谓了，不用快照也行。
     @Override
-    public void sendToAllOnline(WSBaseResp<?> wsBaseResp, Long skipUid) {
+    public void sendAll(WsBaseResp<?> wsBaseResp, Long skipUid) {
         ONLINE_WS_MAP.forEach((ip, channel) -> {
             if (Objects.equals(NettyUtil.getAttr(channel, NettyUtil.UID), skipUid)) {
                 return;
@@ -268,18 +253,14 @@ public class WXMsgServiceImpl implements WebSocketService {
     }
 
     @Override
-    public void sendToAllOnline(WSBaseResp<?> wsBaseResp) {
-        sendToAllOnline(wsBaseResp, null);
-    }
-
-    @Override
-    public void sendToUid(WSBaseResp<?> wsBaseResp, Long uid) {
+    public void sendUser(WsBaseResp<?> wsBaseResp, Long uid) {
         CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uid);
         if (CollectionUtil.isEmpty(channels)) {
             log.info("用户：{}不在线", uid);
             return;
         }
         channels.forEach(channel -> {
+            log.info("发送uid");
             threadPoolTaskExecutor.execute(() -> sendMsg(channel, wsBaseResp));
         });
     }
@@ -291,7 +272,7 @@ public class WXMsgServiceImpl implements WebSocketService {
      * @param channel 通道
      * @param wsBaseResp 消息
      */
-    private void sendMsg(Channel channel, WSBaseResp<?> wsBaseResp) {
+    private void sendMsg(Channel channel, WsBaseResp<?> wsBaseResp) {
         channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(wsBaseResp)));
     }
 }

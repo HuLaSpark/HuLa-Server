@@ -10,7 +10,7 @@ import com.hula.core.chat.service.cache.GroupMemberCache;
 import com.hula.core.chat.service.cache.MsgCache;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.cache.UserInfoCache;
@@ -69,7 +69,7 @@ public class GroupMemberAddListener {
         List<Long> uidList = memberList.stream().map(GroupMember::getUid).collect(Collectors.toList());
         List<User> users = userDao.listByIds(uidList);
         users.forEach(user -> {
-            WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberAddWS(roomGroup.getRoomId(), user);
+            WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberAddWS(roomGroup.getRoomId(), user);
             pushService.sendPushMsg(ws, memberUidList, event.getInviteUid());
         });
         // 移除缓存

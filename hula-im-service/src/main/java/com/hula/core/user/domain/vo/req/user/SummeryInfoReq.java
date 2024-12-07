@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.user;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SummeryInfoReq {
+public class SummeryInfoReq extends BaseEntity {
     @ApiModelProperty(value = "用户信息入参")
     @Size(max = 50)
     private List<infoReq> reqList;

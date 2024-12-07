@@ -2,7 +2,7 @@ package com.hula.common.event.listener;
 
 import com.hula.common.event.UserBlackEvent;
 import com.hula.core.chat.dao.MessageDao;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.WSBlack;
 import com.hula.core.user.service.WebSocketService;
@@ -48,10 +48,10 @@ public class UserBlackListener {
     @EventListener(classes = UserBlackEvent.class)
     public void sendPush(UserBlackEvent event) {
         Long uid = event.getUser().getId();
-        WSBaseResp<WSBlack> resp = new WSBaseResp<>();
+        WsBaseResp<WSBlack> resp = new WsBaseResp<>();
         WSBlack black = new WSBlack(uid);
         resp.setData(black);
         resp.setType(WSRespTypeEnum.INVALID_USER.getType());
-        webSocketService.sendToAllOnline(resp, uid);
+        webSocketService.sendAll(resp, uid);
     }
 }

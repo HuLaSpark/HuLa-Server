@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.friend;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -19,7 +20,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendCheckReq {
+public class FriendCheckReq extends BaseEntity {
 
     @NotEmpty
     @Size(max = 50)

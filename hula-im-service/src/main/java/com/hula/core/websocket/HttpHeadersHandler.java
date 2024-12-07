@@ -21,7 +21,7 @@ public class HttpHeadersHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof FullHttpRequest request) {
             UrlBuilder urlBuilder = UrlBuilder.ofHttp(request.uri());
             // 获取token参数
-            String token = Optional.ofNullable(urlBuilder.getQuery()).map(k -> k.get("token")).map(CharSequence::toString).orElse("");
+            String token = Optional.ofNullable(urlBuilder.getQuery()).map(k -> k.get("token")).map(CharSequence::toString).orElse(null);
             NettyUtil.setAttr(ctx.channel(), NettyUtil.TOKEN, token);
             NettyUtil.setAttr(ctx.channel(), NettyUtil.LOGIN_TYPE, JwtUtils.getLoginType(token));
             // 获取请求路径

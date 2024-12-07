@@ -52,7 +52,8 @@ public class NettyWebSocketServer {
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                .handler(new LoggingHandler(LogLevel.INFO)) // 为 bossGroup 添加 日志处理器
+                // 为 bossGroup 添加 日志处理器
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new NettyChannelInitializer());
         // 启动服务器，监听端口，阻塞直到启动成功
         serverBootstrap.bind(WEB_SOCKET_PORT).sync();

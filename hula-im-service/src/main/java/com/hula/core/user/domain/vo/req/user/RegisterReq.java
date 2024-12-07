@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.user;
 
+import com.hula.domain.BaseEntity;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.Data;
  * @author ZOL
  */
 @Data
-public class RegisterReq {
+public class RegisterReq extends BaseEntity {
 
     /**
      * 用户昵称

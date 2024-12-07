@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.friend;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendApplyReq {
+public class FriendApplyReq extends BaseEntity {
 
     @NotBlank
     @Schema(description ="申请信息")

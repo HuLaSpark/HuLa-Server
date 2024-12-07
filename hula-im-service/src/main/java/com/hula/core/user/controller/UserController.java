@@ -6,7 +6,7 @@ import com.hula.utils.AssertUtil;
 import com.hula.utils.RequestHolder;
 import com.hula.core.user.domain.dto.ItemInfoDTO;
 import com.hula.core.user.domain.dto.SummeryInfoDTO;
-import com.hula.core.user.domain.enums.RoleEnum;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
@@ -40,13 +40,13 @@ public class UserController {
         return ApiResult.success(userService.getUserInfo(RequestHolder.get().getUid()));
     }
 
-    @PostMapping("/public/summary/userInfo/batch")
+    @PostMapping("/summary/userInfo/batch")
     @Operation(summary ="用户聚合信息-返回的代表需要刷新的")
     public ApiResult<List<SummeryInfoDTO>> getSummeryUserInfo(@Valid @RequestBody SummeryInfoReq req) {
         return ApiResult.success(userService.getSummeryUserInfo(req));
     }
 
-    @PostMapping("/public/badges/batch")
+    @PostMapping("/badges/batch")
     @Operation(summary ="徽章聚合信息-返回的代表需要刷新的")
     public ApiResult<List<ItemInfoDTO>> getItemInfo(@Valid @RequestBody ItemInfoReq req) {
         return ApiResult.success(userService.getItemInfo(req));
@@ -76,8 +76,7 @@ public class UserController {
     @Operation(summary ="拉黑用户")
     public ApiResult<Void> black(@Valid @RequestBody BlackReq req) {
         Long uid = RequestHolder.get().getUid();
-        boolean hasPower = roleService.hasPower(uid, RoleEnum.ADMIN);
-        AssertUtil.isTrue(hasPower, "没有权限");
+        AssertUtil.isTrue(roleService.hasRole(uid, RoleTypeEnum.ADMIN), "没有权限");
         userService.black(req);
         return ApiResult.success();
     }

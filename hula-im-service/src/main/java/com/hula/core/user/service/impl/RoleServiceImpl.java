@@ -1,6 +1,6 @@
 package com.hula.core.user.service.impl;
 
-import com.hula.core.user.domain.enums.RoleEnum;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
 import jakarta.annotation.Resource;
@@ -18,12 +18,12 @@ public class RoleServiceImpl implements RoleService {
     private UserCache userCache;
 
     @Override
-    public boolean hasPower(Long uid, RoleEnum roleEnum) {
+    public boolean hasRole(Long uid, RoleTypeEnum roleTypeEnum) {
         Set<Long> roleSet = userCache.getRoleSet(uid);
-        return isAdmin(roleSet) || roleSet.contains(roleEnum.getId());
+        return isAdmin(roleSet) || roleSet.contains(roleTypeEnum.getId());
     }
 
     private boolean isAdmin(Set<Long> roleSet) {
-        return roleSet.contains(RoleEnum.ADMIN.getId());
+        return roleSet.contains(RoleTypeEnum.ADMIN.getId());
     }
 }

@@ -1,6 +1,7 @@
 package com.hula.common.domain.vo.req;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -13,7 +14,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "基础翻页请求")
-public class PageBaseReq {
+public class PageBaseReq  extends BaseEntity {
 
     @Schema(description = "页面大小")
     @Min(0)

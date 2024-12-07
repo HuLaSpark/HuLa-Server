@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.user;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEmojiReq {
+public class UserEmojiReq extends BaseEntity {
     /**
      * 表情地址
      */

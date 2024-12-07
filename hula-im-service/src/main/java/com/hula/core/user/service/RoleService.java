@@ -1,6 +1,6 @@
 package com.hula.core.user.service;
 
-import com.hula.core.user.domain.enums.RoleEnum;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
 
 /**
  * <p>
@@ -13,5 +13,5 @@ public interface RoleService {
     /**
      * 判断用户是否有权限
      **/
-    boolean hasPower(Long uid, RoleEnum roleEnum);
+    boolean hasRole(Long uid, RoleTypeEnum roleTypeEnum);
 }

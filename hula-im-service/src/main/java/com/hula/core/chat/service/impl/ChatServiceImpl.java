@@ -38,7 +38,7 @@ import com.hula.core.chat.service.strategy.msg.RecallMsgHandler;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
-import com.hula.core.user.domain.enums.RoleEnum;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
@@ -196,7 +196,6 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMemberStatisticResp getMemberStatistic() {
-        System.out.println(Thread.currentThread().getName());
         Long onlineNum = userCache.getOnlineNum();
 //        Long offlineNum = userCache.getOfflineNum();不展示总人数
         ChatMemberStatisticResp resp = new ChatMemberStatisticResp();
@@ -232,7 +231,7 @@ public class ChatServiceImpl implements ChatService {
     @Cacheable(cacheNames = "member", key = "'memberList.'+#req.roomId")
     public List<ChatMemberListResp> getMemberList(ChatMessageMemberReq req) {
         if (Objects.equals(1L, req.getRoomId())) {
-            //大群聊可看见所有人
+            // 大群聊可看见所有人
             return userDao.getMemberList()
                     .stream()
                     .map(a -> {
@@ -294,8 +293,8 @@ public class ChatServiceImpl implements ChatService {
     private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
-        boolean hasPower = roleService.hasPower(uid, RoleEnum.CHAT_MANAGER);
-        if (hasPower) {
+        boolean isChatManager = roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER);
+        if (isChatManager) {
             return;
         }
         boolean self = Objects.equals(uid, message.getFromUid());

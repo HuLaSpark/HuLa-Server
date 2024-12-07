@@ -1,9 +1,11 @@
 package com.hula.core.user.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.TokenExpireEvent;
+import com.hula.common.event.UserOfflineEvent;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.TokenService;
 import com.hula.utils.JwtUtils;
@@ -60,7 +62,8 @@ public class TokenServiceImpl implements TokenService {
         if (expireDays == -2) {
             return;
         }
-        if (expireDays < TOKEN_RENEWAL_DAYS) {//小于一天的token帮忙续期
+        // 小于一天的token帮忙续期
+        if (expireDays < TOKEN_RENEWAL_DAYS) {
             RedisUtils.expire(key, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
         }
     }
@@ -79,7 +82,8 @@ public class TokenServiceImpl implements TokenService {
         }
         // 获取用户token
         token = JwtUtils.createToken(uid, loginTypeEnum.getType());
-        RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);//token过期用redis中心化控制，初期采用5天过期，剩1天自动续期的方案。后续可以用双token实现
+        // token过期用redis中心化控制，初期采用5天过期，剩1天自动续期的方案。后续可以用双token实现
+        RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
         return token;
     }
 
@@ -90,6 +94,13 @@ public class TokenServiceImpl implements TokenService {
                         JwtUtils.getLoginType(RequestHolder.get().getToken()),
                         RequestHolder.get().getUid()),
                 TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+    }
+
+    @Override
+    public void offline() {
+        // 下线
+        applicationEventPublisher.publishEvent(new UserOfflineEvent(this,
+                User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateTime.now()).build()));
     }
 
 }

@@ -31,17 +31,25 @@ public class TokenController {
     @Resource
     private TokenService tokenService;
 
+    @PostMapping("/pk")
+    @Operation(summary ="获取公钥")
+    public ApiResult<String> pk() {
+        return ApiResult.success("pk");
+    }
+
     @PostMapping("/login")
     @Operation(summary ="用户登录")
     public ApiResult<String> login(@Valid @RequestBody LoginReq loginReq) {
-        String token = loginService.login(loginReq);
+        String token = loginService.login(User.builder()
+                .account(loginReq.getAccount()).password(loginReq.getPassword()).build());
         return ApiResult.success(token);
     }
 
     @PostMapping("/mobileLogin")
     @Operation(summary ="移动端用户登录")
     public ApiResult<String> mobileLogin(@Valid @RequestBody LoginReq loginReq) {
-        String token = loginService.mobileLogin(loginReq);
+        String token = loginService.mobileLogin(User.builder()
+                .account(loginReq.getAccount()).password(loginReq.getPassword()).build());
         return ApiResult.success(token);
     }
 
@@ -55,7 +63,7 @@ public class TokenController {
     @PostMapping("/register")
     @Operation(summary ="用户注册")
     public ApiResult<String> register(@Valid @RequestBody RegisterReq registerReq) {
-        loginService.register(User.builder()
+        loginService.normalRegister(User.builder()
                 .account(registerReq.getAccount())
                 .password(registerReq.getPassword())
                 .name(registerReq.getName()).build());
@@ -63,10 +71,18 @@ public class TokenController {
     }
 
     @PostMapping("/check")
-    @Operation(summary ="用户验证是否过期")
+    @Operation(summary ="用户token验证")
     public ApiResult<Boolean> check() {
         // 延长token时间
         tokenService.refreshToken();
+        return ApiResult.success(Boolean.TRUE);
+    }
+
+    @PostMapping("/offline")
+    @Operation(summary ="下线")
+    public ApiResult<Boolean> offline() {
+        // 下线
+        tokenService.offline();
         return ApiResult.success(Boolean.TRUE);
     }
 

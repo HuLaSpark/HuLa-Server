@@ -1,6 +1,6 @@
 package com.hula.core.chat.consumer;
 
-import com.hula.common.constant.MQConstant;
+import com.hula.common.constant.MqConstant;
 import com.hula.common.domain.dto.MsgSendMessageDTO;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.MessageDao;
@@ -16,7 +16,7 @@ import com.hula.core.chat.service.WeChatMsgOperationService;
 import com.hula.core.chat.service.cache.GroupMemberCache;
 import com.hula.core.chat.service.cache.HotRoomCache;
 import com.hula.core.chat.service.cache.RoomCache;
-import com.hula.core.user.service.adapter.WSAdapter;
+import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import lombok.AllArgsConstructor;
 import org.apache.rocketmq.spring.annotation.MessageModel;
@@ -33,7 +33,7 @@ import java.util.Objects;
  * 发送消息更新房间收信箱，并同步给房间成员信箱
  * @author nyh
  */
-@RocketMQMessageListener(consumerGroup = MQConstant.SEND_MSG_GROUP, topic = MQConstant.SEND_MSG_TOPIC, messageModel = MessageModel.BROADCASTING)
+@RocketMQMessageListener(consumerGroup = MqConstant.SEND_MSG_GROUP, topic = MqConstant.SEND_MSG_TOPIC, messageModel = MessageModel.BROADCASTING)
 @Component
 @AllArgsConstructor
 public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
@@ -65,7 +65,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             //更新热门群聊时间-redis
             hotRoomCache.refreshActiveTime(room.getId(), message.getCreateTime());
             //推送所有人
-            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), dto.getUid());
+            pushService.sendPushMsg(WsAdapter.buildMsgSend(msgResp), dto.getUid());
         } else {
             List<Long> memberUidList = new ArrayList<>();
             if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
@@ -80,7 +80,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             // 更新所有群成员的会话时间
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
             //推送房间成员
-            pushService.sendPushMsg(WSAdapter.buildMsgSend(msgResp), memberUidList, dto.getUid());
+            pushService.sendPushMsg(WsAdapter.buildMsgSend(msgResp), memberUidList, dto.getUid());
         }
     }
 

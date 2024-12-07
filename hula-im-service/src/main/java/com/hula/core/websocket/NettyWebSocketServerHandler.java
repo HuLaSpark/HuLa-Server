@@ -16,6 +16,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+
 
 /**
  * @author nyh
@@ -27,11 +29,15 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     private WebSocketService webSocketService;
 
     /**
+     *  当web客户端连接后，触发该方法
+     *
      * @param ctx 通道上下文
-     */// 当web客户端连接后，触发该方法
+     */
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        this.webSocketService = SpringUtil.getBean(WebSocketService.class);
+        if(Objects.isNull(webSocketService)) {
+            webSocketService = SpringUtil.getBean(WebSocketService.class);
+        }
     }
 
     /**
@@ -42,8 +48,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         // 可能出现业务判断离线后再次触发 channelInactive
-        log.warn("触发 channelInactive 掉线![{}]", ctx.channel().id());
-        userOffLine(ctx);
+        log.warn("[{}]掉线", ctx.channel().id());
+        userOffline(ctx);
     }
 
     /**
@@ -51,19 +57,19 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
      */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
+        if (evt instanceof IdleStateEvent idleStateEvent) {
             // 读空闲
             if (idleStateEvent.state() == IdleState.READER_IDLE) {
                 // 关闭用户的连接
-                userOffLine(ctx);
+                userOffline(ctx);
             }
         } else if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            this.webSocketService.connect(ctx.channel());
+            webSocketService.connect(ctx.channel());
             String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);
             if (StrUtil.isNotBlank(token)) {
-                this.webSocketService.authorize(ctx.channel(), new WSAuthorize(token));
+                webSocketService.authorize(ctx.channel(), new WSAuthorize(token));
             }
+            log.info("握手成功：{}", (Long)NettyUtil.getAttr(ctx.channel(), NettyUtil.UID));
         }
         super.userEventTriggered(ctx, evt);
     }
@@ -71,7 +77,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
     // 处理异常
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.warn("异常发生，异常消息 = {}", cause);
+        log.warn("异常发生，异常消息", cause);
         ctx.channel().close();
     }
 
@@ -82,8 +88,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
         WSReqTypeEnum wsReqTypeEnum = WSReqTypeEnum.of(wsBaseReq.getType());
         switch (wsReqTypeEnum) {
             case LOGIN:
-                this.webSocketService.handleLoginReq(ctx.channel());
-                log.info("请求二维码 = " + msg.text());
+                webSocketService.handleLogin(ctx.channel());
+                log.info("请求二维码 = {}", msg.text());
                 break;
             case HEARTBEAT:
                 log.info("{},{}",NettyUtil.getAttr(ctx.channel(), NettyUtil.IP), "心跳检测");
@@ -93,8 +99,8 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
         }
     }
 
-    private void userOffLine(ChannelHandlerContext ctx) {
-        this.webSocketService.removed(ctx.channel());
+    private void userOffline(ChannelHandlerContext ctx) {
+        webSocketService.remove(ctx.channel());
         ctx.channel().close();
     }
 

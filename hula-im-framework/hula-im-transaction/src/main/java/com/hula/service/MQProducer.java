@@ -13,11 +13,11 @@ import org.springframework.messaging.support.MessageBuilder;
 public class MQProducer {
 
     @Resource
-    private RocketMQTemplate rocketMQTemplate;
+    private RocketMQTemplate rocketMqTemplate;
 
     public void sendMsg(String topic, Object body) {
         Message<Object> build = MessageBuilder.withPayload(body).build();
-        rocketMQTemplate.send(topic, build);
+        rocketMqTemplate.send(topic, build);
     }
 
     /**
@@ -32,6 +32,6 @@ public class MQProducer {
                 .withPayload(body)
                 .setHeader("KEYS", key)
                 .build();
-        rocketMQTemplate.send(topic, build);
+        rocketMqTemplate.send(topic, build);
     }
 }

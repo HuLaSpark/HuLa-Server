@@ -12,7 +12,7 @@ import com.hula.core.chat.domain.vo.request.member.MemberExitReq;
 import com.hula.core.chat.service.IGroupMemberService;
 import com.hula.core.chat.service.adapter.MemberAdapter;
 import com.hula.core.chat.service.cache.GroupMemberCache;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.impl.PushService;
 import lombok.AllArgsConstructor;
@@ -144,7 +144,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             AssertUtil.isTrue(isDelGroupMember, CommonErrorEnum.SYSTEM_ERROR);
             // 4.7 发送移除事件告知群成员
             List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
-            WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
+            WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
             pushService.sendPushMsg(ws, memberUidList, uid);
             groupMemberCache.evictMemberUidList(room.getId());
         }

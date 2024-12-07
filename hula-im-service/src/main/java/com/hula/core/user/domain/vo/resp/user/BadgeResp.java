@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.user;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description ="徽章信息")
-public class BadgeResp {
+public class BadgeResp extends BaseEntity {
 
     @Schema(description ="徽章id")
     private Long id;

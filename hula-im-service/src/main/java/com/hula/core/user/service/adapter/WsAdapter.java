@@ -3,15 +3,12 @@ package com.hula.core.user.service.adapter;
 import cn.hutool.core.bean.BeanUtil;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
-import com.hula.core.chat.domain.vo.response.ChatMemberStatisticResp;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
-import com.hula.core.chat.service.ChatService;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
-import com.hula.core.user.domain.enums.WSBaseResp;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.*;
-import jakarta.annotation.Resource;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -23,19 +20,17 @@ import java.util.Collections;
  * @author nyh
  */
 @Component
-public class WSAdapter {
-    @Resource
-    private ChatService chatService;
+public class WsAdapter {
 
-    public static WSBaseResp<WSLoginUrl> buildLoginResp(WxMpQrCodeTicket wxMpQrCodeTicket) {
-        WSBaseResp<WSLoginUrl> wsBaseResp = new WSBaseResp<>();
+    public static WsBaseResp<WSLoginUrl> buildLoginResp(WxMpQrCodeTicket wxMpQrCodeTicket) {
+        WsBaseResp<WSLoginUrl> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.LOGIN_QR_CODE.getType());
         wsBaseResp.setData(WSLoginUrl.builder().loginUrl(wxMpQrCodeTicket.getUrl()).build());
         return wsBaseResp;
     }
 
-    public static WSBaseResp<WSLoginSuccess> buildLoginSuccessResp(User user, String token, boolean hasPower) {
-        WSBaseResp<WSLoginSuccess> wsBaseResp = new WSBaseResp<>();
+    public static WsBaseResp<WSLoginSuccess> buildLoginSuccessResp(User user, String token, boolean hasPower) {
+        WsBaseResp<WSLoginSuccess> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.LOGIN_SUCCESS.getType());
         WSLoginSuccess wsLoginSuccess = WSLoginSuccess.builder()
                 .avatar(user.getAvatar())
@@ -48,14 +43,14 @@ public class WSAdapter {
         return wsBaseResp;
     }
 
-    public static WSBaseResp buildScanSuccessResp() {
-        WSBaseResp wsBaseResp = new WSBaseResp();
+    public static WsBaseResp<?> buildScanSuccessResp() {
+        WsBaseResp<?> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.WAITING_AUTHORIZE.getType());
         return wsBaseResp;
     }
 
-    public static WSBaseResp<?> buildMsgRecall(ChatMsgRecallDTO recallDTO) {
-        WSBaseResp<WSMsgRecall> wsBaseResp = new WSBaseResp<>();
+    public static WsBaseResp<?> buildMsgRecall(ChatMsgRecallDTO recallDTO) {
+        WsBaseResp<WSMsgRecall> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.MSG_RECALL.getType());
         WSMsgRecall recall = new WSMsgRecall();
         BeanUtils.copyProperties(recallDTO, recall);
@@ -63,29 +58,24 @@ public class WSAdapter {
         return wsBaseResp;
     }
 
-    public WSBaseResp<WSOnlineNotify> buildOnlineNotifyResp(User user) {
-        WSBaseResp<WSOnlineNotify> wsBaseResp = new WSBaseResp<>();
+    public WsBaseResp<WSOnlineNotify> buildOnlineNotifyResp(User user, Long onlineNum) {
+        WsBaseResp<WSOnlineNotify> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.ONLINE.getType());
         WSOnlineNotify onlineOfflineNotify = new WSOnlineNotify();
         onlineOfflineNotify.setChangeList(Collections.singletonList(buildOnlineInfo(user)));
-        assembleNum(onlineOfflineNotify);
+        onlineOfflineNotify.setOnlineNum(onlineNum);
         wsBaseResp.setData(onlineOfflineNotify);
         return wsBaseResp;
     }
 
-    public WSBaseResp<WSOnlineNotify> buildOfflineNotifyResp(User user) {
-        WSBaseResp<WSOnlineNotify> wsBaseResp = new WSBaseResp<>();
+    public WsBaseResp<WSOnlineNotify> buildOfflineNotifyResp(User user, Long onlineNum) {
+        WsBaseResp<WSOnlineNotify> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.OFFLINE.getType());
         WSOnlineNotify onlineOfflineNotify = new WSOnlineNotify();
         onlineOfflineNotify.setChangeList(Collections.singletonList(buildOfflineInfo(user)));
-        assembleNum(onlineOfflineNotify);
+        onlineOfflineNotify.setOnlineNum(onlineNum);
         wsBaseResp.setData(onlineOfflineNotify);
         return wsBaseResp;
-    }
-
-    private void assembleNum(WSOnlineNotify onlineOfflineNotify) {
-        ChatMemberStatisticResp memberStatistic = chatService.getMemberStatistic();
-        onlineOfflineNotify.setOnlineNum(memberStatistic.getOnlineNum());
     }
 
     private static ChatMemberResp buildOnlineInfo(User user) {
@@ -106,8 +96,8 @@ public class WSAdapter {
         return info;
     }
 
-    public static WSBaseResp<WsTokenExpire> buildInvalidateTokenResp(User user) {
-        WSBaseResp<WsTokenExpire> wsBaseResp = new WSBaseResp<>();
+    public static WsBaseResp<WsTokenExpire> buildInvalidateTokenResp(User user) {
+        WsBaseResp<WsTokenExpire> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.TOKEN_EXPIRED.getType());
         WsTokenExpire wsTokenExpire = new WsTokenExpire();
         wsTokenExpire.setUid(user.getId());
@@ -116,18 +106,18 @@ public class WSAdapter {
         return wsBaseResp;
     }
 
-    public static WSBaseResp<ChatMessageResp> buildMsgSend(ChatMessageResp msgResp) {
-        WSBaseResp<ChatMessageResp> wsBaseResp = new WSBaseResp<>();
+    public static WsBaseResp<ChatMessageResp> buildMsgSend(ChatMessageResp msgResp) {
+        WsBaseResp<ChatMessageResp> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.RECEIVE_MESSAGE.getType());
         wsBaseResp.setData(msgResp);
         return wsBaseResp;
     }
 
-    public static WSBaseResp<WSMsgMark> buildMsgMarkSend(ChatMessageMarkDTO dto, Integer markCount) {
+    public static WsBaseResp<WSMsgMark> buildMsgMarkSend(ChatMessageMarkDTO dto, Integer markCount) {
         WSMsgMark.WSMsgMarkItem item = new WSMsgMark.WSMsgMarkItem();
         BeanUtils.copyProperties(dto, item);
         item.setMarkCount(markCount);
-        WSBaseResp<WSMsgMark> wsBaseResp = new WSBaseResp<>();
+        WsBaseResp<WSMsgMark> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.MSG_MARK_ITEM.getType());
         WSMsgMark mark = new WSMsgMark();
         mark.setMarkList(Collections.singletonList(item));
@@ -135,10 +125,11 @@ public class WSAdapter {
         return wsBaseResp;
     }
 
-    public static WSBaseResp<WSFriendApply> buildApplySend(WSFriendApply resp) {
-        WSBaseResp<WSFriendApply> wsBaseResp = new WSBaseResp<>();
+    public static WsBaseResp<WSFriendApply> buildApplySend(WSFriendApply resp) {
+        WsBaseResp<WSFriendApply> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.REQUEST_NEW_FRIEND.getType());
         wsBaseResp.setData(resp);
         return wsBaseResp;
     }
+
 }

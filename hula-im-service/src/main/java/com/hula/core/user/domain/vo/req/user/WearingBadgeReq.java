@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.user;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WearingBadgeReq {
+public class WearingBadgeReq extends BaseEntity {
 
     @NotNull
     @Schema(description ="徽章id")

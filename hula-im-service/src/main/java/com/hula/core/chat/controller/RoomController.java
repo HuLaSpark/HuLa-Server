@@ -42,14 +42,14 @@ public class RoomController {
     @Resource
     private IGroupMemberService groupMemberService;
 
-    @GetMapping("/public/group")
+    @GetMapping("/group")
     @Operation(summary ="群组详情")
     public ApiResult<MemberResp> groupDetail(@Valid IdReqVO request) {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(roomService.getGroupDetail(uid, request.getId()));
     }
 
-    @GetMapping("/public/group/member/page")
+    @GetMapping("/group/member/page")
     @Operation(summary ="群成员列表")
     public ApiResult<CursorPageBaseResp<ChatMemberResp>> getMemberPage(@Valid MemberReq request) {
         return ApiResult.success(roomService.getMemberPage(request));

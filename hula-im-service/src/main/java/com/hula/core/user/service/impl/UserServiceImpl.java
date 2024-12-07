@@ -65,46 +65,47 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void modifyName(Long uid, ModifyNameReq req) {
-        //判断名字是不是重复
+        // 判断名字是不是重复
         String newName = req.getName();
         AssertUtil.isFalse(sensitiveWordBs.hasSensitiveWord(newName), "名字中包含敏感词，请重新输入"); // 判断名字中有没有敏感词
         User oldUser = userDao.getByName(newName);
         AssertUtil.isEmpty(oldUser, "名字已经被抢占了，请换一个哦~~");
-        //判断改名卡够不够
+        // 判断改名卡够不够
         UserBackpack firstValidItem = userBackpackDao.getFirstValidItem(uid, ItemEnum.MODIFY_NAME_CARD.getId());
         AssertUtil.isNotEmpty(firstValidItem, "改名次数不够了，等后续活动送改名卡哦");
-        //使用改名卡
+        // 使用改名卡
         boolean useSuccess = userBackpackDao.invalidItem(firstValidItem.getId());
-        if (useSuccess) {//用乐观锁，就不用分布式锁了
-            //改名
+        // 用乐观锁，就不用分布式锁了
+        if (useSuccess) {
+            // 改名
             userDao.modifyName(uid, req.getName());
-            //删除缓存
+            // 删除缓存
             userCache.userInfoChange(uid);
         }
     }
 
     @Override
     public List<BadgeResp> badges(Long uid) {
-        //查询所有徽章
+        // 查询所有徽章
         List<ItemConfig> itemConfigs = itemCache.getByType(ItemTypeEnum.BADGE.getType());
-        //查询用户拥有的徽章
+        // 查询用户拥有的徽章
         List<UserBackpack> backpacks = userBackpackDao.getByItemIds(uid, itemConfigs.stream().map(ItemConfig::getId).collect(Collectors.toList()));
-        //查询用户当前佩戴的标签
+        // 查询用户当前佩戴的标签
         User user = userDao.getById(uid);
         return UserAdapter.buildBadgeResp(itemConfigs, backpacks, user);
     }
 
     @Override
     public void wearingBadge(Long uid, WearingBadgeReq req) {
-        //确保有这个徽章
+        // 确保有这个徽章
         UserBackpack firstValidItem = userBackpackDao.getFirstValidItem(uid, req.getBadgeId());
         AssertUtil.isNotEmpty(firstValidItem, "您没有这个徽章哦，快去达成条件获取吧");
-        //确保物品类型是徽章
+        // 确保物品类型是徽章
         ItemConfig itemConfig = itemConfigDao.getById(firstValidItem.getItemId());
         AssertUtil.equal(itemConfig.getType(), ItemTypeEnum.BADGE.getType(), "该徽章不可佩戴");
-        //佩戴徽章
+        // 佩戴徽章
         userDao.wearingBadge(uid, req.getBadgeId());
-        //删除用户缓存
+        // 删除用户缓存
         userCache.userInfoChange(uid);
     }
 

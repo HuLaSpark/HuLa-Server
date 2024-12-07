@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.oss;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadUrlReq {
+public class UploadUrlReq extends BaseEntity {
     @ApiModelProperty(value = "文件名（带后缀）")
     @NotBlank
     private String fileName;

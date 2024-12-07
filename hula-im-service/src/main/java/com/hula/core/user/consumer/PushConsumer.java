@@ -1,6 +1,6 @@
 package com.hula.core.user.consumer;
 
-import com.hula.common.constant.MQConstant;
+import com.hula.common.constant.MqConstant;
 import com.hula.common.domain.dto.PushMessageDTO;
 import com.hula.core.user.domain.enums.WSPushTypeEnum;
 import com.hula.core.user.service.WebSocketService;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author nyh
  */
-@RocketMQMessageListener(topic = MQConstant.PUSH_TOPIC, consumerGroup = MQConstant.PUSH_GROUP, messageModel = MessageModel.BROADCASTING)
+@RocketMQMessageListener(topic = MqConstant.PUSH_TOPIC, consumerGroup = MqConstant.PUSH_GROUP, messageModel = MessageModel.BROADCASTING)
 @Component
 public class PushConsumer implements RocketMQListener<PushMessageDTO> {
     @Resource
@@ -26,11 +26,11 @@ public class PushConsumer implements RocketMQListener<PushMessageDTO> {
         switch (wsPushTypeEnum) {
             case WSPushTypeEnum.USER:
                 message.getUidList().forEach(uid -> {
-                    webSocketService.sendToUid(message.getWsBaseMsg(), uid);
+                    webSocketService.sendUser(message.getWsBaseMsg(), uid);
                 });
                 break;
             case WSPushTypeEnum.ALL:
-                webSocketService.sendToAllOnline(message.getWsBaseMsg(), message.getUid());
+                webSocketService.sendAll(message.getWsBaseMsg(), message.getUid());
                 break;
         }
     }

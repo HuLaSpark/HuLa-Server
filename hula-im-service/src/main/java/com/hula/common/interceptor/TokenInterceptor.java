@@ -35,7 +35,7 @@ public class TokenInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (isPublicURI(request)) {
+        if (isPublicUri(request)) {
             return true;
         }
         String token = getToken(request);
@@ -53,10 +53,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
     }
 
-    private boolean isPublicURI(HttpServletRequest request) {
-//        String requestURL = request.getRequestURI();
-//        String[] split = requestURL.split("/");
-//        return split.length > 3 && "public".equals(split[3]);
+    private boolean isPublicUri(HttpServletRequest request) {
         return Objects.nonNull(publicUrlProperties) && StringUtils.equalsAny(request.getRequestURI(), publicUrlProperties.getUrls());
     }
 

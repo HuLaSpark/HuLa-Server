@@ -41,7 +41,7 @@ public class ChatController {
         return userCache.getBlackMap().getOrDefault(BlackTypeEnum.UID.getType(), new HashSet<>());
     }
 
-    @GetMapping("/public/msg/page")
+    @GetMapping("/msg/page")
     @Operation(summary ="消息列表")
 //    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
     public ApiResult<CursorPageBaseResp<ChatMessageResp>> getMsgPage(@Valid ChatMessagePageReq request) {

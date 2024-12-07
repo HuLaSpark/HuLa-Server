@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.friend;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendResp {
+public class FriendResp extends BaseEntity {
 
     @Schema(description ="好友uid")
     private Long uid;

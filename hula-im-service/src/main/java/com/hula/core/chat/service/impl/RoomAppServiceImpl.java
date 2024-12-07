@@ -35,8 +35,8 @@ import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.enums.RoleEnum;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.RoleService;
@@ -204,7 +204,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         groupMemberDao.removeById(member.getId());
         // 发送移除事件告知群成员
         List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
-        WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
+        WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
         pushService.sendPushMsg(ws, memberUidList, uid);
         groupMemberCache.evictMemberUidList(room.getId());
     }
@@ -259,7 +259,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private boolean hasPower(GroupMember self) {
         return Objects.equals(self.getRole(), GroupRoleEnum.LEADER.getType())
                 || Objects.equals(self.getRole(), GroupRoleEnum.MANAGER.getType())
-                || roleService.hasPower(self.getUid(), RoleEnum.ADMIN);
+                || roleService.hasRole(self.getUid(), RoleTypeEnum.ADMIN);
     }
 
     private GroupRoleAPPEnum getGroupRole(Long uid, RoomGroup roomGroup, Room room) {
@@ -324,7 +324,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                     resp.setAvatar(roomBaseInfo.getAvatar());
                     resp.setRoomId(room.getRoomId());
                     resp.setActiveTime(room.getActiveTime());
-                    resp.setHot_Flag(roomBaseInfo.getHotFlag());
+                    resp.setHotFlag(roomBaseInfo.getHotFlag());
                     resp.setType(roomBaseInfo.getType());
                     resp.setName(roomBaseInfo.getName());
                     Message message = msgMap.get(room.getLastMsgId());

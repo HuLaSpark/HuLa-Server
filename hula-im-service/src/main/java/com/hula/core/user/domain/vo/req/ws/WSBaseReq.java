@@ -1,12 +1,13 @@
 package com.hula.core.user.domain.vo.req.ws;
 
+import com.hula.domain.BaseEntity;
 import lombok.Data;
 
 /**
  * @author nyh
  */
 @Data
-public class WSBaseReq {
+public class WSBaseReq extends BaseEntity {
     /**
      * 请求类型 1.请求登录二维码，2心跳检测
      */

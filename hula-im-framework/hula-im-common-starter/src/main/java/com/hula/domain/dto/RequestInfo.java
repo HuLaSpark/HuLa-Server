@@ -8,10 +8,12 @@ import lombok.Data;
  */
 @Data
 public class RequestInfo {
+
     /**
      * 链路id
      */
     private Long uid;
+
     /**
      * ip地址
      */

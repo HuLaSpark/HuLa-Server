@@ -51,7 +51,7 @@ public class UserCache {
         return RedisUtils.zCard(offlineKey);
     }
 
-    //移除用户
+    // 移除用户
     public void remove(Long uid) {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
         String offlineKey = RedisKey.getKey(RedisKey.OFFLINE_UID_ZET);
@@ -61,17 +61,21 @@ public class UserCache {
         RedisUtils.zRemove(onlineKey, uid);
     }
 
-    //用户上线
+    /**
+     * 用户上线
+     * @param uid 用户id
+     * @param optTime 操作时间
+     */
     public void online(Long uid, Date optTime) {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
         String offlineKey = RedisKey.getKey(RedisKey.OFFLINE_UID_ZET);
-        //移除离线表
+        // 移除离线表
         RedisUtils.zRemove(offlineKey, uid);
-        //更新上线表
+        // 更新上线表
         RedisUtils.zAdd(onlineKey, uid, optTime.getTime());
     }
 
-    //获取用户上线列表
+    // 获取用户上线列表
     public List<Long> getOnlineUidList() {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
         Set<String> strings = RedisUtils.zAll(onlineKey);

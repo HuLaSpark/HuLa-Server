@@ -5,7 +5,7 @@ import com.hula.core.user.dao.UserApplyDao;
 import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.vo.resp.ws.WSFriendApply;
 import com.hula.core.user.service.WebSocketService;
-import com.hula.core.user.service.adapter.WSAdapter;
+import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class UserApplyListener {
     public void notifyFriend(UserApplyEvent event) {
         UserApply userApply = event.getUserApply();
         Integer unReadCount = userApplyDao.getUnReadCount(userApply.getTargetId());
-        pushService.sendPushMsg(WSAdapter.buildApplySend(new WSFriendApply(userApply.getUid(), unReadCount)), userApply.getTargetId());
+        pushService.sendPushMsg(WsAdapter.buildApplySend(new WSFriendApply(userApply.getUid(), unReadCount)), userApply.getTargetId());
     }
 
 }
