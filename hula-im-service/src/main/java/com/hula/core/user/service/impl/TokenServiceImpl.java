@@ -75,7 +75,7 @@ public class TokenServiceImpl implements TokenService {
         if (StrUtil.isNotBlank(token)) {
             // 旧token删除
             RedisUtils.del(key);
-            User user = User.builder().id(RequestHolder.get().getUid()).build();
+            User user = User.builder().id(uid).build();
             user.refreshIp(RequestHolder.get().getIp());
             // 旧设备下线
             applicationEventPublisher.publishEvent(new TokenExpireEvent(this, user));
@@ -87,9 +87,8 @@ public class TokenServiceImpl implements TokenService {
         return token;
     }
 
-    @Async(HULA_EXECUTOR)
     @Override
-    public void refreshToken() {
+    public void refreshToken(User user) {
         RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
                         JwtUtils.getLoginType(RequestHolder.get().getToken()),
                         RequestHolder.get().getUid()),
@@ -97,7 +96,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void offline() {
+    public void offline(User user) {
         // 下线
         applicationEventPublisher.publishEvent(new UserOfflineEvent(this,
                 User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateTime.now()).build()));

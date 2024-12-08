@@ -1,6 +1,7 @@
 package com.hula.core.user.service;
 
 import com.hula.common.enums.LoginTypeEnum;
+import com.hula.core.user.domain.entity.User;
 
 /**
  * @author nyh
@@ -26,12 +27,16 @@ public interface TokenService {
 
     /**
      * 延长token有效期
+     *
+     * @param user 用户信息
      */
-    void refreshToken();
+    void refreshToken(User user);
 
 
     /**
      * 下线
+     *
+     * @param user 用户信息
      */
-    void offline();
+    void offline(User user);
 }

@@ -17,6 +17,7 @@ import java.lang.reflect.ParameterizedType;
 public abstract class AbstractMsgHandler<T> {
     @Resource
     private MessageDao messageDao;
+
     private Class<T> bodyClass;
 
     @PostConstruct
@@ -42,12 +43,12 @@ public abstract class AbstractMsgHandler<T> {
         AssertUtil.allCheckValidateThrow(body);
         // 子类扩展校验
         checkMsg(body, request.getRoomId(), uid);
-        Message insert = MessageAdapter.buildMsgSave(request, uid);
+        Message newMsg = MessageAdapter.buildMsgSave(request, uid);
         // 统一保存
-        messageDao.save(insert);
+        messageDao.save(newMsg);
         // 子类扩展保存
-        saveMsg(insert, body);
-        return insert.getId();
+        saveMsg(newMsg, body);
+        return newMsg.getId();
     }
 
     private T toBean(Object body) {

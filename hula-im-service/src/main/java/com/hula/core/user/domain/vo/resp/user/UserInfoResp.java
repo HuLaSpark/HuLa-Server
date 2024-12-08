@@ -11,7 +11,7 @@ import lombok.Data;
 public class UserInfoResp extends BaseEntity {
 
     @Schema(description = "用户id")
-    private Long id;
+    private Long uid;
 
     @Schema(description = "用户账号")
     private String account;

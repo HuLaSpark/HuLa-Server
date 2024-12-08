@@ -34,7 +34,7 @@ public class TokenExpireListener {
     @TransactionalEventListener(classes = TokenExpireEvent.class, fallbackExecution = true)
     public void forceOffline(TokenExpireEvent event) {
         User user = event.getUser();
-        pushService.sendPushMsg(WsAdapter.buildInvalidateTokenResp(user), user.getId());
+        pushService.sendPushMsg(WsAdapter.buildInvalidateTokenResp(user), user.getId(), user.getId());
     }
 
 }

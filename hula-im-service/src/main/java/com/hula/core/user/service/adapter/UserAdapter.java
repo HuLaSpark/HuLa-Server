@@ -44,6 +44,7 @@ public class UserAdapter {
     public static UserInfoResp buildUserInfoResp(User userInfo, Integer countByValidItemId) {
         UserInfoResp userInfoResp = new UserInfoResp();
         BeanUtil.copyProperties(userInfo, userInfoResp);
+        userInfoResp.setUid(userInfo.getId());
         userInfoResp.setModifyNameChance(countByValidItemId);
         return userInfoResp;
     }

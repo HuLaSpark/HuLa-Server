@@ -74,7 +74,7 @@ public class TokenController {
     @Operation(summary ="用户token验证")
     public ApiResult<Boolean> check() {
         // 延长token时间
-        tokenService.refreshToken();
+        tokenService.refreshToken(User.builder().build());
         return ApiResult.success(Boolean.TRUE);
     }
 
@@ -82,7 +82,7 @@ public class TokenController {
     @Operation(summary ="下线")
     public ApiResult<Boolean> offline() {
         // 下线
-        tokenService.offline();
+        tokenService.offline(User.builder().build());
         return ApiResult.success(Boolean.TRUE);
     }
 

@@ -2,12 +2,13 @@ package com.hula.common.event.listener;
 
 import com.hula.common.event.UserBlackEvent;
 import com.hula.core.chat.dao.MessageDao;
-import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.WSBlack;
 import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.cache.UserCache;
-import jakarta.annotation.Resource;
+import com.hula.core.user.service.impl.PushService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -22,14 +23,13 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class UserBlackListener {
 
-    @Resource
-    private MessageDao messageDao;
-    @Resource
-    private WebSocketService webSocketService;
-    @Resource
-    private UserCache userCache;
+    private final MessageDao messageDao;
+    private final WebSocketService webSocketService;
+    private final UserCache userCache;
+    private final PushService pushService;
 
     @Async(HULA_EXECUTOR)
     @EventListener(classes = UserBlackEvent.class)
@@ -52,6 +52,7 @@ public class UserBlackListener {
         WSBlack black = new WSBlack(uid);
         resp.setData(black);
         resp.setType(WSRespTypeEnum.INVALID_USER.getType());
-        webSocketService.sendAll(resp, uid);
+        pushService.sendPushMsg(resp, uid);
+        //webSocketService.sendAll(resp, uid);
     }
 }
