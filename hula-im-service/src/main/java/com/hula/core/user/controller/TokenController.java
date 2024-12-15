@@ -54,7 +54,7 @@ public class TokenController {
     }
 
     @PostMapping("/logout")
-    @Operation(summary ="用户登录")
+    @Operation(summary ="用户登出")
     public ApiResult<Boolean> logout() {
         loginService.logout();
         return ApiResult.success(Boolean.TRUE);
@@ -64,6 +64,7 @@ public class TokenController {
     @Operation(summary ="用户注册")
     public ApiResult<String> register(@Valid @RequestBody RegisterReq registerReq) {
         loginService.normalRegister(User.builder()
+                        .avatar(registerReq.getAccount())
                 .account(registerReq.getAccount())
                 .password(registerReq.getPassword())
                 .name(registerReq.getName()).build());

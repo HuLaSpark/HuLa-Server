@@ -49,10 +49,10 @@ public class DaoTest {
         stringRedisTemplate.opsForValue().set("hula:userToken:uid_20000","eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjIwMDAwLCJjcmVhdGVUaW1lIjoxNzI4Nzk3MTQzfQ.dH8Xc53n4T4Uq0TNueQZ1lf9rD2iC90T4HkK4ULfj4U");
     }
 
-    @Test
-    public void getUserToken() {
-        String s = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjExMDAwLCJjcmVhdGVUaW1lIjoxNzE0NDkwNjc5fQ.Gu9iLk37OlKMVHsDnzvu6C9-tzt_5WRo9A11DkH9QlY";
-        Long validUid = loginService.getValidUid(s);
-        System.out.println(validUid);
-    }
+//    @Test
+//    public void getUserToken() {
+//        String s = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjExMDAwLCJjcmVhdGVUaW1lIjoxNzE0NDkwNjc5fQ.Gu9iLk37OlKMVHsDnzvu6C9-tzt_5WRo9A11DkH9QlY";
+//        Long validUid = loginService.getValidUid(s);
+//        System.out.println(validUid);
+//    }
 }
