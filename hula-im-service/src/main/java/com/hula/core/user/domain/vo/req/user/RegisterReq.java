@@ -18,7 +18,7 @@ public class RegisterReq extends BaseEntity {
     private String name;
 
     /**
-     * 用户昵称
+     * 用户头像
      */
     @NotNull
     @Pattern(regexp = "00[1-9]|01[0-9]|021", message = "默认头像只能是001到021之间的字符串")
