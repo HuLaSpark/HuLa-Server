@@ -64,7 +64,7 @@ public class TokenController {
     @Operation(summary ="用户注册")
     public ApiResult<String> register(@Valid @RequestBody RegisterReq registerReq) {
         loginService.normalRegister(User.builder()
-                        .avatar(registerReq.getAccount())
+                .avatar(registerReq.getAvatar())
                 .account(registerReq.getAccount())
                 .password(registerReq.getPassword())
                 .name(registerReq.getName()).build());

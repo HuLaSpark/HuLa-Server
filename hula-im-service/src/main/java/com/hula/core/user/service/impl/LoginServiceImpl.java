@@ -73,6 +73,7 @@ public class LoginServiceImpl implements LoginService {
         AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
                     .eq(User::getAccount, user.getAccount())) <= 0, "账号已注册");
         final User newUser = User.builder()
+                .avatar(user.getAvatar())
                 .account(user.getAccount())
                 .password(user.getPassword())
                 .name(user.getName())
