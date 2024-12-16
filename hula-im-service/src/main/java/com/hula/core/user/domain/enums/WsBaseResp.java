@@ -7,12 +7,12 @@ import lombok.Data;
  * @author nyh
  */
 @Data
-public class WSBaseResp<T> {
+public class WsBaseResp<T> {
     /**
      * ws推送给前端的消息
      *
      * @see WSRespTypeEnum
      */
-    private Integer type;
+    private String type;
     private T data;
 }

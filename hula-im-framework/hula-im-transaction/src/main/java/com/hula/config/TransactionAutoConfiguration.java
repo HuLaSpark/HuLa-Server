@@ -62,7 +62,7 @@ public class TransactionAutoConfiguration {
     }
 
     @Bean
-    public MQProducer getMQProducer() {
+    public MQProducer getMqProducer() {
         return new MQProducer();
     }
 }

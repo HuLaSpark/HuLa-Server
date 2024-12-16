@@ -51,7 +51,7 @@ public class UserCache {
         return RedisUtils.zCard(offlineKey);
     }
 
-    //移除用户
+    // 移除用户
     public void remove(Long uid) {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
         String offlineKey = RedisKey.getKey(RedisKey.OFFLINE_UID_ZET);
@@ -61,17 +61,21 @@ public class UserCache {
         RedisUtils.zRemove(onlineKey, uid);
     }
 
-    //用户上线
+    /**
+     * 用户上线
+     * @param uid 用户id
+     * @param optTime 操作时间
+     */
     public void online(Long uid, Date optTime) {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
         String offlineKey = RedisKey.getKey(RedisKey.OFFLINE_UID_ZET);
-        //移除离线表
+        // 移除离线表
         RedisUtils.zRemove(offlineKey, uid);
-        //更新上线表
+        // 更新上线表
         RedisUtils.zAdd(onlineKey, uid, optTime.getTime());
     }
 
-    //获取用户上线列表
+    // 获取用户上线列表
     public List<Long> getOnlineUidList() {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
         Set<String> strings = RedisUtils.zAll(onlineKey);
@@ -102,12 +106,12 @@ public class UserCache {
     }
 
     public List<Long> getUserModifyTime(List<Long> uidList) {
-        List<String> keys = uidList.stream().map(uid -> RedisKey.getKey(RedisKey.USER_MODIFY_STRING, uid)).collect(Collectors.toList());
+        List<String> keys = uidList.stream().map(uid -> RedisKey.getKey(RedisKey.USER_MODIFY_FORMAT, uid)).collect(Collectors.toList());
         return RedisUtils.multiGet(keys, Long.class);
     }
 
     public void refreshUserModifyTime(Long uid) {
-        String key = RedisKey.getKey(RedisKey.USER_MODIFY_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_MODIFY_FORMAT, uid);
         RedisUtils.set(key, new Date().getTime());
     }
 
@@ -123,7 +127,7 @@ public class UserCache {
      */
     public Map<Long, User> getUserInfoBatch(Set<Long> uids) {
         //批量组装key
-        List<String> keys = uids.stream().map(a -> RedisKey.getKey(RedisKey.USER_INFO_STRING, a)).collect(Collectors.toList());
+        List<String> keys = uids.stream().map(a -> RedisKey.getKey(RedisKey.USER_INFO_FORMAT, a)).collect(Collectors.toList());
         //批量get
         List<User> mget = RedisUtils.multiGet(keys, User.class);
         Map<Long, User> map = mget.stream().filter(Objects::nonNull).collect(Collectors.toMap(User::getId, Function.identity()));
@@ -132,7 +136,7 @@ public class UserCache {
         if (CollUtil.isNotEmpty(needLoadUidList)) {
             //批量load
             List<User> needLoadUserList = userDao.listByIds(needLoadUidList);
-            Map<String, User> redisMap = needLoadUserList.stream().collect(Collectors.toMap(a -> RedisKey.getKey(RedisKey.USER_INFO_STRING, a.getId()), Function.identity()));
+            Map<String, User> redisMap = needLoadUserList.stream().collect(Collectors.toMap(a -> RedisKey.getKey(RedisKey.USER_INFO_FORMAT, a.getId()), Function.identity()));
             RedisUtils.multiSet(redisMap, 5 * 60);
             //加载回redis
             map.putAll(needLoadUserList.stream().collect(Collectors.toMap(User::getId, Function.identity())));
@@ -148,7 +152,7 @@ public class UserCache {
     }
 
     public void delUserInfo(Long uid) {
-        String key = RedisKey.getKey(RedisKey.USER_INFO_STRING, uid);
+        String key = RedisKey.getKey(RedisKey.USER_INFO_FORMAT, uid);
         RedisUtils.del(key);
     }
 

@@ -52,7 +52,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
             if (StrUtil.isBlank(ip)) {
                 return;
             }
-            IpDetail ipDetail = TryGetIpDetailOrNullTreeTimes(ip);
+            IpDetail ipDetail = tryGetIpDetailOrNullTreeTimes(ip);
             if (Objects.nonNull(ipDetail)) {
                 ipInfo.refreshIpDetail(ipDetail);
                 User update = new User();
@@ -66,7 +66,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
         });
     }
 
-    private static IpDetail TryGetIpDetailOrNullTreeTimes(String ip) {
+    private static IpDetail tryGetIpDetailOrNullTreeTimes(String ip) {
         for (int i = 0; i < 3; i++) {
             IpDetail ipDetail = getIpDetailOrNull(ip);
             if (Objects.nonNull(ipDetail)) {
@@ -75,7 +75,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("get ip detail fail ip:{},uid:{}", ip, i);
             }
         }
         return null;
@@ -98,7 +98,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
         for (int i = 0; i < 100; i++) {
             int finalI = i;
             EXECUTOR.execute(() -> {
-                IpDetail ipDetail = TryGetIpDetailOrNullTreeTimes("113.90.36.126");
+                IpDetail ipDetail = tryGetIpDetailOrNullTreeTimes("113.90.36.126");
                 if (Objects.nonNull(ipDetail)) {
                     Date date = new Date();
                     System.out.println(String.format("第%d次成功,目前耗时：%dms", finalI, (date.getTime() - begin.getTime())));

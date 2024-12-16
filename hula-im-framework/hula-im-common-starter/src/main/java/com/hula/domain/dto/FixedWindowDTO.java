@@ -14,4 +14,5 @@ public class FixedWindowDTO extends FrequencyControlDTO {
      *  时间范围
      */
     private Integer time;
+
 }

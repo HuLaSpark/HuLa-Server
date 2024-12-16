@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Lists;
 import com.hula.common.annotation.RedissonLock;
@@ -9,7 +10,6 @@ import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.UserApplyEvent;
-import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.RoomFriendDao;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.service.ChatService;
@@ -31,9 +31,9 @@ import com.hula.core.user.domain.vo.resp.friend.FriendResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendUnreadResp;
 import com.hula.core.user.service.FriendService;
 import com.hula.core.user.service.adapter.FriendAdapter;
+import com.hula.utils.AssertUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,23 +97,23 @@ public class FriendServiceImpl implements FriendService {
         //是否有好友关系
         UserFriend friend = userFriendDao.getByFriend(uid, request.getTargetUid());
         AssertUtil.isEmpty(friend, "你们已经是好友了");
-        //是否有待审批的申请记录(自己的)
+        // 是否有待审批的申请记录(自己的)
         UserApply selfApproving = userApplyDao.getFriendApproving(uid, request.getTargetUid());
         if (Objects.nonNull(selfApproving)) {
             log.info("已有好友申请记录,uid:{}, targetId:{}", uid, request.getTargetUid());
             return;
         }
-        //是否有待审批的申请记录(别人请求自己的)
+        // 是否有待审批的申请记录(别人请求自己的)
         UserApply friendApproving = userApplyDao.getFriendApproving(request.getTargetUid(), uid);
         if (Objects.nonNull(friendApproving)) {
-            ((FriendService) AopContext.currentProxy()).applyApprove(uid, new FriendApproveReq(friendApproving.getId()));
+            SpringUtil.getBean(this.getClass()).applyApprove(uid, new FriendApproveReq(friendApproving.getId()));
             return;
         }
-        //申请入库
-        UserApply insert = FriendAdapter.buildFriendApply(uid, request);
-        userApplyDao.save(insert);
-        //申请事件
-        applicationEventPublisher.publishEvent(new UserApplyEvent(this, insert));
+        // 申请入库
+        UserApply newApply = FriendAdapter.buildFriendApply(uid, request);
+        userApplyDao.save(newApply);
+        // 申请事件
+        applicationEventPublisher.publishEvent(new UserApplyEvent(this, newApply));
     }
 
     /**
@@ -128,9 +128,9 @@ public class FriendServiceImpl implements FriendService {
         if (CollectionUtil.isEmpty(userApplyIPage.getRecords())) {
             return PageBaseResp.empty();
         }
-        //将这些申请列表设为已读
+        // 将这些申请列表设为已读
         readApples(uid, userApplyIPage);
-        //返回消息
+        // 返回消息
         return PageBaseResp.init(userApplyIPage, FriendAdapter.buildFriendApplyList(userApplyIPage.getRecords()));
     }
 
@@ -160,13 +160,13 @@ public class FriendServiceImpl implements FriendService {
         AssertUtil.isNotEmpty(userApply, "不存在申请记录");
         AssertUtil.equal(userApply.getTargetId(), uid, "不存在申请记录");
         AssertUtil.equal(userApply.getStatus(), WAIT_APPROVAL.getCode(), "已同意好友申请");
-        //同意申请
+        // 同意申请
         userApplyDao.agree(request.getApplyId());
         //创建双方好友关系
         createFriend(uid, userApply.getUid());
-        //创建一个聊天房间
+        // 创建一个聊天房间
         RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));
-        //发送一条同意消息。。我们已经是好友了，开始聊天吧
+        // 发送一条同意消息。。我们已经是好友了，开始聊天吧
         chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId()), uid);
     }
 
@@ -186,7 +186,7 @@ public class FriendServiceImpl implements FriendService {
         }
         List<Long> friendRecordIds = userFriends.stream().map(UserFriend::getId).collect(Collectors.toList());
         userFriendDao.removeByIds(friendRecordIds);
-        //禁用房间
+        // 禁用房间
         roomService.disableFriendRoom(Arrays.asList(uid, friendUid));
     }
 

@@ -3,7 +3,7 @@ package com.hula.common.constant;
 /**
  * @author nyh
  */
-public interface MQConstant {
+public interface MqConstant {
 
     /**
      * 消息发送mq

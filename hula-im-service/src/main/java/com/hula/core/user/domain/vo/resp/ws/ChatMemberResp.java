@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.ws;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMemberResp {
+public class ChatMemberResp extends BaseEntity {
 
     @Schema(description = "uid")
     private Long uid;

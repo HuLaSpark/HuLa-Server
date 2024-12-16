@@ -42,14 +42,14 @@ public class RoomController {
     @Resource
     private IGroupMemberService groupMemberService;
 
-    @GetMapping("/public/group")
+    @GetMapping("/group")
     @Operation(summary ="群组详情")
     public ApiResult<MemberResp> groupDetail(@Valid IdReqVO request) {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(roomService.getGroupDetail(uid, request.getId()));
     }
 
-    @GetMapping("/public/group/member/page")
+    @GetMapping("/group/member/page")
     @Operation(summary ="群成员列表")
     public ApiResult<CursorPageBaseResp<ChatMemberResp>> getMemberPage(@Valid MemberReq request) {
         return ApiResult.success(roomService.getMemberPage(request));
@@ -58,7 +58,8 @@ public class RoomController {
     @GetMapping("/group/member/list")
     @Operation(summary ="房间内的所有群成员列表-@专用")
     public ApiResult<List<ChatMemberListResp>> getMemberList(@Valid ChatMessageMemberReq request) {
-        return ApiResult.success(roomService.getMemberList(request));
+        List<ChatMemberListResp> memberList = roomService.getMemberList(request);
+        return ApiResult.success(memberList);
     }
 
     @DeleteMapping("/group/member")
@@ -82,7 +83,7 @@ public class RoomController {
     public ApiResult<IdRespVO> addGroup(@Valid @RequestBody GroupAddReq request) {
         Long uid = RequestHolder.get().getUid();
         Long roomId = roomService.addGroup(uid, request);
-        return ApiResult.success(IdRespVO.id(roomId));
+        return ApiResult.success(IdRespVO.builder().id(roomId).build());
     }
 
     @PostMapping("/group/member")

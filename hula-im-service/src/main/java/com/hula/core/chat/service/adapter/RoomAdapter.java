@@ -50,21 +50,16 @@ public class RoomAdapter {
                     member.setUid(uid);
                     member.setGroupId(groupId);
                     return member;
-                }).collect(Collectors.toList());
+                }).toList();
     }
 
     public static ChatMessageReq buildGroupAddMessage(RoomGroup groupRoom, User inviter, Map<Long, User> member) {
         ChatMessageReq chatMessageReq = new ChatMessageReq();
         chatMessageReq.setRoomId(groupRoom.getRoomId());
         chatMessageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
-        StringBuilder sb = new StringBuilder();
-        sb.append("\"")
-                .append(inviter.getName())
-                .append("\"")
-                .append("邀请")
-                .append(member.values().stream().map(u -> "\"" + u.getName() + "\"").collect(Collectors.joining(",")))
-                .append("加入群聊");
-        chatMessageReq.setBody(sb.toString());
+        String body = String.format("%s邀请%s加入群聊", inviter.getName(),
+                member.values().stream().map(User::getName).collect(Collectors.joining("、")));
+        chatMessageReq.setBody(body);
         return chatMessageReq;
     }
 }

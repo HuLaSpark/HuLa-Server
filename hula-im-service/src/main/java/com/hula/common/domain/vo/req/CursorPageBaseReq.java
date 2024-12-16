@@ -2,6 +2,7 @@ package com.hula.common.domain.vo.req;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 @Schema(description = "游标翻页请求")
 @AllArgsConstructor
 @NoArgsConstructor
-public class CursorPageBaseReq {
+public class CursorPageBaseReq  extends BaseEntity {
 
     @Schema(description = "页面大小")
     @Min(0)

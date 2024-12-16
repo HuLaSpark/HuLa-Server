@@ -1,6 +1,6 @@
 package com.hula.common.event.listener;
 
-import com.hula.common.constant.MQConstant;
+import com.hula.common.constant.MqConstant;
 import com.hula.common.domain.dto.MsgSendMessageDTO;
 import com.hula.common.event.MessageSendEvent;
 import com.hula.core.chat.dao.ContactDao;
@@ -68,7 +68,7 @@ public class MessageSendListener {
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT, classes = MessageSendEvent.class, fallbackExecution = true)
     public void messageRoute(MessageSendEvent event) {
         Long msgId = event.getChatMsgSendDto().getMsgId();
-        mqProducer.sendSecureMsg(MQConstant.SEND_MSG_TOPIC, new MsgSendMessageDTO(msgId, event.getChatMsgSendDto().getUid()), msgId);
+        mqProducer.sendSecureMsg(MqConstant.SEND_MSG_TOPIC, new MsgSendMessageDTO(msgId, event.getChatMsgSendDto().getUid()), msgId);
     }
 
     @TransactionalEventListener(classes = MessageSendEvent.class, fallbackExecution = true)
@@ -91,9 +91,9 @@ public class MessageSendListener {
     @TransactionalEventListener(classes = MessageSendEvent.class, fallbackExecution = true)
     public void publishChatToWechat(@NotNull MessageSendEvent event) {
         Message message = messageDao.getById(event.getChatMsgSendDto().getMsgId());
-        if (Objects.nonNull(message.getExtra().getAtUidList())) {
-            weChatMsgOperationService.publishChatMsgToWeChatUser(message.getFromUid(), message.getExtra().getAtUidList(),
-                    message.getContent());
-        }
+//        if (Objects.nonNull(message.getExtra().getAtUidList())) {
+//            weChatMsgOperationService.publishChatMsgToWeChatUser(message.getFromUid(), message.getExtra().getAtUidList(),
+//                    message.getContent());
+//        }
     }
 }

@@ -5,8 +5,11 @@ package com.hula.common.constant;
  * @author nyh
  */
 public class RedisKey {
-    private static final String BASE_KEY = "hula:";
 
+    /**
+     * 应用缓存
+     */
+    private static final String BASE_KEY = "hula:";
 
     /**
      * 在线用户列表
@@ -26,32 +29,32 @@ public class RedisKey {
     /**
      * 用户信息
      */
-    public static final String USER_INFO_STRING = "userInfo:uid_%d";
+    public static final String USER_INFO_FORMAT = "userInfo:uid_%d";
 
     /**
      * 房间详情
      */
-    public static final String ROOM_INFO_STRING = "roomInfo:roomId_%d";
+    public static final String ROOM_INFO_FORMAT = "roomInfo:roomId_%d";
 
     /**
      * 群组详情
      */
-    public static final String GROUP_INFO_STRING = "groupInfo:roomId_%d";
+    public static final String GROUP_INFO_FORMAT = "groupInfo:roomId_%d";
 
     /**
      * 用户token存放
      */
-    public static final String USER_TOKEN_STRING = "userToken:%s:uid_%d";
+    public static final String USER_TOKEN_FORMAT = "userToken:%s:uid_%d";
 
     /**
      * 用户的信息更新时间
      */
-    public static final String USER_MODIFY_STRING = "userModify:uid_%d";
+    public static final String USER_MODIFY_FORMAT = "userModify:uid_%d";
 
     /**
      * 用户的信息汇总
      */
-    public static final String USER_SUMMARY_STRING = "userSummary:uid_%d";
+    public static final String USER_SUMMARY_FORMAT = "userSummary:uid_%d";
 
     /**
      * 用户GPT聊天次数
@@ -63,7 +66,7 @@ public class RedisKey {
     /**
      * 保存Open id
      */
-    public static final String OPEN_ID_STRING = "openid:%s";
+    public static final String OPEN_ID_FORMAT = "openid:%s";
 
 
     /**

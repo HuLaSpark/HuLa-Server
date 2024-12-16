@@ -6,11 +6,12 @@ import lombok.Data;
 
 /**
  * 通用返回体
+ * @author nyh
  */
 @Data
 @Schema(description ="基础返回体")
 public class ApiResult<T> {
-    @Schema(description ="成功标识true or false")
+    @Schema(description ="成功标识。true/false")
     private Boolean success;
     @Schema(description ="错误码")
     private Integer errCode;
@@ -42,7 +43,7 @@ public class ApiResult<T> {
     }
 
     public static <T> ApiResult<T> fail(ErrorEnum errorEnum) {
-        ApiResult<T> result = new ApiResult<T>();
+        ApiResult<T> result = new ApiResult<>();
         result.setSuccess(Boolean.FALSE);
         result.setErrCode(errorEnum.getErrorCode());
         result.setErrMsg(errorEnum.getErrorMsg());

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * @author nyh
  */
 public class UserAdapter {
+
     public static User buildUser(String openId) {
         User user = new User();
         user.setOpenId(openId);
@@ -43,6 +44,7 @@ public class UserAdapter {
     public static UserInfoResp buildUserInfoResp(User userInfo, Integer countByValidItemId) {
         UserInfoResp userInfoResp = new UserInfoResp();
         BeanUtil.copyProperties(userInfo, userInfoResp);
+        userInfoResp.setUid(userInfo.getId());
         userInfoResp.setModifyNameChance(countByValidItemId);
         return userInfoResp;
     }
@@ -64,4 +66,5 @@ public class UserAdapter {
                         .thenComparing(BadgeResp::getObtain, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
+
 }

@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.req.user;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ import jakarta.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModifyNameReq {
+public class ModifyNameReq extends BaseEntity {
 
     @NotNull
     @Length(max = 8, message = "用户名可别取太长，不然我记不住噢")

@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.friend;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendCheckResp {
+public class FriendCheckResp extends BaseEntity {
 
     @Schema(description ="校验结果")
     private List<FriendCheck> checkedList;

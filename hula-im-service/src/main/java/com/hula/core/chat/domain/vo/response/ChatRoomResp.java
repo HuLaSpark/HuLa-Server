@@ -22,7 +22,7 @@ public class ChatRoomResp {
     @Schema(description ="房间类型 1群聊 2单聊")
     private Integer type;
     @Schema(description ="是否全员展示的会话 0否 1是")
-    private Integer hot_Flag;
+    private Integer hotFlag;
     @Schema(description ="最新消息")
     private String text;
     @Schema(description ="会话名称")

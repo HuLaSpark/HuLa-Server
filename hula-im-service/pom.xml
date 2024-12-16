@@ -63,6 +63,8 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <!-- 处理@Cacheable不能直接使用对象参数名进行属性调用bug -->
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
             <plugin>

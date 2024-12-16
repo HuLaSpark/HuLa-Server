@@ -15,21 +15,23 @@ import java.util.stream.Collectors;
  */
 @AllArgsConstructor
 @Getter
-public enum RoleEnum {
+public enum RoleTypeEnum {
+
     ADMIN(1L, "超级管理员"),
     CHAT_MANAGER(2L, "HuLa群聊管理"),
     ;
 
     private final Long id;
+
     private final String desc;
 
-    private static Map<Long, RoleEnum> cache;
+    private final static Map<Long, RoleTypeEnum> CACHE;
 
     static {
-        cache = Arrays.stream(RoleEnum.values()).collect(Collectors.toMap(RoleEnum::getId, Function.identity()));
+        CACHE = Arrays.stream(RoleTypeEnum.values()).collect(Collectors.toMap(RoleTypeEnum::getId, Function.identity()));
     }
 
-    public static RoleEnum of(Long type) {
-        return cache.get(type);
+    public static RoleTypeEnum of(Long type) {
+        return CACHE.get(type);
     }
 }

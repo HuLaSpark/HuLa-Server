@@ -17,7 +17,7 @@ import com.hula.core.chat.service.adapter.MessageAdapter;
 import com.hula.core.chat.service.cache.MsgCache;
 import com.hula.core.chat.service.cache.MsgPlusCache;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.enums.RoleEnum;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
@@ -68,9 +68,8 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
             //如果@用户不存在，userInfoCache 返回的map中依然存在该key，但是value为null，需要过滤掉再校验
             long batchCount = batch.values().stream().filter(Objects::nonNull).count();
             AssertUtil.equal((long)atUidList.size(), batchCount, "@用户不存在");
-            boolean atAll = body.getAtUidList().contains(0L);
-            if (atAll) {
-                AssertUtil.isTrue(roleService.hasPower(uid, RoleEnum.CHAT_MANAGER), "没有权限");
+            if (body.getAtUidList().contains(0L)) {
+                AssertUtil.isTrue(roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER), "没有权限");
             }
         }
     }

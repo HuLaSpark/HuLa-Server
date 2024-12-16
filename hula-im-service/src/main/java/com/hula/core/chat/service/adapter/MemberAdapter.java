@@ -5,7 +5,7 @@ import com.hula.core.chat.domain.enums.GroupRoleEnum;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.entity.UserFriend;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
@@ -83,9 +83,9 @@ public class MemberAdapter {
         }).collect(Collectors.toList());
     }
 
-    public static WSBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, User user) {
-        WSBaseResp<WSMemberChange> wsBaseResp = new WSBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.MEMBER_CHANGE.getType());
+    public static WsBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, User user) {
+        WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
+        wsBaseResp.setType(WSRespTypeEnum.NEW_FRIEND_SESSION.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
         wsMemberChange.setActiveStatus(user.getActiveStatus());
         wsMemberChange.setLastOptTime(user.getLastOptTime());
@@ -96,9 +96,9 @@ public class MemberAdapter {
         return wsBaseResp;
     }
 
-    public static WSBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, Long uid) {
-        WSBaseResp<WSMemberChange> wsBaseResp = new WSBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.MEMBER_CHANGE.getType());
+    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, Long uid) {
+        WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
+        wsBaseResp.setType(WSRespTypeEnum.NEW_FRIEND_SESSION.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
         wsMemberChange.setUid(uid);
         wsMemberChange.setRoomId(roomId);

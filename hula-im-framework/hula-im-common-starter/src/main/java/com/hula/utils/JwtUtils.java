@@ -46,7 +46,8 @@ public class JwtUtils {
                 .withClaim(UID_CLAIM, uid)
                 .withClaim(LOGIN_TYPE_CLAIM, loginType)
                 .withClaim(CREATE_TIME, new Date())
-                .withExpiresAt(DateUtil.addDays(new Date(), 7))
+                // 过期时间
+                //.withExpiresAt(DateUtil.addDays(new Date(), 7))
                 // signature
                 .sign(Algorithm.HMAC256(SpringUtil.getProperty(SECRET_KEY)));
     }
@@ -100,16 +101,23 @@ public class JwtUtils {
 
 
     public static void main(String[] args) {
-        String dsfsdfsdfsdfsd = JWT.create()
-                // 只存一个uid信息，其他的自己去redis查
-                .withClaim(UID_CLAIM, 20000)
-                .withClaim(CREATE_TIME, new Date())
-                // signature
-                .sign(Algorithm.HMAC256("dsfsdfsdfsdfsd"));
-        System.out.println("dsfsdfsdfsdfsd = " + JsonUtils.toStr(dsfsdfsdfsdfsd));
-
-        String obj = JsonUtils.toObj(JsonUtils.toStr(dsfsdfsdfsdfsd), String.class);
-        System.out.println("obj = " + obj);
+        try {
+            String token = JWT.create()
+                    // 只存一个uid信息，其他的自己去redis查
+                    .withClaim(UID_CLAIM, 20000)
+                    .withClaim(CREATE_TIME, new Date())
+                    .withExpiresAt(DateUtil.addMilliseconds(new Date(), 1))
+                    // signature
+                    .sign(Algorithm.HMAC256("dsfsdfsdfsdfsd"));
+            Thread.sleep(2000);
+            System.out.println("dsfsdfsdfsdfsd = " + JsonUtils.toStr(token));
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("dsfsdfsdfsdfsd")).build();
+            DecodedJWT jwt = verifier.verify(token);
+            String obj = JsonUtils.toObj(JsonUtils.toStr(token), String.class);
+            System.out.println("obj = " + obj);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

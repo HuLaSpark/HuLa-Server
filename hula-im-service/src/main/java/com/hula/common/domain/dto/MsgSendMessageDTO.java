@@ -1,10 +1,9 @@
 package com.hula.common.domain.dto;
 
+import com.hula.domain.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 /**
  * @author nyh
@@ -12,7 +11,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MsgSendMessageDTO implements Serializable {
+public class MsgSendMessageDTO extends BaseEntity {
     /**
      * 消息id
      */

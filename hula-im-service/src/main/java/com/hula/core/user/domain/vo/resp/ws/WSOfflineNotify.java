@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 用户上下线变动的推送类
+ * 用户上线变动的推送类
  * @author nyh
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WSOnlineOfflineNotify {
+public class WSOfflineNotify {
     //新的上下线用户
     private List<ChatMemberResp> changeList = new ArrayList<>();
     //在线人数

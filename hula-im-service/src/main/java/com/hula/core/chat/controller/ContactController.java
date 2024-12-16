@@ -34,21 +34,21 @@ public class ContactController {
     @Resource
     private RoomAppService roomService;
 
-    @GetMapping("/public/contact/page")
+    @GetMapping("/contact/page")
     @Operation(summary ="会话列表")
     public ApiResult<CursorPageBaseResp<ChatRoomResp>> getRoomPage(@Valid CursorPageBaseReq request) {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(roomService.getContactPage(request, uid));
     }
 
-    @GetMapping("/public/contact/detail")
+    @GetMapping("/contact/detail")
     @Operation(summary ="会话详情")
     public ApiResult<ChatRoomResp> getContactDetail(@Valid IdReqVO request) {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(roomService.getContactDetail(uid, request.getId()));
     }
 
-    @GetMapping("/public/contact/detail/friend")
+    @GetMapping("/contact/detail/friend")
     @Operation(summary ="会话详情(联系人列表发消息用)")
     public ApiResult<ChatRoomResp> getContactDetailByFriend(@Valid ContactFriendReq request) {
         Long uid = RequestHolder.get().getUid();

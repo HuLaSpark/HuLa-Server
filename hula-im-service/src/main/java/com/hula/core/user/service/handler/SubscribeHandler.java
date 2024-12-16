@@ -3,6 +3,7 @@ package com.hula.core.user.service.handler;
 import com.hula.core.user.service.WxMsgService;
 import com.hula.core.user.service.adapter.TextBuilder;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @author nyh
  */
 @Component
+@Slf4j
 public class SubscribeHandler extends AbstractHandler {
 
     @Resource
@@ -26,13 +28,13 @@ public class SubscribeHandler extends AbstractHandler {
                                     Map<String, Object> context, WxMpService weixinService,
                                     WxSessionManager sessionManager) throws WxErrorException {
 
-        this.logger.info("新关注用户 OPENID: " + wxMessage.getFromUser());
+        log.info("新关注用户openid: {}", wxMessage.getFromUser());
 
         WxMpXmlOutMessage responseResult = null;
         try {
             responseResult = this.handleSpecial(weixinService, wxMessage);
         } catch (Exception e) {
-            this.logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         if (responseResult != null) {
@@ -42,7 +44,7 @@ public class SubscribeHandler extends AbstractHandler {
         try {
             return new TextBuilder().build("感谢关注", wxMessage, weixinService);
         } catch (Exception e) {
-            this.logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         return null;
@@ -51,8 +53,7 @@ public class SubscribeHandler extends AbstractHandler {
     /**
      * 处理特殊请求，比如如果是扫码进来的，可以做相应处理
      */
-    private WxMpXmlOutMessage handleSpecial(WxMpService weixinService, WxMpXmlMessage wxMessage)
-            throws Exception {
+    private WxMpXmlOutMessage handleSpecial(WxMpService weixinService, WxMpXmlMessage wxMessage) {
         return wxMsgService.scan(weixinService, wxMessage);
     }
 

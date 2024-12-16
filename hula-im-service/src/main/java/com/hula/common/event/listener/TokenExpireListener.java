@@ -1,9 +1,8 @@
 package com.hula.common.event.listener;
 
-import com.hula.common.event.UserApplyEvent;
+import com.hula.common.event.TokenExpireEvent;
 import com.hula.core.user.dao.UserApplyDao;
-import com.hula.core.user.domain.entity.UserApply;
-import com.hula.core.user.domain.vo.resp.ws.WSFriendApply;
+import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
@@ -22,7 +21,7 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
  */
 @Slf4j
 @Component
-public class UserApplyListener {
+public class TokenExpireListener {
     @Resource
     private UserApplyDao userApplyDao;
     @Resource
@@ -32,11 +31,10 @@ public class UserApplyListener {
     private PushService pushService;
 
     @Async(HULA_EXECUTOR)
-    @TransactionalEventListener(classes = UserApplyEvent.class, fallbackExecution = true)
-    public void notifyFriend(UserApplyEvent event) {
-        UserApply userApply = event.getUserApply();
-        Integer unReadCount = userApplyDao.getUnReadCount(userApply.getTargetId());
-        pushService.sendPushMsg(WsAdapter.buildApplySend(new WSFriendApply(userApply.getUid(), unReadCount)), userApply.getTargetId());
+    @TransactionalEventListener(classes = TokenExpireEvent.class, fallbackExecution = true)
+    public void forceOffline(TokenExpireEvent event) {
+        User user = event.getUser();
+        pushService.sendPushMsg(WsAdapter.buildInvalidateTokenResp(user), user.getId(), user.getId());
     }
 
 }

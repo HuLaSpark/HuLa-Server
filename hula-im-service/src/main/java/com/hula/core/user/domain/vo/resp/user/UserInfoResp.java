@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.user;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -7,10 +8,10 @@ import lombok.Data;
  * @author nyh
  */
 @Data
-public class UserInfoResp {
+public class UserInfoResp extends BaseEntity {
 
     @Schema(description = "用户id")
-    private Long id;
+    private Long uid;
 
     @Schema(description = "用户账号")
     private String account;

@@ -1,6 +1,7 @@
 package com.hula.domain.vo.res;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description ="基础翻页返回")
-public class PageBaseResp<T> {
+public class PageBaseResp<T> extends BaseEntity {
 
     @Schema(description ="当前页数")
     private Integer pageNo;

@@ -1,6 +1,8 @@
 package com.hula.core.user.service;
 
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.common.domain.dto.LoginMessageDTO;
+import com.hula.common.domain.dto.ScanSuccessMessageDTO;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.ws.WSAuthorize;
 import io.netty.channel.Channel;
 
@@ -11,23 +13,23 @@ public interface WebSocketService {
     /**
      * 处理用户登录请求，需要返回一张带code的二维码
      *
-     * @param channel
+     * @param channel 通道
      */
-    void handleLoginReq(Channel channel);
+    void handleLogin(Channel channel);
 
     /**
      * 处理所有ws连接的事件
      *
-     * @param channel
+     * @param channel 通道
      */
     void connect(Channel channel);
 
     /**
      * 处理ws断开连接的事件
      *
-     * @param channel
+     * @param channel 通道
      */
-    void removed(Channel channel);
+    void remove(Channel channel);
 
     /**
      * 主动认证登录
@@ -40,19 +42,16 @@ public interface WebSocketService {
     /**
      * 扫码用户登录成功通知,清除本地Cache中的loginCode和channel的关系
      *
-     * @param loginCode code
-     * @param uid       用户id
-     * @return {@link Boolean } 结果
+     * @param loginMessageDTO 参数
      */
-    Boolean scanLoginSuccess(Integer loginCode, Long uid);
+    void scanLoginSuccess(LoginMessageDTO loginMessageDTO);
 
     /**
      * 通知用户扫码成功
      *
-     * @param loginCode code
-     * @return {@link Boolean }
+     * @param scanSuccessMessageDTO 参数
      */
-    Boolean scanSuccess(Integer loginCode);
+    void scanSuccess(ScanSuccessMessageDTO scanSuccessMessageDTO);
 
     /**
      * 推动消息给所有在线的人
@@ -60,15 +59,9 @@ public interface WebSocketService {
      * @param wsBaseResp 发送的消息体
      * @param skipUid    需要跳过的人
      */
-    void sendToAllOnline(WSBaseResp<?> wsBaseResp, Long skipUid);
+    void sendAll(WsBaseResp<?> wsBaseResp, Long skipUid);
 
-    /**
-     * 推动消息给所有在线的人
-     *
-     * @param wsBaseResp 发送的消息体
-     */
-    void sendToAllOnline(WSBaseResp<?> wsBaseResp);
 
-    void sendToUid(WSBaseResp<?> wsBaseResp, Long uid);
+    void sendUser(WsBaseResp<?> wsBaseResp, Long uid);
 
 }

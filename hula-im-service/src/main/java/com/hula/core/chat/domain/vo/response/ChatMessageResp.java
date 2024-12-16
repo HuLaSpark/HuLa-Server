@@ -1,5 +1,6 @@
 package com.hula.core.chat.domain.vo.response;
 
+import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessageResp {
+public class ChatMessageResp extends BaseEntity {
 
     @Schema(description ="发送者信息")
     private UserInfo fromUser;

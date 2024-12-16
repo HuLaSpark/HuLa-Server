@@ -6,8 +6,6 @@ import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.event.GroupMemberAddEvent;
-import com.hula.enums.GroupErrorEnum;
-import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
@@ -18,6 +16,7 @@ import com.hula.core.chat.domain.enums.GroupRoleEnum;
 import com.hula.core.chat.domain.enums.HotFlagEnum;
 import com.hula.core.chat.domain.enums.RoomTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
+import com.hula.core.chat.domain.vo.request.ChatMessageReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -36,14 +35,16 @@ import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.enums.RoleEnum;
-import com.hula.core.user.domain.enums.WSBaseResp;
+import com.hula.core.user.domain.enums.RoleTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
+import com.hula.enums.GroupErrorEnum;
+import com.hula.utils.AssertUtil;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.codehaus.plexus.util.StringUtils;
@@ -171,7 +172,7 @@ public class RoomAppServiceImpl implements RoomAppService {
             List<User> memberList = userDao.getMemberList();
             return MemberAdapter.buildMemberList(memberList);
         } else {
-            RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
+            RoomGroup roomGroup = roomGroupCache.get(room.getId());
             List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId());
             Map<Long, User> batch = userInfoCache.getBatch(memberUidList);
             return MemberAdapter.buildMemberList(batch);
@@ -203,7 +204,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         groupMemberDao.removeById(member.getId());
         // 发送移除事件告知群成员
         List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
-        WSBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
+        WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
         pushService.sendPushMsg(ws, memberUidList, uid);
         groupMemberCache.evictMemberUidList(room.getId());
     }
@@ -228,6 +229,12 @@ public class RoomAppServiceImpl implements RoomAppService {
         }
         List<GroupMember> groupMembers = MemberAdapter.buildMemberAdd(roomGroup.getId(), waitAddUidList);
         groupMemberDao.saveBatch(groupMembers);
+
+        User user = userInfoCache.get(uid);
+        List<Long> uidList = groupMembers.stream().map(GroupMember::getUid).collect(Collectors.toList());
+        ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(roomGroup, user, userInfoCache.getBatch(uidList));
+        chatService.sendMsg(chatMessageReq, User.UID_SYSTEM);
+
         applicationEventPublisher.publishEvent(new GroupMemberAddEvent(this, roomGroup, groupMembers, uid));
     }
 
@@ -238,6 +245,12 @@ public class RoomAppServiceImpl implements RoomAppService {
         // 批量保存群成员
         List<GroupMember> groupMembers = RoomAdapter.buildGroupMemberBatch(request.getUidList(), roomGroup.getId());
         groupMemberDao.saveBatch(groupMembers);
+
+        User user = userInfoCache.get(uid);
+        List<Long> uidList = groupMembers.stream().map(GroupMember::getUid).collect(Collectors.toList());
+        ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(roomGroup, user, userInfoCache.getBatch(uidList));
+        chatService.sendMsg(chatMessageReq, User.UID_SYSTEM);
+
         // 发送邀请加群消息==》触发每个人的会话
         applicationEventPublisher.publishEvent(new GroupMemberAddEvent(this, roomGroup, groupMembers, uid));
         return roomGroup.getRoomId();
@@ -246,7 +259,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private boolean hasPower(GroupMember self) {
         return Objects.equals(self.getRole(), GroupRoleEnum.LEADER.getType())
                 || Objects.equals(self.getRole(), GroupRoleEnum.MANAGER.getType())
-                || roleService.hasPower(self.getUid(), RoleEnum.ADMIN);
+                || roleService.hasRole(self.getUid(), RoleTypeEnum.ADMIN);
     }
 
     private GroupRoleAPPEnum getGroupRole(Long uid, RoomGroup roomGroup, Room room) {
@@ -311,7 +324,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                     resp.setAvatar(roomBaseInfo.getAvatar());
                     resp.setRoomId(room.getRoomId());
                     resp.setActiveTime(room.getActiveTime());
-                    resp.setHot_Flag(roomBaseInfo.getHotFlag());
+                    resp.setHotFlag(roomBaseInfo.getHotFlag());
                     resp.setType(roomBaseInfo.getType());
                     resp.setName(roomBaseInfo.getName());
                     Message message = msgMap.get(room.getLastMsgId());
