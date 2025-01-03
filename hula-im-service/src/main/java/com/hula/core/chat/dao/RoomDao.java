@@ -1,5 +1,6 @@
 package com.hula.core.chat.dao;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.domain.po.RoomChatInfoPO;
@@ -33,7 +34,7 @@ public class RoomDao extends ServiceImpl<RoomMapper, Room> implements IService<R
         return baseMapper.chatInfo(uid, roomIds, type);
     }
 
-    public List<GroupListVO> groupList(Long uid) {
-        return baseMapper.groupList(uid);
+    public List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page) {
+        return baseMapper.groupList(uid,page);
     }
 }

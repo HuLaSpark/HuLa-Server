@@ -1,6 +1,9 @@
 package com.hula.core.chat.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
@@ -53,12 +56,15 @@ public class RoomController {
     /**
      * 群聊列表
      *
+     * @param current 当前页
+     * @param size    大小
      * @return {@link ApiResult }
      */
     @GetMapping("/group/list")
-    public ApiResult<List<GroupListVO>> groupList(){
+    public ApiResult<IPage<GroupListVO>> groupList(@RequestParam("current") Long current,@RequestParam("size") Long size){
         Long uid = RequestHolder.get().getUid();
-        return ApiResult.success(roomService.groupList(uid));
+        IPage<GroupListVO>  page = new Page<>(current,size);
+        return ApiResult.success(roomService.groupList(uid,page));
     }
     @GetMapping("/group/member/page")
     @Operation(summary ="群成员列表")

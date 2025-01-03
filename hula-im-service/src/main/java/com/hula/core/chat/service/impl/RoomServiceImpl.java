@@ -1,5 +1,6 @@
 package com.hula.core.chat.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.enums.NormalOrNoEnum;
@@ -95,8 +96,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<GroupListVO> groupList(Long uid) {
-        return roomDao.groupList(uid);
+    public List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page) {
+        return roomDao.groupList(uid,page);
     }
 
     private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {

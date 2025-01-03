@@ -2,11 +2,14 @@ package com.hula.core.chat.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
+import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.GroupMemberAddEvent;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
@@ -37,11 +40,13 @@ import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.RoleService;
+import com.hula.core.user.service.adapter.FriendAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
@@ -128,8 +133,9 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
     @Override
-    public List<GroupListVO> groupList(Long uid) {
-        return roomService.groupList(uid);
+    public IPage<GroupListVO> groupList(Long uid, IPage<GroupListVO>  page) {
+        roomService.groupList(uid,page);
+        return page;
     }
 
     @Override
@@ -248,12 +254,14 @@ public class RoomAppServiceImpl implements RoomAppService {
 
     @Override
     public Long addGroup(Long uid, GroupAddReq request) {
+        List<Long> userIdList = request.getUidList();
+        AssertUtil.isTrue(userIdList.size()>2,"群聊人数应大于2人");
         final RoomGroup[] roomGroup = new RoomGroup[1];
         List<GroupMember> groupMembers = transactionTemplate.execute((status -> {
             try {
                 roomGroup[0] = roomService.createGroupRoom(uid,request.getGroupName());
                 // 批量保存群成员
-                List<GroupMember> members = RoomAdapter.buildGroupMemberBatch(request.getUidList(), roomGroup[0].getId());
+                List<GroupMember> members = RoomAdapter.buildGroupMemberBatch(userIdList, roomGroup[0].getId());
                 groupMemberDao.saveBatch(members);
                 return members;
             } catch (Exception e) {

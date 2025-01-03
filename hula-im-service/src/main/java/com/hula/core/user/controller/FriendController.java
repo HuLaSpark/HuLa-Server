@@ -81,6 +81,34 @@ public class FriendController {
         return ApiResult.success();
     }
 
+    @PutMapping("/reject")
+    @Operation(summary = "审批拒绝")
+    public ApiResult<Void> reject(@Valid @RequestBody FriendApproveReq request) {
+        friendService.reject(RequestHolder.get().getUid(), request);
+        return ApiResult.success();
+    }
+
+    @PutMapping("/ignore")
+    @Operation(summary = "忽略审批")
+    public ApiResult<Void> ignore(@Valid @RequestBody FriendApproveReq request) {
+        friendService.ignore(RequestHolder.get().getUid(), request);
+        return ApiResult.success();
+    }
+
+
+    /**
+     * 删除申请
+     *
+     * @param request 请求
+     * @return {@link ApiResult }<{@link Void }>
+     */
+    @DeleteMapping("/deleteApprove")
+    @Operation(summary = "删除好友申请")
+    public ApiResult<Void> deleteApprove(@Valid @RequestBody FriendApproveReq request) {
+        friendService.deleteApprove(RequestHolder.get().getUid(), request);
+        return ApiResult.success();
+    }
+
     @GetMapping("/page")
     @Operation(summary = "联系人列表")
     public ApiResult<CursorPageBaseResp<FriendResp>> friendList(@Valid CursorPageBaseReq request) {

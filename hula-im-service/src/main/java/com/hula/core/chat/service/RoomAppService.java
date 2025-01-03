@@ -1,5 +1,6 @@
 package com.hula.core.chat.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
@@ -43,5 +44,5 @@ public interface RoomAppService {
 
     ChatRoomResp getContactDetailByFriend(Long uid, Long friendUid);
 
-    List<GroupListVO> groupList(Long uid);
+    IPage<GroupListVO> groupList(Long uid,  IPage<GroupListVO>  page);
 }

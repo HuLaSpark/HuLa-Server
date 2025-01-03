@@ -332,6 +332,7 @@ CREATE TABLE `user_apply`  (
   `read_status` int NOT NULL COMMENT '阅读状态 1未读 2已读',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
+  `deleted` tinyint default 0 NOT NULL  COMMENT '删除状态 0：未删 1 申请人删除 2 被申请人删除 3都删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_uid_target_id`(`uid` ASC, `target_id` ASC) USING BTREE,
   INDEX `idx_target_id_read_status`(`target_id` ASC, `read_status` ASC) USING BTREE,
