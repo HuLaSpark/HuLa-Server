@@ -35,6 +35,6 @@ public class RoomDao extends ServiceImpl<RoomMapper, Room> implements IService<R
     }
 
     public List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page) {
-        return baseMapper.groupList(uid,page);
+        return baseMapper.groupList(uid,page).getRecords();
     }
 }

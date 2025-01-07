@@ -19,5 +19,5 @@ public interface RoomMapper extends BaseMapper<Room> {
 
     List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type);
 
-    List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page);
+    IPage<GroupListVO> groupList(Long uid, IPage<GroupListVO> page);
 }
