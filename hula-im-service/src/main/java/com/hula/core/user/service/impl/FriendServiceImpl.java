@@ -22,6 +22,8 @@ import com.hula.core.user.dao.UserFriendDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.entity.UserFriend;
+import com.hula.core.user.domain.enums.ApplyDeletedEnum;
+import com.hula.core.user.domain.enums.ApplyStatusEnum;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
@@ -98,13 +100,13 @@ public class FriendServiceImpl implements FriendService {
         UserFriend friend = userFriendDao.getByFriend(uid, request.getTargetUid());
         AssertUtil.isEmpty(friend, "你们已经是好友了");
         // 是否有待审批的申请记录(自己的)
-        UserApply selfApproving = userApplyDao.getFriendApproving(uid, request.getTargetUid());
+        UserApply selfApproving = userApplyDao.getFriendApproving(uid, request.getTargetUid(), true);
         if (Objects.nonNull(selfApproving)) {
             log.info("已有好友申请记录,uid:{}, targetId:{}", uid, request.getTargetUid());
             return;
         }
         // 是否有待审批的申请记录(别人请求自己的)
-        UserApply friendApproving = userApplyDao.getFriendApproving(request.getTargetUid(), uid);
+        UserApply friendApproving = userApplyDao.getFriendApproving(request.getTargetUid(), uid, false);
         if (Objects.nonNull(friendApproving)) {
             SpringUtil.getBean(this.getClass()).applyApprove(uid, new FriendApproveReq(friendApproving.getId()));
             return;
@@ -137,7 +139,8 @@ public class FriendServiceImpl implements FriendService {
     private void readApples(Long uid, IPage<UserApply> userApplyIpage) {
         List<Long> applyIds = userApplyIpage.getRecords()
                 .stream().map(UserApply::getId)
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
+        ;
         userApplyDao.readApples(uid, applyIds);
     }
 
@@ -200,7 +203,48 @@ public class FriendServiceImpl implements FriendService {
                 .stream().map(UserFriend::getFriendUid)
                 .collect(Collectors.toList());
         List<User> userList = userDao.getFriendList(friendUids);
-        return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), userList),0L);
+        return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), userList), 0L);
+    }
+
+    @Override
+    public void reject(Long uid, FriendApproveReq request) {
+        UserApply userApply = checkRecord(request);
+        userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.REJECT);
+    }
+
+    @Override
+    public void ignore(Long uid, FriendApproveReq request) {
+        checkRecord(request);
+        userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.IGNORE);
+    }
+
+    @Override
+    @RedissonLock(key = "#uid")
+    public void deleteApprove(Long uid, FriendApproveReq request) {
+        UserApply userApply = checkRecord(request);
+        ApplyDeletedEnum deletedEnum;
+        //判断谁删了这条记录
+        if (Objects.equals(userApply.getUid(), uid)) {
+            deletedEnum = ApplyDeletedEnum.APPLY_DELETED;
+        } else {
+            deletedEnum = ApplyDeletedEnum.TARGET_DELETED;
+        }
+        //数据库已经当前删除方删了
+        if (Objects.equals(userApply.getDeleted(), deletedEnum.getCode())) {
+            return;
+        }
+        //如果之前任意一方删除过 那就是都删了
+        if (!Objects.equals(userApply.getDeleted(), ApplyDeletedEnum.NORMAL.getCode())) {
+            deletedEnum = ApplyDeletedEnum.ALL_DELETED;
+        }
+        userApplyDao.deleteApprove(request.getApplyId(), deletedEnum);
+    }
+
+    private UserApply checkRecord(FriendApproveReq request) {
+        UserApply userApply = userApplyDao.getById(request.getApplyId());
+        AssertUtil.isNotEmpty(userApply, "不存在申请记录");
+        AssertUtil.equal(userApply.getStatus(), WAIT_APPROVAL.getCode(), "对方已是您的好友");
+        return userApply;
     }
 
     private void createFriend(Long uid, Long targetUid) {

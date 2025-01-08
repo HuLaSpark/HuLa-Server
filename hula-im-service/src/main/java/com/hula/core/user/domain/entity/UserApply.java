@@ -77,5 +77,9 @@ public class UserApply implements Serializable {
     @TableField("update_time")
     private LocalDateTime updateTime;
 
-
+    /**
+     * 删除状态 0：未删 1 申请人删除 2 被申请人删除 3都删除
+     */
+    @TableField("deleted")
+    private Integer deleted;
 }

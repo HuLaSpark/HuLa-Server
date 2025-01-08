@@ -52,7 +52,7 @@ public class ContactController {
     @Operation(summary ="会话详情(联系人列表发消息用)")
     public ApiResult<ChatRoomResp> getContactDetailByFriend(@Valid ContactFriendReq request) {
         Long uid = RequestHolder.get().getUid();
-        return ApiResult.success(roomService.getContactDetailByFriend(uid, request.getUid()));
+        return ApiResult.success(roomService.getContactDetailByFriend(uid, request));
     }
 }
 

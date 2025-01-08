@@ -72,4 +72,29 @@ public interface FriendService {
     void deleteFriend(Long uid, Long friendUid);
 
     CursorPageBaseResp<FriendResp> friendList(Long uid, CursorPageBaseReq request);
+
+    /**
+     * 拒绝
+     *
+     * @param uid     uid
+     * @param request 请求
+     */
+    void reject(Long uid, FriendApproveReq request);
+
+    /**
+     * 忽略申请
+     *
+     * @param uid     uid
+     * @param request 请求
+     */
+    void ignore(Long uid, FriendApproveReq request);
+
+    /**
+     * 删除申请
+     *
+     * @param uid     uid
+     * @param request 请求
+     */
+    void deleteApprove(Long uid, FriendApproveReq request);
+
 }

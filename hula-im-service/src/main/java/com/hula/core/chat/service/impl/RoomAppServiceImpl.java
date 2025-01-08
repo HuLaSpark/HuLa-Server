@@ -2,6 +2,7 @@ package com.hula.core.chat.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
@@ -19,6 +20,7 @@ import com.hula.core.chat.domain.enums.HotFlagEnum;
 import com.hula.core.chat.domain.enums.RoomTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
+import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -47,6 +49,7 @@ import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
 import com.hula.enums.GroupErrorEnum;
 import com.hula.utils.AssertUtil;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.codehaus.plexus.util.StringUtils;
@@ -117,19 +120,25 @@ public class RoomAppServiceImpl implements RoomAppService {
     public ChatRoomResp getContactDetail(Long uid, Long roomId) {
         Room room = roomCache.get(roomId);
         AssertUtil.isNotEmpty(room, "房间号有误");
-        return buildContactResp(uid, Collections.singletonList(roomId)).get(0);
+        return buildContactResp(uid, Collections.singletonList(roomId)).getFirst();
     }
 
     @Override
-    public ChatRoomResp getContactDetailByFriend(Long uid, Long friendUid) {
-        RoomFriend friendRoom = roomService.getFriendRoom(uid, friendUid);
+    public ChatRoomResp getContactDetailByFriend(Long uid, @Valid ContactFriendReq req) {
+        //处理群聊
+        if (Objects.equals(req.getRoomType(), RoomTypeEnum.GROUP.getType())) {
+            roomService.checkUser(uid, req.getId());
+            return buildContactResp(uid, Collections.singletonList(req.getId())).getFirst();
+        }
+        RoomFriend friendRoom = roomService.getFriendRoom(uid, req.getId());
         AssertUtil.isNotEmpty(friendRoom, "他不是您的好友");
         return buildContactResp(uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
     }
 
     @Override
-    public List<GroupListVO> groupList(Long uid) {
-        return roomService.groupList(uid);
+    public IPage<GroupListVO> groupList(Long uid, IPage<GroupListVO>  page) {
+        roomService.groupList(uid,page);
+        return page;
     }
 
     @Override
@@ -171,7 +180,6 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
     @Override
-    @Cacheable(cacheNames = "member", key = "'memberList.'+#request.roomId")
     public List<ChatMemberListResp> getMemberList(ChatMessageMemberReq request) {
         Room room = roomCache.get(request.getRoomId());
         AssertUtil.isNotEmpty(room, "房间号有误");
@@ -248,12 +256,14 @@ public class RoomAppServiceImpl implements RoomAppService {
 
     @Override
     public Long addGroup(Long uid, GroupAddReq request) {
+        List<Long> userIdList = request.getUidList();
+        AssertUtil.isTrue(userIdList.size()>2,"群聊人数应大于2人");
         final RoomGroup[] roomGroup = new RoomGroup[1];
         List<GroupMember> groupMembers = transactionTemplate.execute((status -> {
             try {
                 roomGroup[0] = roomService.createGroupRoom(uid,request.getGroupName());
                 // 批量保存群成员
-                List<GroupMember> members = RoomAdapter.buildGroupMemberBatch(request.getUidList(), roomGroup[0].getId());
+                List<GroupMember> members = RoomAdapter.buildGroupMemberBatch(userIdList, roomGroup[0].getId());
                 groupMemberDao.saveBatch(members);
                 return members;
             } catch (Exception e) {

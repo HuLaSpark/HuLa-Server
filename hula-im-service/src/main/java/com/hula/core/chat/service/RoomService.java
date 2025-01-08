@@ -1,6 +1,7 @@
 package com.hula.core.chat.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.core.chat.domain.entity.RoomFriend;
@@ -35,6 +36,13 @@ public interface RoomService {
 
     List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type);
 
-    List<GroupListVO> groupList(Long uid);
+    void groupList(Long uid, IPage<GroupListVO> page);
+
+    /**
+     * 校验当前用户是否在群里
+     * @param uid 当前用户
+     * @param roomId 房间id
+     */
+    void checkUser(Long uid, Long roomId);
 
 }

@@ -1,9 +1,11 @@
 package com.hula.core.chat.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
+import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -12,6 +14,7 @@ import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -41,7 +44,7 @@ public interface RoomAppService {
 
     ChatRoomResp getContactDetail(Long uid, Long roomId);
 
-    ChatRoomResp getContactDetailByFriend(Long uid, Long friendUid);
+    ChatRoomResp getContactDetailByFriend(Long uid, @Valid ContactFriendReq req);
 
-    List<GroupListVO> groupList(Long uid);
+    IPage<GroupListVO> groupList(Long uid,  IPage<GroupListVO>  page);
 }
