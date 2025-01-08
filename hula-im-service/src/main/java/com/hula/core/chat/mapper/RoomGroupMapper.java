@@ -13,4 +13,5 @@ import com.hula.core.chat.domain.entity.RoomGroup;
  */
 public interface RoomGroupMapper extends BaseMapper<RoomGroup> {
 
+    boolean checkUser(Long uid, Long roomId);
 }

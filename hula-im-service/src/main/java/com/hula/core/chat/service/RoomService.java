@@ -36,6 +36,13 @@ public interface RoomService {
 
     List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type);
 
-    List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page);
+    void groupList(Long uid, IPage<GroupListVO> page);
+
+    /**
+     * 校验当前用户是否在群里
+     * @param uid 当前用户
+     * @param roomId 房间id
+     */
+    void checkUser(Long uid, Long roomId);
 
 }

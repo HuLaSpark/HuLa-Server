@@ -19,6 +19,8 @@ import jakarta.validation.constraints.NotNull;
 public class ContactFriendReq {
 
     @NotNull
-    @Schema(description ="好友uid")
-    private Long uid;
+    @Schema(description ="单聊为好友uid 群聊为房间id")
+    private Long id;
+
+    private Integer roomType;
 }

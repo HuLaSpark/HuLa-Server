@@ -96,8 +96,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page) {
-        return roomDao.groupList(uid,page);
+    public void groupList(Long uid, IPage<GroupListVO> page) {
+        roomDao.groupList(uid, page);
+    }
+
+    @Override
+    public void checkUser(Long uid, Long roomId) {
+        AssertUtil.isTrue(roomGroupDao.checkUser(uid,roomId), "您已退出群聊");
     }
 
     private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {

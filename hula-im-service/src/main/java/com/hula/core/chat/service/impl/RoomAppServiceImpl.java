@@ -3,13 +3,11 @@ package com.hula.core.chat.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
-import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.GroupMemberAddEvent;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
@@ -22,6 +20,7 @@ import com.hula.core.chat.domain.enums.HotFlagEnum;
 import com.hula.core.chat.domain.enums.RoomTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
+import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -40,18 +39,17 @@ import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.RoleService;
-import com.hula.core.user.service.adapter.FriendAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
 import com.hula.enums.GroupErrorEnum;
 import com.hula.utils.AssertUtil;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.codehaus.plexus.util.StringUtils;
@@ -122,12 +120,17 @@ public class RoomAppServiceImpl implements RoomAppService {
     public ChatRoomResp getContactDetail(Long uid, Long roomId) {
         Room room = roomCache.get(roomId);
         AssertUtil.isNotEmpty(room, "房间号有误");
-        return buildContactResp(uid, Collections.singletonList(roomId)).get(0);
+        return buildContactResp(uid, Collections.singletonList(roomId)).getFirst();
     }
 
     @Override
-    public ChatRoomResp getContactDetailByFriend(Long uid, Long friendUid) {
-        RoomFriend friendRoom = roomService.getFriendRoom(uid, friendUid);
+    public ChatRoomResp getContactDetailByFriend(Long uid, @Valid ContactFriendReq req) {
+        //处理群聊
+        if (Objects.equals(req.getRoomType(), RoomTypeEnum.GROUP.getType())) {
+            roomService.checkUser(uid, req.getId());
+            return buildContactResp(uid, Collections.singletonList(req.getId())).getFirst();
+        }
+        RoomFriend friendRoom = roomService.getFriendRoom(uid, req.getId());
         AssertUtil.isNotEmpty(friendRoom, "他不是您的好友");
         return buildContactResp(uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
     }
@@ -177,7 +180,6 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
     @Override
-    @Cacheable(cacheNames = "member", key = "'memberList.'+#request.roomId")
     public List<ChatMemberListResp> getMemberList(ChatMessageMemberReq request) {
         Room room = roomCache.get(request.getRoomId());
         AssertUtil.isNotEmpty(room, "房间号有误");

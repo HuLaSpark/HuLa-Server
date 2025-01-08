@@ -28,4 +28,8 @@ public class RoomGroupDao extends ServiceImpl<RoomGroupMapper, RoomGroup> {
                 .eq(RoomGroup::getRoomId, roomId)
                 .one();
     }
+
+    public boolean checkUser(Long uid, Long roomId) {
+        return baseMapper.checkUser(uid,roomId);
+    }
 }
