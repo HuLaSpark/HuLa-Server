@@ -27,6 +27,13 @@ public class HttpHeadersHandler extends ChannelInboundHandlerAdapter {
             // 获取请求路径
             request.setUri(urlBuilder.getPath().toString());
             HttpHeaders headers = request.headers();
+            String device = headers.get("X-Device-Fingerprint");
+            if (StringUtils.isNoneEmpty(device)){
+                NettyUtil.setAttr(ctx.channel(), NettyUtil.IP, device);
+                ctx.pipeline().remove(this);
+                ctx.fireChannelRead(request);
+                return;
+            }
             String ip = headers.get("X-Real-IP");
             if (StringUtils.isEmpty(ip)) {
                 // 如果没经过nginx，就直接获取远端地址
