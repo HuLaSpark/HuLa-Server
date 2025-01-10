@@ -143,21 +143,21 @@ public class WXMsgServiceImpl implements WebSocketService {
      */
     @Override
     public void connect(Channel channel) {
-        // 保证每个IP只有一个连接
-        String ip = NettyUtil.getAttr(channel, NettyUtil.IP);
-        Channel oldChannel = ONLINE_WS_MAP.get(ip);
+        // 保证每个客户端只有一个连接
+        String clientId = NettyUtil.getAttr(channel, NettyUtil.CLIENT_ID);
+        Channel oldChannel = ONLINE_WS_MAP.get(clientId);
         if(Objects.nonNull(oldChannel)) {
             oldChannel.close();
-            ONLINE_WS_MAP.remove(ip);
+            ONLINE_WS_MAP.remove(clientId);
         }
-        ONLINE_WS_MAP.put(ip , channel);
+        ONLINE_WS_MAP.put(clientId , channel);
     }
 
     @Override
     public void remove(Channel channel) {
         Optional<Long> uid = Optional.ofNullable(NettyUtil.getAttr(channel, NettyUtil.UID));
         // 移除连接
-        ONLINE_WS_MAP.remove((String)NettyUtil.getAttr(channel, NettyUtil.IP));
+        ONLINE_WS_MAP.remove((String)NettyUtil.getAttr(channel, NettyUtil.CLIENT_ID));
         // 已登录用户更新
         uid.ifPresent(id -> {
             CopyOnWriteArrayList<Channel> channels = ONLINE_UID_MAP.get(uid.get());

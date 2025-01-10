@@ -15,6 +15,7 @@ public class NettyUtil {
     public final static String IP = "ip";
     public final static String UID = "uid";
     public final static String LOGIN_TYPE = "loginType";
+    public final static String CLIENT_ID = "clientId";
 
     public static <T> void setAttr(Channel channel, String key, T data) {
         channel.attr(AttributeKey.valueOf(key)).set(data);

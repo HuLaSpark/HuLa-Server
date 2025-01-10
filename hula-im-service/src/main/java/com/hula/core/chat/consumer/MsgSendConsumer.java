@@ -25,9 +25,9 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * 发送消息更新房间收信箱，并同步给房间成员信箱
@@ -72,14 +72,15 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
                 // 普通群聊推送所有群成员，过滤掉当前用户
                 memberUidList = groupMemberCache.getMemberUidList(room.getId()).stream().filter(uid->!dto.getUid().equals(uid)).toList();
             } else if (Objects.equals(room.getType(), RoomTypeEnum.FRIEND.getType())) {
-                //单聊对象
-                //对单人推送
+                // 单聊对象
+                // 对单人推送
                 RoomFriend roomFriend = roomFriendDao.getByRoomId(room.getId());
-                memberUidList = Arrays.asList(roomFriend.getUid1(), roomFriend.getUid2());
+                // 不对自己发送消息
+                memberUidList = Stream.of(roomFriend.getUid1(), roomFriend.getUid2()).filter(uid->!dto.getUid().equals(uid)).toList();
             }
             // 更新所有群成员的会话时间
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
-            //推送房间成员
+            // 推送房间成员
             pushService.sendPushMsg(WsAdapter.buildMsgSend(msgResp), memberUidList, dto.getUid());
         }
     }
