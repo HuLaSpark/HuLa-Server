@@ -1,0 +1,17 @@
+globalWhiteRemoteAddresses:
+- 10.10.103.*
+- 192.168.0.*
+
+accounts:
+- accessKey: hula-server
+  secretKey: k2439646234
+  whiteRemoteAddress:
+  admin: false
+  defaultTopicPerm: DENY
+  defaultGroupPerm: SUB
+  topicPerms:
+    - topicA=DENY
+    - topicB=PUB|SUB
+  groupPerms:
+    - groupA=DENY
+    - groupB=SUB
