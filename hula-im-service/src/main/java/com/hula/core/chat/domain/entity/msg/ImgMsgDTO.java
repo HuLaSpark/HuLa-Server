@@ -26,11 +26,11 @@ public class ImgMsgDTO extends BaseFileDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Schema(description ="宽度（像素）")
-    @NotNull
+//    @NotNull
     private Integer width;
 
     @Schema(description ="高度（像素）")
-    @NotNull
+//    @NotNull
     private Integer height;
 
 }
