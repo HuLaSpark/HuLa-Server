@@ -25,6 +25,7 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -75,8 +76,10 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
                 // 单聊对象
                 // 对单人推送
                 RoomFriend roomFriend = roomFriendDao.getByRoomId(room.getId());
+                memberUidList = Arrays.asList(roomFriend.getUid1(), roomFriend.getUid2());
+
                 // 不对自己发送消息
-                memberUidList = Stream.of(roomFriend.getUid1(), roomFriend.getUid2()).filter(uid->!dto.getUid().equals(uid)).toList();
+//                memberUidList = Stream.of(roomFriend.getUid1(), roomFriend.getUid2()).filter(uid->!dto.getUid().equals(uid)).toList();
             }
             // 更新所有群成员的会话时间
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());

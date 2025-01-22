@@ -24,7 +24,7 @@ public class BaseFileDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Schema(description ="大小（字节）")
-//    @NotNull
+    @NotNull
     private Long size;
 
     @Schema(description ="下载地址")
