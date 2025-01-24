@@ -19,10 +19,7 @@ HuLa-IM:
     NAME-SERVER: 127.0.0.1:9876
     ACCESS-KEY: nongyehong
     SECRET-KEY: 919919919
-oss:
-  enabled: true
-  type: minio
-  endpoint: http://127.0.0.1:9000
-  access-key: xFVszhAsEKMz0WVCZhQ
-  secret-key: GNUYrmmFacQlhKYKXMfBt
-  bucketName: hula
+  IMAGEKIT:
+    PUBLIC-KEY:
+    PRIVATE-KEY:
+    URL-ENDPOINT:

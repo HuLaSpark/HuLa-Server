@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  * oss控制层
  * @author nyh
@@ -26,7 +25,7 @@ public class OssController {
     private OssService ossService;
 
     @GetMapping("/upload/url")
-    @ApiOperation("获取临时上传链接")
+    @ApiOperation("获取MinIO临时上传链接")
     public ApiResult<OssResp> getUploadUrl(@Valid UploadUrlReq req) {
         return ApiResult.success(ossService.getUploadUrl(RequestHolder.get().getUid(), req));
     }

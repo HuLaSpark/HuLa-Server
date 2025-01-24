@@ -122,6 +122,12 @@ rocketmq:
       erbadagang-consumer-group:
         topic1: false # 关闭 test-consumer-group 对 topic1 的监听消费
 
+# imagekit配置
+imagekit:
+  public-key: ${HuLa-IM.IMAGEKIT.PUBLIC-KEY}
+  private-key: ${HuLa-IM.IMAGEKIT.PRIVATE-KEY}
+  url-endpoint: ${HuLa-IM.IMAGEKIT.URL-ENDPOINT}
+
 public:
   urls:
     - /token/login

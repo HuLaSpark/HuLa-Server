@@ -31,7 +31,8 @@
         <mybatis-plus-boot-starter.version>3.5.5</mybatis-plus-boot-starter.version>
         <mybatis-plus-generator.version>3.4.1</mybatis-plus-generator.version>
         <jsoup.version>1.15.3</jsoup.version>
-        <okhttp.version>4.8.1</okhttp.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <okio.version>3.7.0</okio.version>
         <maven-model.version>3.9.6</maven-model.version>
         <redisson-spring-boot-starter.version>3.24.1</redisson-spring-boot-starter.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
@@ -81,6 +82,11 @@
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
                 <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okio.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>
@@ -220,6 +226,19 @@
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity-engine-core.version}</version>
             </dependency>
+            <!-- ImageKit SDK -->
+            <dependency>
+                <groupId>com.github.imagekit-developer</groupId>
+                <artifactId>imagekit-java</artifactId>
+                <version>2.0.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 </project>

@@ -53,6 +53,21 @@
             <artifactId>spring-boot-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- ImageKit SDK -->
+        <dependency>
+            <groupId>com.github.imagekit-developer</groupId>
+            <artifactId>imagekit-java</artifactId>
+        </dependency>
+        <!-- OkHttp -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
+        <!-- Okio -->
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
