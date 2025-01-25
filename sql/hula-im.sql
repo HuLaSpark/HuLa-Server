@@ -59,7 +59,7 @@ CREATE TABLE `contact`  (
 -- Records of contact
 -- ----------------------------
 INSERT INTO `contact` VALUES (1, 20000, 1, '2024-07-10 14:54:31.314', NULL, NULL, '2024-07-10 14:54:31.314', '2024-07-10 15:09:05.459');
-
+INSERT INTO `contact` VALUES (2, 20001, 1, '2024-07-10 14:54:31.314', NULL, NULL, '2024-07-10 14:54:31.314', '2024-07-10 15:09:05.459');
 -- ----------------------------
 -- Table structure for group_member
 -- ----------------------------
@@ -175,7 +175,7 @@ CREATE TABLE `role`  (
 -- Records of role
 -- ----------------------------
 INSERT INTO `role` VALUES (1, '超级管理员', '2024-07-10 11:17:15.089', '2024-07-10 11:17:15.089');
-INSERT INTO `role` VALUES (2, '抹茶群聊管理员', '2024-07-10 11:17:15.091', '2024-07-10 11:17:15.091');
+INSERT INTO `role` VALUES (2, 'HuLa管理员', '2024-07-10 11:17:15.091', '2024-07-10 11:17:15.091');
 
 -- ----------------------------
 -- Table structure for room
@@ -199,6 +199,7 @@ CREATE TABLE `room`  (
 -- Records of room
 -- ----------------------------
 INSERT INTO `room` VALUES (1, 1, 1, '2024-07-10 11:17:15.521', NULL, NULL, '2024-07-10 11:17:15.521', '2024-07-10 11:17:15.521');
+INSERT INTO `room` VALUES (2, 2, 0, '2024-07-10 11:17:15.521', NULL, NULL, '2024-07-10 11:17:15.521', '2024-07-10 11:17:15.521');
 
 -- ----------------------------
 -- Table structure for room_friend
@@ -223,7 +224,6 @@ CREATE TABLE `room_friend`  (
 -- ----------------------------
 -- Records of room_friend
 -- ----------------------------
-
 -- ----------------------------
 -- Table structure for room_group
 -- ----------------------------
@@ -246,8 +246,7 @@ CREATE TABLE `room_group`  (
 -- ----------------------------
 -- Records of room_group
 -- ----------------------------
-INSERT INTO `room_group` VALUES (1, 1, '抹茶全员群', 'https://mallchat.cn/assets/logo-e81cd252.jpeg', NULL, 0, '2024-07-10 11:17:15.523', '2024-07-10 11:17:15.523');
-
+INSERT INTO `room_group` VALUES (1, 1, 'HuLa全员群', 'https://hulaspark.com/minio/hula/avatar/hula.png', NULL, 0, '2024-07-10 11:17:15.523', '2024-07-10 11:17:15.523');
 -- ----------------------------
 -- Table structure for secure_invoke_record
 -- ----------------------------
@@ -287,37 +286,33 @@ INSERT INTO `sensitive_word` VALUES ('tmd');
 -- ----------------------------
 -- Table structure for user
 -- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user`  (
-  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户id',
-  `account` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户账号',
-  `password` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户密码',
-  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户昵称',
-  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户头像',
-  `sex` int NULL DEFAULT NULL COMMENT '性别 1为男性，2为女性',
-  `open_id` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '微信openid用户标识',
-  `active_status` int NULL DEFAULT 2 COMMENT '在线状态 1在线 2离线',
-  `last_opt_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '最后上下线时间',
-  `ip_info` json NULL COMMENT 'ip信息',
-  `item_id` bigint NULL DEFAULT NULL COMMENT '佩戴的徽章id',
-  `status` int NULL DEFAULT 0 COMMENT '使用状态 0.正常 1拉黑',
-  `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
-  `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uniq_account`(`account` ASC) USING BTREE,
-  INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
-  INDEX `idx_update_time`(`update_time` ASC) USING BTREE,
-  INDEX `idx_active_status_last_opt_time`(`active_status` ASC, `last_opt_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20001 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
+CREATE TABLE `user` (
+   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
+   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户昵称',
+   `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户头像',
+   `sex` int DEFAULT NULL COMMENT '性别 1为男性，2为女性',
+   `open_id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+   `active_status` int DEFAULT '2' COMMENT '在线状态 1在线 2离线',
+   `last_opt_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '最后上下线时间',
+   `ip_info` json DEFAULT NULL COMMENT 'ip信息',
+   `item_id` bigint DEFAULT NULL COMMENT '佩戴的徽章id',
+   `status` int DEFAULT '0' COMMENT '使用状态 0.正常 1拉黑',
+   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
+   `account` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户账号',
+   `password` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户密码',
+   PRIMARY KEY (`id`) USING BTREE,
+   KEY `idx_create_time` (`create_time`) USING BTREE,
+   KEY `idx_update_time` (`update_time`) USING BTREE,
+   KEY `idx_active_status_last_opt_time` (`active_status`,`last_opt_time`) USING BTREE,
+   KEY `account_UNIQUE` (`account`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT= 20002 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 'admin','admin','系统消息', 'http://mms1.baidu.com/it/u=1979830414,2984779047&fm=253&app=138&f=JPEG&fmt=auto&q=75?w=500&h=500', NULL, '0', 2, '2023-07-01 11:58:24.605', NULL, NULL, 0, '2023-07-01 11:58:24.605', '2023-07-01 12:02:56.900');
-INSERT INTO `user` VALUES (10001,'hula1','hula1', 'ChatGPT', 'https://img1.baidu.com/it/u=3613958228,3522035000&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500', 0, '??', 2, '2023-06-29 17:03:03.357', NULL, NULL, 0, '2023-06-29 17:03:03.357', '2023-07-01 14:56:10.271');
-INSERT INTO `user` VALUES (10002,'hula2','hula2', 'ChatGLM2', 'http://mms1.baidu.com/it/u=1979830414,2984779047&fm=253&app=138&f=JPEG&fmt=auto&q=75?w=500&h=500', NULL, '450', 2, '2023-07-01 11:58:24.605', NULL, NULL, 0, '2023-07-01 11:58:24.605', '2023-07-01 12:02:56.900');
-INSERT INTO `user` VALUES (20000,'hula3','hula3', 'Dawn', 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEL7OpdTZYkEeE9oTmZFKL4gIzCr1ibf38OiaPqqcmqlLxTxvw3gskZV5uTma7NSQzCk8yVbIiaN6FV3kmicBWg2CLOKicysib6mDFGEPprQxfUYEupA/132', 0, 'obxlc6xY1EsMyHbbRAAgWDCnOFHE', 1, '2024-07-10 15:09:09.086', '{\"createIp\": \"127.0.0.1\", \"updateIp\": \"127.0.0.1\", \"createIpDetail\": null, \"updateIpDetail\": null}', NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096');
-
+INSERT INTO `user` VALUES (20000, 'Dawn', '001', 0, '', 1, '2024-07-10 15:09:09.086', NULL, NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096', 'Dawn', '123456');
+INSERT INTO `user` VALUES (20001, 'nong', '002', 0, '', 1, '2024-07-10 15:09:09.086', NULL, NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096', 'nong', '123456');
 -- ----------------------------
 -- Table structure for user_apply
 -- ----------------------------

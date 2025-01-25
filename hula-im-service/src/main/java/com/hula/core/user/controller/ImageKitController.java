@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,8 +32,19 @@ public class ImageKitController {
     @ApiOperation("获取ImageKit认证参数")
     public ApiResult<ImageKitAuthResp> getImageKitAuth() {
         Map<String, String> authParams = imageKit.getAuthenticationParameters();
+        
+        // 获取1小时后的UTC时间戳
+        long expireTimestamp = ZonedDateTime.now(ZoneId.of("UTC"))
+                .plusHours(1)
+                .toInstant()
+                .getEpochSecond();
+                
+        // 创建新的参数Map，确保使用正确的时间戳
+        Map<String, String> updatedParams = new HashMap<>(authParams);
+        updatedParams.put("expire", String.valueOf(expireTimestamp));
+        
         return ApiResult.success(ImageKitAuthResp.builder()
-                .authParams(authParams)
+                .authParams(updatedParams)
                 .build());
     }
 }
