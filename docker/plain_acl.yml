@@ -3,8 +3,8 @@ globalWhiteRemoteAddresses:
 - 192.168.0.*
 
 accounts:
-- accessKey: hula-server
-  secretKey: k2439646234
+  accessKey: nongyehong
+  secretKey: 12345678
   whiteRemoteAddress:
   admin: false
   defaultTopicPerm: DENY
