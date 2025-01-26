@@ -1,4 +1,4 @@
-version: 2.5.3
+version: 2.6.2
 HuLa-IM:
   HOST: localhost #域名
   DATABASE_NAME: hula-im #数据库名
@@ -19,7 +19,3 @@ HuLa-IM:
     NAME-SERVER: 127.0.0.1:9876
     ACCESS-KEY: nongyehong
     SECRET-KEY: 919919919
-  IMAGEKIT:
-    PUBLIC-KEY:
-    PRIVATE-KEY:
-    URL-ENDPOINT:

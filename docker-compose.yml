@@ -106,17 +106,6 @@ services:
     command: server --address ':9000' --console-address ':9001' /data  # 指定容器中的目录 /data
     privileged: true
 
-#  hula-im-server:
-#    image: hula-im-server:v1.5.0
-#    container_name: hula-im-server
-#    environment:
-#      TZ: Asia/Shanghai
-#    ports:
-#      - "9190:9190"
-#      - "8090:8090"
-#    volumes:
-#      - /docker/hula-im-server/config:/config
-
 networks:
   rocketmq_net:
     name: rocketmq_net
