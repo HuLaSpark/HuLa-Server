@@ -5,7 +5,6 @@ import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.WSBlack;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.impl.PushService;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,6 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 public class UserBlackListener {
 
     private final MessageDao messageDao;
-    private final WebSocketService webSocketService;
     private final UserCache userCache;
     private final PushService pushService;
 

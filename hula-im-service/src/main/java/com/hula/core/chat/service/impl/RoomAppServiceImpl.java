@@ -53,7 +53,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.codehaus.plexus.util.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -428,7 +427,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private Map<Long, RoomBaseInfo> getRoomBaseInfoMap(List<Long> roomIds, Long uid) {
         Map<Long, Room> roomMap = roomCache.getBatch(roomIds);
         // 房间根据好友和群组类型分组
-        Map<Integer, List<Long>> groupRoomIdMap = roomMap.values().stream().collect(Collectors.groupingBy(Room::getType,
+        Map<Integer, List<Long>> groupRoomIdMap = roomMap.values().stream().filter(Objects::nonNull).collect(Collectors.groupingBy(Room::getType,
                 Collectors.mapping(Room::getId, Collectors.toList())));
         // 获取群组信息
         List<Long> groupRoomId = groupRoomIdMap.get(RoomTypeEnum.GROUP.getType());
@@ -437,7 +436,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         List<Long> friendRoomId = groupRoomIdMap.get(RoomTypeEnum.FRIEND.getType());
         Map<Long, User> friendRoomMap = getFriendRoomMap(friendRoomId, uid);
 
-        return roomMap.values().stream().map(room -> {
+        return roomMap.values().stream().filter(Objects::nonNull).map(room -> {
             RoomBaseInfo roomBaseInfo = new RoomBaseInfo();
             roomBaseInfo.setRoomId(room.getId());
             roomBaseInfo.setType(room.getType());

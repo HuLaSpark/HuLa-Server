@@ -3,7 +3,6 @@ package com.hula.common.event.listener;
 import com.hula.common.event.TokenExpireEvent;
 import com.hula.core.user.dao.UserApplyDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
@@ -24,8 +23,6 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 public class TokenExpireListener {
     @Resource
     private UserApplyDao userApplyDao;
-    @Resource
-    private WebSocketService webSocketService;
 
     @Resource
     private PushService pushService;

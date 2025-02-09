@@ -10,6 +10,7 @@ import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.UserApplyEvent;
+import com.hula.common.event.UserApprovalEvent;
 import com.hula.core.chat.dao.RoomFriendDao;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.service.ChatService;
@@ -19,6 +20,7 @@ import com.hula.core.chat.service.adapter.MessageAdapter;
 import com.hula.core.user.dao.UserApplyDao;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.dao.UserFriendDao;
+import com.hula.core.user.domain.dto.RequestApprovalDto;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.entity.UserFriend;
@@ -169,8 +171,11 @@ public class FriendServiceImpl implements FriendService {
         createFriend(uid, userApply.getUid());
         // 创建一个聊天房间
         RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));
+        // 通知请求方已处理好友申请
+        applicationEventPublisher.publishEvent(new UserApprovalEvent(this, RequestApprovalDto.builder().uid(uid).targetUid(userApply.getUid()).build()));
         // 发送一条同意消息。。我们已经是好友了，开始聊天吧
         chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId()), uid);
+
     }
 
     /**

@@ -4,7 +4,6 @@ import com.hula.common.event.UserApplyEvent;
 import com.hula.core.user.dao.UserApplyDao;
 import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.vo.resp.ws.WSFriendApply;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
@@ -25,8 +24,6 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 public class UserApplyListener {
     @Resource
     private UserApplyDao userApplyDao;
-    @Resource
-    private WebSocketService webSocketService;
 
     @Resource
     private PushService pushService;

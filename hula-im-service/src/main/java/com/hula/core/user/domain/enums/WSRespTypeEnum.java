@@ -29,6 +29,7 @@ public enum WSRespTypeEnum {
     REQUEST_NEW_FRIEND("requestNewFriend", "好友申请", WSFriendApply.class),
     NEW_FRIEND_SESSION("newFriendSession", "成员变动", WSMemberChange.class),
     OFFLINE("offline", "下线通知", WSOfflineNotify.class),
+    REQUEST_APPROVAL_FRIEND("requestApprovalFriend", "同意好友请求", WSFriendApproval.class),
     ;
 
     private final String type;

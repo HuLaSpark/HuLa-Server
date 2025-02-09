@@ -132,4 +132,11 @@ public class WsAdapter {
         return wsBaseResp;
     }
 
+    public static WsBaseResp<WSFriendApproval> buildApprovalSend(WSFriendApproval resp) {
+        WsBaseResp<WSFriendApproval> wsBaseResp = new WsBaseResp<>();
+        wsBaseResp.setType(WSRespTypeEnum.REQUEST_APPROVAL_FRIEND.getType());
+        wsBaseResp.setData(resp);
+        return wsBaseResp;
+    }
+
 }
