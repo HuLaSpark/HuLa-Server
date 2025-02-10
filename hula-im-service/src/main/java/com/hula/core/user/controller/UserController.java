@@ -40,6 +40,13 @@ public class UserController {
         return ApiResult.success(userService.getUserInfo(RequestHolder.get().getUid()));
     }
 
+    @PostMapping("/avatar")
+    @Operation(summary ="修改头像")
+    public ApiResult<Void> modifyAvatar(@Valid @RequestBody ModifyAvatarReq req) {
+        userService.modifyAvatar(RequestHolder.get().getUid(), req);
+        return ApiResult.success();
+    }
+
     @PostMapping("/summary/userInfo/batch")
     @Operation(summary ="用户聚合信息-返回的代表需要刷新的")
     public ApiResult<List<SummeryInfoDTO>> getSummeryUserInfo(@Valid @RequestBody SummeryInfoReq req) {

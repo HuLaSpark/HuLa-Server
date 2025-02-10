@@ -114,6 +114,12 @@ public class User implements Serializable {
     @TableField("update_time")
     private Date updateTime;
 
+    /**
+     * 修改头像时间
+     */
+    @TableField("avatar_update_time")
+    private Date avatarUpdateTime;
+
     public void refreshIp(String ip) {
         if (ipInfo == null) {
             ipInfo = new IpInfo();

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public enum OssSceneEnum {
     CHAT(1, "聊天", "/chat"),
     EMOJI(2, "表情包", "/emoji"),
+    AVATAR(3, "头像", "/avatar"),
     ;
 
     private final Integer type;

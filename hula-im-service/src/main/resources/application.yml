@@ -125,4 +125,5 @@ rocketmq:
 public:
   urls:
     - /token/login
+    - /token/mobileLogin
     - /token/register

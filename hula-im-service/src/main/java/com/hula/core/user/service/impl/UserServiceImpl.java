@@ -1,5 +1,6 @@
 package com.hula.core.user.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.utils.sensitiveword.SensitiveWordBs;
@@ -27,14 +28,12 @@ import com.hula.core.user.service.cache.UserSummaryCache;
 import com.hula.utils.AssertUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,8 +67,9 @@ public class UserServiceImpl implements UserService {
         // 判断名字是不是重复
         String newName = req.getName();
         AssertUtil.isFalse(sensitiveWordBs.hasSensitiveWord(newName), "名字中包含敏感词，请重新输入"); // 判断名字中有没有敏感词
-        User oldUser = userDao.getByName(newName);
-        AssertUtil.isEmpty(oldUser, "名字已经被抢占了，请换一个哦~~");
+        // 名称可以重复
+//        User oldUser = userDao.getByName(newName);
+//        AssertUtil.isEmpty(oldUser, "名字已经被抢占了，请换一个哦~~");
         // 判断改名卡够不够
         UserBackpack firstValidItem = userBackpackDao.getFirstValidItem(uid, ItemEnum.MODIFY_NAME_CARD.getId());
         AssertUtil.isNotEmpty(firstValidItem, "改名次数不够了，等后续活动送改名卡哦");
@@ -82,6 +82,20 @@ public class UserServiceImpl implements UserService {
             // 删除缓存
             userCache.userInfoChange(uid);
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void modifyAvatar(Long uid, ModifyAvatarReq req) {
+        // 判断30天内是否改过头像
+        User user = userDao.getById(uid);
+        AssertUtil.isTrue(Objects.isNull(user.getAvatarUpdateTime()) ||
+                DateUtils.addDays(user.getAvatarUpdateTime(), 30).getTime() <=
+                        Calendar.getInstance().getTime().getTime(), "30天内只能修改一次头像");
+        // 更新
+        userDao.updateById(User.builder().id(user.getId()).avatar(req.getAvatar()).avatarUpdateTime(DateUtil.date()).build());
+        // 删除缓存
+        userCache.userInfoChange(uid);
     }
 
     @Override
