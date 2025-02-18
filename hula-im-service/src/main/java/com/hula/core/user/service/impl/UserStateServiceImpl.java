@@ -1,5 +1,6 @@
 package com.hula.core.user.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.dao.UserStateDao;
 import com.hula.core.user.domain.entity.User;
@@ -42,10 +43,10 @@ public class UserStateServiceImpl implements UserStateService {
 		UserState userState = userStateDao.getById(userStateId);
 		Boolean changeUserState = userDao.changeUserState(uid, userStateId);
 
-		if (changeUserState){
+		if (ObjectUtil.isNotNull(userState) && changeUserState){
 			WsBaseResp<UserStateVo> wsBaseResp = new WsBaseResp();
 			wsBaseResp.setType(WSRespTypeEnum.USER_STATE_CHANGE.getType());
-			wsBaseResp.setData(new UserStateVo(uid, userState.getTitle(), userState.getUrl()));
+			wsBaseResp.setData(new UserStateVo(uid, userState.getId()));
 			pushService.sendPushMsg(wsBaseResp, uid);
 			return true;
 		}else {

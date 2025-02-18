@@ -9,20 +9,16 @@ import java.io.Serializable;
 public class UserStateVo implements Serializable {
 
 	@Schema(description = "更改人id")
-	private Long id;
+	private Long uid;
 
-	@Schema(description = "状态名")
-	private String title;
-
-	@Schema(description = "状态图标")
-	private String url;
+	@Schema(description = "状态id")
+	private Long stateId;
 
 	public UserStateVo() {
 	}
 
-	public UserStateVo(Long id, String title, String url) {
-		this.id = id;
-		this.title = title;
-		this.url = url;
+	public UserStateVo(Long uid, Long stateId) {
+		this.uid = uid;
+		this.stateId = stateId;
 	}
 }
