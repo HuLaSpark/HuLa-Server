@@ -33,7 +33,7 @@ public class UserApplyListener {
     public void notifyFriend(UserApplyEvent event) {
         UserApply userApply = event.getUserApply();
         Integer unReadCount = userApplyDao.getUnReadCount(userApply.getTargetId());
-        pushService.sendPushMsg(WsAdapter.buildApplySend(new WSFriendApply(userApply.getUid(), unReadCount)), userApply.getTargetId());
+        pushService.sendPushMsg(WsAdapter.buildApplySend(new WSFriendApply(userApply.getUid(), unReadCount)), userApply.getTargetId(), userApply.getUid());
     }
 
 }
