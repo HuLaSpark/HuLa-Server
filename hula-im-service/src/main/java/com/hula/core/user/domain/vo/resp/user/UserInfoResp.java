@@ -4,6 +4,8 @@ import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author nyh
  */
@@ -28,6 +30,12 @@ public class UserInfoResp extends BaseEntity {
     @Schema(description = "性别 1男 2女")
     private Integer sex;
 
+    @Schema(description = "用户状态id")
+    private Long userStateId;
+
     @Schema(description = "修改昵称次数")
     private Integer modifyNameChance;
+
+    @Schema(description = "头像更换时间")
+    private Date AvatarUpdateTime;
 }
