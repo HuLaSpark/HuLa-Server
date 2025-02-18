@@ -33,6 +33,8 @@ public class SummeryInfoDTO {
     private String avatar;
     @Schema(description = "归属地")
     private String locPlace;
+	@Schema(description = "用户状态")
+	private Long userStateId;
     @Schema(description = "佩戴的徽章id")
     private Long wearingItemId;
 

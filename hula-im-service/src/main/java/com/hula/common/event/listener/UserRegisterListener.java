@@ -30,7 +30,7 @@ public class UserRegisterListener {
 
     @Async(HULA_EXECUTOR)
     @EventListener(classes = UserRegisterEvent.class)
-    public void addContact(UserRegisterEvent event) {
+    public void sendCard(UserRegisterEvent event) {
         User user = event.getUser();
         //送一张改名卡
         userBackpackService.acquireItem(user.getId(), ItemEnum.MODIFY_NAME_CARD.getId(), IdempotentEnum.UID, user.getId().toString());
