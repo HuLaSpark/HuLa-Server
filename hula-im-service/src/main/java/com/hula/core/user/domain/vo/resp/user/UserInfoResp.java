@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.vo.resp.user;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -37,5 +38,5 @@ public class UserInfoResp extends BaseEntity {
     private Integer modifyNameChance;
 
     @Schema(description = "头像更换时间")
-    private Date AvatarUpdateTime;
+    private Date avatarUpdateTime;
 }
