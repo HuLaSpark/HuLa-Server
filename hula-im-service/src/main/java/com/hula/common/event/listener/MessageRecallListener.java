@@ -2,10 +2,7 @@ package com.hula.common.event.listener;
 
 import com.hula.common.event.MessageRecallEvent;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
-import com.hula.core.chat.service.ChatService;
-import com.hula.core.chat.service.cache.MsgCache;
 import com.hula.core.chat.service.cache.MsgPlusCache;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
@@ -24,12 +21,6 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 @Slf4j
 @Component
 public class MessageRecallListener {
-    @Resource
-    private WebSocketService webSocketService;
-    @Resource
-    private ChatService chatService;
-    @Resource
-    private MsgCache msgCache;
     @Resource
     private MsgPlusCache msgPlusCache;
     @Resource

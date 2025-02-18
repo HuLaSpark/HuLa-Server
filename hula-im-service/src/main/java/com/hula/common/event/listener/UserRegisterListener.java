@@ -1,6 +1,5 @@
 package com.hula.common.event.listener;
 
-
 import com.hula.common.enums.IdempotentEnum;
 import com.hula.common.event.UserRegisterEvent;
 import com.hula.core.user.dao.UserDao;
@@ -31,7 +30,7 @@ public class UserRegisterListener {
 
     @Async(HULA_EXECUTOR)
     @EventListener(classes = UserRegisterEvent.class)
-    public void sendCard(UserRegisterEvent event) {
+    public void addContact(UserRegisterEvent event) {
         User user = event.getUser();
         //送一张改名卡
         userBackpackService.acquireItem(user.getId(), ItemEnum.MODIFY_NAME_CARD.getId(), IdempotentEnum.UID, user.getId().toString());

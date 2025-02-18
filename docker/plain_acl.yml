@@ -3,7 +3,7 @@ globalWhiteRemoteAddresses:
 - 192.168.0.*
 
 accounts:
-  accessKey: nongyehong
+- accessKey: nongyehong
   secretKey: 12345678
   whiteRemoteAddress:
   admin: false

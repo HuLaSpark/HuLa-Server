@@ -256,28 +256,16 @@ public class RoomAppServiceImpl implements RoomAppService {
     @Override
     public Long addGroup(Long uid, GroupAddReq request) {
         List<Long> userIdList = request.getUidList();
-        AssertUtil.isTrue(userIdList.size()>2,"群聊人数应大于2人");
-        final RoomGroup[] roomGroup = new RoomGroup[1];
-        List<GroupMember> groupMembers = transactionTemplate.execute((status -> {
-            try {
-                roomGroup[0] = roomService.createGroupRoom(uid,request.getGroupName());
-                // 批量保存群成员
-                List<GroupMember> members = RoomAdapter.buildGroupMemberBatch(userIdList, roomGroup[0].getId());
-                groupMemberDao.saveBatch(members);
-                return members;
-            } catch (Exception e) {
-                status.setRollbackOnly();
-                throw e;
-            }
-        }));
-        User user = userInfoCache.get(uid);
-        List<Long> uidList = groupMembers.stream().map(GroupMember::getUid).collect(Collectors.toList());
-        ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(roomGroup[0], user, userInfoCache.getBatch(uidList));
-        chatService.sendMsg(chatMessageReq, uid);
+        AssertUtil.isTrue(userIdList.size() > 1,"群聊人数应大于2人");
+		RoomGroup roomGroup = roomService.createGroupRoom(uid, request);
 
-        // 发送邀请加群消息==》触发每个人的会话
-        applicationEventPublisher.publishEvent(new GroupMemberAddEvent(this, roomGroup[0], groupMembers, uid));
-        return roomGroup[0].getRoomId();
+		// 批量保存群成员
+		List<GroupMember> groupMembers = RoomAdapter.buildGroupMemberBatch(userIdList, roomGroup.getId());
+		groupMemberDao.saveBatch(groupMembers);
+
+        // 发送邀请加群消息 ==> 触发每个人的会话
+        applicationEventPublisher.publishEvent(new GroupMemberAddEvent(this, roomGroup, groupMembers, uid));
+		return roomGroup.getRoomId();
     }
 
     private boolean hasPower(GroupMember self) {

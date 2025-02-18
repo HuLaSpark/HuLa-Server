@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : mysql8.0本地连接
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 80035
- Source Host           : localhost:3306
+ Source Server Version : 80031 (8.0.31)
+ Source Host           : localhost:13306
  Source Schema         : hula-im
 
  Target Server Type    : MySQL
- Target Server Version : 80035
+ Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 10/07/2024 15:09:46
+ Date: 17/02/2025 17:46:34
 */
 
 SET NAMES utf8mb4;
@@ -53,13 +53,14 @@ CREATE TABLE `contact`  (
   INDEX `idx_room_id_read_time`(`room_id` ASC, `read_time` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '会话列表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '会话列表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of contact
 -- ----------------------------
-INSERT INTO `contact` VALUES (1, 20000, 1, '2024-07-10 14:54:31.314', NULL, NULL, '2024-07-10 14:54:31.314', '2024-07-10 15:09:05.459');
-INSERT INTO `contact` VALUES (2, 20001, 1, '2024-07-10 14:54:31.314', NULL, NULL, '2024-07-10 14:54:31.314', '2024-07-10 15:09:05.459');
+INSERT INTO `contact` VALUES (2, 20000, 1, '2025-02-17 16:54:37.820', NULL, NULL, '2025-02-17 16:45:31.514', '2025-02-17 16:54:37.821');
+INSERT INTO `contact` VALUES (15, 20001, 1, '2025-02-17 17:40:43.489', NULL, NULL, '2025-02-17 17:40:38.763', '2025-02-17 17:45:50.433');
+
 -- ----------------------------
 -- Table structure for group_member
 -- ----------------------------
@@ -75,7 +76,7 @@ CREATE TABLE `group_member`  (
   INDEX `idx_group_id_role`(`group_id` ASC, `role` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群成员表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群成员表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of group_member
@@ -169,7 +170,7 @@ CREATE TABLE `role`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of role
@@ -193,12 +194,13 @@ CREATE TABLE `room`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '房间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '房间表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of room
 -- ----------------------------
 INSERT INTO `room` VALUES (1, 1, 1, '2024-07-10 11:17:15.521', NULL, NULL, '2024-07-10 11:17:15.521', '2024-07-10 11:17:15.521');
+
 -- ----------------------------
 -- Table structure for room_friend
 -- ----------------------------
@@ -217,11 +219,12 @@ CREATE TABLE `room_friend`  (
   INDEX `idx_room_id`(`room_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '单聊房间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '单聊房间表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of room_friend
 -- ----------------------------
+
 -- ----------------------------
 -- Table structure for room_group
 -- ----------------------------
@@ -239,12 +242,13 @@ CREATE TABLE `room_group`  (
   INDEX `idx_room_id`(`room_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群聊房间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群聊房间表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of room_group
 -- ----------------------------
 INSERT INTO `room_group` VALUES (1, 1, 'HuLa全员群', 'https://hulaspark.com/minio/hula/avatar/hula.png', NULL, 0, '2024-07-10 11:17:15.523', '2024-07-10 11:17:15.523');
+
 -- ----------------------------
 -- Table structure for secure_invoke_record
 -- ----------------------------
@@ -261,7 +265,7 @@ CREATE TABLE `secure_invoke_record`  (
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_next_retry_time`(`next_retry_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '本地消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '本地消息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of secure_invoke_record
@@ -273,7 +277,7 @@ CREATE TABLE `secure_invoke_record`  (
 DROP TABLE IF EXISTS `sensitive_word`;
 CREATE TABLE `sensitive_word`  (
   `word` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '敏感词'
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '敏感词库' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '敏感词库' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sensitive_word
@@ -284,34 +288,37 @@ INSERT INTO `sensitive_word` VALUES ('tmd');
 -- ----------------------------
 -- Table structure for user
 -- ----------------------------
-CREATE TABLE `user` (
-   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
-   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户昵称',
-   `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户头像',
-   `sex` int DEFAULT NULL COMMENT '性别 1为男性，2为女性',
-   `open_id` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-   `active_status` int DEFAULT '2' COMMENT '在线状态 1在线 2离线',
-   `last_opt_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '最后上下线时间',
-   `ip_info` json DEFAULT NULL COMMENT 'ip信息',
-   `item_id` bigint DEFAULT NULL COMMENT '佩戴的徽章id',
-   `status` int DEFAULT '0' COMMENT '使用状态 0.正常 1拉黑',
-   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
-   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-   `account` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户账号',
-   `password` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户密码',
-   `avatar_update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改头像时间',
-   PRIMARY KEY (`id`) USING BTREE,
-   KEY `idx_create_time` (`create_time`) USING BTREE,
-   KEY `idx_update_time` (`update_time`) USING BTREE,
-   KEY `idx_active_status_last_opt_time` (`active_status`,`last_opt_time`) USING BTREE,
-   KEY `account_UNIQUE` (`account`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT= 20002 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user`  (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户id',
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户昵称',
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '用户头像',
+  `sex` int NULL DEFAULT NULL COMMENT '性别 1为男性，2为女性',
+  `open_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `active_status` int NULL DEFAULT 2 COMMENT '在线状态 1在线 2离线',
+  `last_opt_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '最后上下线时间',
+  `ip_info` json NULL COMMENT 'ip信息',
+  `item_id` bigint NULL DEFAULT NULL COMMENT '佩戴的徽章id',
+  `status` int NULL DEFAULT 0 COMMENT '使用状态 0.正常 1拉黑',
+  `user_state_id` bigint NOT NULL DEFAULT 0 COMMENT '用户状态id',
+  `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+  `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
+  `account` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户账号',
+  `password` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户密码',
+  `avatar_update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改头像时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
+  INDEX `idx_update_time`(`update_time` ASC) USING BTREE,
+  INDEX `idx_active_status_last_opt_time`(`active_status` ASC, `last_opt_time` ASC) USING BTREE,
+  INDEX `account_UNIQUE`(`account` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 20004 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (20000, 'Dawn', '001', 0, '', 1, '2024-07-10 15:09:09.086', NULL, NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096', 'Dawn', '123456');
-INSERT INTO `user` VALUES (20001, 'nong', '002', 0, '', 1, '2024-07-10 15:09:09.086', NULL, NULL, 0, '2024-07-10 15:08:00.607', '2024-07-10 15:09:09.096', 'nong', '123456');
+INSERT INTO `user` VALUES (20000, 'admin', '001', 0, '1', 2, '2025-02-17 16:54:52.188', NULL, NULL, 0, 0, '2025-02-17 15:42:12.536', '2025-02-17 16:54:52.190', 'admin', '123', '2025-02-17 16:54:52.190');
+INSERT INTO `user` VALUES (20001, 'nong', '002', 0, '1', 2, '2025-02-17 15:42:12.536', NULL, NULL, 0, 0, '2025-02-17 15:42:12.536', '2025-02-17 16:45:10.789', 'test', '123', '2025-02-17 16:45:10.789');
+
 -- ----------------------------
 -- Table structure for user_apply
 -- ----------------------------
@@ -326,14 +333,14 @@ CREATE TABLE `user_apply`  (
   `read_status` int NOT NULL COMMENT '阅读状态 1未读 2已读',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
-  `deleted` tinyint default 0 NOT NULL  COMMENT '删除状态 0：未删 1 申请人删除 2 被申请人删除 3都删除',
+  `deleted` tinyint NOT NULL DEFAULT 0 COMMENT '删除状态 0：未删 1 申请人删除 2 被申请人删除 3都删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_uid_target_id`(`uid` ASC, `target_id` ASC) USING BTREE,
   INDEX `idx_target_id_read_status`(`target_id` ASC, `read_status` ASC) USING BTREE,
   INDEX `idx_target_id`(`target_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户申请表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户申请表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_apply
@@ -356,13 +363,17 @@ CREATE TABLE `user_backpack`  (
   INDEX `idx_uid`(`uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户背包表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户背包表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_backpack
 -- ----------------------------
 INSERT INTO `user_backpack` VALUES (1, 20000, 1, 0, '1_1_20000', '2024-07-10 11:20:32.386', '2024-07-10 11:20:32.386');
 INSERT INTO `user_backpack` VALUES (2, 20000, 3, 0, '3_1_20000', '2024-07-10 11:20:32.415', '2024-07-10 11:20:32.415');
+INSERT INTO `user_backpack` VALUES (3, 20002, 1, 0, '1_1_20002', '2025-02-17 16:55:58.986', '2025-02-17 16:55:58.986');
+INSERT INTO `user_backpack` VALUES (4, 20002, 3, 0, '3_1_20002', '2025-02-17 16:55:59.009', '2025-02-17 16:55:59.009');
+INSERT INTO `user_backpack` VALUES (5, 20003, 1, 0, '1_1_20003', '2025-02-17 17:02:34.395', '2025-02-17 17:02:34.395');
+INSERT INTO `user_backpack` VALUES (6, 20003, 3, 0, '3_1_20003', '2025-02-17 17:02:34.396', '2025-02-17 17:02:34.396');
 
 -- ----------------------------
 -- Table structure for user_emoji
@@ -398,7 +409,7 @@ CREATE TABLE `user_friend`  (
   INDEX `idx_uid_friend_uid`(`uid` ASC, `friend_uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户联系人表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户联系人表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_friend
@@ -419,11 +430,64 @@ CREATE TABLE `user_role`  (
   INDEX `idx_role_id`(`role_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户角色关系表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户角色关系表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_role
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for user_state
+-- ----------------------------
+DROP TABLE IF EXISTS `user_state`;
+CREATE TABLE `user_state`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci NOT NULL COMMENT '状态名',
+  `url` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci NOT NULL COMMENT '状态图标',
+  `created_by` bigint NULL DEFAULT NULL COMMENT '创建者',
+  `created_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
+  `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天用户状态表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of user_state
+-- ----------------------------
+INSERT INTO `user_state` VALUES (1, '在线', '/status/online.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (2, '离开', '/status/leave.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (3, '忙碌', '/status/busy.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (4, '请勿打扰', '/status/IonBan.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (5, '隐身', '/status/cloaking.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (6, '离线', '/status/offline.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (7, '今日天气', '/status/weather_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (8, '一言难尽', '/status/hardtosay@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (9, '我太难了', '/status/toohard@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (10, '难得糊涂', '/status/nandehutu.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (11, '元气满满', '/status/fullofyuanqi@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (12, '嗨到飞起', '/status/happytofly@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (13, '水逆退散', '/status/luck@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (14, '好运锦鲤', '/status/jinli@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (15, '恋爱中', '/status/relationship_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (16, '我crush了', '/status/crush.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (17, '被掏空', '/status/tkong.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (18, '听歌中', '/status/music@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (19, '我没事', '/status/imfine_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (20, '学习中', '/status/study_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (21, '睡觉中', '/status/sleeping_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (22, '搬砖中', '/status/banzhuan.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (23, '想静静', '/status/bequiet@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (24, '运动中', '/status/yundongzhong@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (25, '我想开了', '/status/woxiangkaile.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (26, '信号弱', '/status/signal_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (27, '追剧中', '/status/tv_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (28, '美滋滋', '/status/meizizi@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (29, '摸鱼中', '/status/fish@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (30, '无聊中', '/status/boring@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (31, '悠哉哉', '/status/youzaizai@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (32, '去旅行', '/status/gototravel.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
+INSERT INTO `user_state` VALUES (33, '游戏中', '/status/game_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for wx_msg

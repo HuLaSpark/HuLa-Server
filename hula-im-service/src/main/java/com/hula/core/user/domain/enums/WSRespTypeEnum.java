@@ -22,6 +22,7 @@ public enum WSRespTypeEnum {
     LOGIN_SUCCESS("loginSuccess", "用户登录成功返回用户信息", WSLoginSuccess.class),
     RECEIVE_MESSAGE("receiveMessage", "新消息", WSMessage.class),
     ONLINE("online", "上线通知", WSOnlineNotify.class),
+	USER_STATE_CHANGE("userStateChange", "用户状态改变", null),
     TOKEN_EXPIRED("tokenExpired", "使前端的token失效，意味着前端需要重新登录", WsTokenExpire.class),
     INVALID_USER("invalidUser", "拉黑用户", WSBlack.class),
     MSG_MARK_ITEM("msgMarkItem", "消息标记", WSMsgMark.class),

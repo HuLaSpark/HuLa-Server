@@ -7,6 +7,7 @@ import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.common.event.UserRegisterEvent;
+import com.hula.core.chat.service.ContactService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.LoginService;
@@ -26,16 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class LoginServiceImpl implements LoginService {
-
-    // token过期时间
-    private static final Integer TOKEN_EXPIRE_DAYS = 5;
-    // token续期时间
-    private static final Integer TOKEN_RENEWAL_DAYS = 2;
-
     @Resource
     private TokenService tokenService;
     @Resource
     private UserDao userDao;
+    @Resource
+    private ContactService contactService;
     @Resource
     private UserCache userCache;
     @Resource
@@ -51,7 +48,7 @@ public class LoginServiceImpl implements LoginService {
         if (!userCache.isOnline(queryUser.getId())) {
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
-        return  tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC);
+        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC);
     }
 
     @Override
@@ -81,6 +78,8 @@ public class LoginServiceImpl implements LoginService {
                 .build();
         // 保存用户
         userDao.save(newUser);
+        // 创建会话
+        contactService.createContact(newUser.getId(), 1L);
         // 发布用户注册消息
         applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
     }

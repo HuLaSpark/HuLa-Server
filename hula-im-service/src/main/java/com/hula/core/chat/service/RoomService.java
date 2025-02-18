@@ -6,6 +6,7 @@ import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.domain.entity.RoomGroup;
+import com.hula.core.chat.domain.vo.request.GroupAddReq;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public interface RoomService {
     /**
      * 创建一个群聊房间
      */
-    RoomGroup createGroupRoom(Long uid, String groupName);
+    RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq);
 
 
     List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type);

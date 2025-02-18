@@ -1,6 +1,5 @@
 package com.hula.core.chat.controller;
 
-
 import com.hula.annotation.FrequencyControl;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.dto.MsgReadInfoDTO;

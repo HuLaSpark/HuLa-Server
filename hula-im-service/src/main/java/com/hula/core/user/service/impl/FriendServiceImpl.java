@@ -175,7 +175,6 @@ public class FriendServiceImpl implements FriendService {
         applicationEventPublisher.publishEvent(new UserApprovalEvent(this, RequestApprovalDto.builder().uid(uid).targetUid(userApply.getUid()).build()));
         // 发送一条同意消息。。我们已经是好友了，开始聊天吧
         chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId()), uid);
-
     }
 
     /**

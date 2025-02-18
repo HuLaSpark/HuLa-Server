@@ -1,6 +1,5 @@
 package com.hula.common.config;
 
-
 import jakarta.annotation.Resource;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -18,16 +17,16 @@ public class RedissonConfig {
     private RedisProperties redisProperties;
 
     @Bean
-    public RedissonClient redissonClient() {
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress("redis://" + redisProperties.getHost() + ":" + redisProperties.getPort())
-                // redis 6.x 需要设置用户名
-                .setUsername("default")
-                // 记得打开密码设置
-                .setPassword(redisProperties.getPassword())
-                // .setPassword(null)
-                .setDatabase(redisProperties.getDatabase());
-        return Redisson.create(config);
-    }
+	public RedissonClient redissonClient() {
+		Config config = new Config();
+		config.useSingleServer()
+				.setAddress("redis://" + redisProperties.getHost() + ":" + redisProperties.getPort())
+				// redis 6.x 需要设置用户名
+				.setUsername("default")
+				// 记得打开密码设置
+				.setPassword(redisProperties.getPassword())
+				// .setPassword(null)
+				.setDatabase(redisProperties.getDatabase());
+		return Redisson.create(config);
+	}
 }

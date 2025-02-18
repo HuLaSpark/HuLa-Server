@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.enums.NormalOrNoEnum;
+import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.RoomDao;
@@ -72,13 +73,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomGroup createGroupRoom(Long uid, String groupName) {
+	@Transactional(rollbackFor = Exception.class)
+    public RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq) {
         List<GroupMember> selfGroup = groupMemberDao.getSelfGroup(uid);
-        AssertUtil.isTrue(selfGroup.size()<6, "每个人只能创建五个群");
+        AssertUtil.isTrue(selfGroup.size() < 60, "每个人只能创建五个群");
         User user = userInfoCache.get(uid);
         Room room = createRoom(RoomTypeEnum.GROUP);
         // 插入群
-        RoomGroup roomGroup = ChatAdapter.buildGroupRoom(user, room.getId(),groupName);
+        RoomGroup roomGroup = ChatAdapter.buildGroupRoom(user, room.getId(), groupAddReq.getGroupName());
         roomGroupDao.save(roomGroup);
         // 插入群主
         GroupMember leader = GroupMember.builder()

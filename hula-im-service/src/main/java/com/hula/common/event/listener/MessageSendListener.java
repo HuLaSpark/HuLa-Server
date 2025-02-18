@@ -15,7 +15,6 @@ import com.hula.core.chat.service.WeChatMsgOperationService;
 import com.hula.core.chat.service.cache.GroupMemberCache;
 import com.hula.core.chat.service.cache.HotRoomCache;
 import com.hula.core.chat.service.cache.RoomCache;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.service.MQProducer;
 import jakarta.annotation.Resource;
@@ -36,8 +35,6 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class MessageSendListener {
-    @Resource
-    private WebSocketService webSocketService;
     @Resource
     private ChatService chatService;
     @Resource

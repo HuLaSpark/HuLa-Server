@@ -2,4 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hula.core.user.mapper.UserMapper">
 
+    <update id="changeUserState">
+        UPDATE user
+        SET user_state_id = #{userStateId}
+        WHERE id = #{employeeId}
+    </update>
 </mapper>

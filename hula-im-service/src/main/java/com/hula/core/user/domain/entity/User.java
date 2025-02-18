@@ -78,6 +78,12 @@ public class User implements Serializable {
     @TableField("active_status")
     private Integer activeStatus;
 
+	/**
+	 * @see UserState
+	 */
+	@Schema(description = "用户状态id")
+	private Long userStateId;
+
     /**
      * 最后上下线时间
      */
