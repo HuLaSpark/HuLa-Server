@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 @Getter
 public enum HttpErrorEnum implements ErrorEnum {
     ACCESS_DENIED(401, "登录失效，请重新登录"),
+	BLACK_ERROR(360, "对不起，不在白名单内"),
     ;
     private Integer httpCode;
     private String msg;

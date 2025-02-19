@@ -10,6 +10,7 @@ import com.hula.common.event.UserRegisterEvent;
 import com.hula.core.chat.service.ContactService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.cache.UserCache;
@@ -39,7 +40,7 @@ public class LoginServiceImpl implements LoginService {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public String login(User user) {
+    public LoginResultVO login(User user) {
         User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
                 .eq(User::getAccount, user.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
@@ -48,11 +49,11 @@ public class LoginServiceImpl implements LoginService {
         if (!userCache.isOnline(queryUser.getId())) {
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
-        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC);
+        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC.getType());
     }
 
     @Override
-    public String mobileLogin(User user) {
+    public LoginResultVO mobileLogin(User user) {
         User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
                 .eq(User::getAccount, user.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
@@ -61,7 +62,7 @@ public class LoginServiceImpl implements LoginService {
         if (!userCache.isOnline(queryUser.getId())) {
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
-        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.MOBILE);
+        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.MOBILE.getType());
     }
 
     @Override

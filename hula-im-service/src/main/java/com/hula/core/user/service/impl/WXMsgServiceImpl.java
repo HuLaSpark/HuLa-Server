@@ -15,6 +15,7 @@ import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.ws.WSAuthorize;
+import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.TokenService;
@@ -177,7 +178,7 @@ public class WXMsgServiceImpl implements WebSocketService {
         // 用户校验成功给用户登录
         if (tokenService.verify(wsAuthorize.getToken())) {
             User user = userDao.getById(JwtUtils.getUidOrNull(wsAuthorize.getToken()));
-            loginSuccess(channel, user, wsAuthorize.getToken());
+            loginSuccess(channel, user, wsAuthorize.getToken(), wsAuthorize.getToken());
         }
         // 让前端的token失效
         else {
@@ -190,7 +191,7 @@ public class WXMsgServiceImpl implements WebSocketService {
     /**
      * (channel必在本地)登录成功，并更新状态
      */
-    private void loginSuccess(Channel channel, User user, String token) {
+    private void loginSuccess(Channel channel, User user, String token, String refreshToken) {
         // 更新上线列表
         NettyUtil.setAttr(channel, NettyUtil.UID, user.getId());
         ONLINE_UID_MAP.putIfAbsent(user.getId(), new CopyOnWriteArrayList<>());
@@ -206,8 +207,7 @@ public class WXMsgServiceImpl implements WebSocketService {
         }
         ONLINE_UID_MAP.get(user.getId()).add(channel);
         // 发送给对应的用户
-        sendMsg(channel, WsAdapter.buildLoginSuccessResp(user, token,
-                roleService.hasRole(user.getId(), RoleTypeEnum.CHAT_MANAGER)));
+        sendMsg(channel, WsAdapter.buildLoginSuccessResp(user, token, refreshToken, roleService.hasRole(user.getId(), RoleTypeEnum.CHAT_MANAGER)));
     }
 
     @Override
@@ -220,11 +220,10 @@ public class WXMsgServiceImpl implements WebSocketService {
         User user = userDao.getById(loginMessageDTO.getCode());
         // 移除code
         WAIT_LOGIN_MAP.invalidate(loginMessageDTO.getCode());
-        // 创建token
         // 登录类型默认为PC
-        String token = tokenService.createToken(loginMessageDTO.getUid(), LoginTypeEnum.PC);
+		LoginResultVO token = tokenService.createToken(loginMessageDTO.getUid(), LoginTypeEnum.PC.getType());
         // 用户登录
-        loginSuccess(channel, user, token);
+        loginSuccess(channel, user, token.getToken(), token.getRefreshToken());
         // 发送用户上线事件
         if (userCache.isOnline(user.getId())) {
             user.setLastOptTime(new Date());
@@ -264,7 +263,6 @@ public class WXMsgServiceImpl implements WebSocketService {
             threadPoolTaskExecutor.execute(() -> sendMsg(channel, wsBaseResp));
         });
     }
-
 
     /**
      * 给本地channel发送消息

@@ -29,13 +29,14 @@ public class WsAdapter {
         return wsBaseResp;
     }
 
-    public static WsBaseResp<WSLoginSuccess> buildLoginSuccessResp(User user, String token, boolean hasPower) {
+    public static WsBaseResp<WSLoginSuccess> buildLoginSuccessResp(User user, String token, String refreshToken, boolean hasPower) {
         WsBaseResp<WSLoginSuccess> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.LOGIN_SUCCESS.getType());
         WSLoginSuccess wsLoginSuccess = WSLoginSuccess.builder()
                 .avatar(user.getAvatar())
                 .name(user.getName())
                 .token(token)
+				.refreshToken(refreshToken)
                 .uid(user.getId())
                 .power(hasPower ? 1 : 0)
                 .build();

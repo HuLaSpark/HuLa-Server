@@ -1,0 +1,55 @@
+package com.hula.core.user.domain.vo.resp.user;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
+
+/**
+ * 登录参数, 双token, 续签同时刷新 token 与 refreshToken; 相当于自动重新登录; 这样前端无法拿同一个 refreshToken 无限刷新
+ *
+ * @author 乾乾
+ * @date 2025年02月19日22:18:12
+ */
+@Data
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@Schema(description = "登录结果")
+public class LoginResultVO {
+
+    @Schema(description = "随机数")
+    private String uuid;
+
+    @Schema(description = "token")
+    private String token;
+
+    @Schema(description = "刷新token")
+    private String refreshToken;
+
+    @Schema(description = "Token 有效时间：单位：秒")
+    private Long expire;
+
+    @Schema(description = "到期时间")
+    private LocalDateTime expiration;
+
+	@Schema(description = "客户端")
+	private String client;
+
+	public LoginResultVO() {
+	}
+
+	public LoginResultVO(String token, String refreshToken, LocalDateTime expiration, String client) {
+		this.token = token;
+		this.refreshToken = refreshToken;
+		this.expiration = expiration;
+		this.client = client;
+	}
+}

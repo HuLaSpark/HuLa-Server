@@ -28,8 +28,8 @@ public class JwtUtils {
 //    private String secret;
     private final static String SECRET_KEY = "HuLa-IM.JWT.SECRET";
 
-    private static final String UID_CLAIM = "uid";
-    private static final String LOGIN_TYPE_CLAIM = "loginType";
+    public static final String UID_CLAIM = "uid";
+	public static final String LOGIN_TYPE_CLAIM = "loginType";
     private static final String CREATE_TIME = "createTime";
 
     /**
@@ -39,15 +39,13 @@ public class JwtUtils {
      * @param uid 用户id
      * @return {@link String } token
      */
-    public static String createToken(Long uid, String loginType) {
-        // build token
+    public static String createToken(Long uid, String loginType, Integer day) {
         return JWT.create()
-                // 只存一个uid信息，其他的自己去redis查
                 .withClaim(UID_CLAIM, uid)
                 .withClaim(LOGIN_TYPE_CLAIM, loginType)
                 .withClaim(CREATE_TIME, new Date())
                 // 过期时间
-                //.withExpiresAt(DateUtil.addDays(new Date(), 7))
+                .withExpiresAt(DateUtil.addDays(new Date(), day))
                 // signature
                 .sign(Algorithm.HMAC256(SpringUtil.getProperty(SECRET_KEY)));
     }
@@ -109,12 +107,8 @@ public class JwtUtils {
                     .withExpiresAt(DateUtil.addMilliseconds(new Date(), 1))
                     // signature
                     .sign(Algorithm.HMAC256("dsfsdfsdfsdfsd"));
-            Thread.sleep(2000);
-            System.out.println("dsfsdfsdfsdfsd = " + JsonUtils.toStr(token));
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("dsfsdfsdfsdfsd")).build();
-            DecodedJWT jwt = verifier.verify(token);
-            String obj = JsonUtils.toObj(JsonUtils.toStr(token), String.class);
-            System.out.println("obj = " + obj);
+			Map<String, Claim> stringClaimMap = verifyToken(token);
+			System.out.println(stringClaimMap);
         }catch (Exception e){
             e.printStackTrace();
         }

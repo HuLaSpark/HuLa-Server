@@ -1,9 +1,9 @@
 package com.hula.core.user.controller;
 
-
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
 import com.hula.core.user.domain.vo.req.user.RegisterReq;
+import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
 import com.hula.domain.vo.res.ApiResult;
@@ -39,18 +39,16 @@ public class TokenController {
 
     @PostMapping("/login")
     @Operation(summary ="用户登录")
-    public ApiResult<String> login(@Valid @RequestBody LoginReq loginReq) {
-        String token = loginService.login(User.builder()
-                .account(loginReq.getAccount()).password(loginReq.getPassword()).build());
-        return ApiResult.success(token);
+    public ApiResult<LoginResultVO> login(@Valid @RequestBody LoginReq loginReq) {
+        return ApiResult.success(loginService.login(User.builder()
+				.account(loginReq.getAccount()).password(loginReq.getPassword()).build()));
     }
 
     @PostMapping("/mobileLogin")
     @Operation(summary ="移动端用户登录")
-    public ApiResult<String> mobileLogin(@Valid @RequestBody LoginReq loginReq) {
-        String token = loginService.mobileLogin(User.builder()
-                .account(loginReq.getAccount()).password(loginReq.getPassword()).build());
-        return ApiResult.success(token);
+    public ApiResult<LoginResultVO> mobileLogin(@Valid @RequestBody LoginReq loginReq) {
+        return ApiResult.success(loginService.mobileLogin(User.builder()
+				.account(loginReq.getAccount()).password(loginReq.getPassword()).build()));
     }
 
     @PostMapping("/logout")
@@ -71,21 +69,17 @@ public class TokenController {
         return ApiResult.success(registerReq.getAccount());
     }
 
-    @PostMapping("/check")
-    @Operation(summary ="用户token验证")
-    public ApiResult<Boolean> check() {
-        // 延长token时间
-        tokenService.refreshToken(User.builder().build());
-        return ApiResult.success(Boolean.TRUE);
+    @PostMapping("/refreshToken")
+    @Operation(summary ="token续签")
+    public ApiResult<LoginResultVO> refreshToken() {
+        return ApiResult.success(tokenService.refreshToken());
     }
 
     @PostMapping("/offline")
     @Operation(summary ="下线")
     public ApiResult<Boolean> offline() {
-        // 下线
         tokenService.offline(User.builder().build());
         return ApiResult.success(Boolean.TRUE);
     }
-
 }
 

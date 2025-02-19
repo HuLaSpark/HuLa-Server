@@ -560,8 +560,4 @@ public class RoomAppServiceImpl implements RoomAppService {
             return roomBaseInfo;
         }).collect(Collectors.toMap(RoomBaseInfo::getRoomId, Function.identity()));
     }
-
-    private void fillRoomActive(Long uid, Map<Long, Room> roomMap) {
-    }
-
 }

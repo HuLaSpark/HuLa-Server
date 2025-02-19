@@ -2,11 +2,12 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
+import com.auth0.jwt.interfaces.Claim;
 import com.hula.common.constant.RedisKey;
-import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.TokenExpireEvent;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.TokenService;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
@@ -16,6 +17,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -28,10 +31,10 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 @AllArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
-    // token过期时间
+    // token 过期时间
     private static final Integer TOKEN_EXPIRE_DAYS = 5;
-    // token续期时间
-    private static final Integer TOKEN_RENEWAL_DAYS = 2;
+    // refreshToken 过期时间
+    private static final Integer TOKEN_RENEWAL_DAYS = 30;
 
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -49,55 +52,39 @@ public class TokenServiceImpl implements TokenService {
                 JwtUtils.getLoginType(token), uid)));
     }
 
-    @Async(HULA_EXECUTOR)
     @Override
-    public void renewalTokenIfNecessary(String token) {
-        Long uid = JwtUtils.getUidOrNull(token);
-        if (Objects.isNull(uid)) {
-            return;
-        }
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), uid);
-        long expireDays = RedisUtils.getExpire(key, TimeUnit.DAYS);
-        // 不存在的key
-        if (expireDays == -2) {
-            return;
-        }
-        // 小于一天的token帮忙续期
-        if (expireDays < TOKEN_RENEWAL_DAYS) {
-            RedisUtils.expire(key, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
-        }
-    }
-
-    @Override
-    public String createToken(Long uid, LoginTypeEnum loginTypeEnum) {
-        String key = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginTypeEnum.getType(), uid);
-        String token = RedisUtils.getStr(key);
+    public LoginResultVO createToken(Long uid, String loginType) {
+        String tokenKey = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid);
+		String refreshTokenKey = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, loginType, uid);
+		String token = RedisUtils.getStr(tokenKey), refreshToken;
         if (StrUtil.isNotBlank(token)) {
-            // 旧token删除
-            RedisUtils.del(key);
+            RedisUtils.del(tokenKey);
             User user = User.builder().id(uid).build();
             user.refreshIp(RequestHolder.get().getIp());
             // 旧设备下线
             applicationEventPublisher.publishEvent(new TokenExpireEvent(this, user));
         }
-        // 获取用户token
-        token = JwtUtils.createToken(uid, loginTypeEnum.getType());
-        // token过期用redis中心化控制，初期采用5天过期，剩1天自动续期的方案。后续可以用双token实现
-        RedisUtils.set(key, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
-        return token;
+        // 创建用户token
+        token = JwtUtils.createToken(uid, loginType, TOKEN_EXPIRE_DAYS);
+		refreshToken = JwtUtils.createToken(uid, loginType, TOKEN_RENEWAL_DAYS);
+
+		// 刷新存放时间
+		RedisUtils.set(tokenKey, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
+		RedisUtils.set(refreshTokenKey, refreshToken, TOKEN_RENEWAL_DAYS, TimeUnit.DAYS);
+		return new LoginResultVO(token, refreshToken, LocalDateTime.now().plusDays(TOKEN_EXPIRE_DAYS), loginType);
     }
 
     @Override
-    public void refreshToken(User user) {
-        RedisUtils.expire(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
-                        JwtUtils.getLoginType(RequestHolder.get().getToken()),
-                        RequestHolder.get().getUid()),
-                TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
-    }
+    public LoginResultVO refreshToken() {
+		Map<String, Claim> verifyToken = JwtUtils.verifyToken(RequestHolder.get().getToken());
+
+		Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+		String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+		return createToken(uid, type);
+	}
 
     @Override
     public void offline(User user) {
-        // 下线
         applicationEventPublisher.publishEvent(new UserOfflineEvent(this,
                 User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateTime.now()).build()));
     }

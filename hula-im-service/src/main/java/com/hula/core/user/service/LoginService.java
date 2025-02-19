@@ -1,6 +1,7 @@
 package com.hula.core.user.service;
 
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 
 /**
  * @author nyh
@@ -10,13 +11,13 @@ public interface LoginService {
     /**
      * 登录成功，获取token
      */
-    String login(User user);
+	LoginResultVO login(User user);
 
     /**
      * @param user 用户
      * @return {@link String } token
      */
-    String mobileLogin(User user);
+	LoginResultVO mobileLogin(User user);
 
     /**
      * 普通注册
