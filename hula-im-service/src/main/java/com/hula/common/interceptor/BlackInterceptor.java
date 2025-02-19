@@ -30,11 +30,11 @@ public class BlackInterceptor implements HandlerInterceptor {
         Map<Integer, Set<String>> blackMap = userCache.getBlackMap();
         RequestInfo requestInfo = RequestHolder.get();
         if (isBlackList(requestInfo.getUid(), blackMap.get(BlackTypeEnum.UID.getType()))) {
-            HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
+            HttpErrorEnum.BLACK_ERROR.sendHttpError(response);
             return false;
         }
         if (isBlackList(requestInfo.getIp(), blackMap.get(BlackTypeEnum.IP.getType()))) {
-            HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
+            HttpErrorEnum.BLACK_ERROR.sendHttpError(response);
             return false;
         }
         return true;
