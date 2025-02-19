@@ -5,6 +5,8 @@ import com.hula.core.chat.domain.vo.request.admin.AdminAddReq;
 import com.hula.core.chat.domain.vo.request.admin.AdminRevokeReq;
 import com.hula.core.chat.domain.vo.request.member.MemberExitReq;
 
+import java.util.List;
+
 /**
  * <p>
  * 群成员表 服务类

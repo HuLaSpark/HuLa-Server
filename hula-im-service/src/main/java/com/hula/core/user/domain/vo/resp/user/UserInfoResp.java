@@ -1,10 +1,8 @@
 package com.hula.core.user.domain.vo.resp.user;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import java.util.Date;
 
 /**

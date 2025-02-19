@@ -19,6 +19,8 @@ public class PushService {
 
 	/**
 	 * 单个用户推送
+	 * @param uidList 推送的对象
+	 * @param uid 操作人
 	 */
     public void sendPushMsg(WsBaseResp<?> msg, List<Long> uidList, Long uid) {
         mqProducer.sendMsg(MqConstant.PUSH_TOPIC, new PushMessageDTO(uidList, msg, uid));

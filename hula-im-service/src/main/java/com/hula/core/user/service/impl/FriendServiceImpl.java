@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Lists;
@@ -11,10 +12,9 @@ import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.UserApplyEvent;
 import com.hula.common.event.UserApprovalEvent;
-import com.hula.core.chat.dao.RoomFriendDao;
 import com.hula.core.chat.domain.entity.RoomFriend;
+import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
 import com.hula.core.chat.service.ChatService;
-import com.hula.core.chat.service.ContactService;
 import com.hula.core.chat.service.RoomService;
 import com.hula.core.chat.service.adapter.MessageAdapter;
 import com.hula.core.user.dao.UserApplyDao;
@@ -63,10 +63,8 @@ public class FriendServiceImpl implements FriendService {
     private UserApplyDao userApplyDao;
     private ApplicationEventPublisher applicationEventPublisher;
     private RoomService roomService;
-    private ContactService contactService;
     private ChatService chatService;
     private UserDao userDao;
-    private RoomFriendDao roomFriendDao;
 
     /**
      * 检查
@@ -90,6 +88,18 @@ public class FriendServiceImpl implements FriendService {
         return new FriendCheckResp(friendCheckList);
     }
 
+	@Override
+	public void createUserApply(Long uid, Long targetId, String msg, Integer type) {
+		UserApply userApply = new UserApply();
+		userApply.setMsg(msg);
+		userApply.setUid(uid);
+		userApply.setType(type);
+		userApply.setTargetId(targetId);
+		userApply.setStatus(1);
+		userApply.setReadStatus(1);
+		userApplyDao.save(userApply);
+	}
+
     /**
      * 申请好友
      *
@@ -97,7 +107,7 @@ public class FriendServiceImpl implements FriendService {
      */
     @Override
     @RedissonLock(key = "#uid")
-    public void apply(Long uid, FriendApplyReq request) {
+    public UserApply apply(Long uid, FriendApplyReq request) {
         //是否有好友关系
         UserFriend friend = userFriendDao.getByFriend(uid, request.getTargetUid());
         AssertUtil.isEmpty(friend, "你们已经是好友了");
@@ -105,20 +115,32 @@ public class FriendServiceImpl implements FriendService {
         UserApply selfApproving = userApplyDao.getFriendApproving(uid, request.getTargetUid(), true);
         if (Objects.nonNull(selfApproving)) {
             log.info("已有好友申请记录,uid:{}, targetId:{}", uid, request.getTargetUid());
-            return;
+            return null;
         }
         // 是否有待审批的申请记录(别人请求自己的)
         UserApply friendApproving = userApplyDao.getFriendApproving(request.getTargetUid(), uid, false);
         if (Objects.nonNull(friendApproving)) {
             SpringUtil.getBean(this.getClass()).applyApprove(uid, new FriendApproveReq(friendApproving.getId()));
-            return;
+            return null;
         }
         // 申请入库
         UserApply newApply = FriendAdapter.buildFriendApply(uid, request);
         userApplyDao.save(newApply);
         // 申请事件
         applicationEventPublisher.publishEvent(new UserApplyEvent(this, newApply));
+		return newApply;
     }
+
+	@Override
+	public Boolean updateRemark(Long employeeId, FriendRemarkReq request) {
+		UserFriend userFriend = userFriendDao.getByFriends(employeeId, Arrays.asList(request.getTargetUid())).stream().findFirst().orElse(null);
+		if (ObjectUtil.isNull(userFriend)) {
+			throw new RuntimeException("你俩不是好友关系!");
+		}
+
+		userFriend.setRemark(request.getRemark());
+		return userFriendDao.updateById(userFriend);
+	}
 
     /**
      * 分页查询好友申请
@@ -142,7 +164,6 @@ public class FriendServiceImpl implements FriendService {
         List<Long> applyIds = userApplyIpage.getRecords()
                 .stream().map(UserApply::getId)
                 .collect(Collectors.toList());
-        ;
         userApplyDao.readApples(uid, applyIds);
     }
 

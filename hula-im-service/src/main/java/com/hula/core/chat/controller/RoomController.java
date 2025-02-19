@@ -1,6 +1,5 @@
 package com.hula.core.chat.controller;
 
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hula.common.domain.vo.req.IdReqVO;
@@ -9,6 +8,9 @@ import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.domain.vo.res.IdRespVO;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
+import com.hula.core.chat.domain.vo.request.RoomApplyReq;
+import com.hula.core.chat.domain.vo.request.RoomInfoReq;
+import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
 import com.hula.core.chat.domain.vo.request.admin.AdminAddReq;
 import com.hula.core.chat.domain.vo.request.admin.AdminRevokeReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
@@ -65,6 +67,7 @@ public class RoomController {
         IPage<GroupListVO>  page = new Page<>(current,size);
         return ApiResult.success(roomService.groupList(uid,page));
     }
+
     @GetMapping("/group/member/page")
     @Operation(summary ="群成员列表")
     public ApiResult<CursorPageBaseResp<ChatMemberResp>> getMemberPage(@Valid MemberReq request) {
@@ -102,6 +105,26 @@ public class RoomController {
         return ApiResult.success(IdRespVO.builder().id(roomId).build());
     }
 
+	@PostMapping("updateRoomInfo")
+	@Operation(summary = "修改群信息")
+	public ApiResult<Boolean> updateRoomInfo(@Valid @RequestBody RoomInfoReq request) {
+		Long uid = RequestHolder.get().getUid();
+		return ApiResult.success(roomService.updateRoomInfo(uid, request));
+	}
+
+	@PostMapping("updateMyRoomInfo")
+	@Operation(summary = "修改'我的'群信息")
+	public ApiResult<Boolean> updateMyRoomInfo(@Valid @RequestBody RoomMyInfoReq request) {
+		Long uid = RequestHolder.get().getUid();
+		return ApiResult.success(roomService.updateMyRoomInfo(uid, request));
+	}
+
+	@PostMapping("/applyGroup")
+	@Operation(summary = "申请加群")
+	public ApiResult<Boolean> applyGroup(@RequestBody RoomApplyReq request){
+		return ApiResult.success(roomService.applyGroup(RequestHolder.get().getUid(), request));
+	}
+
     @PostMapping("/group/member")
     @Operation(summary ="邀请好友")
     public ApiResult<Void> addMember(@Valid @RequestBody MemberAddReq request) {
@@ -125,6 +148,5 @@ public class RoomController {
         groupMemberService.revokeAdmin(uid, request);
         return ApiResult.success();
     }
-
 
 }

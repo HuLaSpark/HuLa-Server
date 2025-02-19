@@ -27,5 +27,4 @@ public class FriendApplyReq extends BaseEntity {
     @NotNull
     @Schema(description ="好友uid")
     private Long targetUid;
-
 }

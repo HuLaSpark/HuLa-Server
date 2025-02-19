@@ -4,6 +4,8 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
+import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
+import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
@@ -11,6 +13,7 @@ import com.hula.core.user.domain.vo.resp.friend.FriendApplyResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendCheckResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendUnreadResp;
+import jakarta.validation.Valid;
 
 /**
  * <p>
@@ -31,6 +34,15 @@ public interface FriendService {
      */
     FriendCheckResp check(Long uid, FriendCheckReq request);
 
+	/**
+	 * 建立申请
+	 * @param uid 申请人
+	 * @param targetId 被申请人
+	 * @param type 申请类型
+	 * @return
+	 */
+	void createUserApply(Long uid, Long targetId, String msg, Integer type);
+
     /**
      * 应用
      * 申请好友
@@ -38,7 +50,7 @@ public interface FriendService {
      * @param request 请求
      * @param uid     uid
      */
-    void apply(Long uid, FriendApplyReq request);
+	UserApply apply(Long uid, FriendApplyReq request);
 
     /**
      * 分页查询好友申请
@@ -97,4 +109,8 @@ public interface FriendService {
      */
     void deleteApprove(Long uid, FriendApproveReq request);
 
+	/**
+	 * 修改好友备注
+	 */
+	Boolean updateRemark(Long employeeId, @Valid FriendRemarkReq request);
 }

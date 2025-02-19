@@ -12,6 +12,8 @@ import com.hula.core.chat.domain.vo.request.msg.TextMsgReq;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
+import com.hula.core.user.domain.enums.WSRespTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,4 +86,14 @@ public class MessageAdapter {
         chatMessageReq.setBody(textMsgReq);
         return chatMessageReq;
     }
+
+	/**
+	 * 群通知
+	 */
+	public static WsBaseResp<String> buildRoomGroupMessage(String msg) {
+		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_MSG.getType());
+		wsBaseResp.setData(msg);
+		return wsBaseResp;
+	}
 }

@@ -50,6 +50,16 @@ public class GroupMember implements Serializable {
     @TableField("role")
     private Integer role;
 
+	/**
+	 * 群备注
+	 */
+	private String remark;
+
+	/**
+	 * 我的群名称
+	 */
+	private String myName;
+
     /**
      * 创建时间
      */

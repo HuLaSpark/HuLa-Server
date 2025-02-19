@@ -16,7 +16,6 @@ import java.util.List;
 import static com.hula.core.user.domain.enums.ApplyReadStatusEnum.READ;
 import static com.hula.core.user.domain.enums.ApplyReadStatusEnum.UNREAD;
 import static com.hula.core.user.domain.enums.ApplyStatusEnum.AGREE;
-import static com.hula.core.user.domain.enums.ApplyStatusEnum.REJECT;
 
 /**
  * <p>
@@ -53,7 +52,7 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
 
     public IPage<UserApply> friendApplyPage(Long uid, Page<UserApply> page) {
         return lambdaQuery()
-                .eq(UserApply::getTargetId, uid)
+				.and(w -> w.eq(UserApply::getTargetId, uid).or().eq(UserApply::getUid, uid))
                 .eq(UserApply::getType, ApplyTypeEnum.ADD_FRIEND.getCode())
                 .eq(UserApply::getDeleted,false)
                 .orderByDesc(UserApply::getCreateTime)

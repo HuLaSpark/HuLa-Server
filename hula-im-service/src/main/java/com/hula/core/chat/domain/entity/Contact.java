@@ -50,6 +50,11 @@ public class Contact implements Serializable {
     @TableField("read_time")
     private Date readTime;
 
+	/**
+	 * 置顶会话; 都置顶按照时间倒序
+	 */
+	private Boolean top;
+
     /**
      * 会话内消息最后更新的时间(只有普通会话需要维护，全员会话不需要维护)
      */

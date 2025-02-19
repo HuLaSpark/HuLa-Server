@@ -42,6 +42,11 @@ public class UserFriend implements Serializable {
     @TableField("friend_uid")
     private Long friendUid;
 
+	/**
+	 * 好友备注
+	 */
+	private String remark;
+
     /**
      * 逻辑删除(0-正常,1-删除)
      */

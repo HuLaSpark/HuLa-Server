@@ -2,6 +2,8 @@ package com.hula.core.chat.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.po.RoomChatInfoPO;
@@ -22,6 +24,10 @@ import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
+import com.hula.core.chat.domain.vo.request.RoomApplyReq;
+import com.hula.core.chat.domain.vo.request.RoomInfoReq;
+import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
@@ -33,6 +39,7 @@ import com.hula.core.chat.service.RoomAppService;
 import com.hula.core.chat.service.RoomService;
 import com.hula.core.chat.service.adapter.ChatAdapter;
 import com.hula.core.chat.service.adapter.MemberAdapter;
+import com.hula.core.chat.service.adapter.MessageAdapter;
 import com.hula.core.chat.service.adapter.RoomAdapter;
 import com.hula.core.chat.service.cache.*;
 import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
@@ -43,6 +50,7 @@ import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
+import com.hula.core.user.service.FriendService;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
@@ -57,7 +65,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -85,7 +92,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private RoomService roomService;
     private GroupMemberCache groupMemberCache;
     private PushService pushService;
-    private TransactionTemplate transactionTemplate;
+	private FriendService friendService;
     @Override
     public CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid) {
         // 查出用户要展示的会话列表
@@ -140,7 +147,117 @@ public class RoomAppServiceImpl implements RoomAppService {
         return page;
     }
 
-    @Override
+	/**
+	 * 申请加群
+	 *
+	 * @param req
+	 */
+	@Override
+	@RedissonLock(key = "#uid")
+	public Boolean applyGroup(Long uid, RoomApplyReq req){
+		Long targetGroupId = req.getTargetGroupId();
+		// 获取到申请加入的群聊
+		RoomGroup roomGroup = roomGroupCache.get(targetGroupId);
+		if(ObjectUtil.isNull(roomGroup)){
+			return false;
+		}
+
+		// 获取到这个群的管理员的人的信息
+		List<Long> groupAdminIds = roomService.getAdmins(roomGroup.getId());
+		User userInfo = userCache.getUserInfo(uid);
+		String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
+
+		for (Long groupAdminId : groupAdminIds) {
+			friendService.createUserApply(uid, groupAdminId, msg, 2);
+		}
+
+		// 给群里的管理员发送申请
+		pushService.sendPushMsg(MessageAdapter.buildRoomGroupMessage(msg), groupAdminIds, uid);
+		return true;
+	}
+
+	/**
+	 * 校验用户在群里的权限
+	 * @param uid
+	 * @return
+	 */
+	public GroupMember verifyGroupPermissions(Long uid, RoomGroup roomGroup) {
+		if(ObjectUtil.isNull(roomGroup)){
+			throw new RuntimeException("群聊不存在!");
+		}
+
+		GroupMember groupMember = groupMemberDao.getMember(roomGroup.getId(), uid);
+		if(ObjectUtil.isNull(groupMember)){
+			throw new RuntimeException(StrUtil.format("您不是{}的群成员!", roomGroup.getName()));
+		}
+		return groupMember;
+	}
+
+	/**
+	 * 群主，管理员才可以修改
+	 * @param uid
+	 * @param request
+	 * @return
+	 */
+	@Override
+	public Boolean updateRoomInfo(Long uid, RoomInfoReq request) {
+		// 1.校验修改权限
+		RoomGroup roomGroup = roomGroupCache.get(request.getId());
+		GroupMember groupMember = verifyGroupPermissions(uid, roomGroup);
+
+		if(GroupRoleEnum.MEMBER.getType().equals(groupMember.getRole())) {
+			return false;
+		}
+
+		// 2.修改群信息
+		roomGroup.setAvatar(request.getAvatar());
+		roomGroup.setName(request.getName());
+		Boolean success = roomService.updateRoomInfo(roomGroup);
+
+		// 3.通知群里所有人群信息修改了
+		if(success){
+			List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+			pushService.sendPushMsg(RoomAdapter.buildRoomGroupChangeWS(roomGroup.getRoomId(), roomGroup.getName(), roomGroup.getAvatar()), memberUidList, uid);
+		}
+		return success;
+	}
+
+	@Override
+	public Boolean updateMyRoomInfo(Long uid, RoomMyInfoReq request) {
+		// 1.校验修改权限
+		RoomGroup roomGroup = roomGroupCache.get(request.getId());
+		GroupMember member = verifyGroupPermissions(uid, roomGroup);
+
+		// 2.修改我的信息
+		boolean equals = member.getMyName().equals(request.getMyName());
+
+		member.setRemark(request.getRemark());
+		member.setMyName(request.getMyName());
+		boolean success = groupMemberDao.updateById(member);
+
+		// 3.通知群里所有人我的信息改变了
+		if(!equals && success){
+			List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), request.getMyName()), memberUidList, uid);
+		}
+		return success;
+	}
+
+	@Override
+	public Boolean setTop(Long uid, ContactTopReq request) {
+		// 1.判断会话我有没有
+		Contact contact = contactDao.get(uid, request.getRoomId());
+		if(ObjectUtil.isNull(contact)){
+			return false;
+		}
+
+		// 2.置顶
+		contact.setTop(request.getTop());
+		return contactDao.updateById(contact);
+	}
+
+
+	@Override
     public MemberResp getGroupDetail(Long uid, long roomId) {
         RoomGroup roomGroup = roomGroupCache.get(roomId);
         Room room = roomCache.get(roomId);

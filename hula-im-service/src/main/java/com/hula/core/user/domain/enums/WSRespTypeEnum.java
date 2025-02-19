@@ -1,5 +1,7 @@
 package com.hula.core.user.domain.enums;
 
+import com.hula.core.chat.domain.vo.response.ChatMyRoomGroupChange;
+import com.hula.core.chat.domain.vo.response.ChatRoomGroupChange;
 import com.hula.core.user.domain.vo.resp.ws.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +25,9 @@ public enum WSRespTypeEnum {
     RECEIVE_MESSAGE("receiveMessage", "新消息", WSMessage.class),
     ONLINE("online", "上线通知", WSOnlineNotify.class),
 	USER_STATE_CHANGE("userStateChange", "用户状态改变", null),
+	ROOM_INFO_CHANGE("roomInfoChange", "管理员修改群聊信息", ChatRoomGroupChange.class),
+	MY_ROOM_INFO_CHANGE("myRoomInfoChange", "自己修改我在群里的信息", ChatMyRoomGroupChange.class),
+	ROOM_GROUP_MSG("roomGroupMsg", "群通知消息", null),
     TOKEN_EXPIRED("tokenExpired", "使前端的token失效，意味着前端需要重新登录", WsTokenExpire.class),
     INVALID_USER("invalidUser", "拉黑用户", WSBlack.class),
     MSG_MARK_ITEM("msgMarkItem", "消息标记", WSMsgMark.class),

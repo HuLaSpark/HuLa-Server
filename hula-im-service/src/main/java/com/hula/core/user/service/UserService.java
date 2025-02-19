@@ -69,4 +69,11 @@ public interface UserService {
 
     List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
 
+	/**
+	 * 更改用户状态
+	 * @param uid
+	 * @param userStateId
+	 * @return
+	 */
+	Boolean changeUserState(Long uid, Long userStateId);
 }

@@ -164,7 +164,24 @@ public class UserServiceImpl implements UserService {
         }).collect(Collectors.toList());
     }
 
-    private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {
+	/**
+	 * 聊天用的用户更新状态
+	 * @param uid
+	 * @param userStateId
+	 * @return
+	 */
+	@Override
+	public Boolean changeUserState(Long uid, Long userStateId){
+		boolean success = userDao.changeUserState(uid, userStateId) > 0;
+
+		// 清空用户缓存
+		if(success){
+			userSummaryCache.delete(uid);
+		}
+		return success;
+	}
+
+	private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {
         List<Long> needSyncUidList = new ArrayList<>();
         List<Long> userModifyTime = userCache.getUserModifyTime(reqList.stream().map(SummeryInfoReq.infoReq::getUid).collect(Collectors.toList()));
         for (int i = 0; i < reqList.size(); i++) {

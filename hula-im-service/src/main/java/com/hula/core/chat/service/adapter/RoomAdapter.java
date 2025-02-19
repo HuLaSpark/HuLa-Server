@@ -9,8 +9,12 @@ import com.hula.core.chat.domain.enums.GroupRoleEnum;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
 import com.hula.core.chat.domain.vo.response.ChatMessageReadResp;
+import com.hula.core.chat.domain.vo.response.ChatMyRoomGroupChange;
+import com.hula.core.chat.domain.vo.response.ChatRoomGroupChange;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.enums.WSRespTypeEnum;
+import com.hula.core.user.domain.enums.WsBaseResp;
 
 import java.util.List;
 import java.util.Map;
@@ -62,4 +66,24 @@ public class RoomAdapter {
         chatMessageReq.setBody(body);
         return chatMessageReq;
     }
+
+	/**
+	 * 创建群聊基础信息变动ws
+	 */
+	public static WsBaseResp<ChatRoomGroupChange> buildRoomGroupChangeWS(Long roomId, String name, String avatar) {
+		WsBaseResp<ChatRoomGroupChange> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.ROOM_INFO_CHANGE.getType());
+		wsBaseResp.setData(new ChatRoomGroupChange(roomId, name, avatar));
+		return wsBaseResp;
+	}
+
+	/**
+	 * 创建群聊我的信息变动ws
+	 */
+	public static WsBaseResp<ChatMyRoomGroupChange> buildMyRoomGroupChangeWS(Long roomId, String name) {
+		WsBaseResp<ChatMyRoomGroupChange> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.MY_ROOM_INFO_CHANGE.getType());
+		wsBaseResp.setData(new ChatMyRoomGroupChange(roomId, name));
+		return wsBaseResp;
+	}
 }

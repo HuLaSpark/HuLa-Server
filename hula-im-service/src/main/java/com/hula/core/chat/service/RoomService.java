@@ -46,4 +46,15 @@ public interface RoomService {
      */
     void checkUser(Long uid, Long roomId);
 
+	/**
+	 * 修改房间信息
+	 */
+	Boolean updateRoomInfo(RoomGroup roomGroup);
+
+	/**
+	 * 获取群主、管理员
+	 * @return
+	 */
+	List<Long> getAdmins(Long id);
+
 }

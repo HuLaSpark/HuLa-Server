@@ -1,13 +1,13 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.dao.UserStateDao;
-import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.entity.UserState;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
+import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
 import com.hula.core.user.domain.vo.resp.user.UserStateVo;
+import com.hula.core.user.service.UserService;
 import com.hula.core.user.service.UserStateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.List;
 public class UserStateServiceImpl implements UserStateService {
 
     private UserStateDao userStateDao;
-	private UserDao userDao;
+	private UserService userService;
 	private PushService pushService;
 
 	@Override
@@ -34,14 +34,14 @@ public class UserStateServiceImpl implements UserStateService {
 
 	@Override
 	public Boolean changeState(Long uid, Long userStateId) {
-		User user = userDao.getById(uid);
+		UserInfoResp userInfo = userService.getUserInfo(uid);
 		// 如果检测到状态没有改变，那么则不动
-		if (user.getUserStateId().equals(userStateId)){
+		if (userInfo.getUserStateId().equals(userStateId)){
 			return true;
 		}
 
 		UserState userState = userStateDao.getById(userStateId);
-		Boolean changeUserState = userDao.changeUserState(uid, userStateId);
+		Boolean changeUserState = userService.changeUserState(uid, userStateId);
 
 		if (ObjectUtil.isNotNull(userState) && changeUserState){
 			WsBaseResp<UserStateVo> wsBaseResp = new WsBaseResp();

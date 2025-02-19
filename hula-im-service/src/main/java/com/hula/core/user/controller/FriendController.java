@@ -5,6 +5,8 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
+import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
+import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
@@ -46,13 +48,11 @@ public class FriendController {
 
     @PostMapping("/apply")
     @Operation(summary = "申请好友")
-    public ApiResult<Void> apply(@Valid @RequestBody FriendApplyReq request) {
-        Long uid = RequestHolder.get().getUid();
-        friendService.apply(uid, request);
-        return ApiResult.success();
+    public ApiResult<UserApply> apply(@Valid @RequestBody FriendApplyReq request) {
+        return ApiResult.success(friendService.apply(RequestHolder.get().getUid(), request));
     }
 
-    @DeleteMapping()
+	@DeleteMapping()
     @Operation(summary = "删除好友")
     public ApiResult<Void> delete(@Valid @RequestBody FriendDeleteReq request) {
         Long uid = RequestHolder.get().getUid();
@@ -95,13 +95,6 @@ public class FriendController {
         return ApiResult.success();
     }
 
-
-    /**
-     * 删除申请
-     *
-     * @param request 请求
-     * @return {@link ApiResult }<{@link Void }>
-     */
     @DeleteMapping("/deleteApprove")
     @Operation(summary = "删除好友申请")
     public ApiResult<Void> deleteApprove(@Valid @RequestBody FriendApproveReq request) {
@@ -115,5 +108,11 @@ public class FriendController {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(friendService.friendList(uid, request));
     }
+
+	@PostMapping("/updateRemark")
+	@Operation(summary = "修改好友备注")
+	public ApiResult<Boolean> updateRemark(@Valid @RequestBody FriendRemarkReq request) {
+		return ApiResult.success(friendService.updateRemark(RequestHolder.get().getUid(), request));
+	}
 }
 

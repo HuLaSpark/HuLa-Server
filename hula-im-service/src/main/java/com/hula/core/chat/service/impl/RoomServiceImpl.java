@@ -107,7 +107,18 @@ public class RoomServiceImpl implements RoomService {
         AssertUtil.isTrue(roomGroupDao.checkUser(uid,roomId), "您已退出群聊");
     }
 
-    private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {
+	@Override
+	public Boolean updateRoomInfo(RoomGroup roomGroup) {
+		return roomGroupDao.updateById(roomGroup);
+	}
+
+	@Override
+	public List<Long> getAdmins(Long id) {
+		return groupMemberDao.getAdmins(id);
+	}
+
+
+	private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {
         RoomFriend insert = ChatAdapter.buildFriendRoom(roomId, uidList);
         roomFriendDao.save(insert);
         return insert;

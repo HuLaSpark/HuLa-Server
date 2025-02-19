@@ -87,18 +87,7 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
         }, User::getLastOptTime);
     }
 
-	/**
-	 * 聊天用的用户更新状态
-	 * @param employeeId
-	 * @param userStateId
-	 * @return
-	 */
-	public Boolean changeUserState(Long employeeId, Long userStateId){
-		boolean success = baseMapper.changeUserState(employeeId, userStateId) > 0;
-
-		if(success){
-			// TODO 清除用户缓存
-		}
-		return success;
+	public int changeUserState(Long uid, Long userStateId) {
+		return baseMapper.changeUserState(uid, userStateId);
 	}
 }

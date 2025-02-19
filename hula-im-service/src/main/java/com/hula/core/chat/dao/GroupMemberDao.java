@@ -70,6 +70,24 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
         return list.stream().collect(Collectors.toMap(GroupMember::getUid, GroupMember::getRole));
     }
 
+	/**
+	 * 获取群主、管理员
+	 * @param id 群id
+	 * @return
+	 */
+	public List<Long> getAdmins(Long id) {
+		return lambdaQuery()
+				.select(GroupMember::getUid)
+				.eq(GroupMember::getGroupId, id)
+				.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType()).list().stream().map(GroupMember::getUid).toList();
+	}
+
+	/**
+	 * 查询人员在群里的角色
+	 * @param groupId
+	 * @param uid
+	 * @return
+	 */
     public GroupMember getMember(Long groupId, Long uid) {
         return lambdaQuery()
                 .eq(GroupMember::getGroupId, groupId)
