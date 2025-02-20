@@ -18,6 +18,7 @@ import com.hula.core.chat.service.cache.RoomCache;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -32,6 +33,7 @@ import java.util.Objects;
  * 发送消息更新房间收信箱，并同步给房间成员信箱
  * @author nyh
  */
+@Slf4j
 @RocketMQMessageListener(consumerGroup = MqConstant.SEND_MSG_GROUP, topic = MqConstant.SEND_MSG_TOPIC, messageModel = MessageModel.BROADCASTING)
 @Component
 @AllArgsConstructor
@@ -62,6 +64,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             //热门群聊推送所有在线的人, 更新热门群聊时间-redis
             hotRoomCache.refreshActiveTime(room.getId(), message.getCreateTime());
             pushService.sendPushMsg(WsAdapter.buildMsgSend(msgResp), dto.getUid());
+			log.error("HotRoom发送消息......");
         } else {
             List<Long> memberUidList = new ArrayList<>();
             if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
@@ -74,6 +77,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
             // 更新所有群成员的会话时间, 并推送房间成员
             contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
             pushService.sendPushMsg(WsAdapter.buildMsgSend(msgResp), memberUidList, dto.getUid());
+			log.error("Friend发送消息......");
         }
     }
 }
