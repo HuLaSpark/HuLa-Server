@@ -9,6 +9,7 @@ import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
 import com.hula.core.user.domain.vo.resp.user.UserStateVo;
 import com.hula.core.user.service.UserService;
 import com.hula.core.user.service.UserStateService;
+import com.hula.core.user.service.cache.UserSummaryCache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.List;
 public class UserStateServiceImpl implements UserStateService {
 
     private UserStateDao userStateDao;
+	private UserSummaryCache userSummaryCache;
 	private UserService userService;
 	private PushService pushService;
 
@@ -44,6 +46,10 @@ public class UserStateServiceImpl implements UserStateService {
 		Boolean changeUserState = userService.changeUserState(uid, userStateId);
 
 		if (ObjectUtil.isNotNull(userState) && changeUserState){
+			// 1.清除缓存
+			userSummaryCache.delete(uid);
+
+			// 2.推送数据
 			WsBaseResp<UserStateVo> wsBaseResp = new WsBaseResp();
 			wsBaseResp.setType(WSRespTypeEnum.USER_STATE_CHANGE.getType());
 			wsBaseResp.setData(new UserStateVo(uid, userState.getId()));

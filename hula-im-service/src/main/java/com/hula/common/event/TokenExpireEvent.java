@@ -1,6 +1,6 @@
 package com.hula.common.event;
 
-import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.resp.user.OffLineResp;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -11,10 +11,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class TokenExpireEvent extends ApplicationEvent {
 
-    private final User user;
+    private final OffLineResp offLine;
 
-    public TokenExpireEvent(Object source, User user) {
+    public TokenExpireEvent(Object source, OffLineResp offLine) {
         super(source);
-        this.user = user;
+        this.offLine = offLine;
     }
 }

@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.hula.exception.TokenExceedException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,6 +30,7 @@ public class JwtUtils {
     private final static String SECRET_KEY = "HuLa-IM.JWT.SECRET";
 
     public static final String UID_CLAIM = "uid";
+	public static final String UUID_CLAIM = "uuid";
 	public static final String LOGIN_TYPE_CLAIM = "loginType";
     private static final String CREATE_TIME = "createTime";
 
@@ -39,13 +41,14 @@ public class JwtUtils {
      * @param uid 用户id
      * @return {@link String } token
      */
-    public static String createToken(Long uid, String loginType, Integer day) {
+    public static String createToken(Long uid, String loginType, String uuid, Integer day) {
         return JWT.create()
                 .withClaim(UID_CLAIM, uid)
+				.withClaim(UUID_CLAIM, uuid)
                 .withClaim(LOGIN_TYPE_CLAIM, loginType)
                 .withClaim(CREATE_TIME, new Date())
                 // 过期时间
-                .withExpiresAt(DateUtil.addDays(new Date(), day))
+                .withExpiresAt(DateUtil.addSeconds(new Date(), day))
                 // signature
                 .sign(Algorithm.HMAC256(SpringUtil.getProperty(SECRET_KEY)));
     }
@@ -65,11 +68,9 @@ public class JwtUtils {
             DecodedJWT jwt = verifier.verify(token);
             return jwt.getClaims();
         } catch (Exception e) {
-            log.error("decode error,token:{}", token, e);
+            throw TokenExceedException.expired();
         }
-        return null;
     }
-
 
     /**
      * 根据Token获取uid

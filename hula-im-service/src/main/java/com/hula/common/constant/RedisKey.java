@@ -49,7 +49,7 @@ public class RedisKey {
 	/**
 	 * 用户refreshToken存放
 	 */
-	public static final String USER_REFRESH_TOKEN_FORMAT = "userRefreshToken:%s:uid_%d";
+	public static final String USER_REFRESH_TOKEN_FORMAT = "userRefreshToken:%s:uid_%d:%s";
 
     /**
      * 用户的信息更新时间

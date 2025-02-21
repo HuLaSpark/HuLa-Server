@@ -8,6 +8,7 @@ import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
+import com.hula.core.user.domain.vo.resp.user.OffLineResp;
 import com.hula.core.user.domain.vo.resp.ws.*;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.BeanUtils;
@@ -97,13 +98,10 @@ public class WsAdapter {
         return info;
     }
 
-    public static WsBaseResp<WsTokenExpire> buildInvalidateTokenResp(User user) {
-        WsBaseResp<WsTokenExpire> wsBaseResp = new WsBaseResp<>();
+    public static WsBaseResp<OffLineResp> buildInvalidateTokenResp(OffLineResp offLineResp) {
+        WsBaseResp<OffLineResp> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.TOKEN_EXPIRED.getType());
-        WsTokenExpire wsTokenExpire = new WsTokenExpire();
-        wsTokenExpire.setUid(user.getId());
-        wsTokenExpire.setIp(user.getIpInfo().getCreateIp());
-        wsBaseResp.setData(wsTokenExpire);
+        wsBaseResp.setData(offLineResp);
         return wsBaseResp;
     }
 

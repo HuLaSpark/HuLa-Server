@@ -3,6 +3,7 @@ package com.hula.common.event.listener;
 import com.hula.common.event.TokenExpireEvent;
 import com.hula.core.user.dao.UserApplyDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.resp.user.OffLineResp;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
@@ -30,8 +31,8 @@ public class TokenExpireListener {
     @Async(HULA_EXECUTOR)
     @TransactionalEventListener(classes = TokenExpireEvent.class, fallbackExecution = true)
     public void forceOffline(TokenExpireEvent event) {
-        User user = event.getUser();
-        pushService.sendPushMsg(WsAdapter.buildInvalidateTokenResp(user), user.getId(), user.getId());
+		OffLineResp offLine = event.getOffLine();
+        pushService.sendPushMsg(WsAdapter.buildInvalidateTokenResp(offLine), offLine.getUid(), offLine.getUid());
     }
 
 }

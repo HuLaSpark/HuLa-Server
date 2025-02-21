@@ -1,28 +1,28 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.event.TokenExpireEvent;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
+import com.hula.core.user.domain.vo.resp.user.OffLineResp;
 import com.hula.core.user.service.TokenService;
+import com.hula.exception.TokenExceedException;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
 import com.hula.utils.RequestHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 
 /**
  * @author nyh
@@ -31,10 +31,12 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 @AllArgsConstructor
 public class TokenServiceImpl implements TokenService {
 
+	private static final Integer DAY = 60 * 60 * 24;
+
     // token 过期时间
-    private static final Integer TOKEN_EXPIRE_DAYS = 5;
+	private static final Integer TOKEN_EXPIRE_DAYS = 30 * DAY;
     // refreshToken 过期时间
-    private static final Integer TOKEN_RENEWAL_DAYS = 30;
+    private static final Integer TOKEN_RENEWAL_DAYS = 365 * DAY;
 
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -54,32 +56,41 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public LoginResultVO createToken(Long uid, String loginType) {
+		// 1. uuid用于后续区分续签是给哪个token续签
+		String uuid = UUID.randomUUID().toString(true);
         String tokenKey = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid);
-		String refreshTokenKey = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, loginType, uid);
+		String refreshTokenKey = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, loginType, uid, uuid);
 		String token = RedisUtils.getStr(tokenKey), refreshToken;
         if (StrUtil.isNotBlank(token)) {
             RedisUtils.del(tokenKey);
-            User user = User.builder().id(uid).build();
-            user.refreshIp(RequestHolder.get().getIp());
-            // 旧设备下线
-            applicationEventPublisher.publishEvent(new TokenExpireEvent(this, user));
+            // 1.2 token存在 旧设备下线
+            applicationEventPublisher.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, loginType, RequestHolder.get().getIp())));
         }
-        // 创建用户token
-        token = JwtUtils.createToken(uid, loginType, TOKEN_EXPIRE_DAYS);
-		refreshToken = JwtUtils.createToken(uid, loginType, TOKEN_RENEWAL_DAYS);
+        // 2. 创建用户token
+		token = JwtUtils.createToken(uid, loginType, uuid, TOKEN_EXPIRE_DAYS);
+		refreshToken = JwtUtils.createToken(uid, loginType, uuid, TOKEN_RENEWAL_DAYS);
 
-		// 刷新存放时间
-		RedisUtils.set(tokenKey, token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
-		RedisUtils.set(refreshTokenKey, refreshToken, TOKEN_RENEWAL_DAYS, TimeUnit.DAYS);
-		return new LoginResultVO(token, refreshToken, LocalDateTime.now().plusDays(TOKEN_EXPIRE_DAYS), loginType);
+		// 3. 刷新存放时间
+		RedisUtils.set(tokenKey, token, TOKEN_EXPIRE_DAYS, TimeUnit.SECONDS);
+		RedisUtils.set(refreshTokenKey, refreshToken, TOKEN_RENEWAL_DAYS, TimeUnit.SECONDS);
+		return new LoginResultVO(token, refreshToken, loginType);
     }
 
     @Override
-    public LoginResultVO refreshToken() {
-		Map<String, Claim> verifyToken = JwtUtils.verifyToken(RequestHolder.get().getToken());
+    public LoginResultVO refreshToken(RefreshTokenReq refreshTokenReq) {
+		// 1.校验续签token是否有效
+		Map<String, Claim> verifyToken = JwtUtils.verifyToken(refreshTokenReq.getRefreshToken());
 
+		// 2.判断redis里面是否存在续签token
 		Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+		String uuid = verifyToken.get(JwtUtils.UUID_CLAIM).asString();
 		String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+		String token = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, uuid));
+		if(StrUtil.isEmpty(token)){
+			throw TokenExceedException.expired();
+		}
+
+		// 3.生成新的token
 		return createToken(uid, type);
 	}
 

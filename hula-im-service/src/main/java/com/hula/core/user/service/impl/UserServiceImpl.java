@@ -172,13 +172,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public Boolean changeUserState(Long uid, Long userStateId){
-		boolean success = userDao.changeUserState(uid, userStateId) > 0;
-
-		// 清空用户缓存
-		if(success){
-			userSummaryCache.delete(uid);
-		}
-		return success;
+		return userDao.changeUserState(uid, userStateId) > 0;
 	}
 
 	private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {

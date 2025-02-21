@@ -3,11 +3,13 @@ package com.hula.common.handler;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.exception.BusinessException;
 import com.hula.enums.CommonErrorEnum;
+import com.hula.exception.TokenExceedException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 /**
  * 自定义全局异常捕获
@@ -29,6 +31,15 @@ public class GlobalExceptionHandler {
         log.info("validation parameters error！The reason is:{}", message);
         return ApiResult.fail(CommonErrorEnum.PARAM_VALID.getErrorCode(), message.substring(0, message.length() - 1));
     }
+
+	/**
+	 * 身份过期
+	 */
+	@ExceptionHandler({TokenExceedException.class})
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResult<?> handleTokenExceedException(TokenExceedException ex) {
+		return ApiResult.fail(ex.getCode(), ex.getMessage());
+	}
 
     /**
      * 业务异常
