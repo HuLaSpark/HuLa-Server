@@ -68,7 +68,7 @@ public class JwtUtils {
             DecodedJWT jwt = verifier.verify(token);
             return jwt.getClaims();
         } catch (Exception e) {
-            throw TokenExceedException.expired();
+            throw TokenExceedException.wrap();
         }
     }
 
