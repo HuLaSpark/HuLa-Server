@@ -1,7 +1,6 @@
 package com.hula.core.user.domain.vo.resp.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -18,7 +17,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
-@Builder
 @Schema(description = "登录结果")
 public class LoginResultVO {
 	@Schema(description = "登录码")

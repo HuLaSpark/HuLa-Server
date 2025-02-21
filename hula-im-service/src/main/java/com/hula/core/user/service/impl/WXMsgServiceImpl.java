@@ -16,6 +16,7 @@ import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.ws.WSAuthorize;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
+import com.hula.core.user.domain.vo.resp.user.OffLineResp;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.TokenService;
@@ -182,9 +183,7 @@ public class WXMsgServiceImpl implements WebSocketService {
         }
         // 让前端的token失效
         else {
-            User user = User.builder().id(JwtUtils.getUidOrNull(wsAuthorize.getToken())).build();
-            user.refreshIp(null);
-            sendMsg(channel, WsAdapter.buildInvalidateTokenResp(user));
+            sendMsg(channel, WsAdapter.buildInvalidateTokenResp(new OffLineResp(JwtUtils.getUidOrNull(wsAuthorize.getToken()),  LoginTypeEnum.PC.getType(), null)));
         }
     }
 
