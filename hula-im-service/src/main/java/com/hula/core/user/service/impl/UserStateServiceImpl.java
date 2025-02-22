@@ -9,6 +9,7 @@ import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
 import com.hula.core.user.domain.vo.resp.user.UserStateVo;
 import com.hula.core.user.service.UserService;
 import com.hula.core.user.service.UserStateService;
+import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserSummaryCache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class UserStateServiceImpl implements UserStateService {
 
     private UserStateDao userStateDao;
 	private UserSummaryCache userSummaryCache;
+	private UserCache userCache;
 	private UserService userService;
 	private PushService pushService;
 
@@ -47,6 +49,7 @@ public class UserStateServiceImpl implements UserStateService {
 
 		if (ObjectUtil.isNotNull(userState) && changeUserState){
 			// 1.清除缓存
+			userCache.userInfoChange(uid);
 			userSummaryCache.delete(uid);
 
 			// 2.推送数据
