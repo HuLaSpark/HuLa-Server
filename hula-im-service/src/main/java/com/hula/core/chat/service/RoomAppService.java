@@ -22,6 +22,7 @@ import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -94,4 +95,10 @@ public interface RoomAppService {
 	 * 查看公告
 	 */
 	AnnouncementsResp getAnnouncement(Long uid, ReadAnnouncementsParam param);
+
+	/**
+	 * 隐藏会话
+	 * @return
+	 */
+	Boolean delContact(Long uid, Long roomId);
 }

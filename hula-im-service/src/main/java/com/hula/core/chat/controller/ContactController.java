@@ -61,5 +61,12 @@ public class ContactController {
 		Long uid = RequestHolder.get().getUid();
 		return ApiResult.success(roomService.setTop(uid, request));
 	}
+
+	@PostMapping("hide")
+	@Operation(summary = "删除会话")
+	public ApiResult hide(@Valid IdReqVO request) {
+		Long uid = RequestHolder.get().getUid();
+		return ApiResult.success(roomService.delContact(uid, request.getId()));
+	}
 }
 

@@ -328,6 +328,11 @@ public class RoomAppServiceImpl implements RoomAppService {
 	}
 
 	@Override
+	public Boolean delContact(Long uid, Long roomId) {
+		return contactDao.updateByRoomId(roomId, Arrays.asList(uid), true);
+	}
+
+	@Override
     public MemberResp getGroupDetail(Long uid, long roomId) {
         RoomGroup roomGroup = roomGroupCache.get(roomId);
         Room room = roomCache.get(roomId);
