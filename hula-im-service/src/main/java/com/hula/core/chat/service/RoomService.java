@@ -4,9 +4,13 @@ package com.hula.core.chat.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
+import com.hula.core.chat.domain.entity.Announcements;
+import com.hula.core.chat.domain.entity.AnnouncementsReadRecord;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
+import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
+import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 
 import java.util.List;
 
@@ -52,9 +56,37 @@ public interface RoomService {
 	Boolean updateRoomInfo(RoomGroup roomGroup);
 
 	/**
-	 * 获取群主、管理员
+	 * isSpecial：true -> 获取群主、管理员
 	 * @return
 	 */
-	List<Long> getAdmins(Long id);
+	List<Long> getGroupUsers(Long id, Boolean isSpecial);
 
+	/**
+	 * 读公告
+	 *
+	 * @param uid
+	 * @param announcementId
+	 * @return
+	 */
+	Boolean readAnnouncement(Long uid, Long announcementId);
+
+	/**
+	 * 查询公告
+	 */
+	AnnouncementsResp getAnnouncement(Long id);
+
+	/**
+	 * 查询公告已读数量
+	 */
+	Long getAnnouncementReadCount(Long announcementId);
+
+	/**
+	 * 保存群公告
+	 */
+	Boolean saveAnnouncements(Announcements announcements);
+
+	/**
+	 * 批量保存公告已读记录
+	 */
+	Boolean saveBatchAnnouncementsRecord(List<AnnouncementsReadRecord> announcementsReadRecordList);
 }

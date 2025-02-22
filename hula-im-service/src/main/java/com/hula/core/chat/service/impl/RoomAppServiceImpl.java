@@ -1,5 +1,6 @@
 package com.hula.core.chat.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.ObjectUtil;
@@ -31,9 +32,13 @@ import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
+import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
+import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
+import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
+import com.hula.core.chat.domain.vo.response.ReadAnnouncementsResp;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.RoomAppService;
 import com.hula.core.chat.service.RoomService;
@@ -67,6 +72,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -84,6 +90,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private MessageDao messageDao;
     private HotRoomCache hotRoomCache;
     private UserCache userCache;
+	private RoomAnnouncementsCache roomAnnouncementsCache;
     private GroupMemberDao groupMemberDao;
     private UserDao userDao;
     private ChatService chatService;
@@ -163,7 +170,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		}
 
 		// 获取到这个群的管理员的人的信息
-		List<Long> groupAdminIds = roomService.getAdmins(roomGroup.getId());
+		List<Long> groupAdminIds = roomService.getGroupUsers(roomGroup.getId(), true);
 		User userInfo = userCache.getUserInfo(uid);
 		String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
 
@@ -256,6 +263,69 @@ public class RoomAppServiceImpl implements RoomAppService {
 		return contactDao.updateById(contact);
 	}
 
+	@Override
+	public Boolean pushAnnouncement(Long uid, AnnouncementsParam param) {
+		List<Long> uids = roomService.getGroupUsers(param.getRoomId(), false);
+		if(CollUtil.isNotEmpty(uids)){
+			LocalDateTime now = LocalDateTime.now();
+			pushService.sendPushMsg(MessageAdapter.buildRoomGroupAnnouncement(param.getContent()), uids, uid);
+
+			Announcements announcements = new Announcements();
+			announcements.setContent(param.getContent());
+			announcements.setRoomId(param.getRoomId());
+			announcements.setUid(uid);
+			announcements.setPublishTime(now);
+			roomService.saveAnnouncements(announcements);
+
+			// 创建已读的信息
+			List<AnnouncementsReadRecord> announcementsReadRecordList = new ArrayList<>();
+			uids.forEach(item -> {
+				AnnouncementsReadRecord readRecord = new AnnouncementsReadRecord();
+				readRecord.setAnnouncementsId(announcements.getId());
+				readRecord.setUid(item);
+				readRecord.setIsCheck(false);
+				announcementsReadRecordList.add(readRecord);
+			});
+			// 批量添加未读消息
+			return roomService.saveBatchAnnouncementsRecord(announcementsReadRecordList);
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean readAnnouncement(Long uid, ReadAnnouncementsParam param) {
+		// 1.更新已读状态
+		Boolean success = roomService.readAnnouncement(uid, param.getAnnouncementId());
+
+		if(success){
+			// 2.刷新最新的已读数量，通知所有人有人对 announcementId 已读了
+			roomAnnouncementsCache.add(param.getAnnouncementId(), uid);
+
+			List<Long> memberUidList = groupMemberCache.getMemberUidList(param.getRoomId());
+			pushService.sendPushMsg(MessageAdapter.buildReadRoomGroupAnnouncement(new ReadAnnouncementsResp(uid, roomAnnouncementsCache.get(param.getAnnouncementId()))), memberUidList, uid);
+		}
+		return success;
+	}
+
+	@Override
+	public AnnouncementsResp getAnnouncement(Long uid, ReadAnnouncementsParam param) {
+		// 1.鉴权
+		roomService.checkUser(uid, param.getRoomId());
+
+		// 2.获取公告
+		AnnouncementsResp announcement = roomService.getAnnouncement(param.getAnnouncementId());
+
+		// 3.查询公告已读数量
+		Long count = roomAnnouncementsCache.get(param.getAnnouncementId());
+		if(count < 1){
+			count = roomService.getAnnouncementReadCount(param.getAnnouncementId());
+			roomAnnouncementsCache.load(Arrays.asList(param.getAnnouncementId()));
+		}
+
+		// todo 需要测试看看重新加载公告已读数量对不对
+		announcement.setCount(count);
+		return announcement;
+	}
 
 	@Override
     public MemberResp getGroupDetail(Long uid, long roomId) {

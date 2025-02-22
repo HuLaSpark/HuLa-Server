@@ -41,14 +41,14 @@ public class JwtUtils {
      * @param uid 用户id
      * @return {@link String } token
      */
-    public static String createToken(Long uid, String loginType, String uuid, Integer day) {
+    public static String createToken(Long uid, String loginType, String uuid, Integer count) {
         return JWT.create()
                 .withClaim(UID_CLAIM, uid)
 				.withClaim(UUID_CLAIM, uuid)
                 .withClaim(LOGIN_TYPE_CLAIM, loginType)
                 .withClaim(CREATE_TIME, new Date())
                 // 过期时间
-                .withExpiresAt(DateUtil.addSeconds(new Date(), day))
+                .withExpiresAt(DateUtil.addSeconds(new Date(), count))
                 // signature
                 .sign(Algorithm.HMAC256(SpringUtil.getProperty(SECRET_KEY)));
     }

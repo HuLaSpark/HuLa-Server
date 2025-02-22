@@ -10,6 +10,7 @@ import com.hula.core.chat.domain.enums.MessageTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
 import com.hula.core.chat.domain.vo.request.msg.TextMsgReq;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
+import com.hula.core.chat.domain.vo.response.ReadAnnouncementsResp;
 import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
@@ -94,6 +95,26 @@ public class MessageAdapter {
 		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_MSG.getType());
 		wsBaseResp.setData(msg);
+		return wsBaseResp;
+	}
+
+	/**
+	 * 群公告
+	 */
+	public static WsBaseResp<String> buildRoomGroupAnnouncement(String msg) {
+		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_NOTICE_MSG.getType());
+		wsBaseResp.setData(msg);
+		return wsBaseResp;
+	}
+
+	/**
+	 * 已读群公告
+	 */
+	public static WsBaseResp<ReadAnnouncementsResp> buildReadRoomGroupAnnouncement(ReadAnnouncementsResp resp) {
+		WsBaseResp<ReadAnnouncementsResp> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_NOTICE_READ_MSG.getType());
+		wsBaseResp.setData(resp);
 		return wsBaseResp;
 	}
 }

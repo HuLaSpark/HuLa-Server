@@ -1,10 +1,17 @@
 package com.hula.core.chat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.enums.NormalOrNoEnum;
+import com.hula.core.chat.dao.AnnouncementsDao;
+import com.hula.core.chat.dao.AnnouncementsReadRecordDao;
+import com.hula.core.chat.domain.entity.Announcements;
+import com.hula.core.chat.domain.entity.AnnouncementsReadRecord;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
+import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.RoomDao;
@@ -21,6 +28,7 @@ import com.hula.core.chat.service.adapter.ChatAdapter;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.service.cache.UserInfoCache;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +44,8 @@ public class RoomServiceImpl implements RoomService {
     private RoomFriendDao roomFriendDao;
     private RoomDao roomDao;
     private GroupMemberDao groupMemberDao;
+	private AnnouncementsDao announcementsDao;
+	private AnnouncementsReadRecordDao announcementsReadRecordDao;
     private UserInfoCache userInfoCache;
     private RoomGroupDao roomGroupDao;
 
@@ -113,10 +123,43 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
-	public List<Long> getAdmins(Long id) {
-		return groupMemberDao.getAdmins(id);
+	public List<Long> getGroupUsers(Long id, Boolean isSpecial) {
+		return groupMemberDao.getGroupUsers(id, isSpecial);
 	}
 
+	/**
+	 * 更新已读状态
+	 */
+	@Override
+	public Boolean readAnnouncement(Long uid, Long announcementId) {
+		return announcementsReadRecordDao.update(new UpdateWrapper<AnnouncementsReadRecord>().lambda()
+				.eq(AnnouncementsReadRecord::getUid, uid)
+				.eq(AnnouncementsReadRecord::getAnnouncementsId, announcementId)
+				.set(AnnouncementsReadRecord::getIsCheck, true));
+	}
+
+	@Override
+	public AnnouncementsResp getAnnouncement(Long id) {
+		AnnouncementsResp resp = new AnnouncementsResp();
+		BeanUtils.copyProperties(announcementsDao.getById(id), resp);
+		return resp;
+	}
+
+	@Override
+	public Long getAnnouncementReadCount(Long announcementId) {
+		return announcementsReadRecordDao.count(new QueryWrapper<AnnouncementsReadRecord>().lambda()
+				.eq(AnnouncementsReadRecord::getAnnouncementsId, announcementId));
+	}
+
+	@Override
+	public Boolean saveAnnouncements(Announcements announcements) {
+		return announcementsDao.save(announcements);
+	}
+
+	@Override
+	public Boolean saveBatchAnnouncementsRecord(List<AnnouncementsReadRecord> announcementsReadRecordList) {
+		return announcementsReadRecordDao.saveBatch(announcementsReadRecordList);
+	}
 
 	private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {
         RoomFriend insert = ChatAdapter.buildFriendRoom(roomId, uidList);

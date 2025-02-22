@@ -14,6 +14,9 @@ import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
+import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
+import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
+import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
@@ -75,4 +78,20 @@ public interface RoomAppService {
 	 * @return
 	 */
 	Boolean setTop(Long uid, ContactTopReq request);
+
+	/**
+	 * 发布公告
+	 * @return
+	 */
+	Boolean pushAnnouncement(Long uid, AnnouncementsParam param);
+
+	/**
+	 * 已读公告
+	 */
+	Boolean readAnnouncement(Long uid, ReadAnnouncementsParam param);
+
+	/**
+	 * 查看公告
+	 */
+	AnnouncementsResp getAnnouncement(Long uid, ReadAnnouncementsParam param);
 }

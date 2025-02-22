@@ -34,6 +34,7 @@ public enum WSRespTypeEnum {
     MSG_MARK_ITEM("msgMarkItem", "消息标记", WSMsgMark.class),
     MSG_RECALL("msgRecall", "消息撤回", WSMsgRecall.class),
 	ROOM_GROUP_NOTICE_MSG("roomGroupNoticeMsg", "群公告消息", null),
+	ROOM_GROUP_NOTICE_READ_MSG("roomGroupNoticeReadMsg", "群公告已读", null),
     REQUEST_NEW_FRIEND("requestNewFriend", "好友申请", WSFriendApply.class),
     NEW_FRIEND_SESSION("newFriendSession", "成员变动", WSMemberChange.class),
     OFFLINE("offline", "下线通知", WSOfflineNotify.class),

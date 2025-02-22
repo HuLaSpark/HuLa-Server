@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.core.chat.domain.entity.GroupMember;
 import com.hula.core.chat.domain.enums.GroupRoleEnum;
@@ -71,13 +72,19 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
     }
 
 	/**
-	 * 获取群主、管理员
+	 * 获取群聊人员
+	 * isSpecial：true -> 获取群主、管理员
+	 * isSpecial：false -> 获取所有人员
 	 * @param id 群id
 	 * @return
 	 */
-	public List<Long> getAdmins(Long id) {
-		return lambdaQuery()
-				.select(GroupMember::getUid)
+	public List<Long> getGroupUsers(Long id, Boolean isSpecial) {
+		LambdaQueryChainWrapper<GroupMember> wrapper = lambdaQuery();
+		if (isSpecial){
+			wrapper.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType());
+		}
+		return
+				wrapper.select(GroupMember::getUid)
 				.eq(GroupMember::getGroupId, id)
 				.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType()).list().stream().map(GroupMember::getUid).toList();
 	}

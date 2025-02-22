@@ -41,6 +41,11 @@ public class RedisKey {
      */
     public static final String GROUP_INFO_FORMAT = "groupInfo:roomId_%d";
 
+	/**
+	 * 群公告
+	 */
+	public static final String GROUP_ANNOUNCEMENTS_FORMAT = "groupInfo:announcements_%d";
+
     /**
      * 用户token存放
      */

@@ -17,6 +17,8 @@ import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberExitReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
+import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
+import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.chat.service.IGroupMemberService;
@@ -148,5 +150,23 @@ public class RoomController {
         groupMemberService.revokeAdmin(uid, request);
         return ApiResult.success();
     }
+
+	@Operation(summary = "查看公告")
+	@GetMapping("/announcement/{id}")
+	public ApiResult announcement(ReadAnnouncementsParam param){
+		return ApiResult.success(roomService.getAnnouncement(RequestHolder.get().getUid(), param));
+	}
+
+	@Operation(summary = "发布公告")
+	@PostMapping("announcement/push")
+	public ApiResult pushAnnouncement(@Valid @RequestBody AnnouncementsParam param){
+		return ApiResult.success(roomService.pushAnnouncement(RequestHolder.get().getUid(), param));
+	}
+
+	@Operation(summary = "已读公告")
+	@PostMapping("announcement/read")
+	public ApiResult readAnnouncement(@RequestBody ReadAnnouncementsParam param){
+		return ApiResult.success(roomService.readAnnouncement(RequestHolder.get().getUid(), param));
+	}
 
 }

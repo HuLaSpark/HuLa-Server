@@ -78,20 +78,25 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public LoginResultVO refreshToken(RefreshTokenReq refreshTokenReq) {
-		// 1.校验续签token是否有效
-		Map<String, Claim> verifyToken = JwtUtils.verifyToken(refreshTokenReq.getRefreshToken());
+		Map<String, Claim> verifyToken;
+		try {
+			// 1.校验续签token是否有效
+			verifyToken = JwtUtils.verifyToken(refreshTokenReq.getRefreshToken());
 
-		// 2.判断redis里面是否存在续签token
-		Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
-		String uuid = verifyToken.get(JwtUtils.UUID_CLAIM).asString();
-		String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
-		String token = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, uuid));
-		if(StrUtil.isEmpty(token)){
+			// 2.判断redis里面是否存在续签token
+			Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+			String uuid = verifyToken.get(JwtUtils.UUID_CLAIM).asString();
+			String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+			String token = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, uuid));
+			if(StrUtil.isEmpty(token)){
+				throw TokenExceedException.expired();
+			}
+
+			// 3.生成新的token
+			return createToken(uid, type);
+		} catch (Exception e) {
 			throw TokenExceedException.expired();
 		}
-
-		// 3.生成新的token
-		return createToken(uid, type);
 	}
 
     @Override
