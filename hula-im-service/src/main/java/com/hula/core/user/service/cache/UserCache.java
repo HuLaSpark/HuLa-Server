@@ -144,16 +144,16 @@ public class UserCache {
         return map;
     }
 
+    /**
+     * 清空用户缓存，下次请求最新数据
+     * @param uid 用户id
+     **/
     public void userInfoChange(Long uid) {
-        delUserInfo(uid);
+        RedisUtils.del(RedisKey.getKey(RedisKey.USER_INFO_FORMAT, uid));
+
         //删除UserSummaryCache，前端下次懒加载的时候可以获取到最新的数据
         userSummaryCache.delete(uid);
         refreshUserModifyTime(uid);
-    }
-
-    public void delUserInfo(Long uid) {
-        String key = RedisKey.getKey(RedisKey.USER_INFO_FORMAT, uid);
-        RedisUtils.del(key);
     }
 
     @Cacheable(cacheNames = "user", key = "'blackList'")
