@@ -7,6 +7,7 @@ import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.common.event.UserRegisterEvent;
+import com.hula.common.utils.IPUtils;
 import com.hula.core.chat.service.ContactService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
@@ -19,6 +20,7 @@ import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
 import com.hula.utils.RequestHolder;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,26 +42,28 @@ public class LoginServiceImpl implements LoginService {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public LoginResultVO login(User user) {
+    public LoginResultVO login(User user, HttpServletRequest request) {
         User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
                 .eq(User::getAccount, user.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
         AssertUtil.equal(queryUser.getPassword(), user.getPassword(), "账号或密码错误");
         // 上线通知
         if (!userCache.isOnline(queryUser.getId())) {
+			queryUser.refreshIp(IPUtils.getClientIp(request));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
         return tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC.getType());
     }
 
     @Override
-    public LoginResultVO mobileLogin(User user) {
+    public LoginResultVO mobileLogin(User user, HttpServletRequest request) {
         User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
                 .eq(User::getAccount, user.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
         AssertUtil.equal(queryUser.getPassword(), user.getPassword(), "账号或密码错误");
         // 上线通知
         if (!userCache.isOnline(queryUser.getId())) {
+			queryUser.refreshIp(IPUtils.getClientIp(request));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
         return tokenService.createToken(queryUser.getId(), LoginTypeEnum.MOBILE.getType());

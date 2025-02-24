@@ -42,7 +42,7 @@ public class TargetController {
 	}
 
 	@PostMapping("/del")
-	public ApiResult del(List<Long> ids){
+	public ApiResult del(@RequestBody List<Long> ids){
 		return ApiResult.success(targetService.removeByIds(ids));
 	}
 

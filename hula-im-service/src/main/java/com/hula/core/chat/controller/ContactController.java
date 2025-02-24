@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,14 +58,14 @@ public class ContactController {
 
 	@PostMapping("setTop")
 	@Operation(summary = "置顶会话")
-	public ApiResult<Boolean> setTop(@Valid ContactTopReq request) {
+	public ApiResult<Boolean> setTop(@RequestBody @Valid ContactTopReq request) {
 		Long uid = RequestHolder.get().getUid();
 		return ApiResult.success(roomService.setTop(uid, request));
 	}
 
 	@PostMapping("hide")
 	@Operation(summary = "删除会话")
-	public ApiResult hide(@Valid IdReqVO request) {
+	public ApiResult hide(@RequestBody @Valid IdReqVO request) {
 		Long uid = RequestHolder.get().getUid();
 		return ApiResult.success(roomService.delContact(uid, request.getId()));
 	}

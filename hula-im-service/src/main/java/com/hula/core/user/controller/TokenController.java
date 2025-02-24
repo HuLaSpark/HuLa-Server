@@ -11,6 +11,7 @@ import com.hula.domain.vo.res.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,16 +41,16 @@ public class TokenController {
 
     @PostMapping("/login")
     @Operation(summary ="用户登录")
-    public ApiResult<LoginResultVO> login(@Valid @RequestBody LoginReq loginReq) {
+    public ApiResult<LoginResultVO> login(@Valid @RequestBody LoginReq loginReq, HttpServletRequest request) {
         return ApiResult.success(loginService.login(User.builder()
-				.account(loginReq.getAccount()).password(loginReq.getPassword()).build()));
+				.account(loginReq.getAccount()).password(loginReq.getPassword()).build(), request));
     }
 
     @PostMapping("/mobileLogin")
     @Operation(summary ="移动端用户登录")
-    public ApiResult<LoginResultVO> mobileLogin(@Valid @RequestBody LoginReq loginReq) {
+    public ApiResult<LoginResultVO> mobileLogin(@Valid @RequestBody LoginReq loginReq, HttpServletRequest request) {
         return ApiResult.success(loginService.mobileLogin(User.builder()
-				.account(loginReq.getAccount()).password(loginReq.getPassword()).build()));
+				.account(loginReq.getAccount()).password(loginReq.getPassword()).build(), request));
     }
 
     @PostMapping("/logout")
