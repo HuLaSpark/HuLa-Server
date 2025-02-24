@@ -41,9 +41,8 @@ public class IpServiceImpl implements IpService, DisposableBean {
 
 
     @Override
-    public void refreshIpDetailAsync(Long uid) {
+    public void refreshIpDetailAsync(User user) {
         EXECUTOR.execute(() -> {
-            User user = userDao.getById(uid);
             IpInfo ipInfo = user.getIpInfo();
             if (Objects.isNull(ipInfo)) {
                 return;
@@ -56,13 +55,13 @@ public class IpServiceImpl implements IpService, DisposableBean {
             if (Objects.nonNull(ipDetail)) {
                 ipInfo.refreshIpDetail(ipDetail);
                 User update = new User();
-                update.setId(uid);
+                update.setId(user.getId());
                 update.setIpInfo(ipInfo);
+				user.setIpInfo(ipInfo);
                 userDao.updateById(update);
             } else {
-                log.error("get ip detail fail ip:{},uid:{}", ip, uid);
+                log.error("get ip detail fail ip:{},uid:{}", ip, user.getId());
             }
-
         });
     }
 

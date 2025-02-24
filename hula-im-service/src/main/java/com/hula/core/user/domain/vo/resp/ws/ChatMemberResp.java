@@ -29,6 +29,9 @@ public class ChatMemberResp extends BaseEntity {
     @Schema(description = "角色ID")
     private Integer roleId;
 
+	@Schema(description = "IP归属地")
+	private String locPlace;
+
     @Schema(description = "最后一次上下线时间")
     private Date lastOptTime;
 

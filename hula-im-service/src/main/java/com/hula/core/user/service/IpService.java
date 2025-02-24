@@ -1,5 +1,7 @@
 package com.hula.core.user.service;
 
+import com.hula.core.user.domain.entity.User;
+
 /**
  * @author nyh
  */
@@ -7,7 +9,7 @@ public interface IpService {
     /**
      * 异步更新用户ip详情
      *
-     * @param uid 用户id
+     * @param user 用户
      */
-    void refreshIpDetailAsync(Long uid);
+    void refreshIpDetailAsync(User user);
 }

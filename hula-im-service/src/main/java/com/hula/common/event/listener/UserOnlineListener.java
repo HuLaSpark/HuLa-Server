@@ -1,6 +1,5 @@
 package com.hula.common.event.listener;
 
-
 import cn.hutool.core.date.DateUtil;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.core.chat.service.ChatService;
@@ -11,6 +10,7 @@ import com.hula.core.user.service.IpService;
 import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.core.user.service.cache.UserInfoCache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -32,6 +32,7 @@ public class UserOnlineListener {
     private WebSocketService webSocketService;
     private UserDao userDao;
     private UserCache userCache;
+	private UserInfoCache userInfoCache;
     private IpService ipService;
     private WsAdapter wsAdapter;
     private ChatService chatService;
@@ -46,11 +47,12 @@ public class UserOnlineListener {
                 .activeStatus(ChatActiveStatusEnum.ONLINE.getStatus()).build();
         userDao.updateById(update);
         // 更新用户ip详情
-        ipService.refreshIpDetailAsync(user.getId());
+        ipService.refreshIpDetailAsync(user);
+		userCache.delUserInfo(user.getId());
+		userInfoCache.delete(user.getId());
         userCache.online(user.getId(), DateUtil.date());
         // 推送给所有在线用户，该用户上线
-        webSocketService.sendAll(wsAdapter.buildOnlineNotifyResp(event.getUser(),
-                chatService.getMemberStatistic().getOnlineNum()), event.getUser().getId());
+        webSocketService.sendAll(wsAdapter.buildOnlineNotifyResp(user, chatService.getMemberStatistic().getOnlineNum()), event.getUser().getId());
     }
 
 }

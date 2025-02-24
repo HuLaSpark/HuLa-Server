@@ -4,6 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
+import com.hula.core.user.domain.entity.IpDetail;
+import com.hula.core.user.domain.entity.IpInfo;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
@@ -15,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * ws消息适配器
@@ -85,6 +88,7 @@ public class WsAdapter {
         BeanUtil.copyProperties(user, info);
         info.setUid(user.getId());
         info.setActiveStatus(ChatActiveStatusEnum.ONLINE.getStatus());
+		info.setLocPlace(Optional.ofNullable(user.getIpInfo()).map(IpInfo::getUpdateIpDetail).map(IpDetail::getCity).orElse(null));
         info.setLastOptTime(user.getLastOptTime());
         return info;
     }
