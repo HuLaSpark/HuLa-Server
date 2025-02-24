@@ -21,12 +21,15 @@ import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
+import com.hula.core.chat.domain.vo.response.RoomGroupResp;
 import com.hula.core.chat.service.IGroupMemberService;
 import com.hula.core.chat.service.RoomAppService;
+import com.hula.core.user.domain.vo.resp.user.UserSearchResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -48,6 +51,13 @@ public class RoomController {
     private RoomAppService roomService;
     @Resource
     private IGroupMemberService groupMemberService;
+
+    @GetMapping("/group/search")
+    @Operation(summary = "搜索群聊")
+    public ApiResult<List<RoomGroupResp>> searchRoomGroup(
+            @Parameter(description = "搜索关键词（用户名或ID）") @RequestParam String keyword) {
+        return ApiResult.success(roomService.searchRoomGroup(keyword));
+    }
 
     @GetMapping("/group")
     @Operation(summary ="群组详情")

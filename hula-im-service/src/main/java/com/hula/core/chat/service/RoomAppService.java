@@ -16,10 +16,7 @@ import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
-import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
-import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
-import com.hula.core.chat.domain.vo.response.ChatRoomResp;
-import com.hula.core.chat.domain.vo.response.MemberResp;
+import com.hula.core.chat.domain.vo.response.*;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -101,4 +98,6 @@ public interface RoomAppService {
 	 * @return
 	 */
 	Boolean delContact(Long uid, Long roomId);
+
+	List<RoomGroupResp> searchRoomGroup(String keyword);
 }

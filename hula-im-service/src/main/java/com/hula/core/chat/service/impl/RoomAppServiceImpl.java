@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.po.RoomChatInfoPO;
@@ -15,6 +16,7 @@ import com.hula.common.event.GroupMemberAddEvent;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
+import com.hula.core.chat.dao.RoomGroupDao;
 import com.hula.core.chat.domain.dto.RoomBaseInfo;
 import com.hula.core.chat.domain.entity.*;
 import com.hula.core.chat.domain.enums.GroupRoleAPPEnum;
@@ -34,11 +36,7 @@ import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
-import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
-import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
-import com.hula.core.chat.domain.vo.response.ChatRoomResp;
-import com.hula.core.chat.domain.vo.response.MemberResp;
-import com.hula.core.chat.domain.vo.response.ReadAnnouncementsResp;
+import com.hula.core.chat.domain.vo.response.*;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.RoomAppService;
 import com.hula.core.chat.service.RoomService;
@@ -53,6 +51,7 @@ import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
+import com.hula.core.user.domain.vo.resp.user.UserSearchResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.FriendService;
@@ -76,6 +75,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -100,6 +100,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private GroupMemberCache groupMemberCache;
     private PushService pushService;
 	private FriendService friendService;
+    private RoomGroupDao roomGroupDao;
     @Override
     public CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid) {
         // 查出用户要展示的会话列表
@@ -332,7 +333,64 @@ public class RoomAppServiceImpl implements RoomAppService {
 		return contactDao.updateByRoomId(roomId, Arrays.asList(uid), true);
 	}
 
-	@Override
+    /**************************** 查找群聊 *********************************/
+
+    @Override
+    public List<RoomGroupResp> searchRoomGroup(String keyword) {
+        // 1. 参数校验
+        if (!AssertUtil.isValidKeyword(keyword)) {
+            return Collections.emptyList();
+        }
+        // 2. 分两次独立查询（避免复杂SQL）
+        // 精确匹配账号
+        List<RoomGroup> roomGroupsRoom = queryByAccount(keyword);
+        // 模糊匹配昵称
+        List<RoomGroup> roomGroupsName = queryByName(keyword);
+
+        // 3. 合并结果并去重（保留第一个出现的用户）
+        Map<Long, RoomGroup> mergedRoomGroups = new LinkedHashMap<>();
+        Stream.concat(roomGroupsRoom.stream(), roomGroupsName.stream())
+                .forEach(roomGroup -> mergedRoomGroups.putIfAbsent(roomGroup.getId(), roomGroup));
+
+        // 4. 转换为响应对象（可根据需要调整排序）
+        return mergedRoomGroups.values().stream()
+                .sorted(Comparator.comparing((RoomGroup r) ->
+                                r.getRoomId().equals(keyword) ? 0 : 1) // 精确匹配置顶
+                        .thenComparing(RoomGroup::getUpdateTime).reversed())
+                .map(this::buildRoomSearchResp)
+                .collect(Collectors.toList());
+    }
+
+    // 精确匹配房间号
+    private List<RoomGroup> queryByAccount(String keyword) {
+        return roomGroupDao.list(new LambdaQueryWrapper<RoomGroup>()
+                .eq(RoomGroup::getRoomId, keyword)
+                .eq(RoomGroup::getDeleteStatus, 0)
+        );
+    }
+
+    // 模糊匹配昵称
+    private List<RoomGroup> queryByName(String keyword) {
+        return roomGroupDao.list(new LambdaQueryWrapper<RoomGroup>()
+                .like(RoomGroup::getName, keyword)
+                .eq(RoomGroup::getDeleteStatus, 0)
+                .orderByDesc(RoomGroup::getUpdateTime) // 按更新时间倒序
+        );
+    }
+
+    // 构建响应对象
+    private RoomGroupResp buildRoomSearchResp(RoomGroup roomGroup) {
+        return RoomGroupResp.builder()
+                .id(roomGroup.getId())
+                .roomId(roomGroup.getRoomId())
+                .groupName(roomGroup.getName())
+                .avatar(roomGroup.getAvatar())
+                .build();
+    }
+
+    /******************************** 其他 *******************************/
+
+    @Override
     public MemberResp getGroupDetail(Long uid, long roomId) {
         RoomGroup roomGroup = roomGroupCache.get(roomId);
         Room room = roomCache.get(roomId);

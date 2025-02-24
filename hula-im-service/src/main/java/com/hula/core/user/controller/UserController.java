@@ -1,6 +1,9 @@
 package com.hula.core.user.controller;
 
 
+import com.hula.common.domain.vo.req.IdReqVO;
+import com.hula.core.chat.domain.vo.response.MemberResp;
+import com.hula.core.user.domain.vo.resp.user.UserSearchResp;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.AssertUtil;
 import com.hula.utils.RequestHolder;
@@ -13,6 +16,7 @@ import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -33,6 +37,13 @@ public class UserController {
     private UserService userService;
     @Resource
     private RoleService roleService;
+
+    @GetMapping("/search/users")
+    @Operation(summary = "搜索用户")
+    public ApiResult<List<UserSearchResp>> searchUsers(
+            @Parameter(description = "搜索关键词（用户名或ID）") @RequestParam String keyword) {
+        return ApiResult.success(userService.searchUsers(keyword));
+    }
 
     @GetMapping("/userInfo")
     @Operation(summary ="用户详情")

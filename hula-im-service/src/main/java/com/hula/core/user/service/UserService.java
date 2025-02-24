@@ -5,6 +5,7 @@ import com.hula.core.user.domain.dto.SummeryInfoDTO;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
+import com.hula.core.user.domain.vo.resp.user.UserSearchResp;
 
 import java.util.List;
 
@@ -76,4 +77,10 @@ public interface UserService {
 	 * @return
 	 */
 	Boolean changeUserState(Long uid, Long userStateId);
+
+    /**
+     * 查找用户
+     * @param keyword
+     */
+    List<UserSearchResp> searchUsers(String keyword);
 }
