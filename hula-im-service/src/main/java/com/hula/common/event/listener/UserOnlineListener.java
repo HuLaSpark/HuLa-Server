@@ -48,7 +48,7 @@ public class UserOnlineListener {
         userDao.updateById(update);
         // 更新用户ip详情
         ipService.refreshIpDetailAsync(user);
-		userCache.delUserInfo(user.getId());
+		userCache.userInfoChange(user.getId());
 		userInfoCache.delete(user.getId());
         userCache.online(user.getId(), DateUtil.date());
         // 推送给所有在线用户，该用户上线
