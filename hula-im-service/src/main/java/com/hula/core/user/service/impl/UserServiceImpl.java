@@ -2,6 +2,7 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.user.dao.BlackDao;
@@ -20,6 +21,7 @@ import com.hula.core.user.domain.enums.ItemTypeEnum;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
+import com.hula.core.user.domain.vo.resp.user.UserSearchResp;
 import com.hula.core.user.service.UserService;
 import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.core.user.service.cache.ItemCache;
@@ -35,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author nyh
@@ -175,7 +178,70 @@ public class UserServiceImpl implements UserService {
 		return userDao.changeUserState(uid, userStateId) > 0;
 	}
 
-	private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {
+    /**************************** 查找用户 *********************************/
+
+    /**
+     * 根据关键词搜索用户
+     * @param keyword
+     */
+    @Override
+    public List<UserSearchResp> searchUsers(String keyword) {
+        // 1. 参数校验
+        if (!AssertUtil.isValidKeyword(keyword)) {
+            return Collections.emptyList();
+        }
+        // 2. 分两次独立查询（避免复杂SQL）
+        // 精确匹配账号
+        List<User> accountUsers = queryByAccount(keyword);
+        // 模糊匹配昵称
+        List<User> nameUsers = queryByName(keyword);
+
+        // 3. 合并结果并去重（保留第一个出现的用户）
+        Map<Long, User> mergedUsers = new LinkedHashMap<>();
+        Stream.concat(accountUsers.stream(), nameUsers.stream())
+                .forEach(user -> mergedUsers.putIfAbsent(user.getId(), user));
+
+        // 4. 转换为响应对象（可根据需要调整排序）
+        return mergedUsers.values().stream()
+                .sorted(Comparator.comparing((User u) ->
+                                u.getAccount().equals(keyword) ? 0 : 1) // 精确匹配置顶
+                        .thenComparing(User::getUpdateTime).reversed())
+                .map(this::buildUserSearchResp)
+                .collect(Collectors.toList());
+    }
+
+    // 精确匹配账号
+    private List<User> queryByAccount(String keyword) {
+        return userDao.list(new LambdaQueryWrapper<User>()
+                .eq(User::getAccount, keyword)
+                .eq(User::getStatus, 0)
+        );
+    }
+
+    // 模糊匹配昵称
+    private List<User> queryByName(String keyword) {
+        return userDao.list(new LambdaQueryWrapper<User>()
+                .like(User::getName, keyword)
+                .eq(User::getStatus, 0)
+                .orderByDesc(User::getUpdateTime) // 按更新时间倒序
+        );
+    }
+
+    // 构建响应对象
+    private UserSearchResp buildUserSearchResp(User user) {
+        return UserSearchResp.builder()
+                .id(user.getId())
+                .account(user.getAccount())
+                .name(user.getName())
+                .avatar(user.getAvatar())
+                .build();
+    }
+
+
+
+    /******************************** 其他 *******************************/
+
+    private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {
         List<Long> needSyncUidList = new ArrayList<>();
         List<Long> userModifyTime = userCache.getUserModifyTime(reqList.stream().map(SummeryInfoReq.infoReq::getUid).collect(Collectors.toList()));
         for (int i = 0; i < reqList.size(); i++) {

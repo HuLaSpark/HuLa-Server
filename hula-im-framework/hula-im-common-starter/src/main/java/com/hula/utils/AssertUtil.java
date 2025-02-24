@@ -24,6 +24,16 @@ import java.util.Set;
 public class AssertUtil {
 
     /**
+     * 关键词校验
+     */
+    public static boolean isValidKeyword(String keyword) {
+        return keyword != null
+                && keyword.length() >= 1
+                && keyword.length() <= 20
+                && keyword.matches("^[\\p{L}\\p{N}\\p{P}\\p{S}]+$");
+    }
+
+    /**
      * 校验到失败就结束
      */
     private static final Validator failFastValidator = Validation.byProvider(HibernateValidator.class)
