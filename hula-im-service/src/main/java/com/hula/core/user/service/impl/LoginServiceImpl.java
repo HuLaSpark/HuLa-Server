@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.enums.LoginTypeEnum;
@@ -24,6 +25,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 /**
  * @author nyh
@@ -109,11 +112,19 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public void logout() {
-        RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
-                JwtUtils.getLoginType(RequestHolder.get().getToken()),
-                RequestHolder.get().getUid()));
-        applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder()
-                .id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
+		// 1.拿到token
+		String token = RequestHolder.get().getToken();
+
+		// 2.解析token里面的数据，精准拿到当前用户的refreshToken
+		Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
+		Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+		String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+		String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
+
+		// 3.删除refreshToken 与 token
+		RedisUtils.del(key);
+		RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), RequestHolder.get().getUid()));
+        applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
     }
 
 }

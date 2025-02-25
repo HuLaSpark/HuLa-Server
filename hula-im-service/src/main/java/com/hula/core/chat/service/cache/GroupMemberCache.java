@@ -32,7 +32,7 @@ public class GroupMemberCache {
         if (Objects.isNull(roomGroup)) {
             return null;
         }
-        return groupMemberDao.getMemberUidList(roomGroup.getId());
+        return groupMemberDao.getMemberUidList(roomGroup.getId(), false);
     }
 
     @CacheEvict(cacheNames = "member", key = "'groupMember'+#roomId")

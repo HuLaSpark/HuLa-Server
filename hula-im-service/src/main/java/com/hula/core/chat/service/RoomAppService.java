@@ -10,6 +10,7 @@ import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.RoomApplyReq;
 import com.hula.core.chat.domain.vo.request.RoomInfoReq;
 import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -101,4 +102,10 @@ public interface RoomAppService {
 	 * @return
 	 */
 	Boolean delContact(Long uid, Long roomId);
+
+	/**
+	 * 将 id 的消息设置为免打扰
+	 *
+	 */
+	Boolean setNotification(Long uid, ContactNotificationReq request);
 }

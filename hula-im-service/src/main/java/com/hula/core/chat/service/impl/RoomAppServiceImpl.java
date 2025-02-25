@@ -28,6 +28,7 @@ import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.RoomApplyReq;
 import com.hula.core.chat.domain.vo.request.RoomInfoReq;
 import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -57,6 +58,7 @@ import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.FriendService;
 import com.hula.core.user.service.RoleService;
+import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
@@ -331,7 +333,35 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 	@Override
 	public Boolean delContact(Long uid, Long roomId) {
-		return contactDao.updateByRoomId(roomId, Arrays.asList(uid), true);
+		return contactDao.deleteContact(roomId, uid);
+	}
+
+	@Override
+	public Boolean setNotification(Long uid, ContactNotificationReq request) {
+		// 1. 判断会话我有没有
+		Contact contact = contactDao.get(uid, request.getRoomId());
+		if(ObjectUtil.isNull(contact)){
+			return false;
+		}
+
+		// 2. 修改会话通知类型并通知其他终端
+		contact.setMuteNotification(request.getType());
+		if(request.getType().equals(2)){
+			Room room = roomCache.get(request.getRoomId());
+			if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+				// 2.1 把群成员的信息设置为禁止
+				groupMemberDao.setMemberDeFriend(request.getRoomId(), uid, request.getDeFriend());
+			} else {
+				// 2.2 把两个人的房间全部设置为禁止
+				RoomFriend roomFriend = roomFriendCache.get(request.getRoomId());
+				roomService.updateState(roomFriend.getUid1(), roomFriend.getUid2(), request.getDeFriend());
+			}
+			roomFriendCache.delete(request.getRoomId());
+		}
+
+		// 3.通知所有设备我已经屏蔽/解除这个房间
+		pushService.sendPushMsg(WsAdapter.buildContactNotification(request) , uid, uid);
+		return contactDao.updateById(contact);
 	}
 
 	@Override
@@ -344,7 +374,7 @@ public class RoomAppServiceImpl implements RoomAppService {
             // 热点群从redis取人数
             onlineNum = userCache.getOnlineNum();
         } else {
-            List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId());
+            List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
             onlineNum = userDao.getOnlineCount(memberUidList).longValue();
         }
         GroupRoleAPPEnum groupRole = getGroupRole(uid, roomGroup, room);
@@ -367,7 +397,7 @@ public class RoomAppServiceImpl implements RoomAppService {
             memberUidList = null;
         } else {// 只展示房间内的群成员
             RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
-            memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId());
+            memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
         }
         return chatService.getMemberPage(memberUidList, request);
     }
@@ -382,7 +412,7 @@ public class RoomAppServiceImpl implements RoomAppService {
             return MemberAdapter.buildMemberList(memberList);
         } else {
             RoomGroup roomGroup = roomGroupCache.get(room.getId());
-            List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId());
+            List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
             Map<Long, User> batch = userInfoCache.getBatch(memberUidList);
             return MemberAdapter.buildMemberList(batch);
         }

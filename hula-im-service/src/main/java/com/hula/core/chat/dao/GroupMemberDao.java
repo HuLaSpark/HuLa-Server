@@ -37,12 +37,19 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
     @Lazy
     private GroupMemberCache groupMemberCache;
 
-    public List<Long> getMemberUidList(Long groupId) {
-        List<GroupMember> list = lambdaQuery()
-                .eq(GroupMember::getGroupId, groupId)
-                .select(GroupMember::getUid)
-                .list();
-        return list.stream().map(GroupMember::getUid).collect(Collectors.toList());
+	/**
+	 * 查询群成员
+	 * deFriend true -> 查询屏蔽的  false -> 不查屏蔽群的人
+	 * @return
+	 */
+    public List<Long> getMemberUidList(Long groupId, Boolean deFriend) {
+		LambdaQueryChainWrapper<GroupMember> wrapper = lambdaQuery()
+				.eq(GroupMember::getGroupId, groupId)
+				.select(GroupMember::getUid);
+		if(ObjectUtil.isNotNull(deFriend)){
+			wrapper.eq(GroupMember::getDeFriend, deFriend);
+		}
+		return wrapper.list().stream().map(GroupMember::getUid).collect(Collectors.toList());
     }
 
     public List<Long> getMemberBatch(Long groupId, List<Long> uidList) {
@@ -214,4 +221,16 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
         }
         return false;
     }
+
+	/**
+	 * 将群员设置为屏蔽改群
+	 * @param roomId
+	 * @param uid
+	 */
+	public void setMemberDeFriend(Long roomId, Long uid, Boolean deFriend) {
+		GroupMember member = getMember(roomId, uid);
+		member.setDeFriend(deFriend);
+		updateById(member);
+		groupMemberCache.evictMemberUidList(roomId);
+	}
 }

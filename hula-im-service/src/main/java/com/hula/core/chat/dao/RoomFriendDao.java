@@ -1,5 +1,6 @@
 package com.hula.core.chat.dao;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.core.chat.domain.entity.RoomFriend;
@@ -47,4 +48,15 @@ public class RoomFriendDao extends ServiceImpl<RoomFriendMapper, RoomFriend> {
                 .eq(RoomFriend::getRoomId, roomID)
                 .one();
     }
+
+	public void updateState(Long uid1, Long uid2) {
+		update(new UpdateWrapper<RoomFriend>().and(w -> w
+						.eq("uid1", uid1)
+						.eq("uid2", uid2)
+				)
+				.or(w -> w
+						.eq("uid1", uid2)
+						.eq("uid2", uid1)
+				).set("state", 1));
+	}
 }

@@ -4,6 +4,7 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.service.ChatService;
@@ -64,11 +65,17 @@ public class ContactController {
 		return ApiResult.success(roomService.setTop(uid, request));
 	}
 
-	@DeleteMapping("hide")
+	@DeleteMapping("delete")
 	@Operation(summary = "删除会话")
-	public ApiResult hide(@RequestBody @Valid IdReqVO request) {
+	public ApiResult<Boolean> delete(@RequestBody @Valid IdReqVO request) {
 		Long uid = RequestHolder.get().getUid();
 		return ApiResult.success(roomService.delContact(uid, request.getId()));
+	}
+
+	@PostMapping("notification")
+	@Operation(summary = "免打扰")
+	public ApiResult<Boolean> setNotification(@RequestBody @Valid ContactNotificationReq request) {
+		return ApiResult.success(roomService.setNotification(RequestHolder.get().getUid(), request));
 	}
 }
 

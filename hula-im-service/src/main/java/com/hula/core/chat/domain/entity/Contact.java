@@ -57,10 +57,10 @@ public class Contact implements Serializable {
 	private Boolean top;
 
 	/**
-	 * true -> 隐藏  false -> 显示
+	 * 通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰] 2 -> 屏蔽消息
 	 */
-	@TableField("hide")
-	private Boolean hide;
+	@TableField("mute_notification")
+	private Integer muteNotification;
 
     /**
      * 会话内消息最后更新的时间(只有普通会话需要维护，全员会话不需要维护)

@@ -161,6 +161,18 @@ public class RoomServiceImpl implements RoomService {
 		return announcementsReadRecordDao.saveBatch(announcementsReadRecordList);
 	}
 
+	@Override
+	public void updateState(Long uid1, Long uid2, Boolean deFriend) {
+		roomFriendDao.update(new UpdateWrapper<RoomFriend>().and(w -> w
+						.eq("uid1", uid1)
+						.eq("uid2", uid2)
+				)
+				.or(w -> w
+						.eq("uid1", uid2)
+						.eq("uid2", uid1)
+				).set("status", deFriend));
+	}
+
 	private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {
         RoomFriend insert = ChatAdapter.buildFriendRoom(roomId, uidList);
         roomFriendDao.save(insert);

@@ -72,5 +72,8 @@ public class GroupMember implements Serializable {
     @TableField("update_time")
     private Date updateTime;
 
-
+	/**
+	 * 屏蔽群 1 -> 屏蔽 0 -> 正常
+	 */
+	private Boolean deFriend;
 }

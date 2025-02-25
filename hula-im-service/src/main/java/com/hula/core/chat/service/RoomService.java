@@ -89,4 +89,6 @@ public interface RoomService {
 	 * 批量保存公告已读记录
 	 */
 	Boolean saveBatchAnnouncementsRecord(List<AnnouncementsReadRecord> announcementsReadRecordList);
+
+	void updateState(Long uid1, Long uid2, Boolean deFriend);
 }

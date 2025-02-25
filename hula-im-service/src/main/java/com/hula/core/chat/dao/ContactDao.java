@@ -1,10 +1,8 @@
 package com.hula.core.chat.dao;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
@@ -75,7 +73,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
      * 获取用户会话列表
      */
     public CursorPageBaseResp<Contact> getContactPage(Long uid, CursorPageBaseReq request) {
-        return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(Contact::getUid, uid).eq(Contact::getHide, false), Contact::getActiveTime);
+        return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(Contact::getUid, uid), Contact::getActiveTime);
     }
 
     public List<Contact> getByRoomIds(List<Long> roomIds, Long uid) {
@@ -109,11 +107,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
         return false;
     }
 
-	public Boolean updateByRoomId(Long roomId, List<Long> uIds, Boolean hide) {
-		LambdaUpdateWrapper<Contact> wrapper = new LambdaUpdateWrapper<>();
-		if(CollUtil.isNotEmpty(uIds)){
-			wrapper.in(Contact::getUid, uIds);
-		}
-		return this.update(wrapper.eq(Contact::getRoomId, roomId).set(Contact::getHide, hide));
+	public Boolean deleteContact(Long roomId, Long uid) {
+		return remove(new LambdaQueryWrapper<Contact>().eq(Contact::getRoomId, roomId).eq(Contact::getUid, uid));
 	}
 }

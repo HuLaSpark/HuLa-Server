@@ -3,6 +3,7 @@ package com.hula.core.user.service.adapter;
 import cn.hutool.core.bean.BeanUtil;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
+import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.user.domain.entity.IpDetail;
 import com.hula.core.user.domain.entity.IpInfo;
@@ -141,5 +142,11 @@ public class WsAdapter {
         wsBaseResp.setData(resp);
         return wsBaseResp;
     }
+	public static WsBaseResp<ContactNotificationReq> buildContactNotification(ContactNotificationReq req) {
+		WsBaseResp<ContactNotificationReq> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.ROOM_NOTIFICATION.getType());
+		wsBaseResp.setData(req);
+		return wsBaseResp;
+	}
 
 }
