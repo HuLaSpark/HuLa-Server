@@ -16,6 +16,8 @@ import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.snowflake.uid.UidGenerator;
+import com.hula.snowflake.uid.utils.Base62Encoder;
 import com.hula.utils.AssertUtil;
 import com.hula.utils.JwtUtils;
 import com.hula.utils.RedisUtils;
@@ -33,6 +35,8 @@ import java.util.Map;
  */
 @Service
 public class LoginServiceImpl implements LoginService {
+	@Resource
+	private UidGenerator uidGenerator;
     @Resource
     private TokenService tokenService;
     @Resource
@@ -80,6 +84,7 @@ public class LoginServiceImpl implements LoginService {
         final User newUser = User.builder()
                 .avatar(user.getAvatar())
                 .account(user.getAccount())
+				.accountCode("Hula_" + Base62Encoder.encode(uidGenerator.getUid(), 12))
                 .password(user.getPassword())
                 .name(user.getName())
                 .openId(user.getOpenId())

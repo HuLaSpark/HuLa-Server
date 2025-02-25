@@ -12,6 +12,8 @@ import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.AnnouncementsReadRecord;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
+import com.hula.snowflake.uid.UidGenerator;
+import com.hula.snowflake.uid.utils.Base62Encoder;
 import com.hula.utils.AssertUtil;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.RoomDao;
@@ -36,13 +38,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-
 @Service
 @AllArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
     private RoomFriendDao roomFriendDao;
     private RoomDao roomDao;
+	private UidGenerator uidGenerator;
     private GroupMemberDao groupMemberDao;
 	private AnnouncementsDao announcementsDao;
 	private AnnouncementsReadRecordDao announcementsReadRecordDao;
@@ -91,6 +93,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = createRoom(RoomTypeEnum.GROUP);
         // 插入群
         RoomGroup roomGroup = ChatAdapter.buildGroupRoom(user, room.getId(), groupAddReq.getGroupName());
+		roomGroup.setAccountCode("Hula_" + Base62Encoder.encode(uidGenerator.getUid(), 12));
         roomGroupDao.save(roomGroup);
         // 插入群主
         GroupMember leader = GroupMember.builder()

@@ -42,6 +42,12 @@ public class User implements Serializable {
     @TableField("account")
     private String account;
 
+	/**
+	 * Hula号
+	 */
+	@TableField("account_code")
+	private String accountCode;
+
     /**
      * 用户密码
      */
