@@ -53,6 +53,7 @@ public class Contact implements Serializable {
 	/**
 	 * 置顶会话; 都置顶按照时间倒序
 	 */
+	@TableField("top")
 	private Boolean top;
 
 	/**

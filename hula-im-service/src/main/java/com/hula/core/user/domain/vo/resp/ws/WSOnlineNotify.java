@@ -5,11 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * 用户下线变动的推送类
+ * 用户上线变动的推送类
  * @author nyh
  */
 @Data
@@ -18,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class WSOnlineNotify {
     //新的上下线用户
-    private List<ChatMemberResp> changeList = new ArrayList<>();
+    private ChatMemberResp member = new ChatMemberResp();
     //在线人数
     private Long onlineNum;
 }

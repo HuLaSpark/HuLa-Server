@@ -85,14 +85,16 @@ public class TokenServiceImpl implements TokenService {
 
 			// 2.判断redis里面是否存在续签token
 			Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
-			String uuid = verifyToken.get(JwtUtils.UUID_CLAIM).asString();
 			String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
-			String token = RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, uuid));
+			String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
+
+			String token = RedisUtils.getStr(key);
 			if(StrUtil.isEmpty(token)){
 				throw TokenExceedException.expired();
 			}
 
 			// 3.生成新的token
+			RedisUtils.del(key);
 			return createToken(uid, type);
 		} catch (Exception e) {
 			throw TokenExceedException.expired();

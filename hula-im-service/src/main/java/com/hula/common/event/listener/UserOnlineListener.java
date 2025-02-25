@@ -7,10 +7,10 @@ import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
 import com.hula.core.user.service.IpService;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
+import com.hula.core.user.service.impl.PushService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -29,7 +29,7 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 @AllArgsConstructor
 public class UserOnlineListener {
 
-    private WebSocketService webSocketService;
+	private PushService pushService;
     private UserDao userDao;
     private UserCache userCache;
 	private UserInfoCache userInfoCache;
@@ -51,8 +51,8 @@ public class UserOnlineListener {
 		userCache.userInfoChange(user.getId());
 		userInfoCache.delete(user.getId());
         userCache.online(user.getId(), DateUtil.date());
-        // 推送给所有在线用户，该用户上线
-        webSocketService.sendAll(wsAdapter.buildOnlineNotifyResp(user, chatService.getMemberStatistic().getOnlineNum()), event.getUser().getId());
+        // 分布式推送，所有服务器集群都可以收到此消息
+		pushService.sendPushMsg(wsAdapter.buildOnlineNotifyResp(user, chatService.getMemberStatistic().getOnlineNum()), event.getUser().getId());
     }
 
 }

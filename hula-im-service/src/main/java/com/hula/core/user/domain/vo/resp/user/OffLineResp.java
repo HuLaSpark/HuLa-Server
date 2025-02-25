@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 @Builder
-@Schema(description = "登录结果")
+@Schema(description = "下线结果")
 public class OffLineResp {
 	@Schema(description = "用户id")
 	private Long uid;

@@ -5,9 +5,9 @@ import com.hula.core.chat.service.ChatService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
-import com.hula.core.user.service.WebSocketService;
 import com.hula.core.user.service.adapter.WsAdapter;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -25,8 +25,8 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 @Component
 public class UserOfflineListener {
 
-    @Resource
-    private WebSocketService webSocketService;
+	@Resource
+	private PushService pushService;
     @Resource
     private UserDao userDao;
     @Resource
@@ -46,9 +46,8 @@ public class UserOfflineListener {
         update.setActiveStatus(ChatActiveStatusEnum.OFFLINE.getStatus());
         userDao.updateById(update);
         userCache.offline(user.getId(), user.getLastOptTime());
-        // 推送给所有在线用户，该用户下线
-        webSocketService.sendAll(wsAdapter.buildOfflineNotifyResp(event.getUser(),
-                chatService.getMemberStatistic().getOnlineNum()), event.getUser().getId());
+        // 改用分布式推送，服务器集群都能收到下线消息，从而推送给所有客户端
+		pushService.sendPushMsg(wsAdapter.buildOfflineNotifyResp(event.getUser(), chatService.getMemberStatistic().getOnlineNum()), event.getUser().getId());
     }
 
 }

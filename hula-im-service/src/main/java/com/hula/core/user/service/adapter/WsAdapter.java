@@ -67,7 +67,7 @@ public class WsAdapter {
         WsBaseResp<WSOnlineNotify> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.ONLINE.getType());
         WSOnlineNotify onlineOfflineNotify = new WSOnlineNotify();
-        onlineOfflineNotify.setChangeList(Collections.singletonList(buildOnlineInfo(user)));
+        onlineOfflineNotify.setMember(buildOnlineInfo(user));
         onlineOfflineNotify.setOnlineNum(onlineNum);
         wsBaseResp.setData(onlineOfflineNotify);
         return wsBaseResp;
@@ -77,7 +77,7 @@ public class WsAdapter {
         WsBaseResp<WSOnlineNotify> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.OFFLINE.getType());
         WSOnlineNotify onlineOfflineNotify = new WSOnlineNotify();
-        onlineOfflineNotify.setChangeList(Collections.singletonList(buildOfflineInfo(user)));
+        onlineOfflineNotify.setMember(buildOnlineInfo(user));
         onlineOfflineNotify.setOnlineNum(onlineNum);
         wsBaseResp.setData(onlineOfflineNotify);
         return wsBaseResp;

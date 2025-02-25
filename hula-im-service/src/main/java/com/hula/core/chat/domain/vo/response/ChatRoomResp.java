@@ -33,6 +33,10 @@ public class ChatRoomResp {
     private Date activeTime;
     @Schema(description ="未读数")
     private Integer unreadCount;
-    @Schema(description ="单聊时对方的id")
-    private Long friendId;
+	@Schema(description ="单聊时对方的id，群聊是groupId")
+	private Long id;
+	@Schema(description ="Hula账号、群号")
+	private String account;
+	@Schema(description ="是否置顶")
+	private Boolean top;
 }
