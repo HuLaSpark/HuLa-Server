@@ -19,3 +19,16 @@ HuLa-IM:
     NAME-SERVER: 127.0.0.1:9876
     ACCESS-KEY: nongyehong
     SECRET-KEY: 919919919
+
+uid:
+  database:
+    # 时间位分配（默认41）
+    time-bits: 41
+    # 工作节点位分配（默认13）
+    worker-bits: 13
+    # 序列号位分配（默认9）
+    seq-bits: 9
+    # 起始时间
+    epoch-str: "2025-02-25"
+    # 随机序列上限（默认0，表示不启用随机）
+    random-sequence-limit: 0
