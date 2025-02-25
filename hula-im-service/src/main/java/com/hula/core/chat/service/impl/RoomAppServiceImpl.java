@@ -548,6 +548,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                     resp.setHotFlag(roomBaseInfo.getHotFlag());
                     resp.setType(roomBaseInfo.getType());
                     resp.setName(roomBaseInfo.getName());
+					resp.setOperate(roomBaseInfo.getRole());
                     Message message = msgMap.get(room.getLastMsgId());
                     if (Objects.nonNull(message)) {
                         AbstractMsgHandler strategyNoNull = MsgHandlerFactory.getStrategyNoNull(message.getType());
@@ -639,7 +640,13 @@ public class RoomAppServiceImpl implements RoomAppService {
 				roomBaseInfo.setId(roomGroup.getId());
                 roomBaseInfo.setName(roomGroup.getName());
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
-				roomBaseInfo.setRole(groupMemberDao.getMember(roomGroup.getId(), uid).getRole());
+				// todo 稳定了这里可以不用判空，理论上100% 在群里
+				GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
+				if(ObjectUtil.isNotNull(member)){
+					roomBaseInfo.setRole(member.getRole());
+				}else {
+					roomBaseInfo.setRole(0);
+				}
             } else if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.FRIEND) {
                 User user = friendRoomMap.get(room.getId());
 				roomBaseInfo.setRole(0);

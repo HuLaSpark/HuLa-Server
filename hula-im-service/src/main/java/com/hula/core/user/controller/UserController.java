@@ -1,6 +1,7 @@
 package com.hula.core.user.controller;
 
 
+import com.hula.annotation.FrequencyControl;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.AssertUtil;
 import com.hula.utils.RequestHolder;
@@ -19,6 +20,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用户表 前端控制器
@@ -42,6 +44,7 @@ public class UserController {
 
     @PostMapping("/avatar")
     @Operation(summary ="修改头像")
+	@FrequencyControl(target = FrequencyControl.Target.UID, time = 30, unit = TimeUnit.DAYS)
     public ApiResult<Void> modifyAvatar(@Valid @RequestBody ModifyAvatarReq req) {
         userService.modifyAvatar(RequestHolder.get().getUid(), req);
         return ApiResult.success();

@@ -39,4 +39,6 @@ public class ChatRoomResp {
 	private String account;
 	@Schema(description ="是否置顶")
 	private Boolean top;
+	@Schema(description ="0 -> 删除好友 1 -> 解散群聊 2,3 -> 退出该群")
+	private Integer operate;
 }
