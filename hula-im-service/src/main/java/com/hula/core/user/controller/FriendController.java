@@ -6,11 +6,13 @@ import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
+import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
 import com.hula.core.user.domain.vo.req.friend.FriendDeleteReq;
+import com.hula.core.user.domain.vo.req.friend.FriendReq;
 import com.hula.core.user.domain.vo.resp.friend.FriendApplyResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendCheckResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendResp;
@@ -25,6 +27,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 
 /**
@@ -51,6 +54,12 @@ public class FriendController {
     public ApiResult<UserApply> apply(@Valid @RequestBody FriendApplyReq request) {
         return ApiResult.success(friendService.apply(RequestHolder.get().getUid(), request));
     }
+
+	@GetMapping("search")
+	@Operation(summary = "查找联系人")
+	public ApiResult<List<ChatMemberListResp>> search(@Valid FriendReq friendReq) {
+		return ApiResult.success(friendService.searchFriend(friendReq));
+	}
 
 	@DeleteMapping()
     @Operation(summary = "删除好友")

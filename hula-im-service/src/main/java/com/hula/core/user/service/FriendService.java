@@ -5,15 +5,19 @@ import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
+import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
+import com.hula.core.user.domain.vo.req.friend.FriendReq;
 import com.hula.core.user.domain.vo.resp.friend.FriendApplyResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendCheckResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendUnreadResp;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * <p>
@@ -113,4 +117,9 @@ public interface FriendService {
 	 * 修改好友备注
 	 */
 	Boolean updateRemark(Long employeeId, @Valid FriendRemarkReq request);
+
+	/**
+	 * 查询好友
+	 */
+	List<ChatMemberListResp> searchFriend(@Valid FriendReq friendReq);
 }

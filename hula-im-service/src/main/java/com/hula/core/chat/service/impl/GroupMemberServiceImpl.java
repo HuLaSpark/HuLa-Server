@@ -1,5 +1,6 @@
 package com.hula.core.chat.service.impl;
 
+import com.hula.core.chat.service.adapter.RoomAdapter;
 import com.hula.enums.CommonErrorEnum;
 import com.hula.enums.GroupErrorEnum;
 import com.hula.utils.AssertUtil;
@@ -98,7 +99,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
     }
 
     /**
-     * 退出群聊
+     * 退出群聊 | 解散群聊
      *
      * @param uid     需要退出的用户ID
      * @param request 请求信息
@@ -134,15 +135,18 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             // 4.4 删除消息记录 (逻辑删除)
             Boolean isDelMessage = messageDao.removeByRoomId(roomId, Collections.EMPTY_LIST);
             AssertUtil.isTrue(isDelMessage, CommonErrorEnum.SYSTEM_ERROR);
-            // TODO 这里也可以告知群成员 群聊已被删除的消息
+			// 4.5 告知所有人群已经被解散, 这里要走groupMemberDao查询，缓存中可能没有屏蔽群的用户
+			groupMemberCache.evictMemberUidList(room.getId());
+			List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
+			pushService.sendPushMsg(RoomAdapter.buildGroupDissolution(roomGroup.getName()), memberUidList, uid);
         } else {
-            // 4.5 删除会话
+            // 4.6 删除会话
             Boolean isDelContact = contactDao.removeByRoomId(roomId, Collections.singletonList(uid));
             AssertUtil.isTrue(isDelContact, CommonErrorEnum.SYSTEM_ERROR);
-            // 4.6 删除群成员
+            // 4.7 删除群成员
             Boolean isDelGroupMember = groupMemberDao.removeByGroupId(roomGroup.getId(), Collections.singletonList(uid));
             AssertUtil.isTrue(isDelGroupMember, CommonErrorEnum.SYSTEM_ERROR);
-            // 4.7 发送移除事件告知群成员
+            // 4.8 发送移除事件告知群成员
             List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
             WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
             pushService.sendPushMsg(ws, memberUidList, uid);

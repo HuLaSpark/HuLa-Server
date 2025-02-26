@@ -6,6 +6,7 @@ import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.domain.vo.res.IdRespVO;
+import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.RoomApplyReq;
@@ -19,6 +20,8 @@ import com.hula.core.chat.domain.vo.request.member.MemberExitReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
+import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
+import com.hula.core.chat.domain.vo.response.ChatGroupResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.chat.service.IGroupMemberService;
@@ -56,6 +59,12 @@ public class RoomController {
         return ApiResult.success(roomService.getGroupDetail(uid, request.getId()));
     }
 
+	@GetMapping("search")
+	@Operation(summary = "查找群聊")
+	public ApiResult<List<RoomGroup>> searchGroup(@Valid RoomGroupReq req) {
+		return ApiResult.success(roomService.searchGroup(req));
+	}
+
     /**
      * 群聊列表
      *
@@ -92,10 +101,9 @@ public class RoomController {
     }
 
     @DeleteMapping("/group/member/exit")
-    @Operation(summary ="退出群聊")
+    @Operation(summary ="退出群聊 | 解散群聊")
     public ApiResult<Boolean> exitGroup(@Valid @RequestBody MemberExitReq request) {
-        Long uid = RequestHolder.get().getUid();
-        groupMemberService.exitGroup(uid, request);
+        groupMemberService.exitGroup(RequestHolder.get().getUid(), request);
         return ApiResult.success();
     }
 

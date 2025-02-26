@@ -9,6 +9,7 @@ import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.utils.CursorUtils;
+import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
 import com.hula.core.user.mapper.UserMapper;
@@ -89,5 +90,9 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 
 	public int changeUserState(Long uid, Long userStateId) {
 		return baseMapper.changeUserState(uid, userStateId);
+	}
+
+	public List<ChatMemberListResp> getFriend(String key) {
+		return baseMapper.getFriend(key);
 	}
 }

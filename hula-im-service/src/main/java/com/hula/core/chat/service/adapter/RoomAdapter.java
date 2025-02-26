@@ -1,6 +1,7 @@
 package com.hula.core.chat.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.hula.core.chat.domain.entity.Contact;
 import com.hula.core.chat.domain.entity.GroupMember;
 import com.hula.core.chat.domain.entity.Room;
@@ -85,5 +86,15 @@ public class RoomAdapter {
 		wsBaseResp.setType(WSRespTypeEnum.MY_ROOM_INFO_CHANGE.getType());
 		wsBaseResp.setData(new ChatMyRoomGroupChange(roomId, name));
 		return wsBaseResp;
+	}
+
+	/**
+	 * 群聊被群主解散
+	 */
+	public static WsBaseResp<String> buildGroupDissolution(String name) {
+		WsBaseResp<String> WsBaseResp = new WsBaseResp<>();
+		WsBaseResp.setType(WSRespTypeEnum.ROOM_DISSOLUTION.getType());
+		WsBaseResp.setData(StrUtil.format("{}已解散", name));
+		return WsBaseResp;
 	}
 }

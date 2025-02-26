@@ -6,6 +6,7 @@ import com.hula.common.constant.RedisKey;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.utils.CursorUtils;
+import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.utils.RedisUtils;
 import com.hula.core.user.dao.BlackDao;
 import com.hula.core.user.dao.RoleDao;
@@ -178,4 +179,25 @@ public class UserCache {
                 .map(UserRole::getRoleId)
                 .collect(Collectors.toSet());
     }
+
+
+	/**
+	 * 根据key查询好友
+	 * @param key
+	 * @return
+	 */
+	@Cacheable(cacheNames = "user", key = "'findFriend'+#key")
+	public List<ChatMemberListResp> getFriend(String key) {
+		return userDao.getFriend(key);
+	}
+
+	/**
+	 * 当 key 的数据改变后需要调用此方法
+	 * @param key
+	 * @return
+	 */
+	@CacheEvict(cacheNames = "user", key = "'findFriend'+#key")
+	public List<Long> evictFriend(String key) {
+		return null;
+	}
 }

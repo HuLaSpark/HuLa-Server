@@ -11,11 +11,14 @@ import java.util.Date;
  */
 @Data
 public class RoomBaseInfo {
-	@Schema(description ="群id")
+	@Schema(description ="好友id | 群id")
 	private Long id;
 
     @Schema(description ="房间id")
     private Long roomId;
+
+	@Schema(description ="Hula账号、群号")
+	private String accountCode;
 
     @Schema(description ="会话名称")
     private String name;

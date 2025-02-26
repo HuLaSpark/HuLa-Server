@@ -1,8 +1,11 @@
 package com.hula.core.user.mapper;
 
+import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,4 +17,6 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper extends BaseMapper<User> {
 
 	int changeUserState(@Param("employeeId") Long employeeId, @Param("userStateId") Long userStateId);
+
+	List<ChatMemberListResp> getFriend(@Param("key") String key);
 }

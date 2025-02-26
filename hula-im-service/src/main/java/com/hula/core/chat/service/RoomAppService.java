@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
+import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
@@ -17,7 +18,9 @@ import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
+import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
+import com.hula.core.chat.domain.vo.response.ChatGroupResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
@@ -108,4 +111,9 @@ public interface RoomAppService {
 	 *
 	 */
 	Boolean setNotification(Long uid, ContactNotificationReq request);
+
+	/**
+	 * 查找群聊
+	 */
+	List<RoomGroup> searchGroup(@Valid RoomGroupReq req);
 }

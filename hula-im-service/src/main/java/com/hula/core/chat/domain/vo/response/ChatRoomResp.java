@@ -17,6 +17,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatRoomResp {
+	@Schema(description ="单聊时对方的id，群聊是groupId")
+	private Long id;
     @Schema(description ="房间id")
     private Long roomId;
     @Schema(description ="房间类型 1群聊 2单聊")
@@ -33,12 +35,12 @@ public class ChatRoomResp {
     private Date activeTime;
     @Schema(description ="未读数")
     private Integer unreadCount;
-	@Schema(description ="单聊时对方的id，群聊是groupId")
-	private Long id;
 	@Schema(description ="Hula账号、群号")
-	private String account;
+	private String accountCode;
 	@Schema(description ="是否置顶")
 	private Boolean top;
 	@Schema(description ="0 -> 删除好友 1 -> 解散群聊 2,3 -> 退出该群")
 	private Integer operate;
+	@Schema(description = "通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰] 2 -> 屏蔽消息 4 -> 已退出群聊")
+	private Integer muteNotification;
 }

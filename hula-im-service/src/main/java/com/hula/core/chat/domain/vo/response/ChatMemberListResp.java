@@ -21,4 +21,6 @@ public class ChatMemberListResp {
     private String name;
     @Schema(description ="头像")
     private String avatar;
+	@Schema(description ="账号")
+	private String accountCode;
 }

@@ -32,4 +32,10 @@ public class RoomGroupDao extends ServiceImpl<RoomGroupMapper, RoomGroup> {
     public boolean checkUser(Long uid, Long roomId) {
         return baseMapper.checkUser(uid,roomId);
     }
+
+	public List<RoomGroup> searchGroup(String account) {
+		return lambdaQuery()
+				.like(RoomGroup::getAccountCode, account)
+				.list();
+	}
 }

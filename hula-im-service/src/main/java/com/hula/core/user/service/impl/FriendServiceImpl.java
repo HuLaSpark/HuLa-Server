@@ -14,6 +14,7 @@ import com.hula.common.event.UserApplyEvent;
 import com.hula.common.event.UserApprovalEvent;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
+import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.RoomService;
 import com.hula.core.chat.service.adapter.MessageAdapter;
@@ -29,12 +30,14 @@ import com.hula.core.user.domain.enums.ApplyStatusEnum;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
+import com.hula.core.user.domain.vo.req.friend.FriendReq;
 import com.hula.core.user.domain.vo.resp.friend.FriendApplyResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendCheckResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendResp;
 import com.hula.core.user.domain.vo.resp.friend.FriendUnreadResp;
 import com.hula.core.user.service.FriendService;
 import com.hula.core.user.service.adapter.FriendAdapter;
+import com.hula.core.user.service.cache.UserCache;
 import com.hula.utils.AssertUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +68,7 @@ public class FriendServiceImpl implements FriendService {
     private RoomService roomService;
     private ChatService chatService;
     private UserDao userDao;
+	private UserCache userCache;
 
     /**
      * 检查
@@ -142,7 +146,12 @@ public class FriendServiceImpl implements FriendService {
 		return userFriendDao.updateById(userFriend);
 	}
 
-    /**
+	@Override
+	public List<ChatMemberListResp> searchFriend(FriendReq friendReq) {
+		return userCache.getFriend(friendReq.getKey());
+	}
+
+	/**
      * 分页查询好友申请
      *
      * @param request 请求

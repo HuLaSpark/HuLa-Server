@@ -35,7 +35,9 @@ import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
+import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
+import com.hula.core.chat.domain.vo.response.ChatGroupResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
@@ -106,13 +108,16 @@ public class RoomAppServiceImpl implements RoomAppService {
     public CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid) {
         // 查出用户要展示的会话列表
         CursorPageBaseResp<Long> page;
-		Set<Long> tops = new HashSet<>();
+		HashMap<String, Contact> contactHashMap = new HashMap<>();
         if (Objects.nonNull(uid)) {
             Double hotEnd = getCursorOrNull(request.getCursor());
             Double hotStart = null;
             // 用户基础会话
             CursorPageBaseResp<Contact> contactPage = contactDao.getContactPage(uid, request);
-			tops = contactPage.getList().stream().filter(Contact::getTop).map(Contact::getRoomId).collect(Collectors.toSet());
+			contactHashMap = contactPage.getList().stream().collect(Collectors.toMap(
+					contact -> StrUtil.format("{}_{}", contact.getUid(), contact.getRoomId()),
+					contact -> contact, (existing, replacement) -> existing, HashMap::new
+			));
             List<Long> baseRoomIds = contactPage.getList().stream().map(Contact::getRoomId).collect(Collectors.toList());
             if (!contactPage.getIsLast()) {
                 hotStart = getCursorOrNull(contactPage.getCursor());
@@ -129,7 +134,7 @@ public class RoomAppServiceImpl implements RoomAppService {
             page = CursorPageBaseResp.init(roomCursorPage, roomIds,0L);
         }
         // 最后组装会话信息（名称，头像，未读数等）
-        List<ChatRoomResp> result = buildContactResp(tops, uid, page.getList());
+        List<ChatRoomResp> result = buildContactResp(contactHashMap, uid, page.getList());
         return CursorPageBaseResp.init(page, result,0L);
     }
 
@@ -137,7 +142,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     public ChatRoomResp getContactDetail(Long uid, Long roomId) {
         Room room = roomCache.get(roomId);
         AssertUtil.isNotEmpty(room, "房间号有误");
-        return buildContactResp(new HashSet<>(), uid, Collections.singletonList(roomId)).getFirst();
+        return buildContactResp(new HashMap<>(), uid, Collections.singletonList(roomId)).getFirst();
     }
 
     @Override
@@ -145,11 +150,11 @@ public class RoomAppServiceImpl implements RoomAppService {
         //处理群聊
         if (Objects.equals(req.getRoomType(), RoomTypeEnum.GROUP.getType())) {
             roomService.checkUser(uid, req.getId());
-            return buildContactResp(new HashSet<>(), uid, Collections.singletonList(req.getId())).getFirst();
+            return buildContactResp(new HashMap<>(), uid, Collections.singletonList(req.getId())).getFirst();
         }
         RoomFriend friendRoom = roomService.getFriendRoom(uid, req.getId());
         AssertUtil.isNotEmpty(friendRoom, "他不是您的好友");
-        return buildContactResp(new HashSet<>(), uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
+        return buildContactResp(new HashMap<>(), uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
     }
 
     @Override
@@ -227,6 +232,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 		// 3.通知群里所有人群信息修改了
 		if(success){
+			roomGroupCache.evictGroup(roomGroup.getAccountCode());
 			List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildRoomGroupChangeWS(roomGroup.getRoomId(), roomGroup.getName(), roomGroup.getAvatar()), memberUidList, uid);
 		}
@@ -362,6 +368,11 @@ public class RoomAppServiceImpl implements RoomAppService {
 		// 3.通知所有设备我已经屏蔽/解除这个房间
 		pushService.sendPushMsg(WsAdapter.buildContactNotification(request) , uid, uid);
 		return contactDao.updateById(contact);
+	}
+
+	@Override
+	public List<RoomGroup> searchGroup(RoomGroupReq req) {
+		return roomGroupCache.searchGroup(req.getAccountCode());
 	}
 
 	@Override
@@ -544,16 +555,16 @@ public class RoomAppServiceImpl implements RoomAppService {
     }
 
 	/**
-	 * @param tops 需要置顶的房间
+	 * @param contactMap 会话映射
 	 * @param uid 当前登录的用户
 	 * @param roomIds 所有会话对应的房间
 	 * @return
 	 */
     @NotNull
-    private List<ChatRoomResp> buildContactResp(Set<Long> tops, Long uid, List<Long> roomIds) {
+    private List<ChatRoomResp> buildContactResp(HashMap<String, Contact> contactMap, Long uid, List<Long> roomIds) {
         // 表情和头像
         Map<Long, RoomBaseInfo> roomBaseInfoMap = getRoomBaseInfoMap(roomIds, uid);
-        Map<Long, Long> chatMap = getChat(uid,roomIds);
+//        Map<Long, Long> chatMap = getChat(uid,roomIds);
         // 最后一条消息
         List<Long> msgIds = roomBaseInfoMap.values().stream().map(RoomBaseInfo::getLastMsgId).collect(Collectors.toList());
         List<Message> messages = CollectionUtil.isEmpty(msgIds) ? new ArrayList<>() : messageDao.listByIds(msgIds);
@@ -565,16 +576,19 @@ public class RoomAppServiceImpl implements RoomAppService {
                     ChatRoomResp resp = new ChatRoomResp();
                     Long roomId = room.getRoomId();
                     RoomBaseInfo roomBaseInfo = roomBaseInfoMap.get(roomId);
-                    Long friendId = chatMap.get(roomId);
-                    if (Objects.equals(room.getType(), RoomTypeEnum.FRIEND.getType())){
-                        resp.setId(friendId);
-                    } else {
-						resp.setId(room.getId());
+					Contact contact = contactMap.get(StrUtil.format("{}_{}", uid, roomId));
+					if(ObjectUtil.isNotNull(contact)){
+						resp.setMuteNotification(contact.getMuteNotification());
+						resp.setTop(contact.getTop());
+					} else {
+						resp.setMuteNotification(2);
+						resp.setTop(false);
 					}
+					resp.setId(room.getId());
                     resp.setAvatar(roomBaseInfo.getAvatar());
                     resp.setRoomId(roomId);
+					resp.setAccountCode(room.getAccountCode());
                     resp.setActiveTime(room.getActiveTime());
-					resp.setTop(tops.contains(roomId));
                     resp.setHotFlag(roomBaseInfo.getHotFlag());
                     resp.setType(roomBaseInfo.getType());
                     resp.setName(roomBaseInfo.getName());
@@ -670,6 +684,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 				roomBaseInfo.setId(roomGroup.getId());
                 roomBaseInfo.setName(roomGroup.getName());
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
+				roomBaseInfo.setAccountCode(roomGroup.getAccountCode());
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
 				GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
 				if(ObjectUtil.isNotNull(member)){
@@ -679,9 +694,11 @@ public class RoomAppServiceImpl implements RoomAppService {
 				}
             } else if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.FRIEND) {
                 User user = friendRoomMap.get(room.getId());
+				roomBaseInfo.setId(user.getId());
 				roomBaseInfo.setRole(0);
                 roomBaseInfo.setName(user.getName());
                 roomBaseInfo.setAvatar(user.getAvatar());
+				roomBaseInfo.setAccountCode(user.getAccountCode());
             }
             return roomBaseInfo;
         }).collect(Collectors.toMap(RoomBaseInfo::getRoomId, Function.identity()));

@@ -5,6 +5,8 @@ import com.hula.common.service.cache.AbstractRedisStringCache;
 import com.hula.core.chat.dao.RoomGroupDao;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import jakarta.annotation.Resource;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,4 +38,22 @@ public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroup> {
         List<RoomGroup> roomGroups = roomGroupDao.listByRoomIds(roomIds);
         return roomGroups.stream().collect(Collectors.toMap(RoomGroup::getRoomId, Function.identity()));
     }
+
+	/**
+	 * 根据群号查询群信息
+	 */
+	@Cacheable(cacheNames = "room", key = "'findGroup'+#account")
+	public List<RoomGroup> searchGroup(String account) {
+		return roomGroupDao.searchGroup(account);
+	}
+
+	/**
+	 * 当 key 的数据改变后需要调用此方法
+	 * @param account
+	 * @return
+	 */
+	@CacheEvict(cacheNames = "room", key = "'findGroup'+#account")
+	public List<Long> evictGroup(String account) {
+		return null;
+	}
 }
