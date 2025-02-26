@@ -40,7 +40,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
         String token = getToken(request);
         if (!tokenService.verify(token)){
-            HttpErrorEnum.ACCESS_DENIED.sendHttpError(response);
+            HttpErrorEnum.JWT_TOKEN_EXCEED.sendHttpError(response);
             return false;
         }
         Long validUid = JwtUtils.getUidOrNull(token);

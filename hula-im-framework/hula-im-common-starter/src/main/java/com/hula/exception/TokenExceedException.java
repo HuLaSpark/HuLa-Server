@@ -29,7 +29,7 @@ public class TokenExceedException extends RuntimeException {
     }
 
 	public static TokenExceedException expired() {
-		return new TokenExceedException(HttpErrorEnum.JWT_REFRESH_TOKEN_EXCEED.getCode(), HttpErrorEnum.JWT_REFRESH_TOKEN_EXCEED.getMsg());
+		return new TokenExceedException(HttpErrorEnum.ACCESS_DENIED.getCode(), HttpErrorEnum.ACCESS_DENIED.getMsg());
 	}
 
     public static TokenExceedException wrap() {
