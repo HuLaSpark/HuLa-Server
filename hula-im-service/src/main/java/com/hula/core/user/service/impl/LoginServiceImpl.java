@@ -56,7 +56,7 @@ public class LoginServiceImpl implements LoginService {
         AssertUtil.equal(queryUser.getPassword(), user.getPassword(), "账号或密码错误");
         // 上线通知
         if (!userCache.isOnline(queryUser.getId())) {
-			queryUser.refreshIp(IPUtils.getClientIp(request));
+			queryUser.refreshIp(IPUtils.getHostIp(request));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
         return tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC.getType());
@@ -70,7 +70,7 @@ public class LoginServiceImpl implements LoginService {
         AssertUtil.equal(queryUser.getPassword(), user.getPassword(), "账号或密码错误");
         // 上线通知
         if (!userCache.isOnline(queryUser.getId())) {
-			queryUser.refreshIp(IPUtils.getClientIp(request));
+			queryUser.refreshIp(IPUtils.getHostIp(request));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
         return tokenService.createToken(queryUser.getId(), LoginTypeEnum.MOBILE.getType());
@@ -84,7 +84,7 @@ public class LoginServiceImpl implements LoginService {
         final User newUser = User.builder()
                 .avatar(user.getAvatar())
                 .account(user.getAccount())
-				.accountCode("Hula_" + Base62Encoder.encode(uidGenerator.getUid(), 12))
+				.accountCode(Base62Encoder.createAccount(uidGenerator.getUid()))
                 .password(user.getPassword())
                 .name(user.getName())
                 .openId(user.getOpenId())

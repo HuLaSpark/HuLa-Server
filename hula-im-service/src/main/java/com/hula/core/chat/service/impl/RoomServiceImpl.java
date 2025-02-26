@@ -93,7 +93,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = createRoom(RoomTypeEnum.GROUP);
         // 插入群
         RoomGroup roomGroup = ChatAdapter.buildGroupRoom(user, room.getId(), groupAddReq.getGroupName());
-		roomGroup.setAccountCode("Hula_" + Base62Encoder.encode(uidGenerator.getUid(), 12));
+		roomGroup.setAccountCode(Base62Encoder.createAccount(uidGenerator.getUid()));
         roomGroupDao.save(roomGroup);
         // 插入群主
         GroupMember leader = GroupMember.builder()
