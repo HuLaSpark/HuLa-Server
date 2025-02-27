@@ -16,4 +16,10 @@ public class DatabaseProperties {
     private String epochStr = "2025-02-25";
     /** 随机序列上限 */
     private long randomSequenceLimit = 0L;
+	/** 溢出总页数后是否进行处理 */
+	protected Boolean overflow = true;
+	/** 是否启用 防止全表更新与删除插件 */
+	private Boolean isBlockAttack = false;
+	/** 分页最大数量 */
+	private Long maxLimit = 500L;
 }

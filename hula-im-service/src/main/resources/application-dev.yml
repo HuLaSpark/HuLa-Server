@@ -32,3 +32,9 @@ uid:
     epoch-str: "2025-02-25"
     # 随机序列上限（默认0，表示不启用随机）
     random-sequence-limit: 0
+    # 分页最大数量
+    max-limit: 500
+    # 防止全表更新与删除插件
+    is-blockAttack: true
+    # 溢出总页数后是否进行处理
+    overflow: true
