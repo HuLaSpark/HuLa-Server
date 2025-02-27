@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.constant.RedisKey;
-import com.hula.common.enums.LoginTypeEnum;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.common.event.UserRegisterEvent;
@@ -12,6 +11,7 @@ import com.hula.common.utils.IPUtils;
 import com.hula.core.chat.service.ContactService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.req.user.LoginReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
@@ -49,31 +49,17 @@ public class LoginServiceImpl implements LoginService {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public LoginResultVO login(User user, HttpServletRequest request) {
+    public LoginResultVO login(LoginReq loginReq, HttpServletRequest request) {
         User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
-                .eq(User::getAccount, user.getAccount()));
+                .eq(User::getAccount, loginReq.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
-        AssertUtil.equal(queryUser.getPassword(), user.getPassword(), "账号或密码错误");
+        AssertUtil.equal(queryUser.getPassword(), loginReq.getPassword(), "账号或密码错误");
         // 上线通知
         if (!userCache.isOnline(queryUser.getId())) {
 			queryUser.refreshIp(IPUtils.getHostIp(request));
             applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
         }
-        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.PC.getType());
-    }
-
-    @Override
-    public LoginResultVO mobileLogin(User user, HttpServletRequest request) {
-        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
-                .eq(User::getAccount, user.getAccount()));
-        AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
-        AssertUtil.equal(queryUser.getPassword(), user.getPassword(), "账号或密码错误");
-        // 上线通知
-        if (!userCache.isOnline(queryUser.getId())) {
-			queryUser.refreshIp(IPUtils.getHostIp(request));
-            applicationEventPublisher.publishEvent(new UserOnlineEvent(this, queryUser));
-        }
-        return tokenService.createToken(queryUser.getId(), LoginTypeEnum.MOBILE.getType());
+        return tokenService.createToken(queryUser.getId(), loginReq.getSource());
     }
 
     @Override

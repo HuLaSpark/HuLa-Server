@@ -17,8 +17,8 @@ public class UserInfoResp extends BaseEntity {
     @Schema(description = "用户账号")
     private String account;
 
-    @Schema(description = "用户密码")
-    private String password;
+	@Schema(description = "Hula号")
+	private String accountCode;
 
     @Schema(description = "用户昵称")
     private String name;

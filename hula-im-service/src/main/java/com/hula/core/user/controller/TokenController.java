@@ -33,24 +33,10 @@ public class TokenController {
     @Resource
     private TokenService tokenService;
 
-    @PostMapping("/pk")
-    @Operation(summary ="获取公钥")
-    public ApiResult<String> pk() {
-        return ApiResult.success("pk");
-    }
-
     @PostMapping("/login")
     @Operation(summary ="用户登录")
     public ApiResult<LoginResultVO> login(@Valid @RequestBody LoginReq loginReq, HttpServletRequest request) {
-        return ApiResult.success(loginService.login(User.builder()
-				.account(loginReq.getAccount()).password(loginReq.getPassword()).build(), request));
-    }
-
-    @PostMapping("/mobileLogin")
-    @Operation(summary ="移动端用户登录")
-    public ApiResult<LoginResultVO> mobileLogin(@Valid @RequestBody LoginReq loginReq, HttpServletRequest request) {
-        return ApiResult.success(loginService.mobileLogin(User.builder()
-				.account(loginReq.getAccount()).password(loginReq.getPassword()).build(), request));
+        return ApiResult.success(loginService.login(loginReq, request));
     }
 
     @PostMapping("/logout")
