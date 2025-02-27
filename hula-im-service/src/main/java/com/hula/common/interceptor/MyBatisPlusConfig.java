@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Lazy;
 
 import javax.sql.DataSource;
 
-@Configuration
+//@Configuration
 public class MyBatisPlusConfig {
 
 	@Autowired
