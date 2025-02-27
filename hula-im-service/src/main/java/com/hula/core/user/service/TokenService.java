@@ -1,6 +1,5 @@
 package com.hula.core.user.service;
 
-import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 
@@ -25,11 +24,4 @@ public interface TokenService {
      * token续签
      */
 	LoginResultVO refreshToken(RefreshTokenReq refreshTokenReq);
-
-    /**
-     * 下线
-     *
-     * @param user 用户信息
-     */
-    void offline(User user);
 }

@@ -26,4 +26,16 @@ public class RegisterReq extends BaseEntity {
     @NotEmpty(message = "请输入密码")
     private String password;
 
+	private String openId;
+
+	public RegisterReq() {
+	}
+
+	public RegisterReq(String name, String avatar, String account, String password, String openId) {
+		this.name = name;
+		this.avatar = avatar;
+		this.account = account;
+		this.password = password;
+		this.openId = openId;
+	}
 }

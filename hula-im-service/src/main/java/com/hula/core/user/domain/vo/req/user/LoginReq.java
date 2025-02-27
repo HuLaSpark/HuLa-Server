@@ -1,14 +1,14 @@
 package com.hula.core.user.domain.vo.req.user;
 
-import com.hula.domain.BaseEntity;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+import java.io.Serializable;
 
 /**
  * @author nyh
  */
 @Data
-public class LoginReq extends BaseEntity {
+public class LoginReq implements Serializable {
 
 	@NotEmpty(message = "请输入账号")
     private String account;

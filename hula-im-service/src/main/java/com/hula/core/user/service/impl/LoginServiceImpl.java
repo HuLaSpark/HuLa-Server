@@ -12,10 +12,13 @@ import com.hula.core.chat.service.ContactService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
+import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
+import com.hula.core.user.domain.vo.req.user.RegisterReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.exception.TokenExceedException;
 import com.hula.snowflake.uid.UidGenerator;
 import com.hula.snowflake.uid.utils.Base62Encoder;
 import com.hula.utils.AssertUtil;
@@ -50,8 +53,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public LoginResultVO login(LoginReq loginReq, HttpServletRequest request) {
-        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
-                .eq(User::getAccount, loginReq.getAccount()));
+        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getAccount, loginReq.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
         AssertUtil.equal(queryUser.getPassword(), loginReq.getPassword(), "账号或密码错误");
         // 上线通知
@@ -62,18 +64,22 @@ public class LoginServiceImpl implements LoginService {
         return tokenService.createToken(queryUser.getId(), loginReq.getSource());
     }
 
-    @Override
+	@Override
+	public LoginResultVO refreshToken(RefreshTokenReq refreshTokenReq) {
+		return tokenService.refreshToken(refreshTokenReq);
+	}
+
+	@Override
     @Transactional(rollbackFor = Exception.class)
-    public void normalRegister(User user) {
-        AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
-                    .eq(User::getAccount, user.getAccount())) <= 0, "账号已注册");
+    public void normalRegister(RegisterReq req) {
+        AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda().eq(User::getAccount, req.getAccount())) <= 0, "账号已注册");
         final User newUser = User.builder()
-                .avatar(user.getAvatar())
-                .account(user.getAccount())
+                .avatar(req.getAvatar())
+                .account(req.getAccount())
 				.accountCode(Base62Encoder.createAccount(uidGenerator.getUid()))
-                .password(user.getPassword())
-                .name(user.getName())
-                .openId(user.getOpenId())
+                .password(req.getPassword())
+                .name(req.getName())
+                .openId(req.getOpenId())
                 .build();
         // 保存用户
         userDao.save(newUser);
@@ -84,16 +90,16 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void wxRegister(User user) {
-        AssertUtil.isNotEmpty(user.getOpenId(), "未找到openid");
+    public void wxRegister(RegisterReq req) {
+        AssertUtil.isNotEmpty(req.getOpenId(), "未找到openid");
         AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda()
-                .eq(User::getOpenId, user.getOpenId())) <= 0, "微信号已绑定其他账号");
+                .eq(User::getOpenId, req.getOpenId())) <= 0, "微信号已绑定其他账号");
 
         final User newUser = User.builder()
-                .account(user.getAccount())
-                .password(user.getPassword())
-                .name(user.getName())
-                .openId(user.getOpenId())
+                .account(req.getAccount())
+                .password(req.getPassword())
+                .name(req.getName())
+                .openId(req.getOpenId())
                 .build();
         // 保存用户
         userDao.save(newUser);
@@ -107,17 +113,21 @@ public class LoginServiceImpl implements LoginService {
 		String token = RequestHolder.get().getToken();
 
 		// 2.解析token里面的数据，精准拿到当前用户的refreshToken
-		if(!autoLogin){
-			Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
-			Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
-			String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
-			String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
-			RedisUtils.del(key);
-		}
+		try {
+			if(!autoLogin){
+				Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
+				Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+				String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+				String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
+				RedisUtils.del(key);
+			}
 
-		// 3.删除refreshToken 与 token
-		RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), RequestHolder.get().getUid()));
-        applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
-    }
+			// 3.删除refreshToken 与 token
+			RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), RequestHolder.get().getUid()));
+			applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
+		} catch (Exception e) {
+			throw TokenExceedException.expired();
+		}
+	}
 
 }

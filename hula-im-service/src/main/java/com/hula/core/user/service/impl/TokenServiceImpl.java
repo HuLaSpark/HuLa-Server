@@ -1,13 +1,10 @@
 package com.hula.core.user.service.impl;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.event.TokenExpireEvent;
-import com.hula.common.event.UserOfflineEvent;
-import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.domain.vo.resp.user.OffLineResp;
@@ -40,9 +37,6 @@ public class TokenServiceImpl implements TokenService {
 
     private ApplicationEventPublisher applicationEventPublisher;
 
-    /**
-     * 校验token是不是有效
-     */
     @Override
     public boolean verify(String token) {
         Long uid = JwtUtils.getUidOrNull(token);
@@ -100,11 +94,4 @@ public class TokenServiceImpl implements TokenService {
 			throw TokenExceedException.expired();
 		}
 	}
-
-    @Override
-    public void offline(User user) {
-        applicationEventPublisher.publishEvent(new UserOfflineEvent(this,
-                User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateTime.now()).build()));
-    }
-
 }

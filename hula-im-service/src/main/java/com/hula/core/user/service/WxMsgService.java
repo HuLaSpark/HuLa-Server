@@ -7,6 +7,7 @@ import com.hula.common.domain.dto.LoginMessageDTO;
 import com.hula.common.domain.dto.ScanSuccessMessageDTO;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.req.user.RegisterReq;
 import com.hula.core.user.service.adapter.TextBuilder;
 import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.service.MQProducer;
@@ -76,7 +77,7 @@ public class WxMsgService {
 
         // user为空先注册,手动生成,以保存uid
         if (Objects.isNull(user)) {
-            loginService.wxRegister(User.builder().openId(openid).build());
+            loginService.wxRegister(new RegisterReq(user.getName(), user.getAvatar(), user.getAccount(), user.getPassword(), user.getOpenId()));
         }
         // 在redis中保存openid和场景code的关系，后续才能通知到前端,旧版数据没有清除,这里设置了过期时间
         RedisUtils.set(RedisKey.getKey(RedisKey.OPEN_ID_FORMAT, openid), loginCode, 60, TimeUnit.MINUTES);
