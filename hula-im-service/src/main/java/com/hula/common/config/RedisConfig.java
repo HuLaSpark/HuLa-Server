@@ -1,7 +1,10 @@
 package com.hula.common.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
+import jakarta.annotation.Resource;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -18,6 +21,9 @@ import java.util.Objects;
  */
 @Configuration
 public class RedisConfig {
+
+	@Resource
+	private RedisProperties redisProperties;
 
     @Bean("myRedisTemplate")
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -63,11 +69,17 @@ public class RedisConfig {
         }
     }
 
-    @SneakyThrows
-    public static void main(String[] args) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        System.out.println(objectMapper.writeValueAsString(1));
-        System.out.println(objectMapper.writeValueAsString("1"));
-        System.out.println(objectMapper.writeValueAsString(Boolean.TRUE));
-    }
+	@Bean
+	public RedissonClient redissonClient() {
+		Config config = new Config();
+		config.useSingleServer()
+				.setAddress("redis://" + redisProperties.getHost() + ":" + redisProperties.getPort())
+				// redis 6.x 需要设置用户名
+				.setUsername("default")
+				// 记得打开密码设置
+				.setPassword(redisProperties.getPassword())
+				// .setPassword(null)
+				.setDatabase(redisProperties.getDatabase());
+		return Redisson.create(config);
+	}
 }
