@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 用户在线状态管理
+ */
 @RestController
 @RequestMapping("/user/state/")
 public class UserStateController {

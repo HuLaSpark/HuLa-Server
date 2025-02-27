@@ -102,18 +102,20 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void logout() {
+    public void logout(Boolean autoLogin) {
 		// 1.拿到token
 		String token = RequestHolder.get().getToken();
 
 		// 2.解析token里面的数据，精准拿到当前用户的refreshToken
-		Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
-		Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
-		String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
-		String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
+		if(!autoLogin){
+			Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
+			Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+			String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+			String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
+			RedisUtils.del(key);
+		}
 
 		// 3.删除refreshToken 与 token
-		RedisUtils.del(key);
 		RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), RequestHolder.get().getUid()));
         applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
     }

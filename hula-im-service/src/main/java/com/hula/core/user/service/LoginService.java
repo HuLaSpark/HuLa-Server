@@ -32,7 +32,5 @@ public interface LoginService {
     /**
      * 退出登录
      */
-    void logout();
-
-
+    void logout(Boolean autoLogin);
 }

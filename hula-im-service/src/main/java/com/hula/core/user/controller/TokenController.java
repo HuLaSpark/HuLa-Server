@@ -2,6 +2,7 @@ package com.hula.core.user.controller;
 
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
+import com.hula.core.user.domain.vo.req.user.LogoutReq;
 import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
 import com.hula.core.user.domain.vo.req.user.RegisterReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
@@ -41,8 +42,8 @@ public class TokenController {
 
     @PostMapping("/logout")
     @Operation(summary ="用户登出")
-    public ApiResult<Boolean> logout() {
-        loginService.logout();
+    public ApiResult<Boolean> logout(@Valid @RequestBody LogoutReq logoutReq) {
+        loginService.logout(logoutReq.getAutoLogin());
         return ApiResult.success(Boolean.TRUE);
     }
 
