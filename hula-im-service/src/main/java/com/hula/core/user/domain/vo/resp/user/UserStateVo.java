@@ -9,16 +9,16 @@ import java.io.Serializable;
 public class UserStateVo implements Serializable {
 
 	@Schema(description = "更改人id")
-	private Long uid;
+	private String uid;
 
 	@Schema(description = "状态id")
-	private Long stateId;
+	private String userStateId;
 
 	public UserStateVo() {
 	}
 
 	public UserStateVo(Long uid, Long stateId) {
-		this.uid = uid;
-		this.stateId = stateId;
+		this.uid = String.valueOf(uid);
+		this.userStateId = String.valueOf(stateId);
 	}
 }
