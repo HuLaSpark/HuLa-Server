@@ -24,7 +24,7 @@ import javax.sql.DataSource;
  * 自定义mybatis-plus 包扫描、分页、乐观锁、全表删除、ID自增
  */
 @Configuration
-@MapperScan("com.hula.core.*.mapper")
+@MapperScan("com.hula.**.mapper")
 public class MyBatisPlusConfig {
 
 	@Autowired
