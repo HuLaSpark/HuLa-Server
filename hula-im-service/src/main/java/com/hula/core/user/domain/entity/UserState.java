@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @TableName("user_state")
 public class UserState implements Serializable {
 
-	@TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
 	private Long id;
 
 	@Schema(description = "状态名")

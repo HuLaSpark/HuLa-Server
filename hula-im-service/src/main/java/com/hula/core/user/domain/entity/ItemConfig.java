@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -25,7 +26,7 @@ public class ItemConfig implements Serializable {
     /**
      * id
      */
-    @TableId("id")
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
     @Schema(description = "唯一标识ID")
     private Long id;
 

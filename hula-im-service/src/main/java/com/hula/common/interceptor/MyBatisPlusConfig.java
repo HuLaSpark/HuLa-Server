@@ -5,14 +5,17 @@ import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.hula.snowflake.uid.UidGenerator;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 
-//@Configuration
+@Configuration
+@MapperScan("com.hula.core.*.mapper")
 public class MyBatisPlusConfig {
 
 	@Autowired
@@ -23,6 +26,7 @@ public class MyBatisPlusConfig {
         MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
 
 		factoryBean.setDataSource(dataSource);
+		factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/*/*.xml"));
 
         GlobalConfig globalConfig = new GlobalConfig();
         GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();

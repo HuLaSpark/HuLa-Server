@@ -15,7 +15,7 @@ import java.io.Serializable;
 @TableName("announcements_read_records")
 public class AnnouncementsReadRecord implements Serializable {
 
-	@TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
 	private Long id;
 
 	@Schema(description = "公告ID")

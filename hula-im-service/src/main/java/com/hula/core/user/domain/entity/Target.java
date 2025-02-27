@@ -12,7 +12,7 @@ import java.io.Serializable;
 @TableName("target")
 public class Target implements Serializable {
 
-	@TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
 	private Long id;
 
 	@Schema(description = "标签创建人")

@@ -28,7 +28,7 @@ public class UserBackpack implements Serializable {
     /**
      * 唯一标识ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
     @Schema(description = "记录的唯一标识ID，自增")
     private Long id;
 

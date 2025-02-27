@@ -26,10 +26,7 @@ public class MessageMark implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+	@TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
