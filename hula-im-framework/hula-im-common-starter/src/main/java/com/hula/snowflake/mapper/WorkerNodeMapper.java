@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 package com.hula.snowflake.mapper;
-
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.hula.snowflake.uid.worker.entity.WorkerNodeEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
-import org.springframework.stereotype.Repository;
 
 /**
  * DAO for M_WORKER_NODE
  *
  * @author yutianbao
  */
-@Repository
-@InterceptorIgnore(tenantLine = "true", dynamicTableName = "true")
 public interface WorkerNodeMapper {
 
     /**

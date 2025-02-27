@@ -6,6 +6,7 @@ import com.hula.domain.vo.res.ApiResult;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -35,7 +36,7 @@ public enum HttpErrorEnum implements ErrorEnum {
     }
 
     public void sendHttpError(HttpServletResponse response) throws IOException {
-        response.setStatus(this.getErrorCode());
+		response.setStatus(HttpStatus.OK.value());
         ApiResult<Object> responseData = ApiResult.fail(this);
         response.setContentType(ContentType.JSON.toString(Charset.forName("UTF-8")));
         response.getWriter().write(JSONUtil.toJsonStr(responseData));
