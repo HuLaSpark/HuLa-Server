@@ -74,7 +74,7 @@ public class MessageAdapter {
 
     private static ChatMessageResp.UserInfo buildFromUser(Long fromUid) {
         ChatMessageResp.UserInfo userInfo = new ChatMessageResp.UserInfo();
-        userInfo.setUid(fromUid);
+        userInfo.setUid(fromUid.toString());
         return userInfo;
     }
 

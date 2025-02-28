@@ -1,4 +1,4 @@
-package com.hula.common.interceptor;
+package com.hula.common.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
-import com.hula.common.config.DatabaseProperties;
+import com.hula.common.interceptor.SnowflakeIdInterceptor;
 import com.hula.snowflake.uid.UidGenerator;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
@@ -64,7 +64,7 @@ public class MyBatisPlusConfig {
         globalConfig.setDbConfig(dbConfig);
 
 		// 自定义自己的id生成器
-        globalConfig.setIdentifierGenerator(new CustomSnowflakeIdGenerator(uidGenerator));
+        globalConfig.setIdentifierGenerator(new SnowflakeIdInterceptor(uidGenerator));
         factoryBean.setGlobalConfig(globalConfig);
         return factoryBean.getObject();
     }

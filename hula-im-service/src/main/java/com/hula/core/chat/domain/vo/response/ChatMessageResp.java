@@ -27,15 +27,15 @@ public class ChatMessageResp extends BaseEntity {
     @Data
     public static class UserInfo {
         @Schema(description ="用户id")
-        private Long uid;
+        private String uid;
     }
 
     @Data
     public static class Message {
         @Schema(description ="消息id")
-        private Long id;
+        private String id;
         @Schema(description ="房间id")
-        private Long roomId;
+        private String roomId;
         @Schema(description ="消息发送时间")
         private Date sendTime;
         @Schema(description ="消息类型 1正常文本 2.撤回消息")

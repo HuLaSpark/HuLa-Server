@@ -6,11 +6,11 @@ import com.hula.snowflake.uid.UidGenerator;
 /**
  * 自定义mybatisPlus雪花ID
  */
-public class CustomSnowflakeIdGenerator implements IdentifierGenerator {
+public class SnowflakeIdInterceptor implements IdentifierGenerator {
 
     private final UidGenerator uidGenerator;
 
-    public CustomSnowflakeIdGenerator(UidGenerator uidGenerator) {
+    public SnowflakeIdInterceptor(UidGenerator uidGenerator) {
         this.uidGenerator = uidGenerator;
     }
 
