@@ -11,6 +11,11 @@ public class RedisKey {
      */
     private static final String BASE_KEY = "hula:";
 
+	/**
+	 * 系统配置缓存
+	 */
+	public static final String CONFIG_KEY = BASE_KEY + "config";
+
     /**
      * 在线用户列表
      */
@@ -50,6 +55,11 @@ public class RedisKey {
      * 用户token存放
      */
     public static final String USER_TOKEN_FORMAT = "userToken:%s:uid_%d";
+
+	/**
+	 * 用户refreshToken存放
+	 */
+	public static final String USER_REFRESH_TOKEN_UID_FORMAT = "userRefreshToken:%s:uid_%d";
 
 	/**
 	 * 用户refreshToken存放

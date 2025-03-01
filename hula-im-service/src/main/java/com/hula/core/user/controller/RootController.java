@@ -1,6 +1,8 @@
 package com.hula.core.user.controller;
 
 import com.hula.core.user.domain.vo.req.oss.UploadUrlReq;
+import com.hula.core.user.domain.vo.resp.config.Init;
+import com.hula.core.user.service.ConfigService;
 import com.hula.core.user.service.OssService;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.domain.vo.res.OssResp;
@@ -14,19 +16,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * oss控制层
+ * 系统控制层
  * @author nyh
  */
 @RestController
-@RequestMapping("/oss")
+@RequestMapping("system/")
 @Api(tags = "oss相关接口")
-public class OssController {
+public class RootController {
     @Resource
     private OssService ossService;
 
-    @GetMapping("/upload/url")
+	@Resource
+	private ConfigService configService;
+
+    @GetMapping("oss/upload/url")
     @ApiOperation("获取MinIO临时上传链接")
     public ApiResult<OssResp> getUploadUrl(@Valid UploadUrlReq req) {
         return ApiResult.success(ossService.getUploadUrl(RequestHolder.get().getUid(), req));
     }
+
+	@GetMapping("config/init")
+	@ApiOperation("获取系统全局配置")
+	public ApiResult<Init> init() {
+		return ApiResult.success(configService.getSystemInit());
+	}
 }

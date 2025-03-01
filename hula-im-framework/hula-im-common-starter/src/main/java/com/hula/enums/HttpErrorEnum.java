@@ -37,7 +37,7 @@ public enum HttpErrorEnum implements ErrorEnum {
 
     public void sendHttpError(HttpServletResponse response) throws IOException {
 		response.setStatus(HttpStatus.OK.value());
-        ApiResult<Object> responseData = ApiResult.fail(this);
+        ApiResult<Object> responseData = ApiResult.tokenExceed(this);
         response.setContentType(ContentType.JSON.toString(Charset.forName("UTF-8")));
         response.getWriter().write(JSONUtil.toJsonStr(responseData));
     }

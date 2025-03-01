@@ -352,10 +352,19 @@ public class RedisUtils {
      */
     public static Map<Object, Object> hmget(String key) {
         return stringRedisTemplate.opsForHash().entries(key);
-
     }
 
-    /**
+	/**
+	 * 获取map缓存的大小
+	 * @param key
+	 * @return
+	 */
+	public static Long hLen(String key) {
+		return stringRedisTemplate.opsForHash().size(key);
+	}
+
+
+	/**
      * HashSet
      *
      * @param key 键

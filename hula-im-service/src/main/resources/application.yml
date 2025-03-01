@@ -17,7 +17,7 @@ spring:
   #数据库连接配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${HuLa-IM.HOST}:3306/${HuLa-IM.DATABASE_NAME}?serverTimezone=GMT%2b8
+    url: jdbc:mysql://${HuLa-IM.HOST}:${HuLa-IM.MYSQL_PORT}/${HuLa-IM.DATABASE_NAME}?serverTimezone=GMT%2b8
     username: ${HuLa-IM.MYSQL_USER_NAME}
     password: ${HuLa-IM.MYSQL_PASSWORD}
     type: com.zaxxer.hikari.HikariDataSource
@@ -124,6 +124,7 @@ rocketmq:
 
 public:
   urls:
+    - /system/config/init
     - /token/login
-    - /token/mobileLogin
+    - /token/refreshToken
     - /token/register

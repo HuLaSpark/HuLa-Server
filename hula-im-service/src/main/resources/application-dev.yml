@@ -1,6 +1,7 @@
 version: 2.6.2
 HuLa-IM:
-  HOST: localhost #域名
+  HOST: 127.0.0.1 #域名
+  MYSQL_PORT: 3306 #端口
   DATABASE_NAME: hula-im #数据库名
   MYSQL_USER_NAME: root #数据库用户名
   MYSQL_PASSWORD: 123456 #数据库密码

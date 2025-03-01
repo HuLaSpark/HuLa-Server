@@ -43,9 +43,7 @@ public class TokenServiceImpl implements TokenService {
         if (Objects.isNull(uid)) {
             return false;
         }
-        // 有可能token失效了，需要校验是不是和最新token一致
-        return Objects.equals(token, RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT,
-                JwtUtils.getLoginType(token), uid)));
+        return Objects.equals(token, RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), uid)));
     }
 
     @Override
@@ -55,11 +53,14 @@ public class TokenServiceImpl implements TokenService {
         String tokenKey = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid);
 		String refreshTokenKey = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, loginType, uid, uuid);
 		String token = RedisUtils.getStr(tokenKey), refreshToken;
+		String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_UID_FORMAT, loginType, uid);
+		RedisUtils.del(tokenKey, key);
+
+		// 1.2 token存在 旧设备下线
         if (StrUtil.isNotBlank(token)) {
-            RedisUtils.del(tokenKey);
-            // 1.2 token存在 旧设备下线
             applicationEventPublisher.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, loginType, RequestHolder.get().getIp())));
         }
+
         // 2. 创建用户token
 		token = JwtUtils.createToken(uid, loginType, uuid, TOKEN_EXPIRE_DAYS);
 		refreshToken = JwtUtils.createToken(uid, loginType, uuid, TOKEN_RENEWAL_DAYS);
