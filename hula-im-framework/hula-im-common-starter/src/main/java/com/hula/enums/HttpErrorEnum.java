@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 public enum HttpErrorEnum implements ErrorEnum {
     ACCESS_DENIED(401, "登录失效，请重新登录"),
 	BLACK_ERROR(360, "对不起，不在白名单内"),
+	SYSTEM_ERROR(1001, "系统出小差了，请稍后再试哦~~"),
 	JWT_TOKEN_EXCEED(40004, "正在为您的token续签..."),
     ;
     private Integer code;

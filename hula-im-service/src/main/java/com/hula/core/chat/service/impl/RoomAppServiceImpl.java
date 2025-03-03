@@ -28,6 +28,7 @@ import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.RoomApplyReq;
 import com.hula.core.chat.domain.vo.request.RoomInfoReq;
 import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
@@ -337,8 +338,8 @@ public class RoomAppServiceImpl implements RoomAppService {
 	}
 
 	@Override
-	public Boolean delContact(Long uid, Long roomId) {
-		return contactDao.deleteContact(roomId, uid);
+	public Boolean setHide(Long uid, ContactHideReq req) {
+		return contactDao.setHide(uid, req.getRoomId(), req.getHide());
 	}
 
 	@Override
@@ -563,7 +564,6 @@ public class RoomAppServiceImpl implements RoomAppService {
     private List<ChatRoomResp> buildContactResp(HashMap<String, Contact> contactMap, Long uid, List<Long> roomIds) {
         // 表情和头像
         Map<Long, RoomBaseInfo> roomBaseInfoMap = getRoomBaseInfoMap(roomIds, uid);
-//        Map<Long, Long> chatMap = getChat(uid,roomIds);
         // 最后一条消息
         List<Long> msgIds = roomBaseInfoMap.values().stream().map(RoomBaseInfo::getLastMsgId).collect(Collectors.toList());
         List<Message> messages = CollectionUtil.isEmpty(msgIds) ? new ArrayList<>() : messageDao.listByIds(msgIds);
@@ -606,29 +606,6 @@ public class RoomAppServiceImpl implements RoomAppService {
                     return resp;
                 }).sorted(Comparator.comparing(ChatRoomResp::getActiveTime).reversed())
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * 获取单聊的对象map
-     * key->roomId
-     * v->单聊对象id
-     * @param uid     用户id
-     * @param roomIds 房间 ID
-     * @return {@link Map }<{@link Long }, {@link Long }>
-     */
-    private Map<Long, Long> getChat(Long uid, List<Long> roomIds) {
-        List<RoomChatInfoPO> poList = roomService.chatInfo(uid, roomIds, RoomTypeEnum.FRIEND.getType());
-        Map<Long, Long> map = new HashMap<>();
-        poList.forEach(e -> {
-            Long friendId;
-            if (Objects.equals(uid, e.getUid())) {
-                friendId = e.getFriendId();
-            } else {
-                friendId = e.getUid();
-            }
-            map.put(e.getRoomId(), friendId);
-        });
-        return map;
     }
 
     /**

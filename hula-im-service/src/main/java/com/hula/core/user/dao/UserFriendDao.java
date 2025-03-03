@@ -61,7 +61,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 		return baseMapper.selectObjs(new LambdaQueryWrapper<UserFriend>()
 						.select(UserFriend::getUid)
 						.eq(UserFriend::getFriendUid, uid)
-						.eq(UserFriend::getHideTheirPosts, 1))
+						.eq(UserFriend::getHideTheirPosts, true))
 				.stream()
 				.map(o -> (Long) o)
 				.collect(Collectors.toList());
@@ -76,7 +76,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 		return baseMapper.selectObjs(new LambdaQueryWrapper<UserFriend>()
 						.select(UserFriend::getFriendUid)
 						.eq(UserFriend::getUid, uid)
-						.eq(UserFriend::getHideMyPosts, 1))
+						.eq(UserFriend::getHideMyPosts, true))
 				.stream()
 				.map(o -> (Long) o)
 				.collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 		return baseMapper.selectObjs(new LambdaQueryWrapper<UserFriend>()
 						.select(UserFriend::getFriendUid)
 						.eq(UserFriend::getUid, uid)
-						.eq(UserFriend::getHideTheirPosts, 1))
+						.eq(UserFriend::getHideTheirPosts, true))
 				.stream()
 				.map(o -> (Long) o)
 				.collect(Collectors.toList());
@@ -106,8 +106,8 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 		return baseMapper.selectObjs(new LambdaQueryWrapper<UserFriend>()
 						.select(UserFriend::getFriendUid)
 						.eq(UserFriend::getUid, uid)
-						.eq(UserFriend::getHideMyPosts, 1)
-						.eq(UserFriend::getHideTheirPosts, 1))
+						.eq(UserFriend::getHideMyPosts, true)
+						.eq(UserFriend::getHideTheirPosts, true))
 				.stream()
 				.map(o -> (Long) o)
 				.collect(Collectors.toList());

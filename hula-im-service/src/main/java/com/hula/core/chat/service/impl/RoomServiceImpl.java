@@ -106,11 +106,6 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type) {
-        return roomDao.chatInfo(uid,roomIds,type);
-    }
-
-    @Override
     public void groupList(Long uid, IPage<GroupListVO> page) {
         roomDao.groupList(uid, page);
     }

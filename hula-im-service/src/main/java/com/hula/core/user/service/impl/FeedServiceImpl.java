@@ -279,7 +279,7 @@ public class FeedServiceImpl implements FeedService {
 		}
 
 		// 处理朋友圈权限
-		if(feedVo.getPermission().equals(FeedPermissionEnum.open.getType()) && feedVo.getPermission().equals(FeedPermissionEnum.privacy.getType())){
+		if(feedVo.getPermission().equals(FeedPermissionEnum.partVisible.getType()) || feedVo.getPermission().equals(FeedPermissionEnum.notAnyone.getType())){
 			List<FeedTarget> feedTargets = RedisUtils.hget(RedisKey.FEED_TARGET, feedId.toString());
 			if(CollUtil.isEmpty(feedTargets)){
 				feedTargets = feedTargetDao.selectFeedTargets(feedId);

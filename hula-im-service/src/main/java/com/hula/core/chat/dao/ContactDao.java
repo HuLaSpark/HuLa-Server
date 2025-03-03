@@ -3,6 +3,7 @@ package com.hula.core.chat.dao;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
@@ -34,6 +35,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
 
     public Integer getReadCount(Message message) {
         return Math.toIntExact(lambdaQuery()
+				.eq(Contact::getHide, false)
                 .eq(Contact::getRoomId, message.getRoomId())
                 .ne(Contact::getUid, message.getFromUid())// 不需要查询出自己
                 .ge(Contact::getReadTime, message.getCreateTime())
@@ -42,12 +44,14 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
 
     public Integer getTotalCount(Long roomId) {
         return Math.toIntExact(lambdaQuery()
+				.eq(Contact::getHide, false)
                 .eq(Contact::getRoomId, roomId)
                 .count());
     }
 
     public Integer getUnReadCount(Message message) {
         return Math.toIntExact(lambdaQuery()
+				.eq(Contact::getHide, false)
                 .eq(Contact::getRoomId, message.getRoomId())
                 .lt(Contact::getReadTime, message.getCreateTime())
                 .count());
@@ -56,6 +60,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
     public CursorPageBaseResp<Contact> getReadPage(Message message, CursorPageBaseReq cursorPageBaseReq) {
         return CursorUtils.getCursorPageByMysql(this, cursorPageBaseReq, wrapper -> {
             wrapper.eq(Contact::getRoomId, message.getRoomId());
+			wrapper.eq(Contact::getHide, false);
             wrapper.ne(Contact::getUid, message.getFromUid());// 不需要查询出自己
             wrapper.ge(Contact::getReadTime, message.getCreateTime());// 已读时间大于等于消息发送时间
         }, Contact::getReadTime);
@@ -64,6 +69,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
     public CursorPageBaseResp<Contact> getUnReadPage(Message message, CursorPageBaseReq cursorPageBaseReq) {
         return CursorUtils.getCursorPageByMysql(this, cursorPageBaseReq, wrapper -> {
             wrapper.eq(Contact::getRoomId, message.getRoomId());
+			wrapper.eq(Contact::getHide, false);
             wrapper.ne(Contact::getUid, message.getFromUid());// 不需要查询出自己
             wrapper.lt(Contact::getReadTime, message.getCreateTime());// 已读时间小于消息发送时间
         }, Contact::getReadTime);
@@ -73,12 +79,13 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
      * 获取用户会话列表
      */
     public CursorPageBaseResp<Contact> getContactPage(Long uid, CursorPageBaseReq request) {
-        return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(Contact::getUid, uid), Contact::getActiveTime);
+        return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(Contact::getUid, uid).eq(Contact::getHide, false), Contact::getActiveTime);
     }
 
     public List<Contact> getByRoomIds(List<Long> roomIds, Long uid) {
         return lambdaQuery()
                 .in(Contact::getRoomId, roomIds)
+				.eq(Contact::getHide, false)
                 .eq(Contact::getUid, uid)
                 .list();
     }
@@ -107,7 +114,19 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
         return false;
     }
 
-	public Boolean deleteContact(Long roomId, Long uid) {
-		return remove(new LambdaQueryWrapper<Contact>().eq(Contact::getRoomId, roomId).eq(Contact::getUid, uid));
+	/**
+	 * 创建会话
+	 */
+	public Boolean save(Long uid, Long roomId) {
+		Contact insert = new Contact();
+		insert.setUid(uid);
+		insert.setRoomId(roomId);
+		insert.setReadTime(new Date());
+		return save(insert);
+	}
+
+	public Boolean setHide(Long uid, Long roomId, Boolean hide) {
+		return update(new UpdateWrapper<Contact>().lambda()
+				.eq(Contact::getRoomId, roomId).eq(Contact::getUid, uid).set(Contact::getHide, hide));
 	}
 }

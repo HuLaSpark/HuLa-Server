@@ -39,8 +39,6 @@ public interface RoomService {
     RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq);
 
 
-    List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type);
-
     void groupList(Long uid, IPage<GroupListVO> page);
 
     /**

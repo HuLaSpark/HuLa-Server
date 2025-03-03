@@ -4,6 +4,7 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
@@ -16,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,11 +65,11 @@ public class ContactController {
 		return ApiResult.success(roomService.setTop(uid, request));
 	}
 
-	@DeleteMapping("delete")
-	@Operation(summary = "删除会话")
-	public ApiResult<Boolean> delete(@RequestBody @Valid IdReqVO request) {
+	@PostMapping("setHide")
+	@Operation(summary = "隐藏/展示会话")
+	public ApiResult<Boolean> setHide(@RequestBody @Valid ContactHideReq req) {
 		Long uid = RequestHolder.get().getUid();
-		return ApiResult.success(roomService.delContact(uid, request.getId()));
+		return ApiResult.success(roomService.setHide(uid, req));
 	}
 
 	@PostMapping("notification")
