@@ -3,6 +3,7 @@ package com.hula.core.user.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.hula.common.constant.RedisKey;
 import com.hula.core.user.domain.entity.Config;
 import com.hula.core.user.domain.vo.req.config.ConfigParam;
@@ -75,7 +76,7 @@ public class ConfigServiceImpl implements ConfigService {
 	 */
 	public String get(String name) {
 		loadingConfigCache();
-		String data = (String) RedisUtils.hget(RedisKey.CONFIG_KEY, name);
+		String data = RedisUtils.hget(RedisKey.CONFIG_KEY, name);
 		if (ObjectUtil.isNull(data) || StrUtil.isBlank(data)) {
 			// 没有找到数据
 			return "";

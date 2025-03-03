@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.core.user.domain.entity.UserTargetRel;
 import com.hula.core.chat.domain.vo.request.room.TargetVo;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,5 +70,20 @@ public class UserTargetRelServiceImpl implements UserTargetRelService {
 			return targetService.getTargetList(ids);
 		}
 		return new ArrayList<>();
+	}
+
+	/**
+	 * 获取到朋友圈可见的人员
+	 * @param targetIds 标签集合
+	 * @return
+	 */
+	public List<Long> getFeedUidList(List<Long> targetIds, Long uid) {
+		return userTargetRelDao.getBaseMapper().selectObjs(new LambdaQueryWrapper<UserTargetRel>()
+						.select(UserTargetRel::getFriendId)
+						.in(UserTargetRel::getTargetId, targetIds)
+						.eq(UserTargetRel::getUid, uid))
+				.stream()
+				.map(o -> (Long) o)
+				.collect(Collectors.toList());
 	}
 }

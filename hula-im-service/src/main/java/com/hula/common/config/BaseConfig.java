@@ -44,7 +44,7 @@ public class BaseConfig {
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean
-	public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
+	public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
 		ObjectMapper objectMapper = builder.createXmlMapper(false).build();
 		objectMapper
 				.setLocale(Locale.CHINA)
