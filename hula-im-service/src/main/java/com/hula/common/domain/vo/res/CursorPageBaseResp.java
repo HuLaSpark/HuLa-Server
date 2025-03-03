@@ -34,7 +34,7 @@ public class CursorPageBaseResp<T> {
     private Long total;
 
     public static <T> CursorPageBaseResp<T> init(CursorPageBaseResp cursorPage, List<T> list, Long total) {
-        CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
+        CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<>();
         cursorPageBaseResp.setIsLast(cursorPage.getIsLast());
         cursorPageBaseResp.setList(list);
         cursorPageBaseResp.setCursor(cursorPage.getCursor());
@@ -48,9 +48,9 @@ public class CursorPageBaseResp<T> {
     }
 
     public static <T> CursorPageBaseResp<T> empty() {
-        CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
+        CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<>();
         cursorPageBaseResp.setIsLast(true);
-        cursorPageBaseResp.setList(new ArrayList<T>());
+        cursorPageBaseResp.setList(new ArrayList<>());
         cursorPageBaseResp.setTotal(0L);
         return cursorPageBaseResp;
     }

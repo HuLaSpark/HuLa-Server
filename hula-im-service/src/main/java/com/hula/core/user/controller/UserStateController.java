@@ -1,5 +1,6 @@
 package com.hula.core.user.controller;
 
+import com.hula.core.user.domain.entity.UserState;
 import com.hula.core.user.service.UserStateService;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 用户在线状态管理
@@ -23,13 +26,13 @@ public class UserStateController {
 
 	@PostMapping("changeState/{id}")
 	@Operation(summary = "用户状态改变")
-	public ApiResult changeState(@PathVariable("id") Long id){
+	public ApiResult<Boolean> changeState(@PathVariable("id") Long id){
 		return ApiResult.success(userStateService.changeState(RequestHolder.get().getUid(), id));
 	}
 
 	@GetMapping("list")
 	@Operation(summary = "获取所有用户状态")
-	public ApiResult list(){
+	public ApiResult<List<UserState>> list(){
 		return ApiResult.success(userStateService.list());
 	}
 }

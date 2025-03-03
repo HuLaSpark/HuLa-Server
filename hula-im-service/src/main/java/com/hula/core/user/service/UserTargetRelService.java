@@ -20,5 +20,15 @@ public interface UserTargetRelService {
 	 */
 	List<Long> getRelTarget(Long uid, Long friendId);
 
+	/**
+	 * 查询标签详情
+	 * @return
+	 */
 	List<TargetVo> detail(Long uid, Long friendId);
+
+	/**
+	 * 获取到朋友圈可见的人员
+	 * @param targetIds 标签集合
+	 */
+	List<Long> getFeedUidList(List<Long> targetIds, Long uid);
 }

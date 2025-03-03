@@ -31,6 +31,21 @@ public class RedisKey {
      */
     public static final String HOT_ROOM_ZET = "hotRoom";
 
+	/**
+	 * 用户朋友圈的信息汇总
+	 */
+	public static final String USER_FEED_STRING = BASE_KEY + "userFeed";
+
+	/**
+	 * 朋友圈素材
+	 */
+	public static final String FEED_MEDIA = BASE_KEY + "feedMedia";
+
+	/**
+	 * 朋友圈权限
+	 */
+	public static final String FEED_TARGET = BASE_KEY + "feedTarget";
+
     /**
      * 用户信息
      */

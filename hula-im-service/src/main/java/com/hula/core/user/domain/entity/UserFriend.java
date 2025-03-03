@@ -47,6 +47,18 @@ public class UserFriend implements Serializable {
 	 */
 	private String remark;
 
+	/**
+	 * 不让他看我（0-允许，1-禁止）
+	 */
+	@TableField("hide_my_posts")
+	private Boolean hideMyPosts;
+
+	/**
+	 * 不看他（0-允许，1-禁止）
+	 */
+	@TableField("hide_their_posts")
+	private Boolean hideTheirPosts;
+
     /**
      * 逻辑删除(0-正常,1-删除)
      */

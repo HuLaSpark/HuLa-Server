@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Pair;
+import cn.hutool.core.util.ObjectUtil;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
@@ -103,14 +104,8 @@ public class ChatServiceImpl implements ChatService {
 
     private void check(ChatMessageReq request, Long uid) {
         Room room = roomCache.get(request.getRoomId());
-        if (room.isHotRoom()) {
-            // 全员群跳过校验
-            return;
-        }
-        if (room.isRoomFriend()) {
-            RoomFriend roomFriend = roomFriendDao.getByRoomId(request.getRoomId());
-            AssertUtil.equal(NormalOrNoEnum.NORMAL.getStatus(), roomFriend.getStatus(), "您已经被对方拉黑");
-            AssertUtil.isTrue(uid.equals(roomFriend.getUid1()) || uid.equals(roomFriend.getUid2()), "您已经被对方拉黑");
+        if (ObjectUtil.isNull(room)) {
+			throw new RuntimeException("您已经被移除该群!");
         }
         if (room.isRoomGroup()) {
             RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
@@ -119,8 +114,12 @@ public class ChatServiceImpl implements ChatService {
 			if(member.getDeFriend()){
 				throw new RuntimeException("您已经屏蔽群聊!");
 			}
-        }
-
+        } else {
+			RoomFriend roomFriend = roomFriendDao.getByRoomId(request.getRoomId());
+			AssertUtil.isNotEmpty(roomFriend, "你们之间不是好友!");
+			AssertUtil.equal(NormalOrNoEnum.NORMAL.getStatus(), roomFriend.getStatus(), "您已经被对方拉黑");
+			AssertUtil.isTrue(uid.equals(roomFriend.getUid1()) || uid.equals(roomFriend.getUid2()), "您已经被对方拉黑");
+		}
     }
 
     @Override

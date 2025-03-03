@@ -8,6 +8,7 @@ import com.hula.core.user.domain.entity.UserFriend;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
+import com.hula.core.user.domain.vo.resp.ws.WSFeedMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.cache.UserCache;
 import jakarta.annotation.Resource;
@@ -106,4 +107,16 @@ public class MemberAdapter {
         wsBaseResp.setData(wsMemberChange);
         return wsBaseResp;
     }
+
+	/**
+	 * 发朋友圈以后推送的消息
+	 * @param uid 发布人
+	 * @return
+	 */
+	public static WsBaseResp<WSFeedMemberResp> buildFeedPushWS(Long uid){
+		WsBaseResp<WSFeedMemberResp> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.FEED_SEND_MSG.getType());
+		wsBaseResp.setData(new WSFeedMemberResp(uid));
+		return wsBaseResp;
+	}
 }

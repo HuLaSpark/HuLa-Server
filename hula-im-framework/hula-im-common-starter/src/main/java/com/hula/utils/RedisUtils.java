@@ -1,6 +1,9 @@
 package com.hula.utils;
 
 import cn.hutool.extra.spring.SpringUtil;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -20,9 +23,11 @@ import java.util.stream.Collectors;
 public class RedisUtils {
 
     private static StringRedisTemplate stringRedisTemplate;
+	private static ObjectMapper objectMapper;
 
     static {
         RedisUtils.stringRedisTemplate = SpringUtil.getBean(StringRedisTemplate.class);
+		RedisUtils.objectMapper = SpringUtil.getBean(ObjectMapper.class);
     }
 
     private static final String LUA_INCR_EXPIRE =
@@ -340,9 +345,25 @@ public class RedisUtils {
      * @param item 项 不能为null
      * @return 值
      */
-    public static Object hget(String key, String item) {
-        return stringRedisTemplate.opsForHash().get(key, item);
+    public static <T> T hget(String key, String item) {
+        return hget(key, item, new TypeReference<>() {});
     }
+
+	public static <T> T readValue(String value, TypeReference<T> typeReference) {
+		try {
+			return objectMapper.readValue(value, typeReference);
+		} catch (Exception e) {
+			throw new RuntimeException("hGet 序列号失败", e);
+		}
+	}
+
+	public static <T> T hget(String key, String item, TypeReference<T> typeReference) {
+		Object result = stringRedisTemplate.opsForHash().get(key, item);
+		if (result == null) {
+			return null;
+		}
+		return readValue(result.toString(), typeReference);
+	}
 
     /**
      * 获取hashKey对应的所有键值
@@ -412,7 +433,7 @@ public class RedisUtils {
      */
     public static Boolean hset(String key, String item, Object value) {
         try {
-            stringRedisTemplate.opsForHash().put(key, item, value);
+            stringRedisTemplate.opsForHash().put(key, item, objectMapper.writeValueAsString(value));
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
