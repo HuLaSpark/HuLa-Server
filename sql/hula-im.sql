@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 03/03/2025 13:20:44
+ Date: 03/03/2025 18:24:14
 */
 
 SET NAMES utf8mb4;
@@ -118,6 +118,7 @@ CREATE TABLE `contact`  (
   `mute_notification` tinyint NOT NULL DEFAULT 0 COMMENT '免打扰',
   `read_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '阅读到的时间',
   `top` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
+  `hide` tinyint NOT NULL DEFAULT 0 COMMENT '隐藏会话',
   `active_time` datetime(3) NULL DEFAULT NULL COMMENT '会话内消息最后更新的时间(只有普通会话需要维护，全员会话不需要维护)',
   `last_msg_id` bigint NULL DEFAULT NULL COMMENT '会话最新消息id',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -132,8 +133,8 @@ CREATE TABLE `contact`  (
 -- ----------------------------
 -- Records of contact
 -- ----------------------------
-INSERT INTO `contact` VALUES (1, 20018, 1, 0, '2024-11-16 13:10:46.646', 0, NULL, NULL, '2024-11-16 12:12:49.035', '2025-02-25 15:07:03.944');
-INSERT INTO `contact` VALUES (2, 20000, 1, 0, '2025-02-27 18:17:15.866', 0, NULL, NULL, '2024-11-16 12:12:49.171', '2025-02-27 18:17:15.903');
+INSERT INTO `contact` VALUES (1, 20018, 1, 0, '2024-11-16 13:10:46.646', 0, 0, NULL, NULL, '2024-11-16 12:12:49.035', '2025-02-25 15:07:03.944');
+INSERT INTO `contact` VALUES (2, 20000, 1, 0, '2025-02-27 18:17:15.866', 0, 0, NULL, NULL, '2024-11-16 12:12:49.171', '2025-02-27 18:17:15.903');
 
 -- ----------------------------
 -- Table structure for feed
@@ -716,7 +717,7 @@ CREATE TABLE `worker_node`  (
   `modified` timestamp NULL DEFAULT NULL COMMENT '修改时间',
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of worker_node

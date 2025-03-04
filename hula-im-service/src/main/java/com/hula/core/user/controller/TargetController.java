@@ -8,6 +8,7 @@ import com.hula.core.user.service.TargetService;
 import com.hula.core.user.service.UserTargetRelService;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/target")
+@Api(tags = "好友标签")
 @RequiredArgsConstructor
 public class TargetController {
 
@@ -32,21 +34,25 @@ public class TargetController {
 	private UserTargetRelService userTargetRelService;
 
 	@PostMapping("/add")
+	@Operation(summary = "给好友创建一个标签")
 	public ApiResult<Boolean> save(@RequestBody TargetParam param){
 		return ApiResult.success(targetService.save(RequestHolder.get().getUid(), param));
 	}
 
 	@PostMapping("/edit")
+	@Operation(summary = "编辑`我`创建的标签")
 	public ApiResult<Boolean> edit(@RequestBody TargetParam param){
 		return ApiResult.success(targetService.edit(param));
 	}
 
 	@GetMapping("/detail")
+	@Operation(summary = "查看`我`创建的标签")
 	public ApiResult<Target> detail(@RequestParam("id")Long id){
 		return ApiResult.success(targetService.detail(id));
 	}
 
 	@PostMapping("/del")
+	@Operation(summary = "删除好友标签")
 	public ApiResult<Boolean> del(@RequestBody List<Long> ids){
 		return ApiResult.success(targetService.removeByIds(ids));
 	}

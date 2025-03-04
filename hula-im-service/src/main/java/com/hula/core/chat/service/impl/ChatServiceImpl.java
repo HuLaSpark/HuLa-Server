@@ -108,7 +108,7 @@ public class ChatServiceImpl implements ChatService {
         if (room.isRoomGroup()) {
             RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
             GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
-            AssertUtil.isNotEmpty(member, "您已经被移除该群");
+            AssertUtil.isEmpty(member, "您已经被移除该群");
 			if(member.getDeFriend()){
 				throw new RuntimeException("您已经屏蔽群聊!");
 			}
