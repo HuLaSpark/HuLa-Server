@@ -188,4 +188,18 @@ public class RoomServiceImpl implements RoomService {
             roomFriendDao.restoreRoom(room.getId());
         }
     }
+
+	/**
+	 * 创建一个群成员
+	 * @param groupId 群id
+	 * @param uid     加入的人
+	 */
+	public void createGroupMember(Long groupId, Long uid) {
+		GroupMember groupMember = new GroupMember();
+		groupMember.setRemark("");
+		groupMember.setGroupId(groupId);
+		groupMember.setRole(3);
+		groupMember.setUid(uid);
+		groupMemberDao.save(groupMember);
+	}
 }

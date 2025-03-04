@@ -8,7 +8,9 @@ import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.common.event.UserRegisterEvent;
 import com.hula.common.utils.IPUtils;
+import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.service.ContactService;
+import com.hula.core.chat.service.RoomService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
@@ -44,6 +46,8 @@ public class LoginServiceImpl implements LoginService {
     private TokenService tokenService;
     @Resource
     private UserDao userDao;
+	@Resource
+	private RoomService roomService;
     @Resource
     private ContactService contactService;
     @Resource
@@ -85,6 +89,8 @@ public class LoginServiceImpl implements LoginService {
         userDao.save(newUser);
         // 创建会话
         contactService.createContact(newUser.getId(), 1L);
+		// 创建群成员
+		roomService.createGroupMember(1L, newUser.getId());
         // 发布用户注册消息
         applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
     }
