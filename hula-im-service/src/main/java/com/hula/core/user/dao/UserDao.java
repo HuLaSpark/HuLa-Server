@@ -57,7 +57,7 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .orderByDesc(User::getLastOptTime)
                 //毕竟是大群聊，人数需要做个限制
                 .last("limit 1000")
-                .select(User::getId, User::getName, User::getAvatar)
+                .select(User::getId, User::getName, User::getAvatar, User::getAccountCode)
                 .list();
 
     }

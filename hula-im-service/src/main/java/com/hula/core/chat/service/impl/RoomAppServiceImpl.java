@@ -7,7 +7,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.annotation.RedissonLock;
-import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;

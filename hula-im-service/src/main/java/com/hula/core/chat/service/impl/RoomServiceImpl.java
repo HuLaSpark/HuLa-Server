@@ -3,7 +3,6 @@ package com.hula.core.chat.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.core.chat.dao.AnnouncementsDao;

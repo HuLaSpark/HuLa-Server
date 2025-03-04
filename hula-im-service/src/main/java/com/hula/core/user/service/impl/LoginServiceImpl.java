@@ -8,7 +8,6 @@ import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
 import com.hula.common.event.UserRegisterEvent;
 import com.hula.common.utils.IPUtils;
-import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.service.ContactService;
 import com.hula.core.chat.service.RoomService;
 import com.hula.core.user.dao.UserDao;
