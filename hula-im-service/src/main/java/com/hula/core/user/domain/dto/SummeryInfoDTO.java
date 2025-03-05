@@ -29,6 +29,8 @@ public class SummeryInfoDTO {
     private Boolean needRefresh = Boolean.TRUE;
     @Schema(description = "用户昵称")
     private String name;
+	@Schema(description = "Hula号")
+	private String accountCode;
     @Schema(description = "用户头像")
     private String avatar;
     @Schema(description = "归属地")
