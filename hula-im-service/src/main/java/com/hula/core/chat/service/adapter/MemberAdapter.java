@@ -10,8 +10,6 @@ import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSFeedMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
-import com.hula.core.user.service.cache.UserCache;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -32,12 +30,11 @@ import static com.hula.core.user.domain.vo.resp.ws.WSMemberChange.CHANGE_TYPE_RE
 @Component
 @Slf4j
 public class MemberAdapter {
-    @Resource
-    private UserCache userCache;
 
     public static List<ChatMemberResp> buildMember(List<User> list) {
         return list.stream().map(a -> {
             ChatMemberResp resp = new ChatMemberResp();
+			resp.setAccountCode(a.getAccountCode());
             resp.setActiveStatus(a.getActiveStatus());
             resp.setLastOptTime(a.getLastOptTime());
             resp.setUid(a.getId());
