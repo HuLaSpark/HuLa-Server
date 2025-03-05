@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 
 /**
- * 用户上线监听器
+ * 用户注册监听器
  * @author nyh
  */
 @Slf4j

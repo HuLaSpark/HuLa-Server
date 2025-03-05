@@ -23,6 +23,9 @@ public class ChatMemberResp extends BaseEntity {
     @Schema(description = "uid")
     private Long uid;
 
+    @Schema(description = "HuLa号")
+    private String accountCode;
+
     @Schema(description = "在线状态 1在线 2离线")
     private Integer activeStatus;
 
