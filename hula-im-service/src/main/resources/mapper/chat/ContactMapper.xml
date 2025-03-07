@@ -9,7 +9,7 @@
             (#{roomId},#{uid},#{msgId},#{activeTime})
         </foreach>
         on DUPLICATE KEY UPDATE
-        `hide`=VALUES(0),
+        `hide`=0,
         `last_msg_id`=VALUES(last_msg_id),
         `active_time`=VALUES(active_time)
     </insert>

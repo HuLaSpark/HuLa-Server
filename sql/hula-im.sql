@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 03/03/2025 18:24:14
+ Date: 04/03/2025 10:46:02
 */
 
 SET NAMES utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE `announcements`  (
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天公告表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天公告表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of announcements
@@ -72,7 +72,7 @@ CREATE TABLE `black`  (
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_type_target`(`type` ASC, `target` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '黑名单' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '黑名单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of black
@@ -118,7 +118,7 @@ CREATE TABLE `contact`  (
   `mute_notification` tinyint NOT NULL DEFAULT 0 COMMENT '免打扰',
   `read_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '阅读到的时间',
   `top` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
-  `hide` tinyint NOT NULL DEFAULT 0 COMMENT '隐藏会话',
+  `hide` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
   `active_time` datetime(3) NULL DEFAULT NULL COMMENT '会话内消息最后更新的时间(只有普通会话需要维护，全员会话不需要维护)',
   `last_msg_id` bigint NULL DEFAULT NULL COMMENT '会话最新消息id',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -288,7 +288,7 @@ CREATE TABLE `message_mark`  (
   INDEX `idx_uid`(`uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息标记表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息标记表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of message_mark
@@ -454,7 +454,7 @@ CREATE TABLE `target`  (
   `is_del` tinyint(1) NOT NULL COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `employee`(`u_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天的标签' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天的标签' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of target
@@ -577,7 +577,7 @@ CREATE TABLE `user_emoji`  (
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `IDX_USER_EMOJIS_UID`(`uid` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表情包' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表情包' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_emoji
@@ -741,6 +741,9 @@ INSERT INTO `worker_node` VALUES (16, '192.168.1.105', '1740976869970-90188', 2,
 INSERT INTO `worker_node` VALUES (17, '192.168.1.105', '1740977125946-60633', 2, '2025-03-03', '2025-03-03 12:45:26', '2025-03-03 12:45:26');
 INSERT INTO `worker_node` VALUES (18, '192.168.1.105', '1740977161406-14512', 2, '2025-03-03', '2025-03-03 12:46:01', '2025-03-03 12:46:01');
 INSERT INTO `worker_node` VALUES (19, '192.168.1.105', '1740979045821-69473', 2, '2025-03-03', '2025-03-03 13:17:26', '2025-03-03 13:17:26');
+INSERT INTO `worker_node` VALUES (20, '192.168.1.105', '1740980020945-56302', 2, '2025-03-03', '2025-03-03 13:33:41', '2025-03-03 13:33:41');
+INSERT INTO `worker_node` VALUES (21, '192.168.1.105', '1740994972856-83727', 2, '2025-03-03', '2025-03-03 17:42:53', '2025-03-03 17:42:53');
+INSERT INTO `worker_node` VALUES (22, '192.168.1.105', '1740997288040-43007', 2, '2025-03-03', '2025-03-03 18:21:28', '2025-03-03 18:21:28');
 
 -- ----------------------------
 -- Table structure for wx_msg
@@ -756,7 +759,7 @@ CREATE TABLE `wx_msg`  (
   INDEX `idx_open_id`(`open_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '微信消息表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '微信消息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of wx_msg

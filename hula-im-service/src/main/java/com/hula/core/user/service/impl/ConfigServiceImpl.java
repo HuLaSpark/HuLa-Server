@@ -2,8 +2,8 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.hula.common.constant.RedisKey;
 import com.hula.core.user.domain.entity.Config;
 import com.hula.core.user.domain.vo.req.config.ConfigParam;
@@ -67,6 +67,20 @@ public class ConfigServiceImpl implements ConfigService {
 	 */
 	public void deleteRedis(String key) {
 		RedisUtils.hdel(RedisKey.CONFIG_KEY, key);
+	}
+
+	/**
+	 * 缓存转Bean对象
+	 * @param name
+	 * @param <T> 返回的类型
+	 * @return
+	 */
+	public <T> T getBeanByName(String name, Class<T> t) {
+		String data = get(name);
+		if (StrUtil.isEmpty(data)) {
+			return null;
+		}
+		return JSON.parseObject(data, t);
 	}
 
 	/**
