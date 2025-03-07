@@ -26,7 +26,7 @@ public class ChatMessageReq {
     @NotNull
     private Integer msgType;
 
-    @Schema(description ="消息内容，类型不同传值不同，见https://www.yuque.com/snab/mallcaht/rkb2uz5k1qqdmcmd")
+    @Schema(description ="消息内容，类型不同传值不同")
     @NotNull
     private Object body;
 
