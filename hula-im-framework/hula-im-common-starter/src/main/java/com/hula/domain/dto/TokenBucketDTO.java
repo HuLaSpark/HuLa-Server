@@ -1,6 +1,6 @@
 package com.hula.domain.dto;
 
-import com.hula.enums.BusinessErrorEnum;
+import com.hula.enums.HttpErrorEnum;
 import com.hula.exception.BusinessException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class TokenBucketDTO extends FrequencyControlDTO {
 
     public TokenBucketDTO(long capacity, double refillRate) {
         if (capacity <= 0 || refillRate <= 0) {
-            throw new BusinessException(BusinessErrorEnum.CAPACITY_REFILL_ERROR);
+            throw new BusinessException(HttpErrorEnum.SYSTEM_ERROR);
         }
         this.capacity = capacity;
         this.refillRate = refillRate;

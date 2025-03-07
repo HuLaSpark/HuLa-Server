@@ -4,6 +4,7 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
+import com.hula.core.chat.domain.vo.request.friend.FriendPermissionReq;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.UserApply;
@@ -122,4 +123,9 @@ public interface FriendService {
 	 * 查询好友
 	 */
 	List<ChatMemberListResp> searchFriend(@Valid FriendReq friendReq);
+
+	/**
+	 * 设置好友权限
+	 */
+	Boolean permissionSettings(Long uid, FriendPermissionReq request);
 }

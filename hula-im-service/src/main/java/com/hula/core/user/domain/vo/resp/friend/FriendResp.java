@@ -23,4 +23,10 @@ public class FriendResp extends BaseEntity {
 
     @Schema(description ="在线状态 1在线 2离线")
     private Integer activeStatus;
+
+	@Schema(description ="不让他看我（0-允许，1-禁止）")
+	private Boolean hideMyPosts;
+
+	@Schema(description ="不看他（0-允许，1-禁止）")
+	private Boolean hideTheirPosts;
 }

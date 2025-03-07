@@ -39,8 +39,6 @@ public interface RoomService {
     RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq);
 
 
-    List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type);
-
     void groupList(Long uid, IPage<GroupListVO> page);
 
     /**
@@ -90,5 +88,13 @@ public interface RoomService {
 	 */
 	Boolean saveBatchAnnouncementsRecord(List<AnnouncementsReadRecord> announcementsReadRecordList);
 
+	/**
+	 * 改变好友的消息屏蔽类型
+	 */
 	void updateState(Long uid1, Long uid2, Boolean deFriend);
+
+	/**
+	 * 创建群成员
+	 */
+	void createGroupMember(Long groupId, Long uid);
 }

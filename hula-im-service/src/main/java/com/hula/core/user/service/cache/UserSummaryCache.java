@@ -56,6 +56,7 @@ public class UserSummaryCache extends AbstractRedisStringCache<Long, SummeryInfo
             summeryInfoDTO.setUid(user.getId());
             summeryInfoDTO.setName(user.getName());
             summeryInfoDTO.setAvatar(user.getAvatar());
+			summeryInfoDTO.setAccountCode(user.getAccountCode());
 			summeryInfoDTO.setUserStateId(user.getUserStateId());
 			summeryInfoDTO.setLocPlace(Optional.ofNullable(user.getIpInfo()).map(IpInfo::getUpdateIpDetail).map(IpDetail::getCity).orElse(null));
             summeryInfoDTO.setWearingItemId(user.getItemId());

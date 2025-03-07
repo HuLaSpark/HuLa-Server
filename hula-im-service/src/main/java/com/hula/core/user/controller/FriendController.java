@@ -1,10 +1,10 @@
 package com.hula.core.user.controller;
 
-
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.PageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
+import com.hula.core.chat.domain.vo.request.friend.FriendPermissionReq;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.user.domain.entity.UserApply;
@@ -122,6 +122,12 @@ public class FriendController {
 	@Operation(summary = "修改好友备注")
 	public ApiResult<Boolean> updateRemark(@Valid @RequestBody FriendRemarkReq request) {
 		return ApiResult.success(friendService.updateRemark(RequestHolder.get().getUid(), request));
+	}
+
+	@PostMapping("/permissionSettings")
+	@Operation(summary = "好友权限设置")
+	public ApiResult<Boolean> permissionSettings(@RequestBody FriendPermissionReq request) {
+		return ApiResult.success(friendService.permissionSettings(RequestHolder.get().getUid(), request));
 	}
 }
 

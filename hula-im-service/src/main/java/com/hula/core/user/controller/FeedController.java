@@ -9,6 +9,7 @@ import com.hula.core.user.domain.vo.req.feed.FeedVo;
 import com.hula.core.user.service.FeedService;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -22,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 朋友圈功能 发布朋友圈、编辑朋友圈、设置谁可见、谁不可见、仅聊天、不看他、不让他看我
+ * 发布朋友圈、编辑朋友圈、设置谁可见、谁不可见、仅聊天、不看他、不让他看我
  */
 @RestController
 @RequestMapping("/feed/")
+@Api(tags = "朋友圈模块")
 public class FeedController {
 
 	@Resource

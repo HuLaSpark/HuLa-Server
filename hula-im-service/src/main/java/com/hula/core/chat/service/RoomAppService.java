@@ -11,6 +11,7 @@ import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.RoomApplyReq;
 import com.hula.core.chat.domain.vo.request.RoomInfoReq;
 import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
@@ -20,13 +21,11 @@ import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
-import com.hula.core.chat.domain.vo.response.ChatGroupResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -104,7 +103,7 @@ public interface RoomAppService {
 	 * 隐藏会话
 	 * @return
 	 */
-	Boolean delContact(Long uid, Long roomId);
+	Boolean setHide(Long uid, ContactHideReq req);
 
 	/**
 	 * 将 id 的消息设置为免打扰

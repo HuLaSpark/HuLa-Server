@@ -12,7 +12,9 @@ import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.UserApplyEvent;
 import com.hula.common.event.UserApprovalEvent;
+import com.hula.core.chat.domain.entity.Contact;
 import com.hula.core.chat.domain.entity.RoomFriend;
+import com.hula.core.chat.domain.vo.request.friend.FriendPermissionReq;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
 import com.hula.core.chat.service.ChatService;
@@ -47,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -149,6 +152,22 @@ public class FriendServiceImpl implements FriendService {
 	@Override
 	public List<ChatMemberListResp> searchFriend(FriendReq friendReq) {
 		return userCache.getFriend(friendReq.getKey());
+	}
+
+	/**
+	 * 好友权限设置
+	 * @param uid 操作人
+	 */
+	@Override
+	public Boolean permissionSettings(Long uid, FriendPermissionReq request) {
+		// 1. 校验好友是否存在
+		UserFriend userFriend = userFriendDao.getByFriend(uid, request.getFriendId());
+		AssertUtil.isNotEmpty(userFriend, "你们不是好友!");
+
+		// 2. 修改权限
+		userFriend.setHideMyPosts(request.getHideMyPosts());
+		userFriend.setHideTheirPosts(request.getHideTheirPosts());
+		return userFriendDao.updateById(userFriend);
 	}
 
 	/**

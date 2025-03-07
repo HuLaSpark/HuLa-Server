@@ -75,8 +75,6 @@ public class ChatServiceImpl implements ChatService {
     private UserDao userDao;
     private ApplicationEventPublisher applicationEventPublisher;
     private UserCache userCache;
-    private MemberAdapter memberAdapter;
-    private RoomDao roomDao;
     private MessageMarkDao messageMarkDao;
     private RoomFriendDao roomFriendDao;
     private RoleService roleService;
@@ -284,11 +282,7 @@ public class ChatServiceImpl implements ChatService {
             update.setReadTime(new Date());
             contactDao.updateById(update);
         } else {
-            Contact insert = new Contact();
-            insert.setUid(uid);
-            insert.setRoomId(request.getRoomId());
-            insert.setReadTime(new Date());
-            contactDao.save(insert);
+            contactDao.save(uid, request.getRoomId());
         }
     }
 

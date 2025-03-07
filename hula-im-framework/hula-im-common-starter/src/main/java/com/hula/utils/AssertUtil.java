@@ -1,9 +1,9 @@
 package com.hula.utils;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.hula.enums.BusinessErrorEnum;
 import com.hula.enums.CommonErrorEnum;
 import com.hula.enums.ErrorEnum;
+import com.hula.enums.HttpErrorEnum;
 import com.hula.exception.BusinessException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -160,7 +160,7 @@ public class AssertUtil {
 
     private static void throwException(ErrorEnum errorEnum, Object... arg) {
         if (Objects.isNull(errorEnum)) {
-            errorEnum = BusinessErrorEnum.BUSINESS_ERROR;
+            errorEnum = HttpErrorEnum.SYSTEM_ERROR;
         }
         throw new BusinessException(errorEnum.getErrorCode(), MessageFormat.format(errorEnum.getErrorMsg(), arg));
     }

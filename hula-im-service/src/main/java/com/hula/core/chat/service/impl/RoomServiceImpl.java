@@ -3,7 +3,6 @@ package com.hula.core.chat.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.core.chat.dao.AnnouncementsDao;
@@ -106,11 +105,6 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomChatInfoPO> chatInfo(Long uid, List<Long> roomIds, int type) {
-        return roomDao.chatInfo(uid,roomIds,type);
-    }
-
-    @Override
     public void groupList(Long uid, IPage<GroupListVO> page) {
         roomDao.groupList(uid, page);
     }
@@ -193,4 +187,18 @@ public class RoomServiceImpl implements RoomService {
             roomFriendDao.restoreRoom(room.getId());
         }
     }
+
+	/**
+	 * 创建一个群成员
+	 * @param groupId 群id
+	 * @param uid     加入的人
+	 */
+	public void createGroupMember(Long groupId, Long uid) {
+		GroupMember groupMember = new GroupMember();
+		groupMember.setRemark("");
+		groupMember.setGroupId(groupId);
+		groupMember.setRole(3);
+		groupMember.setUid(uid);
+		groupMemberDao.save(groupMember);
+	}
 }
