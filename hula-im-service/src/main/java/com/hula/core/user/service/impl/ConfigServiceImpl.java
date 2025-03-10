@@ -30,6 +30,7 @@ public class ConfigServiceImpl implements ConfigService {
 	/**
 	 * 重置参数缓存数据
 	 */
+	@PostConstruct
 	public void resetConfigCache() {
 		clearConfigCache();
 		loadingConfigCache();
