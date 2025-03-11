@@ -163,7 +163,7 @@ public class ChatServiceImpl implements ChatService {
             isLast = cursorPage.getIsLast();
         }
         // 获取群成员角色ID
-        List<Long> uidList = resultList.stream().map(ChatMemberResp::getUid).collect(Collectors.toList());
+        List<Long> uidList = resultList.stream().map(item -> Long.parseLong(item.getUid())).collect(Collectors.toList());
         RoomGroup roomGroup = roomGroupDao.getByRoomId(request.getRoomId());
         Map<Long, Integer> uidMapRole = groupMemberDao.getMemberMapRole(roomGroup.getId(), uidList);
         resultList.forEach(member -> member.setRoleId(uidMapRole.get(member.getUid())));

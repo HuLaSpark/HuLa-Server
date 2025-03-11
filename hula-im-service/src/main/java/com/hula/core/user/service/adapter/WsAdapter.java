@@ -87,7 +87,7 @@ public class WsAdapter {
     private static ChatMemberResp buildOnlineInfo(User user) {
         ChatMemberResp info = new ChatMemberResp();
         BeanUtil.copyProperties(user, info);
-        info.setUid(user.getId());
+        info.setUid(user.getId().toString());
         info.setActiveStatus(ChatActiveStatusEnum.ONLINE.getStatus());
 		info.setLocPlace(Optional.ofNullable(user.getIpInfo()).map(IpInfo::getUpdateIpDetail).map(IpDetail::getCity).orElse(null));
         info.setLastOptTime(user.getLastOptTime());
@@ -97,7 +97,7 @@ public class WsAdapter {
     private static ChatMemberResp buildOfflineInfo(User user) {
         ChatMemberResp info = new ChatMemberResp();
         BeanUtil.copyProperties(user, info);
-        info.setUid(user.getId());
+        info.setUid(user.getId().toString());
         info.setActiveStatus(ChatActiveStatusEnum.OFFLINE.getStatus());
         info.setLastOptTime(user.getLastOptTime());
         return info;

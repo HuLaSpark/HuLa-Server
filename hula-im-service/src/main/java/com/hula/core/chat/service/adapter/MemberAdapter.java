@@ -37,7 +37,7 @@ public class MemberAdapter {
 			resp.setAccountCode(a.getAccountCode());
             resp.setActiveStatus(a.getActiveStatus());
             resp.setLastOptTime(a.getLastOptTime());
-            resp.setUid(a.getId());
+            resp.setUid(a.getId().toString());
             return resp;
         }).collect(Collectors.toList());
     }
@@ -46,7 +46,7 @@ public class MemberAdapter {
         Map<Long, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, user -> user));
         return list.stream().map(userFriend -> {
             ChatMemberResp resp = new ChatMemberResp();
-            resp.setUid(userFriend.getFriendUid());
+            resp.setUid(userFriend.getFriendUid().toString());
             User user = userMap.get(userFriend.getFriendUid());
             if (Objects.nonNull(user)) {
                 resp.setActiveStatus(user.getActiveStatus());

@@ -21,7 +21,7 @@ import java.util.Date;
 public class ChatMemberResp extends BaseEntity {
 
     @Schema(description = "uid")
-    private Long uid;
+    private String uid;
 
     @Schema(description = "HuLa号")
     private String accountCode;
