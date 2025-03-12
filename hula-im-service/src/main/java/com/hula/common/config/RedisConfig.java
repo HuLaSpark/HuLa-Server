@@ -75,7 +75,7 @@ public class RedisConfig {
 		config.useSingleServer()
 				.setAddress("redis://" + redisProperties.getHost() + ":" + redisProperties.getPort())
 				// redis 6.x 需要设置用户名
-//				.setUsername("default")
+				.setUsername("default")
 				// 记得打开密码设置
 				.setPassword(redisProperties.getPassword())
 				// .setPassword(null)
