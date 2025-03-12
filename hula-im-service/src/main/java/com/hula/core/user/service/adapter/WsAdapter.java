@@ -1,6 +1,7 @@
 package com.hula.core.user.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
@@ -149,4 +150,25 @@ public class WsAdapter {
 		return wsBaseResp;
 	}
 
+	/**
+	 * 屏蔽好友
+	 * @param name
+	 */
+	public static WsBaseResp<String> buildShieldContact(String name) {
+		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.SHIELD.getType());
+		wsBaseResp.setData(StrUtil.format("你已屏蔽来自{}的消息", name));
+		return wsBaseResp;
+	}
+
+	/**
+	 * 解除屏蔽好友
+	 * @param name
+	 */
+	public static WsBaseResp<String> buildUnblockContact(String name) {
+		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.UNBLOCK.getType());
+		wsBaseResp.setData(StrUtil.format("你已解除屏蔽{}的消息", name));
+		return wsBaseResp;
+	}
 }

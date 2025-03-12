@@ -4,13 +4,12 @@ import cn.hutool.core.util.ObjectUtil;
 import com.hula.enums.CommonErrorEnum;
 import com.hula.enums.ErrorEnum;
 import com.hula.enums.HttpErrorEnum;
-import com.hula.exception.BusinessException;
+import com.hula.exception.BizException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.hibernate.validator.HibernateValidator;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -159,10 +158,16 @@ public class AssertUtil {
     }
 
     private static void throwException(ErrorEnum errorEnum, Object... arg) {
+		int code = HttpErrorEnum.SYSTEM_ERROR.getCode();
+		String msg = "";
         if (Objects.isNull(errorEnum)) {
-            errorEnum = HttpErrorEnum.SYSTEM_ERROR;
+			msg = HttpErrorEnum.SYSTEM_ERROR.getMsg();
         }
-        throw new BusinessException(errorEnum.getErrorCode(), MessageFormat.format(errorEnum.getErrorMsg(), arg));
+		if (arg.length > 0) {
+			msg = arg[0].toString();
+		}
+
+        throw new BizException(code, msg);
     }
 
 

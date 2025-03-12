@@ -9,7 +9,7 @@ import java.io.Serial;
  * @author nyh
  */
 @Data
-public class BusinessException extends RuntimeException {
+public class BizException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -23,28 +23,28 @@ public class BusinessException extends RuntimeException {
      */
     protected String errorMsg;
 
-    public BusinessException() {
+    public BizException() {
         super();
     }
 
-    public BusinessException(String errorMsg) {
+    public BizException(String errorMsg) {
         super(errorMsg);
         this.errorMsg = errorMsg;
     }
 
-    public BusinessException(Integer errorCode, String errorMsg) {
+    public BizException(Integer errorCode, String errorMsg) {
         super(errorMsg);
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
     }
 
-    public BusinessException(Integer errorCode, String errorMsg, Throwable cause) {
+    public BizException(Integer errorCode, String errorMsg, Throwable cause) {
         super(errorMsg, cause);
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
     }
 
-    public BusinessException(ErrorEnum error) {
+    public BizException(ErrorEnum error) {
         super(error.getErrorMsg());
         this.errorCode = error.getErrorCode();
         this.errorMsg = error.getErrorMsg();

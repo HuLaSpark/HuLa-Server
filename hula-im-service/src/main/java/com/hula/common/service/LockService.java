@@ -1,7 +1,7 @@
 package com.hula.common.service;
 
 import com.hula.enums.CommonErrorEnum;
-import com.hula.exception.BusinessException;
+import com.hula.exception.BizException;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class LockService {
         RLock lock = redissonClient.getLock(key);
         boolean lockSuccess = lock.tryLock(waitTime, unit);
         if (!lockSuccess) {
-            throw new BusinessException(CommonErrorEnum.LOCK_LIMIT);
+            throw new BizException(CommonErrorEnum.LOCK_LIMIT);
         }
         try {
             //执行锁内的代码逻辑

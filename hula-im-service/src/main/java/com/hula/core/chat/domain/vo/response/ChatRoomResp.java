@@ -41,6 +41,6 @@ public class ChatRoomResp {
 	private Boolean top;
 	@Schema(description ="0 -> 删除好友 1 -> 解散群聊 2,3 -> 退出该群")
 	private Integer operate;
-	@Schema(description = "通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰] 2 -> 屏蔽消息 4 -> 已退出群聊")
+	@Schema(description = "通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰] 4 -> 已退出群聊")
 	private Integer muteNotification;
 }

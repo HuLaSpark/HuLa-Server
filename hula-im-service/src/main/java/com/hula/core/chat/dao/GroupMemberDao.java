@@ -223,7 +223,7 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
     }
 
 	/**
-	 * 将群员设置为屏蔽改群
+	 * 将群员设置为屏蔽该群
 	 * @param roomId
 	 * @param uid
 	 */

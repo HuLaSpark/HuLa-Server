@@ -6,6 +6,7 @@ import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.service.ChatService;
@@ -76,6 +77,13 @@ public class ContactController {
 	@Operation(summary = "免打扰")
 	public ApiResult<Boolean> setNotification(@RequestBody @Valid ContactNotificationReq request) {
 		return ApiResult.success(roomService.setNotification(RequestHolder.get().getUid(), request));
+	}
+
+	@PostMapping("setShield")
+	@Operation(summary = "屏蔽/解除屏蔽")
+	public ApiResult<Boolean> setShield(@RequestBody @Valid ContactShieldReq request) {
+		Long uid = RequestHolder.get().getUid();
+		return ApiResult.success(roomService.setShield(uid, request));
 	}
 }
 

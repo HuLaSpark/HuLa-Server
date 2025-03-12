@@ -38,6 +38,8 @@ public enum WSRespTypeEnum {
 	FEED_SEND_MSG("feedSendMsg", "朋友圈发布", null),
 	ROOM_DISSOLUTION("roomDissolution", "群解散", null),
 	ROOM_NOTIFICATION("roomNotification", "会话消息接收类型改变", null),
+	SHIELD("shield", "你已屏蔽好友的消息", null),
+	UNBLOCK("unblock", "你已解除屏蔽好友的消息", null),
     REQUEST_NEW_FRIEND("requestNewFriend", "好友申请", WSFriendApply.class),
     NEW_FRIEND_SESSION("newFriendSession", "成员变动", WSMemberChange.class),
     OFFLINE("offline", "下线通知", WSOfflineNotify.class),

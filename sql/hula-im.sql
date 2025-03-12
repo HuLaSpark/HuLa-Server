@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 04/03/2025 10:46:02
+ Date: 12/03/2025 19:20:03
 */
 
 SET NAMES utf8mb4;
@@ -116,6 +116,7 @@ CREATE TABLE `contact`  (
   `uid` bigint NOT NULL COMMENT 'uid',
   `room_id` bigint NOT NULL COMMENT '房间id',
   `mute_notification` tinyint NOT NULL DEFAULT 0 COMMENT '免打扰',
+  `shield` tinyint NOT NULL DEFAULT 0 COMMENT '屏蔽会话',
   `read_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '阅读到的时间',
   `top` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
   `hide` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
@@ -133,8 +134,8 @@ CREATE TABLE `contact`  (
 -- ----------------------------
 -- Records of contact
 -- ----------------------------
-INSERT INTO `contact` VALUES (1, 20018, 1, 0, '2024-11-16 13:10:46.646', 0, 0, NULL, NULL, '2024-11-16 12:12:49.035', '2025-02-25 15:07:03.944');
-INSERT INTO `contact` VALUES (2, 20000, 1, 0, '2025-02-27 18:17:15.866', 0, 0, NULL, NULL, '2024-11-16 12:12:49.171', '2025-02-27 18:17:15.903');
+INSERT INTO `contact` VALUES (1, 20018, 1, 0, 0, '2024-11-16 13:10:46.646', 0, 0, NULL, NULL, '2024-11-16 12:12:49.035', '2025-02-25 15:07:03.944');
+INSERT INTO `contact` VALUES (2, 20000, 1, 0, 0, '2025-02-27 18:17:15.866', 0, 0, NULL, NULL, '2024-11-16 12:12:49.171', '2025-02-27 18:17:15.903');
 
 -- ----------------------------
 -- Table structure for feed
@@ -149,7 +150,7 @@ CREATE TABLE `feed`  (
   `created_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uid`(`u_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '朋友圈表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '朋友圈表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of feed
@@ -165,7 +166,7 @@ CREATE TABLE `feed_media`  (
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci NOT NULL COMMENT '图片或视频的路径',
   `sort` int NOT NULL COMMENT '排序',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '朋友圈资源表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '朋友圈资源表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of feed_media
@@ -181,7 +182,7 @@ CREATE TABLE `feed_target`  (
   `feed_id` bigint NOT NULL COMMENT '朋友圈id',
   `target_id` bigint NOT NULL COMMENT '标签id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '朋友圈可见表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '朋友圈可见表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of feed_target
