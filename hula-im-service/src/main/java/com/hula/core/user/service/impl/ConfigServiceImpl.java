@@ -40,7 +40,7 @@ public class ConfigServiceImpl implements ConfigService {
 	 * 清空参数缓存数据
 	 */
 	public void clearConfigCache() {
-		RedisUtils.hdel(RedisKey.CONFIG_KEY);
+		RedisUtils.del(RedisKey.CONFIG_KEY);
 	}
 
 	/**
