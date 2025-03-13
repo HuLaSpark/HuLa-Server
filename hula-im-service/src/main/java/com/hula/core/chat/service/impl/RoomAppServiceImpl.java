@@ -595,9 +595,13 @@ public class RoomAppServiceImpl implements RoomAppService {
                     RoomBaseInfo roomBaseInfo = roomBaseInfoMap.get(roomId);
 					Contact contact = contactMap.get(StrUtil.format("{}_{}", uid, roomId));
 					if(ObjectUtil.isNotNull(contact)){
+						resp.setHide(contact.getHide());
+						resp.setShield(contact.getShield());
 						resp.setMuteNotification(contact.getMuteNotification());
 						resp.setTop(contact.getTop());
 					} else {
+						resp.setHide(true);
+						resp.setShield(true);
 						resp.setMuteNotification(2);
 						resp.setTop(false);
 					}
