@@ -117,4 +117,17 @@ public class MessageAdapter {
 		wsBaseResp.setData(resp);
 		return wsBaseResp;
 	}
+
+	/**
+	 * 屏蔽/解除好友
+	 * @param name
+	 */
+	public static ChatMessageReq buildShieldContact(String name, Long roomId, Boolean state) {
+		ChatMessageReq chatMessageReq = new ChatMessageReq();
+		chatMessageReq.setRoomId(roomId);
+		chatMessageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
+		chatMessageReq.setBody(String.format("你已{}的消息", state?"屏蔽":"解除" + name));
+		return chatMessageReq;
+	}
+
 }

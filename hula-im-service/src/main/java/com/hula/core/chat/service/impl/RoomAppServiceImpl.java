@@ -353,7 +353,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		// 2. 修改会话通知类型并通知其他终端
 		contact.setMuteNotification(request.getType());
 
-		// 3.通知所有设备我已经屏蔽/解除这个房间
+		// 3.通知所有设备我已经开启/关闭这个房间的免打扰
 		pushService.sendPushMsg(WsAdapter.buildContactNotification(request) , uid, uid);
 		return contactDao.updateById(contact);
 	}
@@ -368,7 +368,9 @@ public class RoomAppServiceImpl implements RoomAppService {
 		Room room = roomCache.get(request.getRoomId());
 		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
 			// 1. 把群成员的信息设置为禁止
-			groupMemberDao.setMemberDeFriend(request.getRoomId(), uid, request.getState());
+			RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
+			groupMemberDao.setMemberDeFriend(roomGroup.getId(), uid, request.getState());
+			chatService.sendMsg(RoomAdapter.buildShieldGroupMessage(roomGroup, request.getState()), uid);
 		} else {
 			// 2. 把两个人的房间全部设置为禁止
 			RoomFriend roomFriend = roomFriendCache.get(request.getRoomId());
@@ -376,11 +378,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 			// 3. 通知所有设备我已经屏蔽这个房间
 			User userInfo = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1());
-			if(request.getState()){
-				pushService.sendPushMsg(WsAdapter.buildShieldContact(userInfo.getName()) , uid, uid);
-			} else {
-				pushService.sendPushMsg(WsAdapter.buildUnblockContact(userInfo.getName()) , uid, uid);
-			}
+			chatService.sendMsg(MessageAdapter.buildShieldContact(userInfo.getName(), request.getRoomId(), request.getState()), uid);
 		}
 
 		roomFriendCache.delete(request.getRoomId());
