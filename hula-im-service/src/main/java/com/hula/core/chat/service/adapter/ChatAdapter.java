@@ -45,7 +45,8 @@ public class ChatAdapter {
         roomFriend.setUid1(collect.get(0));
         roomFriend.setUid2(collect.get(1));
         roomFriend.setRoomKey(generateRoomKey(uidList));
-        roomFriend.setStatus(NormalOrNoEnum.NORMAL.getStatus());
+		roomFriend.setDeFriend1(false);
+		roomFriend.setDeFriend2(false);
         return roomFriend;
     }
 

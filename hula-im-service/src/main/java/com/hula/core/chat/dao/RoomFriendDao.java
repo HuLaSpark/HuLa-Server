@@ -26,14 +26,16 @@ public class RoomFriendDao extends ServiceImpl<RoomFriendMapper, RoomFriend> {
     public void restoreRoom(Long id) {
         lambdaUpdate()
                 .eq(RoomFriend::getId, id)
-                .set(RoomFriend::getStatus, NormalOrNoEnum.NORMAL.getStatus())
+				.set(RoomFriend::getDeFriend1, NormalOrNoEnum.NORMAL.getStatus())
+				.set(RoomFriend::getDeFriend2, NormalOrNoEnum.NORMAL.getStatus())
                 .update();
     }
 
     public void disableRoom(String key) {
         lambdaUpdate()
                 .eq(RoomFriend::getRoomKey, key)
-                .set(RoomFriend::getStatus, NormalOrNoEnum.NOT_NORMAL.getStatus())
+				.set(RoomFriend::getDeFriend1, NormalOrNoEnum.NOT_NORMAL.getStatus())
+				.set(RoomFriend::getDeFriend2, NormalOrNoEnum.NOT_NORMAL.getStatus())
                 .update();
     }
 

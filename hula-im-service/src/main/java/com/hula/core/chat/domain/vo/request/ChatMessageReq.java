@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotNull;
 
-
 /**
  * 聊天信息点播
  * @author nyh
@@ -30,4 +29,6 @@ public class ChatMessageReq {
     @NotNull
     private Object body;
 
+	@Schema(description ="跳过消息校验")
+	private Boolean skip = false;
 }

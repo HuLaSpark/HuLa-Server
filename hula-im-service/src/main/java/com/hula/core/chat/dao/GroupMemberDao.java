@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.hula.core.chat.domain.enums.GroupRoleEnum.ADMIN_LIST;
+import static com.hula.core.chat.domain.enums.GroupRoleEnum.ROLE_LIST;
 
 
 /**
@@ -68,14 +68,14 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
      * @param uidList 用户列表
      * @return 成员群角色列表
      */
-    public Map<Long, Integer> getMemberMapRole(Long groupId, List<Long> uidList) {
+    public Map<String, Integer> getMemberMapRole(Long groupId, List<Long> uidList) {
         List<GroupMember> list = lambdaQuery()
                 .eq(GroupMember::getGroupId, groupId)
                 .in(GroupMember::getUid, uidList)
-                .in(GroupMember::getRole, ADMIN_LIST)
+                .in(GroupMember::getRole, ROLE_LIST)
                 .select(GroupMember::getUid, GroupMember::getRole)
                 .list();
-        return list.stream().collect(Collectors.toMap(GroupMember::getUid, GroupMember::getRole));
+        return list.stream().collect(Collectors.toMap(member -> String.valueOf(member.getUid()), GroupMember::getRole));
     }
 
 	/**

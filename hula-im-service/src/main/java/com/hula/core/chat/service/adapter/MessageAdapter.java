@@ -125,8 +125,9 @@ public class MessageAdapter {
 	public static ChatMessageReq buildShieldContact(String name, Long roomId, Boolean state) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
+		chatMessageReq.setSkip(true);
 		chatMessageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
-		chatMessageReq.setBody(String.format("你已{}的消息", state?"屏蔽":"解除" + name));
+		chatMessageReq.setBody(String.format("你已%s的消息", (state?"屏蔽":"解除") + name));
 		return chatMessageReq;
 	}
 

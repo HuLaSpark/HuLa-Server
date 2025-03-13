@@ -374,7 +374,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		} else {
 			// 2. 把两个人的房间全部设置为禁止
 			RoomFriend roomFriend = roomFriendCache.get(request.getRoomId());
-			roomService.updateState(roomFriend.getUid1(), roomFriend.getUid2(), request.getState());
+			roomService.updateState(uid.equals(roomFriend.getUid1()), roomFriend.getUid1(), roomFriend.getUid2(), request.getState());
 
 			// 3. 通知所有设备我已经屏蔽这个房间
 			User userInfo = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1());

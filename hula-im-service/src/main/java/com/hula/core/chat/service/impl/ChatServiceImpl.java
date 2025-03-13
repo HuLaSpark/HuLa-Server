@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.ObjectUtil;
 import com.hula.common.annotation.RedissonLock;
@@ -43,6 +44,7 @@ import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.service.RoleService;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.exception.BizException;
 import com.hula.utils.AssertUtil;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
@@ -92,7 +94,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Long sendMsg(ChatMessageReq request, Long uid) {
-        check(request, uid);
+		check(request.getSkip(), request.getRoomId(), uid);
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(request.getMsgType());
         Long msgId = msgHandler.checkAndSaveMsg(request, uid);
         // 发布消息发送事件
@@ -100,24 +102,31 @@ public class ChatServiceImpl implements ChatService {
         return msgId;
     }
 
-    private void check(ChatMessageReq request, Long uid) {
-        Room room = roomCache.get(request.getRoomId());
-        if (ObjectUtil.isNull(room)) {
-			throw new RuntimeException("您已经被移除该群!");
-        }
-        if (room.isRoomGroup()) {
-            RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
-            GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
-            AssertUtil.isNotEmpty(member, "您已经被移除该群");
-			if(member.getDeFriend()){
-				throw new RuntimeException("您已经屏蔽群聊!");
+	private void checkDeFriend(Long roomId, Long uid) {
+		Room room = roomCache.get(roomId);
+		if (room.isRoomGroup()) {
+			RoomGroup roomGroup = roomGroupCache.get(roomId);
+			GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
+			Assert.notNull(member, "您已经被移除该群");
+			Assert.isFalse(member.getDeFriend(), "您已经屏蔽群聊!");
+		} else {
+			RoomFriend roomFriend = roomFriendDao.getByRoomId(roomId);
+			boolean u1State = uid.equals(roomFriend.getUid1());
+			boolean u2State = uid.equals(roomFriend.getUid2());
+
+			if (roomFriend.getDeFriend1() && u1State || roomFriend.getDeFriend2() && u2State){
+				throw new BizException("已屏蔽对方!");
 			}
-        } else {
-			RoomFriend roomFriend = roomFriendDao.getByRoomId(request.getRoomId());
-			AssertUtil.isNotEmpty(roomFriend, "你们之间不是好友!");
-			AssertUtil.equal(NormalOrNoEnum.NORMAL.getStatus(), roomFriend.getStatus(), "您已经被对方拉黑");
-			AssertUtil.isTrue(uid.equals(roomFriend.getUid1()) || uid.equals(roomFriend.getUid2()), "您已经被对方拉黑");
+
+			Assert.isTrue(u1State || u2State, "消息已发送, 但对方拒收了");
 		}
+	}
+
+    private void check(Boolean skip, Long roomId, Long uid) {
+		if(skip){
+			return;
+		}
+		checkDeFriend(roomId, uid);
     }
 
     @Override
@@ -165,7 +174,7 @@ public class ChatServiceImpl implements ChatService {
         // 获取群成员角色ID
         List<Long> uidList = resultList.stream().map(item -> Long.parseLong(item.getUid())).collect(Collectors.toList());
         RoomGroup roomGroup = roomGroupDao.getByRoomId(request.getRoomId());
-        Map<Long, Integer> uidMapRole = groupMemberDao.getMemberMapRole(roomGroup.getId(), uidList);
+        Map<String, Integer> uidMapRole = groupMemberDao.getMemberMapRole(roomGroup.getId(), uidList);
         resultList.forEach(member -> member.setRoleId(uidMapRole.get(member.getUid())));
         // 组装结果
         return new CursorPageBaseResp<>(ChatMemberHelper.generateCursor(activeStatusEnum, timeCursor),
@@ -174,8 +183,10 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public CursorPageBaseResp<ChatMessageResp> getMsgPage(ChatMessagePageReq request, Long receiveUid) {
-        // 用最后一条消息id，来限制被踢出的人能看见的最大一条消息
+		// 1. 用最后一条消息id，来限制被踢出的人能看见的最大一条消息
         Long lastMsgId = getLastMsgId(request.getRoomId(), receiveUid);
+		// 2. 判断我屏蔽会话没有权限
+		check(request.getSkip(), request.getRoomId(), receiveUid);
         CursorPageBaseResp<Message> cursorPage = messageDao.getCursorPage(request.getRoomId(), request, lastMsgId);
         if (cursorPage.isEmpty()) {
             return CursorPageBaseResp.empty();
