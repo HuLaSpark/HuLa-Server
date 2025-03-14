@@ -233,7 +233,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		// 3.通知群里所有人群信息修改了
 		if(success){
 			roomGroupCache.evictGroup(roomGroup.getAccountCode());
-			List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildRoomGroupChangeWS(roomGroup.getRoomId(), roomGroup.getName(), roomGroup.getAvatar()), memberUidList, uid);
 		}
 		return success;
@@ -254,7 +254,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 		// 3.通知群里所有人我的信息改变了
 		if(!equals && success){
-			List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), request.getMyName()), memberUidList, uid);
 		}
 		return success;
@@ -311,7 +311,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 			// 2.刷新最新的已读数量，通知所有人有人对 announcementId 已读了
 			roomAnnouncementsCache.add(param.getAnnouncementId(), uid);
 
-			List<Long> memberUidList = groupMemberCache.getMemberUidList(param.getRoomId());
+			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(param.getRoomId());
 			pushService.sendPushMsg(MessageAdapter.buildReadRoomGroupAnnouncement(new ReadAnnouncementsResp(uid, roomAnnouncementsCache.get(param.getAnnouncementId()))), memberUidList, uid);
 		}
 		return success;
@@ -404,12 +404,21 @@ public class RoomAppServiceImpl implements RoomAppService {
             List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
             onlineNum = userDao.getOnlineCount(memberUidList).longValue();
         }
+
+		// 获取群成员数、备注、我的群名称
+		Integer memberNum = groupMemberCache.getMemberUidList(roomId).size();
+		GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
+
         GroupRoleAPPEnum groupRole = getGroupRole(uid, roomGroup, room);
         return MemberResp.builder()
                 .avatar(roomGroup.getAvatar())
                 .roomId(roomId)
                 .groupName(roomGroup.getName())
                 .onlineNum(onlineNum)
+				.memberNum(memberNum)
+				.accountCode(roomGroup.getAccountCode())
+				.remark(member.getRemark())
+				.myName(member.getMyName())
                 .role(groupRole.getType())
                 .build();
     }
@@ -469,7 +478,10 @@ public class RoomAppServiceImpl implements RoomAppService {
         AssertUtil.isNotEmpty(member, "用户已经移除");
         groupMemberDao.removeById(member.getId());
         // 发送移除事件告知群成员
-        List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+        List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
+		if(!memberUidList.contains(request.getUid())){
+			memberUidList.add(request.getUid());
+		}
         WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
         pushService.sendPushMsg(ws, memberUidList, uid);
         groupMemberCache.evictMemberUidList(room.getId());

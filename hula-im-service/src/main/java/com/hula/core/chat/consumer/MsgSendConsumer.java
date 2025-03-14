@@ -68,7 +68,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
         } else {
             List<Long> memberUidList = new ArrayList<>();
             if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
-                memberUidList = groupMemberCache.getMemberUidList(room.getId());
+                memberUidList = groupMemberCache.getMemberExceptUidList(room.getId());
             } else if (Objects.equals(room.getType(), RoomTypeEnum.FRIEND.getType())) {
                 // 单聊对象, 对单人推送
                 RoomFriend roomFriend = roomFriendDao.getByRoomId(room.getId());

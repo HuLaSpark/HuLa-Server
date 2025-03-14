@@ -24,4 +24,12 @@ public class MemberResp {
     private Long onlineNum;//在线人数
     @Schema(description ="成员角色 1群主 2管理员 3普通成员 4踢出群聊")
     private Integer role;
+	@Schema(description = "群号")
+	private String accountCode;
+	@Schema(description = "群成员数")
+	private Integer memberNum;
+	@Schema(description = "群备注")
+	private String remark;
+	@Schema(description = "在这个群的昵称")
+	private String myName;
 }

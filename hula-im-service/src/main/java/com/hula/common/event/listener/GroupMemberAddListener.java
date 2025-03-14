@@ -67,7 +67,7 @@ public class GroupMemberAddListener {
     public void sendChangePush(GroupMemberAddEvent event) {
         List<GroupMember> memberList = event.getMemberList();
         RoomGroup roomGroup = event.getRoomGroup();
-        List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+        List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
         List<Long> uidList = memberList.stream().map(GroupMember::getUid).collect(Collectors.toList());
         List<User> users = userDao.listByIds(uidList);
         users.forEach(user -> {
