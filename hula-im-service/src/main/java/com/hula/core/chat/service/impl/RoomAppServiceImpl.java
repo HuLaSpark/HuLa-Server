@@ -365,22 +365,23 @@ public class RoomAppServiceImpl implements RoomAppService {
 			return false;
 		}
 
+		String name;
 		Room room = roomCache.get(request.getRoomId());
 		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
 			// 1. 把群成员的信息设置为禁止
 			RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
+			name = roomGroup.getName();
 			groupMemberDao.setMemberDeFriend(roomGroup.getId(), uid, request.getState());
-			chatService.sendMsg(RoomAdapter.buildShieldGroupMessage(roomGroup, request.getState()), uid);
 		} else {
 			// 2. 把两个人的房间全部设置为禁止
 			RoomFriend roomFriend = roomFriendCache.get(request.getRoomId());
 			roomService.updateState(uid.equals(roomFriend.getUid1()), roomFriend.getUid1(), roomFriend.getUid2(), request.getState());
 
-			// 3. 通知所有设备我已经屏蔽这个房间
-			User userInfo = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1());
-			chatService.sendMsg(MessageAdapter.buildShieldContact(userInfo.getName(), request.getRoomId(), request.getState()), uid);
+			name = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1()).getName();
 		}
 
+		// 3. 通知所有设备我已经屏蔽这个房间
+		pushService.sendPushMsg(WsAdapter.buildShieldContact(request.getState(), name), uid, uid);
 		roomFriendCache.delete(request.getRoomId());
 		contact.setShield(request.getState());
 		return contactDao.updateById(contact);

@@ -73,19 +73,6 @@ public class RoomAdapter {
     }
 
 	/**
-	 * 屏蔽群的消息
-	 * @return
-	 */
-	public static ChatMessageReq buildShieldGroupMessage(RoomGroup roomGroup, Boolean state) {
-		ChatMessageReq chatMessageReq = new ChatMessageReq();
-		chatMessageReq.setRoomId(roomGroup.getRoomId());
-		chatMessageReq.setSkip(true);
-		chatMessageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
-		chatMessageReq.setBody(String.format("您已%s群聊", (state?"屏蔽":"解除") + roomGroup.getName()));
-		return chatMessageReq;
-	}
-
-	/**
 	 * 创建群聊基础信息变动ws
 	 */
 	public static WsBaseResp<ChatRoomGroupChange> buildRoomGroupChangeWS(Long roomId, String name, String avatar) {
