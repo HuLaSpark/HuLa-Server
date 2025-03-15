@@ -40,7 +40,7 @@ public class ChatMessageResp extends BaseEntity {
         private Date sendTime;
         @Schema(description ="消息类型 1正常文本 2.撤回消息")
         private Integer type;
-        @Schema(description ="消息内容不同的消息类型，内容体不同，见https://www.yuque.com/snab/mallcaht/rkb2uz5k1qqdmcmd")
+        @Schema(description ="消息内容不同的消息类型，内容体不同")
         private Object body;
         @Schema(description ="消息标记")
         private MessageMark messageMark;

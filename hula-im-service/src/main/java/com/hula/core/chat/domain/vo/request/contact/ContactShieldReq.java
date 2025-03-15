@@ -7,17 +7,17 @@ import lombok.Data;
 
 /**
  * Description: 会话屏蔽
- * Date: 2025-02-25 17:20:00
+ * Date: 2025-03-12 17:20:00
  */
 @Builder
 @Data
-public class ContactNotificationReq {
+public class ContactShieldReq {
 
     @NotNull(message = "请选择会话")
     @Schema(description ="房间id")
     private Long roomId;
 
-	@NotNull(message = "请选择通知类型")
-	@Schema(description ="通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰]")
-	private Integer type;
+	@NotNull(message = "请选择屏蔽状态")
+	@Schema(description = "true -> 屏蔽 false -> 正常")
+	private Boolean state;
 }

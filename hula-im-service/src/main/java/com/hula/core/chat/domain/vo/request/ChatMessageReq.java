@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotNull;
 
-
 /**
  * 聊天信息点播
  * @author nyh
@@ -26,8 +25,10 @@ public class ChatMessageReq {
     @NotNull
     private Integer msgType;
 
-    @Schema(description ="消息内容，类型不同传值不同，见https://www.yuque.com/snab/mallcaht/rkb2uz5k1qqdmcmd")
+    @Schema(description ="消息内容，类型不同传值不同")
     @NotNull
     private Object body;
 
+	@Schema(description ="跳过消息校验")
+	private Boolean skip = false;
 }

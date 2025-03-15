@@ -1,7 +1,7 @@
 package com.hula.common.handler;
 
 import com.hula.domain.vo.res.ApiResult;
-import com.hula.exception.BusinessException;
+import com.hula.exception.BizException;
 import com.hula.enums.CommonErrorEnum;
 import com.hula.exception.TokenExceedException;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +44,8 @@ public class GlobalExceptionHandler {
     /**
      * 业务异常
      */
-    @ExceptionHandler(value = BusinessException.class)
-    public ApiResult<String> businessExceptionHandler(BusinessException e) {
+    @ExceptionHandler(value = BizException.class)
+    public ApiResult<String> businessExceptionHandler(BizException e) {
         log.error(String.format("business exception！The reason is: %s", e.getMessage()), e);
         return ApiResult.fail(e.getErrorCode(), e.getMessage());
     }

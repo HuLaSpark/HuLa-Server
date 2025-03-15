@@ -91,7 +91,7 @@ public interface RoomService {
 	/**
 	 * 改变好友的消息屏蔽类型
 	 */
-	void updateState(Long uid1, Long uid2, Boolean deFriend);
+	void updateState(Boolean u1, Long uid1, Long uid2, Boolean deFriend);
 
 	/**
 	 * 创建群成员

@@ -130,7 +130,7 @@ public class RoomController {
 
 	@PostMapping("/applyGroup")
 	@Operation(summary = "申请加群")
-	public ApiResult<Boolean> applyGroup(@RequestBody RoomApplyReq request){
+	public ApiResult<Boolean> applyGroup(@Valid @RequestBody RoomApplyReq request){
 		return ApiResult.success(roomService.applyGroup(RequestHolder.get().getUid(), request));
 	}
 

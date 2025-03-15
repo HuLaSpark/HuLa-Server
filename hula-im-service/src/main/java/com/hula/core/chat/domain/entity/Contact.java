@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -54,7 +55,7 @@ public class Contact implements Serializable {
 	private Boolean top;
 
 	/**
-	 * 通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰] 2 -> 屏蔽消息
+	 * 通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰]
 	 */
 	@TableField("mute_notification")
 	private Integer muteNotification;
@@ -89,5 +90,6 @@ public class Contact implements Serializable {
     @TableField("update_time")
     private Date updateTime;
 
-
+	@Schema(description = "true -> 屏蔽 false -> 正常")
+	private Boolean shield;
 }

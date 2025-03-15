@@ -159,15 +159,16 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
-	public void updateState(Long uid1, Long uid2, Boolean deFriend) {
-		roomFriendDao.update(new UpdateWrapper<RoomFriend>().and(w -> w
-						.eq("uid1", uid1)
-						.eq("uid2", uid2)
-				)
-				.or(w -> w
-						.eq("uid1", uid2)
-						.eq("uid2", uid1)
-				).set("status", deFriend));
+	public void updateState(Boolean u1, Long uid1, Long uid2, Boolean deFriend) {
+		UpdateWrapper<RoomFriend> wrapper = new UpdateWrapper<RoomFriend>()
+				.and(w -> w.eq("uid1", uid1).eq("uid2", uid2)).or
+						(w -> w.eq("uid1", uid2).eq("uid2", uid1));
+		if(u1){
+			wrapper.set("de_friend1", deFriend);
+		} else {
+			wrapper.set("de_friend2", deFriend);
+		}
+		roomFriendDao.update(wrapper);
 	}
 
 	private RoomFriend createFriendRoom(Long roomId, List<Long> uidList) {
@@ -183,7 +184,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private void restoreRoomIfNeed(RoomFriend room) {
-        if (Objects.equals(room.getStatus(), NormalOrNoEnum.NOT_NORMAL.getStatus())) {
+        if (room.getDeFriend1() || room.getDeFriend2()) {
             roomFriendDao.restoreRoom(room.getId());
         }
     }

@@ -28,6 +28,7 @@ public enum GroupRoleEnum {
     private final String desc;
 
     public static final List<Integer> ADMIN_LIST = Arrays.asList(GroupRoleEnum.LEADER.getType(), GroupRoleEnum.MANAGER.getType());
+	public static final List<Integer> ROLE_LIST = Arrays.asList(GroupRoleEnum.LEADER.getType(), GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.MEMBER.getType());
 
     private static Map<Integer, GroupRoleEnum> cache;
 

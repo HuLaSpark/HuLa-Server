@@ -1,6 +1,5 @@
 package com.hula.core.chat.domain.vo.request;
 
-
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -23,4 +22,6 @@ public class ChatMessagePageReq extends CursorPageBaseReq {
     @NotNull
     @Schema(description ="会话id")
     private Long roomId;
+
+	private Boolean skip = false;
 }

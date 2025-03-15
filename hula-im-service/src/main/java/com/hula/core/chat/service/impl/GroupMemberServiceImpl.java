@@ -147,7 +147,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             Boolean isDelGroupMember = groupMemberDao.removeByGroupId(roomGroup.getId(), Collections.singletonList(uid));
             AssertUtil.isTrue(isDelGroupMember, CommonErrorEnum.SYSTEM_ERROR);
             // 4.8 发送移除事件告知群成员
-            List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+            List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
             WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
             pushService.sendPushMsg(ws, memberUidList, uid);
             groupMemberCache.evictMemberUidList(room.getId());

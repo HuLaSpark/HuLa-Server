@@ -7,7 +7,7 @@ import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.entity.MessageMark;
 import com.hula.core.chat.domain.enums.MessageMarkActTypeEnum;
 import com.hula.core.chat.domain.enums.MessageMarkTypeEnum;
-import com.hula.exception.BusinessException;
+import com.hula.exception.BizException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.context.ApplicationEventPublisher;
@@ -80,7 +80,7 @@ public abstract class AbstractMsgMarkStrategy {
         } else if (actType == 2) {
             return YesOrNoEnum.YES.getStatus();
         }
-        throw new BusinessException("动作类型 1确认 2取消");
+        throw new BizException("动作类型 1确认 2取消");
     }
 
 }

@@ -51,11 +51,15 @@ public class RoomFriend implements Serializable {
     @TableField("room_key")
     private String roomKey;
 
-    /**
-     * 房间状态 0正常 1禁用(删好友了禁用)
-     */
-    @TableField("status")
-    private Integer status;
+	/**
+	 * 房间状态 0正常 1屏蔽  uid1 屏蔽 uid2
+	 */
+	private Boolean deFriend1;
+
+	/**
+	 * 房间状态 0正常 1屏蔽 uid2 屏蔽 uid1
+	 */
+	private Boolean deFriend2;
 
     /**
      * 创建时间

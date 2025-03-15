@@ -13,6 +13,7 @@ import com.hula.core.chat.domain.vo.request.RoomInfoReq;
 import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.request.member.MemberAddReq;
 import com.hula.core.chat.domain.vo.request.member.MemberDelReq;
@@ -115,4 +116,10 @@ public interface RoomAppService {
 	 * 查找群聊
 	 */
 	List<RoomGroup> searchGroup(@Valid RoomGroupReq req);
+
+	/**
+	 * 屏蔽/解除屏蔽
+	 * @return
+	 */
+	Boolean setShield(Long uid, ContactShieldReq request);
 }

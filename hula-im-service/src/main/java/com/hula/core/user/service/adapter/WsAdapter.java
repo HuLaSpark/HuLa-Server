@@ -1,6 +1,7 @@
 package com.hula.core.user.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
@@ -87,7 +88,7 @@ public class WsAdapter {
     private static ChatMemberResp buildOnlineInfo(User user) {
         ChatMemberResp info = new ChatMemberResp();
         BeanUtil.copyProperties(user, info);
-        info.setUid(user.getId());
+        info.setUid(user.getId().toString());
         info.setActiveStatus(ChatActiveStatusEnum.ONLINE.getStatus());
 		info.setLocPlace(Optional.ofNullable(user.getIpInfo()).map(IpInfo::getUpdateIpDetail).map(IpDetail::getCity).orElse(null));
         info.setLastOptTime(user.getLastOptTime());
@@ -97,7 +98,7 @@ public class WsAdapter {
     private static ChatMemberResp buildOfflineInfo(User user) {
         ChatMemberResp info = new ChatMemberResp();
         BeanUtil.copyProperties(user, info);
-        info.setUid(user.getId());
+        info.setUid(user.getId().toString());
         info.setActiveStatus(ChatActiveStatusEnum.OFFLINE.getStatus());
         info.setLastOptTime(user.getLastOptTime());
         return info;
@@ -148,5 +149,4 @@ public class WsAdapter {
 		wsBaseResp.setData(req);
 		return wsBaseResp;
 	}
-
 }
