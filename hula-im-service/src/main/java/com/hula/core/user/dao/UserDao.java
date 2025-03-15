@@ -93,6 +93,6 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 	}
 
 	public List<ChatMemberListResp> getFriend(String key) {
-		return baseMapper.getFriend(key);
+		return baseMapper.getFriend("%" + key + "%");
 	}
 }

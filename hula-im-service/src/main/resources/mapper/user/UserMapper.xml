@@ -11,6 +11,6 @@
     <select id="getFriend" resultType="com.hula.core.chat.domain.vo.response.ChatMemberListResp">
         SELECT id AS uid, name, avatar, account_code
         FROM user
-        WHERE account_code = #{key}
+        WHERE account_code like #{key}
     </select>
 </mapper>

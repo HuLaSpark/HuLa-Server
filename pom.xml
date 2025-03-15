@@ -21,6 +21,7 @@
         <hutool.version>5.8.27</hutool.version>
         <mysql-connector.version>8.2.0</mysql-connector.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <qiniu.version>7.15.1</qiniu.version>
         <logstash-logback.version>7.2</logstash-logback.version>
         <minio.version>8.4.5</minio.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -168,7 +169,7 @@
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
-            <!-- 阿里云OSS -->
+            <!-- minio OSS -->
             <dependency>
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
@@ -178,6 +179,12 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
                 <version>${redisson-spring-boot-starter.version}</version>
+            </dependency>
+            <!--   七牛云OSS     -->
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu.version}</version>
             </dependency>
             <!--   maven模块版本     -->
             <dependency>
