@@ -46,6 +46,6 @@ public class EmojisMsgHandler extends AbstractMsgHandler<EmojisMsgDTO> {
 
     @Override
     public String showContactMsg(Message msg) {
-        return "[表情包]";
+        return "[动画表情]";
     }
 }
