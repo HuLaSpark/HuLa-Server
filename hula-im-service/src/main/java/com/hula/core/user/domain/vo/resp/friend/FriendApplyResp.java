@@ -1,11 +1,11 @@
 package com.hula.core.user.domain.vo.resp.friend;
 
-import com.hula.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 
 /**
@@ -16,12 +16,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendApplyResp extends BaseEntity {
+public class FriendApplyResp {
     @Schema(description ="申请id")
     private Long applyId;
 
     @Schema(description ="申请人uid")
     private Long uid;
+
+	@Schema(description = "被申请人uid")
+	private Long targetId;
 
     @Schema(description ="申请类型 1加好友")
     private Integer type;
@@ -31,4 +34,7 @@ public class FriendApplyResp extends BaseEntity {
 
     @Schema(description ="申请状态 1待审批 2同意")
     private Integer status;
+
+	@Schema(description ="申请时间")
+	private LocalDateTime createTime;
 }
