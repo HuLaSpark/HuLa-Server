@@ -246,7 +246,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		GroupMember member = verifyGroupPermissions(uid, roomGroup);
 
 		// 2.修改我的信息
-		boolean equals = member.getMyName().equals(request.getMyName());
+		boolean equals = member.getMyName().equals(StrUtil.isEmpty(request.getMyName())? "": request.getMyName());
 
 		member.setRemark(request.getRemark());
 		member.setMyName(request.getMyName());
