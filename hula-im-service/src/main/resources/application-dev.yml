@@ -17,7 +17,7 @@ HuLa-IM:
   JWT: #JWT配置
     SECRET: dsfsdfsdfsdfsd
   ROCKETMQ: #rocketmq配置
-    NAME-SERVER: 127.0.0.1:9876
+    NAME-SERVER: 127.0.0.1:9876  # 修改为与broker.conf一致
     ACCESS-KEY: nongyehong
     SECRET-KEY: 919919919
 
