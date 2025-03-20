@@ -2,7 +2,6 @@ package com.hula.core.chat.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import java.util.Date;
 
 /**
@@ -40,4 +39,10 @@ public class RoomBaseInfo {
 
 	@Schema(description ="我在群里的角色")
 	private Integer role;
+
+	@Schema(description ="群备注")
+	private String remark;
+
+	@Schema(description ="我的群名称")
+	private String myName;
 }

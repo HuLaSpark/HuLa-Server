@@ -88,6 +88,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     
     private ContactDao contactDao;
     private RoomCache roomCache;
+	private GroupMemberInfoCache groupMemberInfoCache;
     private RoomGroupCache roomGroupCache;
     private RoomFriendCache roomFriendCache;
     private UserInfoCache userInfoCache;
@@ -625,6 +626,8 @@ public class RoomAppServiceImpl implements RoomAppService {
                     resp.setType(roomBaseInfo.getType());
                     resp.setName(roomBaseInfo.getName());
 					resp.setOperate(roomBaseInfo.getRole());
+					resp.setRemark(roomBaseInfo.getRemark());
+					resp.setMyName(roomBaseInfo.getMyName());
                     Message message = msgMap.get(room.getLastMsgId());
                     if (Objects.nonNull(message)) {
                         AbstractMsgHandler strategyNoNull = MsgHandlerFactory.getStrategyNoNull(message.getType());
@@ -672,8 +675,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private Map<Long, RoomBaseInfo> getRoomBaseInfoMap(List<Long> roomIds, Long uid) {
         Map<Long, Room> roomMap = roomCache.getBatch(roomIds);
         // 房间根据好友和群组类型分组
-        Map<Integer, List<Long>> groupRoomIdMap = roomMap.values().stream().filter(Objects::nonNull).collect(Collectors.groupingBy(Room::getType,
-                Collectors.mapping(Room::getId, Collectors.toList())));
+        Map<Integer, List<Long>> groupRoomIdMap = roomMap.values().stream().filter(Objects::nonNull).collect(Collectors.groupingBy(Room::getType, Collectors.mapping(Room::getId, Collectors.toList())));
         // 获取群组信息
         List<Long> groupRoomId = groupRoomIdMap.get(RoomTypeEnum.GROUP.getType());
         Map<Long, RoomGroup> roomInfoBatch = roomGroupCache.getBatch(groupRoomId);
@@ -694,8 +696,10 @@ public class RoomAppServiceImpl implements RoomAppService {
                 roomBaseInfo.setName(roomGroup.getName());
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
 				roomBaseInfo.setAccountCode(roomGroup.getAccountCode());
+				GroupMember member = groupMemberInfoCache.get(roomBaseInfo.getId());
+				roomBaseInfo.setMyName(member.getMyName());
+				roomBaseInfo.setRemark(member.getRemark());
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
-				GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
 				if(ObjectUtil.isNotNull(member)){
 					roomBaseInfo.setRole(member.getRole());
 				}else {
