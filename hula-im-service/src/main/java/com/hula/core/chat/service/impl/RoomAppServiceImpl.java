@@ -256,7 +256,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		// 3.通知群里所有人我的信息改变了
 		if(!equals && success){
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
-			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), request.getMyName()), memberUidList, uid);
+			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), uid, request.getMyName()), memberUidList, uid);
 		}
 		return success;
 	}
