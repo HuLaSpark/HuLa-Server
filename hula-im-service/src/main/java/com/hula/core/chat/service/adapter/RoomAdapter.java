@@ -78,17 +78,17 @@ public class RoomAdapter {
 	public static WsBaseResp<ChatRoomGroupChange> buildRoomGroupChangeWS(Long roomId, String name, String avatar) {
 		WsBaseResp<ChatRoomGroupChange> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.ROOM_INFO_CHANGE.getType());
-		wsBaseResp.setData(new ChatRoomGroupChange(roomId, name, avatar));
+		wsBaseResp.setData(new ChatRoomGroupChange(roomId.toString(), name, avatar));
 		return wsBaseResp;
 	}
 
 	/**
 	 * 创建群聊我的信息变动ws
 	 */
-	public static WsBaseResp<ChatMyRoomGroupChange> buildMyRoomGroupChangeWS(Long roomId, String name) {
+	public static WsBaseResp<ChatMyRoomGroupChange> buildMyRoomGroupChangeWS(Long roomId, Long uid, String name) {
 		WsBaseResp<ChatMyRoomGroupChange> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.MY_ROOM_INFO_CHANGE.getType());
-		wsBaseResp.setData(new ChatMyRoomGroupChange(roomId, name));
+		wsBaseResp.setData(new ChatMyRoomGroupChange(roomId.toString(), uid.toString(), name));
 		return wsBaseResp;
 	}
 
