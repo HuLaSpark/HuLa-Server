@@ -697,12 +697,14 @@ public class RoomAppServiceImpl implements RoomAppService {
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
 				roomBaseInfo.setAccountCode(roomGroup.getAccountCode());
 				GroupMember member = groupMemberInfoCache.get(roomBaseInfo.getId());
-				roomBaseInfo.setMyName(member.getMyName());
-				roomBaseInfo.setRemark(member.getRemark());
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
 				if(ObjectUtil.isNotNull(member)){
+					roomBaseInfo.setMyName(member.getMyName());
+					roomBaseInfo.setRemark(member.getRemark());
 					roomBaseInfo.setRole(member.getRole());
 				}else {
+					roomBaseInfo.setMyName("会话异常");
+					roomBaseInfo.setRemark("会话异常");
 					roomBaseInfo.setRole(0);
 				}
             } else if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.FRIEND) {
