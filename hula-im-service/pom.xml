@@ -63,6 +63,12 @@
             <groupId>com.squareup.okio</groupId>
             <artifactId>okio</artifactId>
         </dependency>
+        <!-- 集成邮箱服务 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
         <!-- 七牛云依赖 -->
         <dependency>
             <groupId>com.qiniu</groupId>

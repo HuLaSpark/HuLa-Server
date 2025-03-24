@@ -47,6 +47,12 @@ public class UserController {
         return ApiResult.success();
     }
 
+	@PostMapping("/bindEmail")
+	@Operation(summary ="绑定邮箱")
+	public ApiResult<Boolean> bindEmail(@Valid @RequestBody BindEmailReq req) {
+		return ApiResult.success(userService.bindEmail(RequestHolder.get().getUid(), req));
+	}
+
     @PostMapping("/summary/userInfo/batch")
     @Operation(summary ="用户聚合信息-返回的代表需要刷新的")
     public ApiResult<List<SummeryInfoDTO>> getSummeryUserInfo(@Valid @RequestBody SummeryInfoReq req) {

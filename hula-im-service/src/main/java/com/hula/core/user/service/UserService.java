@@ -5,6 +5,7 @@ import com.hula.core.user.domain.dto.SummeryInfoDTO;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -76,4 +77,12 @@ public interface UserService {
 	 * @return
 	 */
 	Boolean changeUserState(Long uid, Long userStateId);
+
+	/**
+	 * 绑定邮箱
+	 * @param uid
+	 * @param req
+	 * @return
+	 */
+	Boolean bindEmail(Long uid, BindEmailReq req);
 }

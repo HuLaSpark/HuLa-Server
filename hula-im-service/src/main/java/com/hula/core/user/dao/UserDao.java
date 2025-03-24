@@ -67,7 +67,6 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .in(User::getId, uids)
                 .select(User::getId, User::getActiveStatus, User::getName, User::getAvatar)
                 .list();
-
     }
 
     public Integer getOnlineCount() {
@@ -94,5 +93,12 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 
 	public List<ChatMemberListResp> getFriend(String key) {
 		return baseMapper.getFriend("%" + key + "%");
+	}
+
+	public Boolean existsByEmailAndIdNot(Long uid, String email) {
+		return baseMapper.selectCount(new LambdaQueryWrapper<User>()
+				.eq(User::getEmail, email)
+				.ne(User::getId, uid)
+		) > 0;
 	}
 }

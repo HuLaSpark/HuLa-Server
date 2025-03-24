@@ -20,6 +20,9 @@ HuLa-IM:
     NAME-SERVER: 127.0.0.1:9876  # 修改为与broker.conf一致
     ACCESS-KEY: nongyehong
     SECRET-KEY: 919919919
+  mail:
+    username: nongyehong919@163.com  # 发件人邮箱
+    password: ZDiFAsKBBJSZVBBR    # 邮箱SMTP授权码
 
 uid:
   database:

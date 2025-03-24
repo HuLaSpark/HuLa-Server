@@ -48,6 +48,17 @@ spring:
       password: ${HuLa-IM.REDIS.PAW}
       # 连接超时时间
       timeout: 1800000
+  mail:
+    host: smtp.163.com  # 网易邮箱SMTP服务器
+    port: 465            # SSL端口
+    username: ${HuLa-IM.mail.username}  # 发件人邮箱
+    password: ${HuLa-IM.mail.password}    # 邮箱SMTP授权码
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true
 
   # jackson配置
   jackson:
