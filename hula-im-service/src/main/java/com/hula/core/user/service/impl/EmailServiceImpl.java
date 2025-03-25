@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
 
 		// 2. 发送邮箱验证码到用户邮箱
 		String emailCode = ToolsUtil.randomCount(100000, 999999).toString();
-		RedisUtils.hset("emailCode", req.getUuid(), emailCode);
+		RedisUtils.hset("emailCode", req.getUuid(), emailCode, 300);
 
 		SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
