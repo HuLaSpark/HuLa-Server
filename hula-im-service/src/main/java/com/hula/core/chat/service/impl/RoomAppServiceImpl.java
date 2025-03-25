@@ -233,7 +233,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 		// 3.通知群里所有人群信息修改了
 		if(success){
-			roomGroupCache.evictGroup(roomGroup.getAccountCode());
+			roomGroupCache.evictGroup(roomGroup.getAccount());
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildRoomGroupChangeWS(roomGroup.getRoomId(), roomGroup.getName(), roomGroup.getAvatar()), memberUidList, uid);
 		}
@@ -390,7 +390,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 	@Override
 	public List<RoomGroup> searchGroup(RoomGroupReq req) {
-		return roomGroupCache.searchGroup(req.getAccountCode());
+		return roomGroupCache.searchGroup(req.getAccount());
 	}
 
 	@Override
@@ -418,7 +418,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                 .groupName(roomGroup.getName())
                 .onlineNum(onlineNum)
 				.memberNum(memberNum)
-				.accountCode(roomGroup.getAccountCode())
+				.account(roomGroup.getAccount())
 				.remark(member.getRemark())
 				.myName(member.getMyName())
                 .role(groupRole.getType())
@@ -620,7 +620,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 					resp.setId(room.getId());
                     resp.setAvatar(roomBaseInfo.getAvatar());
                     resp.setRoomId(roomId);
-					resp.setAccountCode(room.getAccountCode());
+					resp.setAccount(room.getAccount());
                     resp.setActiveTime(room.getActiveTime());
                     resp.setHotFlag(roomBaseInfo.getHotFlag());
                     resp.setType(roomBaseInfo.getType());
@@ -695,7 +695,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 				roomBaseInfo.setId(roomGroup.getId());
                 roomBaseInfo.setName(roomGroup.getName());
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
-				roomBaseInfo.setAccountCode(roomGroup.getAccountCode());
+				roomBaseInfo.setAccount(roomGroup.getAccount());
 				GroupMember member = groupMemberInfoCache.get(roomBaseInfo.getId());
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
 				if(ObjectUtil.isNotNull(member)){
@@ -713,7 +713,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 				roomBaseInfo.setRole(0);
                 roomBaseInfo.setName(user.getName());
                 roomBaseInfo.setAvatar(user.getAvatar());
-				roomBaseInfo.setAccountCode(user.getAccountCode());
+				roomBaseInfo.setAccount(user.getAccount());
             }
             return roomBaseInfo;
         }).collect(Collectors.toMap(RoomBaseInfo::getRoomId, Function.identity()));

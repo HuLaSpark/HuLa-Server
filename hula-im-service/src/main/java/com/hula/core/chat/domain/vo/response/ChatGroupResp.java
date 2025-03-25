@@ -19,7 +19,7 @@ public class ChatGroupResp {
     private String avatar;
 
 	@Schema(description = "群账号")
-	private String accountCode;
+	private String account;
 
 	@Schema(description = "扩展数据")
 	private String extJson;

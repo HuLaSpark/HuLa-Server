@@ -36,7 +36,7 @@ public class CreateAccount {
     public void createGroupAccountCode() throws InterruptedException {
 		List<RoomGroup> list = roomGroupDao.list();
 		for (RoomGroup roomGroup : list) {
-			roomGroup.setAccountCode(Base62Encoder.createAccount(uidGenerator.getUid()));
+			roomGroup.setAccount(Base62Encoder.createAccount(uidGenerator.getUid()));
 			Thread.sleep(50);
 		}
 		roomGroupDao.updateBatchById(list);
@@ -50,7 +50,7 @@ public class CreateAccount {
 	public void createUserAccountCode() throws InterruptedException {
 		List<User> list = userDao.list();
 		for (User user : list) {
-			user.setAccountCode(Base62Encoder.createAccount(uidGenerator.getUid()));
+			user.setAccount(Base62Encoder.createAccount(uidGenerator.getUid()));
 			Thread.sleep(50);
 		}
 		userDao.updateBatchById(list);

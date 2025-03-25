@@ -25,11 +25,11 @@ public class UserAdapter {
         return user;
     }
 
-    public static User buildAuthorizeUser(Long id, WxOAuth2UserInfo userInfo) {
+    public static User buildAuthorizeUser(Long id, String account, WxOAuth2UserInfo userInfo) {
         User user = new User();
         user.setId(id);
         user.setAvatar(userInfo.getHeadImgUrl());
-        user.setAccount(userInfo.getNickname());
+        user.setAccount(account);
         user.setPassword(userInfo.getNickname());
         user.setName(userInfo.getNickname());
         user.setSex(userInfo.getSex());

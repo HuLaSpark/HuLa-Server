@@ -36,7 +36,7 @@ public class ChatRoomResp {
     @Schema(description ="未读数")
     private Integer unreadCount;
 	@Schema(description ="Hula账号、群号")
-	private String accountCode;
+	private String account;
 	@Schema(description ="是否置顶")
 	private Boolean top;
 	@Schema(description ="删除会话")

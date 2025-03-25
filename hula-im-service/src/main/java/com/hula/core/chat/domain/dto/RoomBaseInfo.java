@@ -17,7 +17,7 @@ public class RoomBaseInfo {
     private Long roomId;
 
 	@Schema(description ="Hula账号、群号")
-	private String accountCode;
+	private String account;
 
     @Schema(description ="会话名称")
     private String name;

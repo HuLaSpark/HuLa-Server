@@ -9,8 +9,8 @@
     </update>
 
     <select id="getFriend" resultType="com.hula.core.chat.domain.vo.response.ChatMemberListResp">
-        SELECT id AS uid, name, avatar, account_code
+        SELECT id AS uid, name, avatar, account
         FROM user
-        WHERE account_code like #{key}
+        WHERE account like #{key}
     </select>
 </mapper>

@@ -46,7 +46,7 @@ public class TokenController {
     @Operation(summary ="用户注册")
     public ApiResult<String> register(@Valid @RequestBody RegisterReq registerReq) {
         loginService.normalRegister(registerReq);
-        return ApiResult.success(registerReq.getAccount());
+        return ApiResult.success(registerReq.getEmail());
     }
 
     @PostMapping("/refreshToken")

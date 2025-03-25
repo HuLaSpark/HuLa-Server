@@ -11,6 +11,8 @@ import com.hula.core.user.domain.vo.req.user.RegisterReq;
 import com.hula.core.user.service.adapter.TextBuilder;
 import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.service.MQProducer;
+import com.hula.snowflake.uid.UidGenerator;
+import com.hula.snowflake.uid.utils.Base62Encoder;
 import com.hula.utils.RedisUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +64,9 @@ public class WxMsgService {
     @Resource
     private LoginService loginService;
 
+	@Resource
+	private UidGenerator uidGenerator;
+
     @Resource
     private MQProducer mqProducer;
 
@@ -77,7 +82,7 @@ public class WxMsgService {
 
         // user为空先注册,手动生成,以保存uid
         if (Objects.isNull(user)) {
-            loginService.wxRegister(new RegisterReq(user.getName(), user.getAvatar(), user.getAccount(), user.getPassword(), user.getOpenId()));
+            loginService.wxRegister(new RegisterReq(user.getName(), user.getAvatar(), user.getEmail(), user.getPassword(), user.getOpenId()));
         }
         // 在redis中保存openid和场景code的关系，后续才能通知到前端,旧版数据没有清除,这里设置了过期时间
         RedisUtils.set(RedisKey.getKey(RedisKey.OPEN_ID_FORMAT, openid), loginCode, 60, TimeUnit.MINUTES);
@@ -113,7 +118,7 @@ public class WxMsgService {
     }
 
     private void fillUserInfo(Long uid, WxOAuth2UserInfo userInfo) {
-        User fillUser = UserAdapter.buildAuthorizeUser(uid, userInfo);
+        User fillUser = UserAdapter.buildAuthorizeUser(uid, Base62Encoder.createAccount(uidGenerator.getUid()), userInfo);
         // TODO 循环防止账号重复，存在bug
         for (int i = 0; i < 5; i++) {
             try {
@@ -124,7 +129,7 @@ public class WxMsgService {
             } catch (Exception e) {
                 log.error("fill userInfo fail uid:{},info:{}", uid, userInfo);
             }
-            fillUser.setAccount(userInfo.getNickname() + RandomUtil.randomInt(100000));
+            fillUser.setAccount(Base62Encoder.createAccount(uidGenerator.getUid()));
             fillUser.setPassword(userInfo.getNickname() + RandomUtil.randomInt(100000));
         }
     }

@@ -49,6 +49,11 @@ public class WxPortalController {
         return "非法请求";
     }
 
+	/**
+	 * TODO 没有邮箱
+	 * @param code
+	 * @return
+	 */
     @GetMapping("/callBack")
     public RedirectView callBack(@RequestParam(name = "code") String code) {
         try {

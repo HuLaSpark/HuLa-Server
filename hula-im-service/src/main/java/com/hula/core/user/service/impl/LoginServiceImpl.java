@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.constant.RedisKey;
@@ -19,6 +20,7 @@ import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.cache.UserCache;
+import com.hula.exception.BizException;
 import com.hula.exception.TokenExceedException;
 import com.hula.snowflake.uid.UidGenerator;
 import com.hula.snowflake.uid.utils.Base62Encoder;
@@ -56,7 +58,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public LoginResultVO login(LoginReq loginReq, HttpServletRequest request) {
-        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getAccount, loginReq.getAccount()));
+        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getEmail, loginReq.getAccount()));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
         AssertUtil.equal(queryUser.getPassword(), loginReq.getPassword(), "账号或密码错误");
         // 上线通知
@@ -75,11 +77,21 @@ public class LoginServiceImpl implements LoginService {
 	@Override
     @Transactional(rollbackFor = Exception.class)
     public void normalRegister(RegisterReq req) {
-        AssertUtil.isTrue(userDao.count(new QueryWrapper<User>().lambda().eq(User::getAccount, req.getAccount())) <= 0, "账号已注册");
+		String emailCode = RedisUtils.hget("emailCode", req.getUuid());
+		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
+			throw new BizException("验证码错误!");
+		}
+
+		// 2. 检查邮箱是否已被其他用户绑定
+		if (userDao.existsByEmailAndIdNot(null, req.getEmail())) {
+			throw new BizException("该邮箱已被其他账号绑定");
+		}
+
+		// 3. 走注册流程
         final User newUser = User.builder()
                 .avatar(req.getAvatar())
-                .account(req.getAccount())
-				.accountCode(Base62Encoder.createAccount(uidGenerator.getUid()))
+                .account(Base62Encoder.createAccount(uidGenerator.getUid()))
+				.email(req.getEmail())
                 .password(req.getPassword())
                 .name(req.getName())
                 .openId(req.getOpenId())
@@ -101,7 +113,8 @@ public class LoginServiceImpl implements LoginService {
                 .eq(User::getOpenId, req.getOpenId())) <= 0, "微信号已绑定其他账号");
 
         final User newUser = User.builder()
-                .account(req.getAccount())
+				.account(Base62Encoder.createAccount(uidGenerator.getUid()))
+                .email(req.getEmail())
                 .password(req.getPassword())
                 .name(req.getName())
                 .openId(req.getOpenId())

@@ -34,7 +34,7 @@ public class MemberAdapter {
     public static List<ChatMemberResp> buildMember(List<User> list) {
         return list.stream().map(a -> {
             ChatMemberResp resp = new ChatMemberResp();
-			resp.setAccountCode(a.getAccountCode());
+			resp.setAccount(a.getAccount());
             resp.setActiveStatus(a.getActiveStatus());
             resp.setLastOptTime(a.getLastOptTime());
             resp.setUid(a.getId().toString());

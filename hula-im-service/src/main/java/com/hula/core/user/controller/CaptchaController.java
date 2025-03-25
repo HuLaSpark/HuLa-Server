@@ -49,6 +49,6 @@ public class CaptchaController {
 	@PostMapping("/sendCode")
 	@Operation(summary ="发送验证码到用户邮箱")
 	public ApiResult<Boolean> sendCode(@Valid @RequestBody BindEmailReq req) {
-		return ApiResult.success(emailService.sendVerificationCode(RequestHolder.get().getUid(), req));
+		return ApiResult.success(emailService.sendVerificationCode(req));
 	}
 }
