@@ -1,16 +1,24 @@
 globalWhiteRemoteAddresses:
-- 127.0.0.1
+#  - 47.100.93.*
+#  - 156.254.120.*
 
 accounts:
-- accessKey: nongyehong
-  secretKey: 12345678
-  whiteRemoteAddress:
-  admin: false
-  defaultTopicPerm: DENY
-  defaultGroupPerm: SUB
-  topicPerms:
-    - topicA=DENY
-    - topicB=PUB|SUB
-  groupPerms:
-    - groupA=DENY
-    - groupB=SUB
+  - accessKey: RocketMQ
+    secretKey: hula123456789
+    whiteRemoteAddress:
+    admin: true
+    defaultTopicPerm: PUB|SUB
+    defaultGroupPerm: PUB|SUB
+    topicPerms:
+      - topicA=DENY
+      - topicB=PUB|SUB
+      - topicC=SUB
+    groupPerms:
+      - groupA=DENY
+      - groupB=PUB|SUB
+      - groupC=SUB
+
+  - accessKey: hulaspark
+    secretKey: hula123456789
+    whiteRemoteAddress:
+    admin: true

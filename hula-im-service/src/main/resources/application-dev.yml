@@ -17,12 +17,12 @@ HuLa-IM:
   JWT: #JWT配置
     SECRET: dsfsdfsdfsdfsd
   ROCKETMQ: #rocketmq配置
-    NAME-SERVER: 127.0.0.1:9876  # 修改为与broker.conf一致
-    ACCESS-KEY: nongyehong
-    SECRET-KEY: 919919919
+    NAME-SERVER: 127.0.0.1:9876  # nameserver地址
+    ACCESS-KEY: hulaspark
+    SECRET-KEY: hula123456789
   mail:
-    username: nongyehong919@163.com  # 发件人邮箱
-    password: ZDiFAsKBBJSZVBBR    # 邮箱SMTP授权码
+    username: xxxxxxxxxxxxxxx  # 发件人邮箱
+    password: xxxxxxxx    # 邮箱SMTP授权码
 
 uid:
   database:

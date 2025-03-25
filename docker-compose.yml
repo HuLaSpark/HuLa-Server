@@ -24,7 +24,6 @@ services:
       - /docker/redis/redis.conf:/etc/redis/redis.conf
     command: [ "redis-server","/etc/redis/redis.conf" ]
 
-
   rocketmq-namesrv:
     image: foxiswho/rocketmq:4.8.0
     container_name: rocketmq-namesrv
@@ -32,8 +31,8 @@ services:
     ports:
       - 9876:9876
     volumes:
-      - /docker/rocketmq/namesrv/logs:/home/rocketmq/logs
-      - /docker/rocketmq/namesrv/store:/home/rocketmq/store
+      - /docker/namesrv/logs:/home/rocketmq/logs
+      - /docker/namesrv/store:/home/rocketmq/store
     environment:
       TZ: Asia/Shanghai
       JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms128M -Xmx128M -Xmn128m"
@@ -43,7 +42,6 @@ services:
         aliases:
           - rocketmq-namesrv
 
-
   rocketmq-broker:
     image: apache/rocketmq:5.3.1
     container_name: rocketmq-broker
@@ -52,22 +50,20 @@ services:
       - 10909:10909
       - 10911:10911
     volumes:
-      - /docker/rocketmq/broker/logs:/home/rocketmq/logs
-      - /docker/rocketmq/broker/store:/home/rocketmq/store
-      - ./docker/plain_acl.yml:/home/rocketmq/rocketmq-5.3.1/conf/plain_acl.yml
-      - ./docker/broker.conf:/etc/rocketmq/broker.conf
+      - /docker/broker/logs:/home/rocketmq/logs
+      - /docker/broker/store:/home/rocketmq/store
+      - /docker/broker/plain_acl.yml:/home/rocketmq/rocketmq-5.3.1/conf/plain_acl.yml
+      - /docker/broker/broker.conf:/etc/rocketmq/broker.conf
     environment:
       TZ: Asia/Shanghai
       JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms128m -Xmx128m -Xmn128m"
     command: ["sh","mqbroker","-c","/etc/rocketmq/broker.conf"]
-    user: root
     depends_on:
       - rocketmq-namesrv
     networks:
       rocketmq_net:
         aliases:
           - rocketmq-broker
-
 
   rocketmq-console:
     image: iamverygood/rocketmq-console:4.7.1
@@ -76,10 +72,10 @@ services:
     ports:
       - 8180:8080
     volumes:
-      - /docker/rocketmq/console/data:/tmp/rocketmq-console/data
+      - /docker/console/data:/tmp/rocketmq-console/data
     environment:
       TZ: Asia/Shanghai
-      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Drocketmq.config.loginRequired=true -Drocketmq.config.aclEnabled=true -Drocketmq.config.accessKey=hula-server -Drocketmq.config.secretKey=k2439646234"
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Drocketmq.config.loginRequired=true -Drocketmq.config.aclEnabled=true -Drocketmq.config.accessKey=hulaspark -Drocketmq.config.secretKey=hula123456789"
     depends_on:
       - rocketmq-namesrv
     networks:

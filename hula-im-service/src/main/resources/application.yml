@@ -139,3 +139,5 @@ public:
     - /token/login
     - /token/refreshToken
     - /token/register
+    - /captcha/captcha
+    - /captcha/sendCode
