@@ -23,7 +23,6 @@ public class RegisterReq extends BaseEntity {
 	@NotEmpty(message = "请填写邮箱")
 	@Schema(description = "邮箱")
 	@Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", message = "请输入有效的邮箱地址")
-    private String account;
 	private String email;
 
 	@NotEmpty(message = "邮箱验证码不能为空")
