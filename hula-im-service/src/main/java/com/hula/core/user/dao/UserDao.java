@@ -96,9 +96,12 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 	}
 
 	public Boolean existsByEmailAndIdNot(Long uid, String email) {
-		return baseMapper.selectCount(new LambdaQueryWrapper<User>()
-				.eq(User::getEmail, email)
-				.ne(User::getId, uid)
-		) > 0;
+        LambdaQueryWrapper<User> wrapper =  new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email);
+
+        if(uid != null){
+            wrapper.ne(User::getId, uid);
+        }
+		return baseMapper.selectCount(wrapper) > 0;
 	}
 }

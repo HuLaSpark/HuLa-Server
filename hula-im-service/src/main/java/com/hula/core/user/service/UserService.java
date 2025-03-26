@@ -5,7 +5,6 @@ import com.hula.core.user.domain.dto.SummeryInfoDTO;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
-import jakarta.validation.Valid;
 
 import java.util.List;
 

@@ -58,7 +58,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public LoginResultVO login(LoginReq loginReq, HttpServletRequest request) {
-        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda().eq(User::getEmail, loginReq.getAccount()));
+        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda().and(w -> w.eq(User::getEmail, loginReq.getAccount()).or().eq(User::getAccount, loginReq.getAccount())));
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
         AssertUtil.equal(queryUser.getPassword(), loginReq.getPassword(), "账号或密码错误");
         // 上线通知
@@ -77,7 +77,7 @@ public class LoginServiceImpl implements LoginService {
 	@Override
     @Transactional(rollbackFor = Exception.class)
     public void normalRegister(RegisterReq req) {
-		String emailCode = RedisUtils.hget("emailCode", req.getUuid());
+		String emailCode = RedisUtils.hget("emailCode", req.getUuid()).toString();
 		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
 			throw new BizException("验证码错误!");
 		}

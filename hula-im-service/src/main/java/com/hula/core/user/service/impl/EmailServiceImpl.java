@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
 	 */
 	public Boolean sendVerificationCode(BindEmailReq req) {
 		// 1. 校验数字验证码是否正确
-		String code = RedisUtils.hget("numberCode", req.getUuid());
+		String code = RedisUtils.hget("numberCode", req.getUuid()).toString();
 		if(StrUtil.isEmpty(code) || !code.equals(req.getCode())){
 			throw new BizException("验证码输入错误!");
 		}
