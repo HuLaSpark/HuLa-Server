@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <revision>v2.6.7</revision>
+        <revision>v2.6.8</revision>
         <java.version>21</java.version>
         <spring-boot.version>3.4.4</spring-boot.version>
         <hutool.version>5.8.27</hutool.version>
