@@ -67,7 +67,7 @@ public class EmailServiceImpl implements EmailService {
 
 			// 替换占位符并设置 HTML 内容
 			String emailCode = ToolsUtil.randomCount(100000, 999999).toString();
-			String htmlContent = StrUtil.format(htmlTemplate, systemName, "注册验证码", systemName, systemName, emailCode, expireTime / 60,fromEmail, systemName, time);
+			String htmlContent = StrUtil.format(htmlTemplate, systemName, systemName, systemName, emailCode, expireTime / 60,fromEmail, systemName, time);
 			helper.setText(htmlContent, true);
 
 			mailSender.send(message);

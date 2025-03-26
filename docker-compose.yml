@@ -1,15 +1,15 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    ports:
-      - "3306:3306"
-    volumes:
-      - /docker/mysql/data:/var/lib/mysql
-    environment: #指定root密码
-      TZ: Asia/Shanghai
-      MYSQL_ROOT_PASSWORD: 123456
+#  mysql:
+#    image: mysql:8.0
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - /docker/mysql/data:/var/lib/mysql
+#    environment: #指定root密码
+#      TZ: Asia/Shanghai
+#      MYSQL_ROOT_PASSWORD: 123456
 
   redis:
     image: redis:latest
@@ -31,8 +31,8 @@ services:
     ports:
       - 9876:9876
     volumes:
-      - /docker/namesrv/logs:/home/rocketmq/logs
-      - /docker/namesrv/store:/home/rocketmq/store
+      - ./docker/namesrv/logs:/home/rocketmq/logs
+      - ./docker/namesrv/store:/home/rocketmq/store
     environment:
       TZ: Asia/Shanghai
       JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms128M -Xmx128M -Xmn128m"
@@ -50,10 +50,10 @@ services:
       - 10909:10909
       - 10911:10911
     volumes:
-      - /docker/broker/logs:/home/rocketmq/logs
-      - /docker/broker/store:/home/rocketmq/store
-      - /docker/broker/plain_acl.yml:/home/rocketmq/rocketmq-5.3.1/conf/plain_acl.yml
-      - /docker/broker/broker.conf:/etc/rocketmq/broker.conf
+      - ./docker/logs:/home/rocketmq/logs
+      - ./docker/store:/home/rocketmq/store
+      - ./docker/plain_acl.yml:/home/rocketmq/rocketmq-5.3.1/conf/plain_acl.yml
+      - ./docker/broker.conf:/etc/rocketmq/broker.conf
     environment:
       TZ: Asia/Shanghai
       JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms128m -Xmx128m -Xmn128m"
