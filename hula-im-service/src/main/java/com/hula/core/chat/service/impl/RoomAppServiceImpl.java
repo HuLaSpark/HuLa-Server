@@ -88,6 +88,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     
     private ContactDao contactDao;
     private RoomCache roomCache;
+	private GroupMemberInfoCache groupMemberInfoCache;
     private RoomGroupCache roomGroupCache;
     private RoomFriendCache roomFriendCache;
     private UserInfoCache userInfoCache;
@@ -232,7 +233,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 		// 3.通知群里所有人群信息修改了
 		if(success){
-			roomGroupCache.evictGroup(roomGroup.getAccountCode());
+			roomGroupCache.evictGroup(roomGroup.getAccount());
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildRoomGroupChangeWS(roomGroup.getRoomId(), roomGroup.getName(), roomGroup.getAvatar()), memberUidList, uid);
 		}
@@ -246,7 +247,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		GroupMember member = verifyGroupPermissions(uid, roomGroup);
 
 		// 2.修改我的信息
-		boolean equals = member.getMyName().equals(request.getMyName());
+		boolean equals = member.getMyName().equals(StrUtil.isEmpty(request.getMyName())? "": request.getMyName());
 
 		member.setRemark(request.getRemark());
 		member.setMyName(request.getMyName());
@@ -255,7 +256,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		// 3.通知群里所有人我的信息改变了
 		if(!equals && success){
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
-			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), request.getMyName()), memberUidList, uid);
+			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), uid, request.getMyName()), memberUidList, uid);
 		}
 		return success;
 	}
@@ -365,22 +366,23 @@ public class RoomAppServiceImpl implements RoomAppService {
 			return false;
 		}
 
+		String name;
 		Room room = roomCache.get(request.getRoomId());
 		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
 			// 1. 把群成员的信息设置为禁止
 			RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
+			name = roomGroup.getName();
 			groupMemberDao.setMemberDeFriend(roomGroup.getId(), uid, request.getState());
-			chatService.sendMsg(RoomAdapter.buildShieldGroupMessage(roomGroup, request.getState()), uid);
 		} else {
 			// 2. 把两个人的房间全部设置为禁止
 			RoomFriend roomFriend = roomFriendCache.get(request.getRoomId());
 			roomService.updateState(uid.equals(roomFriend.getUid1()), roomFriend.getUid1(), roomFriend.getUid2(), request.getState());
 
-			// 3. 通知所有设备我已经屏蔽这个房间
-			User userInfo = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1());
-			chatService.sendMsg(MessageAdapter.buildShieldContact(userInfo.getName(), request.getRoomId(), request.getState()), uid);
+			name = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1()).getName();
 		}
 
+		// 3. 通知所有设备我已经屏蔽这个房间
+		pushService.sendPushMsg(WsAdapter.buildShieldContact(request.getState(), name), uid, uid);
 		roomFriendCache.delete(request.getRoomId());
 		contact.setShield(request.getState());
 		return contactDao.updateById(contact);
@@ -388,7 +390,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 	@Override
 	public List<RoomGroup> searchGroup(RoomGroupReq req) {
-		return roomGroupCache.searchGroup(req.getAccountCode());
+		return roomGroupCache.searchGroup(req.getAccount());
 	}
 
 	@Override
@@ -416,7 +418,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                 .groupName(roomGroup.getName())
                 .onlineNum(onlineNum)
 				.memberNum(memberNum)
-				.accountCode(roomGroup.getAccountCode())
+				.account(roomGroup.getAccount())
 				.remark(member.getRemark())
 				.myName(member.getMyName())
                 .role(groupRole.getType())
@@ -618,12 +620,14 @@ public class RoomAppServiceImpl implements RoomAppService {
 					resp.setId(room.getId());
                     resp.setAvatar(roomBaseInfo.getAvatar());
                     resp.setRoomId(roomId);
-					resp.setAccountCode(room.getAccountCode());
+					resp.setAccount(room.getAccount());
                     resp.setActiveTime(room.getActiveTime());
                     resp.setHotFlag(roomBaseInfo.getHotFlag());
                     resp.setType(roomBaseInfo.getType());
                     resp.setName(roomBaseInfo.getName());
 					resp.setOperate(roomBaseInfo.getRole());
+					resp.setRemark(roomBaseInfo.getRemark());
+					resp.setMyName(roomBaseInfo.getMyName());
                     Message message = msgMap.get(room.getLastMsgId());
                     if (Objects.nonNull(message)) {
                         AbstractMsgHandler strategyNoNull = MsgHandlerFactory.getStrategyNoNull(message.getType());
@@ -671,8 +675,7 @@ public class RoomAppServiceImpl implements RoomAppService {
     private Map<Long, RoomBaseInfo> getRoomBaseInfoMap(List<Long> roomIds, Long uid) {
         Map<Long, Room> roomMap = roomCache.getBatch(roomIds);
         // 房间根据好友和群组类型分组
-        Map<Integer, List<Long>> groupRoomIdMap = roomMap.values().stream().filter(Objects::nonNull).collect(Collectors.groupingBy(Room::getType,
-                Collectors.mapping(Room::getId, Collectors.toList())));
+        Map<Integer, List<Long>> groupRoomIdMap = roomMap.values().stream().filter(Objects::nonNull).collect(Collectors.groupingBy(Room::getType, Collectors.mapping(Room::getId, Collectors.toList())));
         // 获取群组信息
         List<Long> groupRoomId = groupRoomIdMap.get(RoomTypeEnum.GROUP.getType());
         Map<Long, RoomGroup> roomInfoBatch = roomGroupCache.getBatch(groupRoomId);
@@ -692,12 +695,16 @@ public class RoomAppServiceImpl implements RoomAppService {
 				roomBaseInfo.setId(roomGroup.getId());
                 roomBaseInfo.setName(roomGroup.getName());
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
-				roomBaseInfo.setAccountCode(roomGroup.getAccountCode());
+				roomBaseInfo.setAccount(roomGroup.getAccount());
+				GroupMember member = groupMemberInfoCache.get(roomBaseInfo.getId());
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
-				GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
 				if(ObjectUtil.isNotNull(member)){
+					roomBaseInfo.setMyName(member.getMyName());
+					roomBaseInfo.setRemark(member.getRemark());
 					roomBaseInfo.setRole(member.getRole());
 				}else {
+					roomBaseInfo.setMyName("会话异常");
+					roomBaseInfo.setRemark("会话异常");
 					roomBaseInfo.setRole(0);
 				}
             } else if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.FRIEND) {
@@ -706,7 +713,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 				roomBaseInfo.setRole(0);
                 roomBaseInfo.setName(user.getName());
                 roomBaseInfo.setAvatar(user.getAvatar());
-				roomBaseInfo.setAccountCode(user.getAccountCode());
+				roomBaseInfo.setAccount(user.getAccount());
             }
             return roomBaseInfo;
         }).collect(Collectors.toMap(RoomBaseInfo::getRoomId, Function.identity()));

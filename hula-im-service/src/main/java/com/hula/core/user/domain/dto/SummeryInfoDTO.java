@@ -30,7 +30,7 @@ public class SummeryInfoDTO {
     @Schema(description = "用户昵称")
     private String name;
 	@Schema(description = "Hula号")
-	private String accountCode;
+	private String account;
     @Schema(description = "用户头像")
     private String avatar;
     @Schema(description = "归属地")

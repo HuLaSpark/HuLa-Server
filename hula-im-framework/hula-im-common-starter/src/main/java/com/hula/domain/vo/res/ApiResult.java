@@ -21,12 +21,23 @@ public class ApiResult<T> {
     private String msg;
     @Schema(description ="追踪id")
     private String tid;
+	@Schema(description ="版本号")
+	private String version;
     @Schema(description ="返回对象")
     private T data;
 
-    private ApiResult() {
-        this.setTid(MDC.get(MDCKey.TID));
-    }
+	private static String baseVersion;
+
+	public static void setBaseVersion(String version) {
+		ApiResult.baseVersion = version;
+	}
+
+	private ApiResult() {
+		this.setTid(MDC.get(MDCKey.TID));
+		if (baseVersion != null) {
+			this.setVersion(baseVersion);
+		}
+	}
 
     public static <T> ApiResult<T> success() {
         ApiResult<T> result = new ApiResult<>();

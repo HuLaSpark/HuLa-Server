@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
         return ApiResult.fail(CommonErrorEnum.PARAM_VALID.getErrorCode(), message.substring(0, message.length() - 1));
     }
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResult illegalArgumentException(IllegalArgumentException ex) {
+		return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR.getCode(), ex.getMessage());
+	}
+
 	/**
 	 * 身份过期
 	 */

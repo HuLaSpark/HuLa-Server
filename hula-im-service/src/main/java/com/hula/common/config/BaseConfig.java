@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.hula.domain.vo.res.ApiResult;
 import com.hula.jackson.JacksonModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,15 @@ import java.util.TimeZone;
  */
 @Configuration
 public class BaseConfig {
+
+	@Value("${version}")
+	private String version;
+
+	@Bean
+	public Object configureApiResult() {
+		ApiResult.setBaseVersion(version);
+		return ApiResult.success();
+	}
 
 	/**
 	 * 全局配置 序列化和反序列化规则

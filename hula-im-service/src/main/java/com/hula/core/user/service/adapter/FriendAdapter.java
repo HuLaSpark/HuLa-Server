@@ -43,10 +43,12 @@ public class FriendAdapter {
         return records.stream().map(userApply -> {
             FriendApplyResp friendApplyResp = new FriendApplyResp();
             friendApplyResp.setUid(userApply.getUid());
+			friendApplyResp.setTargetId(userApply.getTargetId());
             friendApplyResp.setType(userApply.getType());
             friendApplyResp.setApplyId(userApply.getId());
             friendApplyResp.setMsg(userApply.getMsg());
             friendApplyResp.setStatus(userApply.getStatus());
+			friendApplyResp.setCreateTime(userApply.getCreateTime());
             return friendApplyResp;
         }).collect(Collectors.toList());
     }

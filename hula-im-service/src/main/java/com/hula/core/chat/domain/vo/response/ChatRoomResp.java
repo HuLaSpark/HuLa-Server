@@ -36,7 +36,7 @@ public class ChatRoomResp {
     @Schema(description ="未读数")
     private Integer unreadCount;
 	@Schema(description ="Hula账号、群号")
-	private String accountCode;
+	private String account;
 	@Schema(description ="是否置顶")
 	private Boolean top;
 	@Schema(description ="删除会话")
@@ -47,4 +47,8 @@ public class ChatRoomResp {
 	private Integer operate;
 	@Schema(description = "通知类型 0 -> 允许接受消息 1 -> 接收但不提醒[免打扰] 4 -> 已退出群聊")
 	private Integer muteNotification;
+	@Schema(description ="群备注 [群专属]")
+	private String remark;
+	@Schema(description ="我的群名称 [群专属]")
+	private String myName;
 }

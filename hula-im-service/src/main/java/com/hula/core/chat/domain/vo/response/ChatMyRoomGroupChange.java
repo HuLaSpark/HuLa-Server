@@ -20,7 +20,12 @@ public class ChatMyRoomGroupChange {
 	/**
 	 * 房间id
 	 */
-	private Long roomId;
+	private String roomId;
+
+	/**
+	 * 更改人id
+	 */
+	private String uid;
 
 	/**
 	 * 我在群里的名称

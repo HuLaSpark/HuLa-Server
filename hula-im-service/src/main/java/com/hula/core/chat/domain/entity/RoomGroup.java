@@ -39,8 +39,8 @@ public class RoomGroup implements Serializable {
 	/**
 	 * Hula群号
 	 */
-	@TableField("account_code")
-	private String accountCode;
+	@TableField("account")
+	private String account;
 
     /**
      * 群头像

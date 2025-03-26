@@ -76,4 +76,12 @@ public interface UserService {
 	 * @return
 	 */
 	Boolean changeUserState(Long uid, Long userStateId);
+
+	/**
+	 * 绑定邮箱
+	 * @param uid
+	 * @param req
+	 * @return
+	 */
+	Boolean bindEmail(Long uid, BindEmailReq req);
 }

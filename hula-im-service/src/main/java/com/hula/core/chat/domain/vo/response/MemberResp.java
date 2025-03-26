@@ -26,6 +26,8 @@ public class MemberResp {
     private Integer role;
 	@Schema(description = "群号")
 	private String accountCode;
+	@Schema(description = "群号")
+	private String account;
 	@Schema(description = "群成员数")
 	private Integer memberNum;
 	@Schema(description = "群备注")

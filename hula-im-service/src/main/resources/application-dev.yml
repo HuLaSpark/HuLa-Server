@@ -1,4 +1,4 @@
-version: 2.6.2
+version: 2.6.8
 HuLa-IM:
   HOST: 127.0.0.1 #域名
   MYSQL_PORT: 3306 #端口
@@ -17,9 +17,12 @@ HuLa-IM:
   JWT: #JWT配置
     SECRET: dsfsdfsdfsdfsd
   ROCKETMQ: #rocketmq配置
-    NAME-SERVER: 127.0.0.1:9876
-    ACCESS-KEY: nongyehong
-    SECRET-KEY: 919919919
+    NAME-SERVER: 127.0.0.1:9876  # nameserver地址
+    ACCESS-KEY: hulaspark
+    SECRET-KEY: hula123456789
+  mail:
+    username: xxxxxxxxxxxxxxx  # 发件人邮箱
+    password: xxxxxxxx    # 邮箱SMTP授权码
 
 uid:
   database:

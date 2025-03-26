@@ -57,7 +57,7 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .orderByDesc(User::getLastOptTime)
                 //毕竟是大群聊，人数需要做个限制
                 .last("limit 1000")
-                .select(User::getId, User::getName, User::getAvatar, User::getAccountCode)
+                .select(User::getId, User::getName, User::getAvatar, User::getAccount)
                 .list();
 
     }
@@ -67,7 +67,6 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .in(User::getId, uids)
                 .select(User::getId, User::getActiveStatus, User::getName, User::getAvatar)
                 .list();
-
     }
 
     public Integer getOnlineCount() {
@@ -93,6 +92,16 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 	}
 
 	public List<ChatMemberListResp> getFriend(String key) {
-		return baseMapper.getFriend(key);
+		return baseMapper.getFriend("%" + key + "%");
+	}
+
+	public Boolean existsByEmailAndIdNot(Long uid, String email) {
+        LambdaQueryWrapper<User> wrapper =  new LambdaQueryWrapper<User>()
+                .eq(User::getEmail, email);
+
+        if(uid != null){
+            wrapper.ne(User::getId, uid);
+        }
+		return baseMapper.selectCount(wrapper) > 0;
 	}
 }

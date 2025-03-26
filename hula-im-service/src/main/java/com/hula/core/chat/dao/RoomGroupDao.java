@@ -35,7 +35,7 @@ public class RoomGroupDao extends ServiceImpl<RoomGroupMapper, RoomGroup> {
 
 	public List<RoomGroup> searchGroup(String account) {
 		return lambdaQuery()
-				.like(RoomGroup::getAccountCode, account)
+				.like(RoomGroup::getAccount, account)
 				.list();
 	}
 }

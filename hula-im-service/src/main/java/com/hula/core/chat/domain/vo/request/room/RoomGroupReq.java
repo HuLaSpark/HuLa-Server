@@ -11,5 +11,5 @@ import lombok.Data;
 public class RoomGroupReq {
 
     @NotEmpty(message = "请输入群号")
-    private String accountCode;
+	private String account;
 }

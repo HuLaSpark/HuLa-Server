@@ -149,4 +149,15 @@ public class WsAdapter {
 		wsBaseResp.setData(req);
 		return wsBaseResp;
 	}
+
+	/**
+	 * 屏蔽/解除屏蔽好友/群
+	 * @param name
+	 */
+	public static WsBaseResp<String> buildShieldContact(Boolean state, String name) {
+		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(state? WSRespTypeEnum.SHIELD.getType(): WSRespTypeEnum.UNBLOCK.getType());
+		wsBaseResp.setData(StrUtil.format("你已{}屏蔽来自{}的消息", state? "":"解除",name));
+		return wsBaseResp;
+	}
 }

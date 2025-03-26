@@ -25,7 +25,9 @@ import com.hula.core.user.service.adapter.UserAdapter;
 import com.hula.core.user.service.cache.ItemCache;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserSummaryCache;
+import com.hula.exception.BizException;
 import com.hula.utils.AssertUtil;
+import com.hula.utils.RedisUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
@@ -81,7 +83,7 @@ public class UserServiceImpl implements UserService {
             userDao.modifyName(uid, req.getName());
             // 删除缓存
             userCache.userInfoChange(uid);
-			userCache.evictFriend(userCache.getUserInfo(uid).getAccountCode());
+			userCache.evictFriend(userCache.getUserInfo(uid).getAccount());
         }
     }
 
@@ -97,7 +99,7 @@ public class UserServiceImpl implements UserService {
         userDao.updateById(User.builder().id(user.getId()).avatar(req.getAvatar()).avatarUpdateTime(DateUtil.date()).build());
         // 删除缓存
         userCache.userInfoChange(uid);
-		userCache.evictFriend(user.getAccountCode());
+		userCache.evictFriend(user.getAccount());
     }
 
     @Override
@@ -175,6 +177,31 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean changeUserState(Long uid, Long userStateId){
 		return userDao.changeUserState(uid, userStateId) > 0;
+	}
+
+	@Override
+	public Boolean bindEmail(Long uid, BindEmailReq req) {
+		// 1.校验验证码
+		String emailCode = RedisUtils.hget("emailCode", req.getUuid()).toString();
+		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
+			throw new BizException("验证码错误!");
+		}
+
+		// 2. 检查邮箱是否已被其他用户绑定
+		if (userDao.existsByEmailAndIdNot(uid, req.getEmail())) {
+			throw new BizException("该邮箱已被其他账号绑定");
+		}
+
+		// 3. 修改邮箱
+		User userInfo = userCache.getUserInfo(uid);
+		userInfo.setEmail(req.getEmail());
+		boolean save = userDao.save(userInfo);
+		if(save){
+            RedisUtils.hdel("emailCode", req.getUuid());
+			userCache.userInfoChange(uid);
+			userSummaryCache.delete(uid);
+		}
+		return save;
 	}
 
 	private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {
