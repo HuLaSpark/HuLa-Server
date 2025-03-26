@@ -104,6 +104,8 @@ public class LoginServiceImpl implements LoginService {
 		roomService.createGroupMember(1L, newUser.getId());
         // 发布用户注册消息
         applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
+		// 移除验证码
+		RedisUtils.hdel("emailCode", req.getUuid());
     }
 
     @Override
