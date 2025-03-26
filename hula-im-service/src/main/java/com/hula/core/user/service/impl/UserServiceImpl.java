@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean bindEmail(Long uid, BindEmailReq req) {
 		// 1.校验验证码
-		String emailCode = RedisUtils.hget("emailCode", uid.toString());
+		String emailCode = RedisUtils.hget("emailCode", req.getUuid()).toString();
 		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
 			throw new BizException("验证码错误!");
 		}
@@ -197,6 +197,7 @@ public class UserServiceImpl implements UserService {
 		userInfo.setEmail(req.getEmail());
 		boolean save = userDao.save(userInfo);
 		if(save){
+            RedisUtils.hdel("emailCode", req.getUuid());
 			userCache.userInfoChange(uid);
 			userSummaryCache.delete(uid);
 		}

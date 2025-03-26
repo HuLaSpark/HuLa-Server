@@ -26,11 +26,12 @@ public class CaptchaServiceImpl implements CaptchaService {
      */
     public HashMap<String, Object> createImg() {
 		String uuid = IdUtil.fastUUID();
+		int expireTime = 300;
 
 		SpecCaptcha specCaptcha = new SpecCaptcha(120, 45, 4);
 		// 设置类型，纯数字、纯字母、字母数字混合
 		specCaptcha.setCharType(Captcha.TYPE_ONLY_NUMBER);
-		RedisUtils.hset("numberCode", uuid, specCaptcha.text().toLowerCase(), 300);
+		RedisUtils.hset("numberCode", uuid, specCaptcha.text().toLowerCase(), expireTime);
 
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("uuid", uuid);

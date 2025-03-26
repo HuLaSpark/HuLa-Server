@@ -2,6 +2,7 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.StrUtil;
+import com.hula.common.utils.ToolsUtil;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.vo.req.user.BindEmailReq;
 import com.hula.core.user.service.ConfigService;
@@ -51,12 +52,12 @@ public class EmailServiceImpl implements EmailService {
 			throw new BizException("该邮箱已被其他账号绑定");
 		}
 
-		// 3. 发送邮箱验证码到用户邮箱
-		String systemName = configService.get("systemName");
-		String time = LocalDateTimeUtil.format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss");
-
-		String htmlTemplate = configService.get("codeHtmlTemplate");
 		try{
+			int expireTime = 300;
+			// 3. 发送邮箱验证码到用户邮箱
+			String systemName = configService.get("systemName");
+			String time = LocalDateTimeUtil.format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss");
+			String htmlTemplate = configService.get("codeHtmlTemplate");
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -65,10 +66,12 @@ public class EmailServiceImpl implements EmailService {
 			helper.setSubject("验证码邮件");
 
 			// 替换占位符并设置 HTML 内容
-			String htmlContent = StrUtil.format(htmlTemplate, systemName, "注册验证码", systemName, systemName, code, fromEmail, systemName, time);
+			String emailCode = ToolsUtil.randomCount(100000, 999999).toString();
+			String htmlContent = StrUtil.format(htmlTemplate, systemName, "注册验证码", systemName, systemName, emailCode, expireTime / 60,fromEmail, systemName, time);
 			helper.setText(htmlContent, true);
 
 			mailSender.send(message);
+			RedisUtils.hset("emailCode", req.getUuid(), emailCode, expireTime);
 		} catch (MessagingException e) {
 			throw new BizException("邮箱发送失败!");
 		}
