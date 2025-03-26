@@ -74,6 +74,11 @@ public class LoginServiceImpl implements LoginService {
 		return tokenService.refreshToken(refreshTokenReq);
 	}
 
+	public static void main(String[] args) {
+		String[] split = "2134@adaw".split("@");
+		System.out.println();
+	}
+
 	@Override
     @Transactional(rollbackFor = Exception.class)
     public void normalRegister(RegisterReq req) {
@@ -87,10 +92,13 @@ public class LoginServiceImpl implements LoginService {
 			throw new BizException("该邮箱已被其他账号绑定");
 		}
 
+		String account = req.getEmail().split("@")[0];
+		boolean exists = userDao.count(new QueryWrapper<User>().lambda().eq(User::getAccount, account)) > 0;
+
 		// 3. 走注册流程
         final User newUser = User.builder()
                 .avatar(req.getAvatar())
-                .account(Base62Encoder.createAccount(uidGenerator.getUid()))
+                .account(exists? req.getEmail(): account)
 				.email(req.getEmail())
                 .password(req.getPassword())
                 .name(req.getName())
