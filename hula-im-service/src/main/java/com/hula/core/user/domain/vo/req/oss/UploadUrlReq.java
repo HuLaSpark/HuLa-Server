@@ -22,7 +22,7 @@ public class UploadUrlReq extends BaseEntity {
     @ApiModelProperty(value = "文件名（带后缀）")
     @NotBlank
     private String fileName;
-    @ApiModelProperty(value = "上传场景1.聊天室,2.表情包")
+    @ApiModelProperty(value = "上传场景chat.聊天室,emoji.表情包,avatar.头像")
     @NotNull
     private Integer scene;
 }

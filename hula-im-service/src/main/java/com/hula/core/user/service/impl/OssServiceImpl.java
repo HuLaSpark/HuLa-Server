@@ -20,7 +20,7 @@ public class OssServiceImpl implements OssService {
 
     @Override
     public OssResp getUploadUrl(Long uid, UploadUrlReq req) {
-        OssSceneEnum sceneEnum = OssSceneEnum.of(req.getScene());
+        OssSceneEnum sceneEnum = OssSceneEnum.of(String.valueOf(req.getScene()));
         AssertUtil.isNotEmpty(sceneEnum, "场景有误");
         OssReq ossReq = OssReq.builder()
                 .fileName(req.getFileName())
