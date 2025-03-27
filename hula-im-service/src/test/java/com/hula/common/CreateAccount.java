@@ -30,7 +30,6 @@ public class CreateAccount {
 
 	/**
 	 * 批量填充群账号
-	 * @throws InterruptedException
 	 */
     @Test
     public void createGroupAccountCode() throws InterruptedException {
