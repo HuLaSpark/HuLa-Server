@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
             // 改名
             userDao.modifyName(uid, req.getName());
             // 删除缓存
+			userSummaryCache.delete(uid);
             userCache.userInfoChange(uid);
 			userCache.evictFriend(userCache.getUserInfo(uid).getAccount());
         }
@@ -99,6 +100,7 @@ public class UserServiceImpl implements UserService {
         userDao.updateById(User.builder().id(user.getId()).avatar(req.getAvatar()).avatarUpdateTime(DateUtil.date()).build());
         // 删除缓存
         userCache.userInfoChange(uid);
+		userSummaryCache.delete(uid);
 		userCache.evictFriend(user.getAccount());
     }
 
@@ -125,6 +127,7 @@ public class UserServiceImpl implements UserService {
         userDao.wearingBadge(uid, req.getBadgeId());
         // 删除用户缓存
         userCache.userInfoChange(uid);
+		userSummaryCache.delete(uid);
     }
 
     @Override
