@@ -2,6 +2,7 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.user.dao.BlackDao;
@@ -233,4 +234,16 @@ public class UserServiceImpl implements UserService {
             log.error("duplicate black ip:{}", ip);
         }
     }
+
+	public Boolean subElectricity(Long uid) {
+		User user = userDao.getById(uid);
+		UpdateWrapper<User> uw = new UpdateWrapper<>();
+		uw.lambda().set(User::getNum, user.getNum() - 1).eq(User::getId, user.getId());
+		boolean success = userDao.update(uw);
+		if(success){
+			userCache.remove(uid);
+			userSummaryCache.delete(uid);
+		}
+		return success;
+	}
 }

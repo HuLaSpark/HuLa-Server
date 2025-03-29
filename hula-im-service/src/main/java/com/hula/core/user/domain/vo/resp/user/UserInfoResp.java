@@ -37,4 +37,10 @@ public class UserInfoResp extends BaseEntity {
 
     @Schema(description = "头像更换时间")
     private Date avatarUpdateTime;
+
+	@Schema(description = "是否开启上下文[AI模块]")
+	private Boolean context;
+
+	@Schema(description = "调用次数[AI模块]")
+	private Integer num;
 }
