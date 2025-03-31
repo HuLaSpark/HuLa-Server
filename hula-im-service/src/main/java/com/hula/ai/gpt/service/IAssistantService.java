@@ -45,7 +45,7 @@ public interface IAssistantService extends IService<Assistant> {
      * @param param 查询条件
      * @return AI助理功能集合
      */
-	List<AppAssistantVO> listAssistantByApp(AssustantParams param);
+	List<AppAssistantVO> listAssistantByApp(AgreementParam param);
 
     /**
      * 根据主键查询AI助理功能

@@ -44,6 +44,6 @@ public interface AssistantMapper extends BaseMapper<Assistant> {
 	 * @param query 查询条件
 	 * @return
 	 */
-	List<AssistantVO> listAssistantRandom(@Param("q") AssustantParams query);
+	List<AssistantVO> listAssistantRandom(@Param("q") AgreementParam query);
 
 }

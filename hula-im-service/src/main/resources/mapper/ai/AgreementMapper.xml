@@ -5,20 +5,19 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.hula.ai.gpt.pojo.entity.Agreement" >
         <result column="id" property="id"/>
-        <result column="create_user" property="createUser"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_user" property="updateUser"/>
-        <result column="update_time" property="updateTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
         <result column="title" property="title"/>
         <result column="type" property="type"/>
         <result column="status" property="status"/>
         <result column="content" property="content"/>
-        <result column="deleted" property="deleted"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        t.id, t.create_user, t.create_time, t.update_user, t.update_time, t.title, t.type, t.status, t.content, t.deleted
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.title, t.type, t.status, t.content, t.del
     </sql>
 
     <!-- 通用查询条件 -->
@@ -26,14 +25,13 @@
         select <include refid="Base_Column_List"></include>
         from gpt_agreement t
         <where>
-            t.deleted = 0
+            t.del = 0
             <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
             <if test="q.title != null and q.title != ''"> and t.title = #{q.title}</if>
             <if test="q.type != null"> and t.type = #{q.type}</if>
             <if test="q.status != null"> and t.status = #{q.status}</if>
-            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.create_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
-            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.create_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
-            <if test="q.dataScope != null and q.dataScope != ''"> ${q.dataScope} </if>
+            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
+            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
         </where>
         order by t.id desc
     </sql>

@@ -61,10 +61,12 @@ public class AssistantServiceImpl extends ServiceImpl<AssistantMapper, Assistant
     }
 
     @Override
-    public List<AppAssistantVO> listAssistantByApp(AssustantParams param) {
+    public List<AppAssistantVO> listAssistantByApp(AgreementParam param) {
         List<AssistantVO> assistants;
 		if (ObjectUtil.isNotNull(param.getSize()) && ObjectUtil.isNotNull(param.getCurrent())) {
-			assistants = assistantMapper.pageAssistant(new Page(param.getCurrent(), param.getSize()), param).getRecords();
+			AssustantParams params = new AssustantParams();
+			params.setStatus(param.getStatus());
+			assistants = assistantMapper.pageAssistant(new Page(param.getCurrent(), param.getSize()), params).getRecords();
 		} else {
 			assistants = assistantMapper.listAssistantRandom(param);
 		}
