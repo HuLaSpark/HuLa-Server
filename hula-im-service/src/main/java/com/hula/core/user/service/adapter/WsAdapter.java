@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hula.core.chat.domain.dto.ChatMessageMarkDTO;
 import com.hula.core.chat.domain.dto.ChatMsgRecallDTO;
+import com.hula.core.chat.domain.dto.ConverseMessageDto;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.user.domain.entity.IpDetail;
@@ -158,6 +159,16 @@ public class WsAdapter {
 		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(state? WSRespTypeEnum.SHIELD.getType(): WSRespTypeEnum.UNBLOCK.getType());
 		wsBaseResp.setData(StrUtil.format("你已{}屏蔽来自{}的消息", state? "":"解除",name));
+		return wsBaseResp;
+	}
+
+	/**
+	 * 视频消息
+	 */
+	public static WsBaseResp<ConverseMessageDto> buildVideoMsg(ConverseMessageDto message) {
+		WsBaseResp<ConverseMessageDto> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.VIDEO.getType());
+		wsBaseResp.setData(message);
 		return wsBaseResp;
 	}
 }
