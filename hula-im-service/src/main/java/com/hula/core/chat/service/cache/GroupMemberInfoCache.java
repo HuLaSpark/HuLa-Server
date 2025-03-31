@@ -1,5 +1,6 @@
 package com.hula.core.chat.service.cache;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.service.cache.AbstractRedisStringCache;
 import com.hula.core.chat.dao.GroupMemberDao;
@@ -32,8 +33,8 @@ public class GroupMemberInfoCache extends AbstractRedisStringCache<Long, GroupMe
     }
 
     @Override
-    protected Map<Long, GroupMember> load(List<Long> uidList) {
-        List<GroupMember> needLoadUserList = groupMemberDao.listByIds(uidList);
-        return needLoadUserList.stream().collect(Collectors.toMap(GroupMember::getId, Function.identity()));
+    protected Map<Long, GroupMember> load(List<Long> groupIds) {
+        List<GroupMember> needLoadUserList = groupMemberDao.getBaseMapper().selectList(new QueryWrapper<GroupMember>().in("group_id", groupIds));
+        return needLoadUserList.stream().collect(Collectors.toMap(GroupMember::getGroupId, Function.identity()));
     }
 }
