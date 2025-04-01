@@ -1,17 +1,17 @@
 /*
- Navicat Premium Data Transfer
+ Navicat Premium Dump SQL
 
- Source Server         : localhost
+ Source Server         : mysql8
  Source Server Type    : MySQL
- Source Server Version : 80031 (8.0.31)
- Source Host           : localhost:13306
- Source Schema         : im
+ Source Server Version : 80020 (8.0.20)
+ Source Host           : localhost:3306
+ Source Schema         : hula-im
 
  Target Server Type    : MySQL
- Target Server Version : 80031 (8.0.31)
+ Target Server Version : 80020 (8.0.20)
  File Encoding         : 65001
 
- Date: 01/04/2025 19:57:07
+ Date: 02/04/2025 00:46:05
 */
 
 SET NAMES utf8mb4;
@@ -23,18 +23,18 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `ai_gpt_agreement`;
 CREATE TABLE `ai_gpt_agreement`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `title` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '标题',
+  `title` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '标题',
   `type` smallint NULL DEFAULT 0 COMMENT '类型',
   `status` smallint NULL DEFAULT 0 COMMENT '状态 0 禁用 1 启用',
-  `content` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL COMMENT '内容',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `content` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '内容',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '内容管理' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '内容管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_agreement
@@ -51,10 +51,10 @@ INSERT INTO `ai_gpt_agreement` VALUES (5, '如何提高GPT回答的逻辑性', 3
 DROP TABLE IF EXISTS `ai_gpt_assistant`;
 CREATE TABLE `ai_gpt_assistant`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `avatar` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '头像',
+  `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '头像',
   `icon` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '角色图标',
   `title` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '角色名称',
-  `tag` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '标签',
+  `tag` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '标签',
   `main_model` smallint NULL DEFAULT 0 COMMENT '主模型',
   `description` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '角色描述',
   `first_message` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT 'AI打招呼',
@@ -62,7 +62,7 @@ CREATE TABLE `ai_gpt_assistant`  (
   `type_id` bigint NOT NULL DEFAULT 0 COMMENT '助手分类id',
   `sort` int NOT NULL DEFAULT 1 COMMENT '排序',
   `status` smallint NOT NULL DEFAULT 1 COMMENT '状态 0 禁用 1 启用',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
@@ -70,7 +70,7 @@ CREATE TABLE `ai_gpt_assistant`  (
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `type_id`(`type_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = 'AI助理功能' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'AI助理功能' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_assistant
@@ -91,18 +91,18 @@ INSERT INTO `ai_gpt_assistant` VALUES (9, '', '👨‍👩‍👧', '育儿活�
 DROP TABLE IF EXISTS `ai_gpt_assistant_type`;
 CREATE TABLE `ai_gpt_assistant_type`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '分类名称',
-  `icon` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT 'icon图标',
+  `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '分类名称',
+  `icon` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT 'icon图标',
   `sort` int NOT NULL DEFAULT 0 COMMENT '排序',
   `status` smallint NULL DEFAULT 1 COMMENT '状态 0 禁用 1 启用',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '助手分类' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '助手分类' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_assistant_type
@@ -125,18 +125,18 @@ INSERT INTO `ai_gpt_assistant_type` VALUES (11, 'AI作画', 'icon-park-outline:p
 DROP TABLE IF EXISTS `ai_gpt_chat`;
 CREATE TABLE `ai_gpt_chat`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `chat_number` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '聊天编号',
+  `chat_number` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '聊天编号',
   `assistant_id` bigint NOT NULL DEFAULT 0 COMMENT '角色id',
   `uid` bigint NOT NULL COMMENT '会员id',
-  `title` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '聊天摘要',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `title` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '聊天摘要',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169702 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '聊天摘要' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169702 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '聊天摘要' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_chat
@@ -149,26 +149,26 @@ DROP TABLE IF EXISTS `ai_gpt_chat_message`;
 CREATE TABLE `ai_gpt_chat_message`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `chat_id` bigint NOT NULL DEFAULT 0 COMMENT 'chat_id',
-  `message_id` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '消息id',
-  `parent_message_id` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '回复消息id',
-  `model` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型',
-  `model_version` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型版本',
+  `message_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '消息id',
+  `parent_message_id` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '回复消息id',
+  `model` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型',
+  `model_version` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型版本',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '消息内容',
-  `content_type` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '内容类型：text：文字 image : 图片',
-  `role` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '角色',
-  `finish_reason` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '结束原因',
+  `content_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '内容类型：text：文字 image : 图片',
+  `role` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '角色',
+  `finish_reason` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '结束原因',
   `status` smallint NULL DEFAULT 1 COMMENT '状态 1 回复中 2正常 3 失败',
-  `app_key` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '使用的key',
+  `app_key` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '使用的key',
   `used_tokens` bigint NOT NULL DEFAULT 0 COMMENT '使用token',
-  `response` longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL COMMENT '响应全文',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `response` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '响应全文',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169735 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '对话消息' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169735 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '对话消息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_chat_message
@@ -180,20 +180,20 @@ CREATE TABLE `ai_gpt_chat_message`  (
 DROP TABLE IF EXISTS `ai_gpt_comb`;
 CREATE TABLE `ai_gpt_comb`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `title` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '套餐名称',
+  `title` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '套餐名称',
   `type` smallint NULL DEFAULT 1 COMMENT '套餐类型 1 次数 2 天数',
   `num` int NULL DEFAULT 0 COMMENT '包含次数',
   `origin_price` decimal(10, 2) NULL DEFAULT 0.00 COMMENT '原价',
   `price` decimal(10, 2) NULL DEFAULT 0.00 COMMENT '价格',
   `status` smallint NULL DEFAULT 1 COMMENT '状态 0 禁用 1 启用',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '会员套餐' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '会员套餐' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_comb
@@ -210,23 +210,23 @@ INSERT INTO `ai_gpt_comb` VALUES (5, '500次全年包', 1, 5000, 199.99, 99.99, 
 DROP TABLE IF EXISTS `ai_gpt_model`;
 CREATE TABLE `ai_gpt_model`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `name` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型名称',
-  `icon` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型logo',
-  `model` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型名称',
+  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型名称',
+  `icon` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型logo',
+  `model` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型名称',
   `local_model_type` int NOT NULL DEFAULT 0 COMMENT '本地模型类型：1、Langchian；2、ollama；3、Giteeai',
-  `model_url` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型接口',
-  `knowledge` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '知识库名称',
-  `version` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型版本',
+  `model_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型接口',
+  `knowledge` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '知识库名称',
+  `version` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型版本',
   `sort` int NOT NULL DEFAULT 0 COMMENT '排序',
   `status` smallint NOT NULL DEFAULT 1 COMMENT '状态 0 禁用 1 启用',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '大模型信息' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '大模型信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_model
@@ -248,15 +248,15 @@ INSERT INTO `ai_gpt_model` VALUES (10, '豆包', 'back/model/doubao.png', 'douba
 DROP TABLE IF EXISTS `ai_gpt_openkey`;
 CREATE TABLE `ai_gpt_openkey`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `model` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '模型',
-  `app_id` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT 'appid',
-  `app_key` varchar(512) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT 'app key对应openai的token',
-  `app_secret` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT 'app密钥',
+  `model` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '模型',
+  `app_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT 'appid',
+  `app_key` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT 'app key对应openai的token',
+  `app_secret` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT 'app密钥',
   `total_tokens` bigint NOT NULL DEFAULT 0 COMMENT '总额度',
   `used_tokens` bigint NOT NULL DEFAULT 0 COMMENT '已用额度',
   `surplus_tokens` bigint NOT NULL DEFAULT 0 COMMENT '剩余token',
   `status` int NOT NULL DEFAULT 1 COMMENT '状态 0 禁用 1 启用',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
@@ -265,7 +265,7 @@ CREATE TABLE `ai_gpt_openkey`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `app_key`(`app_key` ASC) USING BTREE,
   INDEX `model`(`model` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = 'openai token' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'openai token' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_openkey
@@ -286,21 +286,21 @@ DROP TABLE IF EXISTS `ai_gpt_order`;
 CREATE TABLE `ai_gpt_order`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `success_time` datetime NULL DEFAULT NULL COMMENT '支付成功时间',
-  `trade_no` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT '' COMMENT '订单号',
-  `transaction_id` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '渠道交易ID',
+  `trade_no` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '订单号',
+  `transaction_id` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '渠道交易ID',
   `uid` bigint NOT NULL DEFAULT 0 COMMENT '下单用户',
   `comb_id` bigint NOT NULL DEFAULT 0 COMMENT '购买套餐',
   `price` decimal(10, 2) NULL DEFAULT 0.00 COMMENT '价格',
   `chanel` smallint NULL DEFAULT -1 COMMENT '支付渠道 1 微信小程序 2、微信公众号 3、微信h5 4、微信扫码',
   `status` smallint NULL DEFAULT -1 COMMENT '订单状态 1 待支付 2 支付成功 3 支付超时 4 已退款',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '订单' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '订单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_order
@@ -312,19 +312,19 @@ CREATE TABLE `ai_gpt_order`  (
 DROP TABLE IF EXISTS `ai_gpt_redemption`;
 CREATE TABLE `ai_gpt_redemption`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `code` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '兑换码',
+  `code` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '兑换码',
   `num` int NULL DEFAULT 0 COMMENT '可兑次数',
   `uid` bigint NULL DEFAULT 0 COMMENT '兑换人',
   `recieve_time` int NULL DEFAULT NULL COMMENT '兑换时间',
   `status` int NULL DEFAULT 0 COMMENT '状态 0 未兑换 1 已兑换',
-  `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   `created_by` bigint NOT NULL COMMENT '创建者',
   `created_time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '兑换码' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '兑换码' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of ai_gpt_redemption
@@ -439,7 +439,7 @@ INSERT INTO `config` VALUES (3, 'qiniu_up_config', '{\"title\":\"空间域名 Do
 INSERT INTO `config` VALUES (4, 'qiniu_up_config', '{\"title\":\"accessKey\",\"componentType\":\"text\",\"value\":\"LXrRo61111111111111AQaUGUJ\",\"configKey\":\"qnAccessKey\",\"type\":\"qiniu_up_config\"}', 'qnAccessKey', 'LXrRo61111111111111AQaUGUJ', 0);
 INSERT INTO `config` VALUES (5, 'qiniu_up_config', '{\"title\":\"SecretKey\",\"componentType\":\"text\",\"value\":\"BY22222222LKgX6C300BlVS-llemF2Hg\",\"configKey\":\"qnSecretKey\",\"type\":\"qiniu_up_config\"}', 'qnSecretKey', 'BY22222222LKgX6C300BlVS-llemF2Hg', 0);
 INSERT INTO `config` VALUES (6, 'qiniu_up_config', '{\"title\":\"存储空间名称\",\"componentType\":\"text\",\"value\":\"hula\",\"configKey\":\"qnStorageName\",\"type\":\"qiniu_up_config\"}', 'qnStorageName', 'hula-spark', 0);
-INSERT INTO `config` VALUES (7, 'qiniu_up_config', '{\"title\":\"七牛云CDN（访问图片用的）\",\"componentType\":\"text\",\"value\":\"https://file.hula.com/\",\"configKey\":\"qnStorageCDN\",\"type\":\"qiniu_up_config\"}', 'qnStorageCDN', 'https://cdn.hulaspark.com', 0);
+INSERT INTO `config` VALUES (7, 'qiniu_up_config', '{\"title\":\"七牛云CDN（访问图片用的）\",\"componentType\":\"text\",\"value\":\"https://file.hula.com/\",\"configKey\":\"qnStorageCDN\",\"type\":\"qiniu_up_config\"}', 'qnStorageCDN', 'https://xxxxxx.com', 0);
 INSERT INTO `config` VALUES (8, 'system', '{\"title\":\"大群ID\",\"componentType\":\"text\",\"value\":\"1\",\"configKey\":\"roomGroupId\",\"type\":\"system\"}', 'roomGroupId', '1', 0);
 INSERT INTO `config` VALUES (9, 'qiniu_up_config', '{\"title\":\"超过多少MB开启分片上传\",\"componentType\":\"text\",\"value\":\"500\",\"configKey\":\"turnSharSize\",\"type\":\"qiniu_up_config\"}', 'turnSharSize', '4', 0);
 INSERT INTO `config` VALUES (10, 'qiniu_up_config', '{\"title\":\"分片大小\",\"componentType\":\"text\",\"value\":\"50\",\"configKey\":\"fragmentSize\",\"type\":\"shop_config\"}', 'fragmentSize', '2', 0);
@@ -478,7 +478,6 @@ CREATE TABLE `contact`  (
 -- ----------------------------
 -- Records of contact
 -- ----------------------------
-INSERT INTO `contact` VALUES (10937855681025, 10937855681024, 1, 0, 0, '2025-04-01 19:15:16.811', 1, 0, NULL, NULL, '2025-03-27 04:23:08.420', '2025-04-01 19:15:16.818');
 
 -- ----------------------------
 -- Table structure for feed
@@ -667,21 +666,12 @@ CREATE TABLE `room`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11804382110721 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '房间表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '房间表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of room
 -- ----------------------------
-INSERT INTO `room` VALUES (1, 1, 1, '2025-04-01 19:03:23.481', 12971317175296, NULL, '2024-07-10 11:17:15.521', '2025-04-01 19:03:23.563');
-INSERT INTO `room` VALUES (11229133317122, 2, 0, '2025-03-29 12:54:31.331', 11791325242368, NULL, '2025-03-27 23:40:34.539', '2025-03-29 12:54:31.449');
-INSERT INTO `room` VALUES (11367692149762, 2, 0, '2025-03-28 08:51:18.166', 11367729898496, NULL, '2025-03-28 08:51:09.404', '2025-03-28 08:51:18.214');
-INSERT INTO `room` VALUES (11515000300546, 2, 0, '2025-03-28 22:11:20.627', 11569064879104, NULL, '2025-03-28 18:36:30.836', '2025-03-28 22:11:20.686');
-INSERT INTO `room` VALUES (11515012883458, 2, 0, '2025-03-28 18:36:33.240', 11515012883460, NULL, '2025-03-28 18:36:33.219', '2025-03-28 18:36:33.291');
-INSERT INTO `room` VALUES (11794076705794, 2, 0, '2025-03-29 13:05:27.817', 11794076705796, NULL, '2025-03-29 13:05:27.797', '2025-03-29 13:05:27.873');
-INSERT INTO `room` VALUES (11794085094402, 2, 0, '2025-03-29 13:05:29.193', 11794085094404, NULL, '2025-03-29 13:05:29.175', '2025-03-29 13:05:29.234');
-INSERT INTO `room` VALUES (11794630353920, 1, 0, '2025-03-29 13:07:39.457', 11794630353927, NULL, '2025-03-29 13:07:39.200', '2025-03-29 13:07:39.546');
-INSERT INTO `room` VALUES (11803039933440, 1, 0, '2025-03-29 13:41:04.451', 11803039933446, NULL, '2025-03-29 13:41:04.169', '2025-03-29 13:41:04.542');
-INSERT INTO `room` VALUES (11804382110720, 1, 0, '2025-04-01 14:18:46.547', 12899691045888, NULL, '2025-03-29 13:46:24.546', '2025-04-01 14:18:46.615');
+INSERT INTO `room` VALUES (1, 1, 1, '2025-04-02 00:42:40.881', NULL, NULL, '2025-04-02 00:42:40.881', '2025-04-02 00:42:40.881');
 
 -- ----------------------------
 -- Table structure for room_friend
@@ -707,12 +697,6 @@ CREATE TABLE `room_friend`  (
 -- ----------------------------
 -- Records of room_friend
 -- ----------------------------
-INSERT INTO `room_friend` VALUES (11229133317123, 11229133317122, 10937855681024, 11225442329600, '10937855681024,11225442329600', 0, 0, '2025-03-27 23:40:34.548', '2025-03-27 23:40:34.548');
-INSERT INTO `room_friend` VALUES (11367692149763, 11367692149762, 11003672699392, 11049889735168, '11003672699392,11049889735168', 0, 0, '2025-03-28 08:51:09.406', '2025-03-28 08:51:09.406');
-INSERT INTO `room_friend` VALUES (11515000300547, 11515000300546, 10937855681024, 11419261117440, '10937855681024,11419261117440', 0, 0, '2025-03-28 18:36:30.839', '2025-03-28 18:36:30.839');
-INSERT INTO `room_friend` VALUES (11515012883459, 11515012883458, 10937855681024, 11406854366208, '10937855681024,11406854366208', 0, 0, '2025-03-28 18:36:33.221', '2025-03-28 18:36:33.221');
-INSERT INTO `room_friend` VALUES (11794076705795, 11794076705794, 10937855681024, 11792579339264, '10937855681024,11792579339264', 0, 0, '2025-03-29 13:05:27.800', '2025-03-29 13:05:27.800');
-INSERT INTO `room_friend` VALUES (11794085094403, 11794085094402, 10937855681024, 11793372062720, '10937855681024,11793372062720', 0, 0, '2025-03-29 13:05:29.179', '2025-03-29 13:05:29.179');
 
 -- ----------------------------
 -- Table structure for room_group
@@ -738,9 +722,6 @@ CREATE TABLE `room_group`  (
 -- Records of room_group
 -- ----------------------------
 INSERT INTO `room_group` VALUES (1, 1, 'hula-ds240401', 'HuLa官方频道', 'https://cdn.hulaspark.com/avatar/hula.png', NULL, 0, '2024-07-10 11:17:15.523', '2025-03-31 20:59:45.523');
-INSERT INTO `room_group` VALUES (11794630353922, 11794630353920, 'hula-3LeMkyQL', '测试群bug群', 'https://cdn.hulaspark.com/avatar/2439646234/cface6fcc52bae9c3d59bcf8014318b2.webp', NULL, 0, '2025-03-29 13:07:39.211', '2025-03-29 13:07:39.211');
-INSERT INTO `room_group` VALUES (11803039933442, 11803039933440, 'hula-3LnXsiDh', '测试群bug2群', 'https://cdn.hulaspark.com/avatar/2439646234/5bc6e2e65225019c6b4a1cf974b2799b.webp', NULL, 0, '2025-03-29 13:41:04.175', '2025-03-29 13:41:04.175');
-INSERT INTO `room_group` VALUES (11804382110722, 11804382110720, 'hula-3Lp0iLqL', 'bug反馈群', 'https://cdn.hulaspark.com/avatar/2439646234/cb0d74199060ed6d4f2720b8aa302432.webp', NULL, 0, '2025-03-29 13:46:24.551', '2025-03-29 13:46:24.551');
 
 -- ----------------------------
 -- Table structure for secure_invoke_record
@@ -834,7 +815,6 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (10937855681024, 'Dawn', 'https://cdn.hulaspark.com/avatar/2439646234/ae862ed84ac12da587d79c93ebbe9045.webp', '2439646234@qq.com', '2439646234', NULL, '', 2, 14, '2025-04-01 19:17:56.864', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"117.181.235.53\", \"createIpDetail\": {\"ip\": \"206.237.119.215\", \"isp\": \"XX\", \"area\": \"\", \"city\": \"XX\", \"isp_id\": \"xx\", \"region\": \"XX\", \"city_id\": \"xx\", \"country\": \"美国\", \"region_id\": \"xx\", \"country_id\": \"US\"}, \"updateIpDetail\": {\"ip\": \"117.181.235.53\", \"isp\": \"移动\", \"area\": \"\", \"city\": \"柳州\", \"isp_id\": \"100025\", \"region\": \"广西\", \"city_id\": \"450200\", \"country\": \"中国\", \"region_id\": \"450000\", \"country_id\": \"CN\"}}', 6, 0, '2025-03-27 04:23:08.393', '2025-04-01 19:17:56.882', 'k.23772439646234', '2025-03-29 13:24:17.085', 0, 0);
 
 -- ----------------------------
 -- Table structure for user_apply
@@ -885,9 +865,6 @@ CREATE TABLE `user_backpack`  (
 -- ----------------------------
 -- Records of user_backpack
 -- ----------------------------
-INSERT INTO `user_backpack` VALUES (10937855681027, 10937855681024, 1, 0, '1_1_10937855681024', '2025-03-27 04:23:08.580', '2025-03-27 04:23:08.580');
-INSERT INTO `user_backpack` VALUES (10937855681028, 10937855681024, 3, 0, '3_1_10937855681024', '2025-03-27 04:23:08.564', '2025-03-27 04:23:08.564');
-INSERT INTO `user_backpack` VALUES (10937855681029, 10937855681024, 6, 0, '6_1_10937855681024', '2025-03-27 04:27:34.443', '2025-03-27 04:27:34.443');
 
 -- ----------------------------
 -- Table structure for user_block
@@ -926,13 +903,6 @@ CREATE TABLE `user_emoji`  (
 -- ----------------------------
 -- Records of user_emoji
 -- ----------------------------
-INSERT INTO `user_emoji` VALUES (10951726244352, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/c64611c3bbbcd197552b7f84ac4b709b.jpg', 0, '2025-03-27 05:18:15.512', '2025-03-27 05:18:15.512');
-INSERT INTO `user_emoji` VALUES (11099252499456, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/34c18e6c846bf18525a2eb180179ff5a.jpg', 0, '2025-03-27 15:04:28.904', '2025-03-27 15:04:28.904');
-INSERT INTO `user_emoji` VALUES (11099458020352, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/bb124e9812456b4f6c9c2b3dcfeb859b.jpg', 0, '2025-03-27 15:05:17.671', '2025-03-27 15:05:17.671');
-INSERT INTO `user_emoji` VALUES (12637274416128, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/710683d87faa15a807c58574a6ee8c81.png', 0, '2025-03-31 20:56:01.302', '2025-03-31 20:56:01.302');
-INSERT INTO `user_emoji` VALUES (12637333136384, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/322eed8d06539028c2e9c27212ee232c.png', 0, '2025-03-31 20:56:15.350', '2025-03-31 20:56:15.350');
-INSERT INTO `user_emoji` VALUES (12637379273728, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/6ac23bb3a9a384ada1e82f41d181e4bc.png', 0, '2025-03-31 20:56:26.793', '2025-03-31 20:56:26.793');
-INSERT INTO `user_emoji` VALUES (12637450576896, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/ae4e6c0e10667c33f0066eaf7444c3a9.png', 0, '2025-03-31 20:56:43.103', '2025-03-31 20:56:43.103');
 
 -- ----------------------------
 -- Table structure for user_friend
@@ -958,18 +928,6 @@ CREATE TABLE `user_friend`  (
 -- ----------------------------
 -- Records of user_friend
 -- ----------------------------
-INSERT INTO `user_friend` VALUES (11229133317120, 10937855681024, 11225442329600, 0, 0, 0, 0, NULL, '2025-03-27 23:40:34.527', '2025-03-27 23:40:34.527');
-INSERT INTO `user_friend` VALUES (11229133317121, 11225442329600, 10937855681024, 0, 0, 0, 0, NULL, '2025-03-27 23:40:34.529', '2025-03-27 23:40:34.529');
-INSERT INTO `user_friend` VALUES (11367692149760, 11003672699392, 11049889735168, 0, 0, 0, 0, NULL, '2025-03-28 08:51:09.397', '2025-03-28 08:51:09.397');
-INSERT INTO `user_friend` VALUES (11367692149761, 11049889735168, 11003672699392, 0, 0, 0, 0, NULL, '2025-03-28 08:51:09.399', '2025-03-28 08:51:09.399');
-INSERT INTO `user_friend` VALUES (11515000300544, 10937855681024, 11419261117440, 0, 0, 0, 0, NULL, '2025-03-28 18:36:30.828', '2025-03-28 18:36:30.828');
-INSERT INTO `user_friend` VALUES (11515000300545, 11419261117440, 10937855681024, 0, 0, 0, 0, NULL, '2025-03-28 18:36:30.830', '2025-03-28 18:36:30.830');
-INSERT INTO `user_friend` VALUES (11515012883456, 10937855681024, 11406854366208, 0, 0, 0, 0, NULL, '2025-03-28 18:36:33.214', '2025-03-28 18:36:33.214');
-INSERT INTO `user_friend` VALUES (11515012883457, 11406854366208, 10937855681024, 0, 0, 0, 0, NULL, '2025-03-28 18:36:33.215', '2025-03-28 18:36:33.215');
-INSERT INTO `user_friend` VALUES (11794076705792, 10937855681024, 11792579339264, 0, 0, 0, 0, NULL, '2025-03-29 13:05:27.789', '2025-03-29 13:05:27.789');
-INSERT INTO `user_friend` VALUES (11794076705793, 11792579339264, 10937855681024, 0, 0, 0, 0, NULL, '2025-03-29 13:05:27.791', '2025-03-29 13:05:27.791');
-INSERT INTO `user_friend` VALUES (11794085094400, 10937855681024, 11793372062720, 0, 0, 0, 0, NULL, '2025-03-29 13:05:29.167', '2025-03-29 13:05:29.167');
-INSERT INTO `user_friend` VALUES (11794085094401, 11793372062720, 10937855681024, 0, 0, 0, 0, NULL, '2025-03-29 13:05:29.169', '2025-03-29 13:05:29.169');
 
 -- ----------------------------
 -- Table structure for user_role
@@ -1080,16 +1038,12 @@ CREATE TABLE `worker_node`  (
   `modified` timestamp NULL DEFAULT NULL COMMENT '修改时间',
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 85 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of worker_node
 -- ----------------------------
-INSERT INTO `worker_node` VALUES (80, '172.19.0.2', '1743020152589-45802', 2, '2025-03-27', '2025-03-27 04:15:53', '2025-03-27 04:15:53');
-INSERT INTO `worker_node` VALUES (81, '172.24.0.5', '1743020334526-47834', 2, '2025-03-27', '2025-03-27 04:18:55', '2025-03-27 04:18:55');
-INSERT INTO `worker_node` VALUES (82, '172.19.0.2', '1743057680832-8203', 2, '2025-03-27', '2025-03-27 14:41:21', '2025-03-27 14:41:21');
-INSERT INTO `worker_node` VALUES (83, '192.168.1.105', '1743508524841-32864', 2, '2025-04-01', '2025-04-01 19:55:25', '2025-04-01 19:55:25');
-INSERT INTO `worker_node` VALUES (84, '192.168.1.105', '1743508546813-7663', 2, '2025-04-01', '2025-04-01 19:55:47', '2025-04-01 19:55:47');
+INSERT INTO `worker_node` VALUES (1, '172.25.160.1', '1743525637043-17657', 2, '2025-04-02', '2025-04-02 00:40:37', '2025-04-02 00:40:37');
 
 -- ----------------------------
 -- Table structure for wx_msg
