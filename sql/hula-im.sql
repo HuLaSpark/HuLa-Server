@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 01/04/2025 19:45:32
+ Date: 01/04/2025 19:57:07
 */
 
 SET NAMES utf8mb4;
@@ -428,7 +428,7 @@ CREATE TABLE `config`  (
   `is_del` tinyint UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `key`(`config_key` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '参数配置表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '参数配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of config
@@ -446,6 +446,10 @@ INSERT INTO `config` VALUES (10, 'qiniu_up_config', '{\"title\":\"分片大小\"
 INSERT INTO `config` VALUES (11, 'qiniu_up_config', '{\"title\":\"OSS引擎\",\"componentType\":\"text\",\"value\":\"qiniu\",\"configKey\":\"storageDefault\",\"type\":\"shop_config\"}', 'storageDefault', 'qiniu', 0);
 INSERT INTO `config` VALUES (12, 'system', '{\"title\":\"Hula注册邮箱模板\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"codeHtmlTemplate\",\"type\":\"shop_config\"}', 'codeHtmlTemplate', '<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\" /><title>{}</title></head><body><div style=\"background-color: #ececec; padding: 15px\"><table cellpadding=\"0\" align=\"center\" style=\"width: 600px; margin: 0px auto; text-align: left; position: relative; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; font-size: 14px; font-family: 微软雅黑, 黑体; line-height: 1.5; box-shadow: rgb(153, 153, 153) 0px 0px 5px; border-collapse: collapse; background-position: initial initial; background-repeat: initial initial; background: #fff\"><tbody><tr><th valign=\"middle\" style=\"height: 25px; line-height: 25px; padding: 15px 35px; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; text-align: center\"><img src=\"https://cdn.hulaspark.com/avatar/logo.png\" width=\"180\" height=\"80\" alt=\"HuLa Logo\" /></th></tr><tr><td><div style=\"padding: 6px 35px 10px; background-color: #fff\"><h2 style=\"margin: 5px 0px\"><font color=\"#333333\" style=\"line-height: 20px\"><font style=\"line-height: 22px\" size=\"4\">亲爱的<b>{}</b>用户，您好：</font></font></h2><p>首先感谢您使用{}，请在验证页面输入以下验证码:<br /><p style=\"font-size: 18px; text-align: center; font-weight: bold\">{}</p>本验证码{}分钟内有效，为了保障您的账户安全，请不要告诉别人<br />如果您有什么疑问可以联系管理员，Email: {} </p><p align=\"right\">{}</p><p align=\"right\">{}</p><div style=\"width: 700px; margin: 0 auto\"><div style=\"padding: 10px 10px 0; border-top: 1px solid #ccc; color: #747474; margin-bottom: 20px; line-height: 1.3em; font-size: 12px\"><p>本邮件系统自动发送，请勿回复<br />请保管好您的邮箱，避免账号被他人盗用</p></div></div></div></td></tr></tbody></table></div></body></html>', 0);
 INSERT INTO `config` VALUES (13, 'system', '{\"title\":\"Hula管理员邮箱\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"masterEmail\",\"type\":\"system\"}', 'masterEmail', '', 0);
+INSERT INTO `config` VALUES (14, 'system', '{\"title\":\"AI基础信息\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"baseInfo\",\"type\":\"site_config\"}', 'baseInfo', '{\"contentSecurity\":0,\"copyright\":\"© 2025 earth 湘ICP备2022002234号-1 xxxx技有限公司\",\"descrip\":\"HulaAi，基于AI大模型api实现的ChatGPT服务，支持ChatGPT(3.5、4.0)模型，同时也支持国内文心一言(支持Stable-Diffusion-XL作图)、通义千问、讯飞星火、智谱清言(ChatGLM)等主流模型，支出同步响应及流式响应，完美呈现打印机效果。\",\"keywords\":[\"通义千问\",\"ChatGPT\",\"文心一言\",\"智谱清言\"],\"proxyServer\":\"\",\"siteTitle\":\"HulaAi\",\"domain\":\"https://gpt.panday94.xyz\",\"proxyType\":2,\"siteLogo\":\"\"}', 0);
+INSERT INTO `config` VALUES (15, 'system', '{\"title\":\"AI 扩展配置\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"extraInfo\",\"type\":\"site_config\"}', 'extraInfo', '{\"ossType\":1,\"smsType\":0}', 0);
+INSERT INTO `config` VALUES (16, 'system', '{\"title\":\"AI AppInfo\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"appInfo\",\"type\":\"site_config\"}', 'appInfo', '{\"h5Url\":\"https://gpt.panday94.xyz/h5\",\"isSms\":1,\"homeNotice\":\"确保合法合规使用，在运营过程中产生的一切问题后果自负，与作者无关。!\",\"isGptLimit\":0,\"isShare\":1,\"shareRewardNum\":\"20\",\"freeNum\":\"5\",\"isRedemption\":1}', 0);
+INSERT INTO `config` VALUES (17, 'system', '{\"title\":\"AI 微信配置\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"wxInfo\",\"type\":\"site_config\"}', 'wxInfo', '{\"mpLogin\":0,\"mpPay\":0,\"maAppId\":\"xx\",\"maSecret\":\"xx\",\"mpAppId\":\"xx\",\"mpSecret\":\"xx\",\"mchNo\":\"xx\",\"v3Secret\":\"xx\"}', 0);
 
 -- ----------------------------
 -- Table structure for contact
@@ -1076,7 +1080,7 @@ CREATE TABLE `worker_node`  (
   `modified` timestamp NULL DEFAULT NULL COMMENT '修改时间',
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 83 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 85 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of worker_node
@@ -1084,6 +1088,8 @@ CREATE TABLE `worker_node`  (
 INSERT INTO `worker_node` VALUES (80, '172.19.0.2', '1743020152589-45802', 2, '2025-03-27', '2025-03-27 04:15:53', '2025-03-27 04:15:53');
 INSERT INTO `worker_node` VALUES (81, '172.24.0.5', '1743020334526-47834', 2, '2025-03-27', '2025-03-27 04:18:55', '2025-03-27 04:18:55');
 INSERT INTO `worker_node` VALUES (82, '172.19.0.2', '1743057680832-8203', 2, '2025-03-27', '2025-03-27 14:41:21', '2025-03-27 14:41:21');
+INSERT INTO `worker_node` VALUES (83, '192.168.1.105', '1743508524841-32864', 2, '2025-04-01', '2025-04-01 19:55:25', '2025-04-01 19:55:25');
+INSERT INTO `worker_node` VALUES (84, '192.168.1.105', '1743508546813-7663', 2, '2025-04-01', '2025-04-01 19:55:47', '2025-04-01 19:55:47');
 
 -- ----------------------------
 -- Table structure for wx_msg
