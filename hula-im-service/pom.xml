@@ -56,6 +56,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>dashscope-sdk-java</artifactId>
             <version>2.11.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- 智谱清言sdk -->
         <dependency>
@@ -68,17 +74,18 @@
             <groupId>com.volcengine</groupId>
             <artifactId>volcengine-java-sdk-ark-runtime</artifactId>
             <version>0.1.151</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel-core</artifactId>
             <version>4.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.knuddels</groupId>
-            <artifactId>jtokkit</artifactId>
-        </dependency>
-
 
         <dependency>
             <groupId>com.HuLa</groupId>

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/converse")
 @Tag(name = "converse", description = "通话模块")
-public class VideoChatController {
+public class ConverseController {
 
     @Resource
     private ConverseService converseService;
