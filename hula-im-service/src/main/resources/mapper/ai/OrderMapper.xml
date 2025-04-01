@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hula.ai.gpt.mapper.OrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hula.ai.gpt.pojo.entity.Order" >
+        <result column="id" property="id"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="success_time" property="successTime"/>
+        <result column="trade_no" property="tradeNo"/>
+        <result column="transaction_id" property="transactionId"/>
+        <result column="user_id" property="userId"/>
+        <result column="comb_id" property="combId"/>
+        <result column="price" property="price"/>
+        <result column="chanel" property="chanel"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.success_time, t.trade_no, t.transaction_id,
+            t.user_id, t.comb_id, t.price, t.chanel, t.status, t.del
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="BaseSelect">
+        select <include refid="Base_Column_List"></include>, t1.nick_name as userName, t2.title as combName
+        from gpt_order t
+        left join gpt_user t1 on t.user_id = t1.id
+        left join gpt_comb t2 on t.comb_id = t2.id
+        <where>
+            t.del = 0
+            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
+            <if test="q.successTime != null"> and t.success_time = #{q.successTime}</if>
+            <if test="q.tradeNo != null and q.tradeNo != ''"> and t.trade_no = #{q.tradeNo}</if>
+            <if test="q.transactionId != null and q.transactionId != ''"> and t.transaction_id = #{q.transactionId}</if>
+            <if test="q.userId != null"> and t.user_id = #{q.userId}</if>
+            <if test="q.combId != null"> and t.comb_id = #{q.combId}</if>
+            <if test="q.price != null"> and t.price = #{q.price}</if>
+            <if test="q.chanel != null"> and t.chanel = #{q.chanel}</if>
+            <if test="q.status != null"> and t.status = #{q.status}</if>
+            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
+            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
+        </where>
+        order by t.id desc
+    </sql>
+
+    <select id="pageOrder" resultType="com.hula.ai.gpt.pojo.vo.OrderVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="listOrder" resultType="com.hula.ai.gpt.pojo.vo.OrderVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="getOrder" resultType="com.hula.ai.gpt.pojo.vo.OrderVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+</mapper>

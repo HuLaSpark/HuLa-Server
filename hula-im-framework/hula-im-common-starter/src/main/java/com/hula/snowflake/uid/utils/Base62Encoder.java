@@ -10,7 +10,7 @@ public class Base62Encoder {
 	 * @return
 	 */
 	public static String createAccount(long id){
-		return "Hula_" + encode(id, 19);
+		return "hula-" + encode(id, 19);
 	}
 	/**
 	 * 将Long型ID编码为定长Base62字符串（可配置12-19位）

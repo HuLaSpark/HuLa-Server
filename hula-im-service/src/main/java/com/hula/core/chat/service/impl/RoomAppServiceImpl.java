@@ -233,6 +233,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 		// 3.通知群里所有人群信息修改了
 		if(success){
+			roomGroupCache.delete(roomGroup.getId());
 			roomGroupCache.evictGroup(roomGroup.getAccount());
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildRoomGroupChangeWS(roomGroup.getRoomId(), roomGroup.getName(), roomGroup.getAvatar()), memberUidList, uid);

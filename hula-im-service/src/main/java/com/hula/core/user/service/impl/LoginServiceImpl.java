@@ -74,11 +74,6 @@ public class LoginServiceImpl implements LoginService {
 		return tokenService.refreshToken(refreshTokenReq);
 	}
 
-	public static void main(String[] args) {
-		String[] split = "2134@adaw".split("@");
-		System.out.println();
-	}
-
 	@Override
     @Transactional(rollbackFor = Exception.class)
     public void normalRegister(RegisterReq req) {

@@ -4,7 +4,6 @@ import com.hula.core.user.domain.vo.req.user.BindEmailReq;
 import com.hula.core.user.service.CaptchaService;
 import com.hula.core.user.service.EmailService;
 import com.hula.domain.vo.res.ApiResult;
-import com.hula.utils.RequestHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;

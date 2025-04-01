@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hula.ai.gpt.mapper.RedemptionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hula.ai.gpt.pojo.entity.Redemption" >
+        <result column="id" property="id"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="code" property="code"/>
+        <result column="num" property="num"/>
+        <result column="user_id" property="userId"/>
+        <result column="recieve_time" property="recieveTime"/>
+        <result column="status" property="status"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.code, t.num, t.user_id, t.recieve_time, t.status, t.del
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="BaseSelect">
+        select <include refid="Base_Column_List"></include>, t1.nick_name as userName
+        from gpt_redemption t
+        left join gpt_user t1 on t.user_id = t1.id
+        <where>
+            t.del = 0
+            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
+            <if test="q.code != null and q.code != ''"> and t.code = #{q.code}</if>
+            <if test="q.num != null"> and t.num = #{q.num}</if>
+            <if test="q.userId != null"> and t.user_id = #{q.userId}</if>
+            <if test="q.recieveTime != null"> and t.recieve_time = #{q.recieveTime}</if>
+            <if test="q.status != null"> and t.status = #{q.status}</if>
+            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
+            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
+        </where>
+        order by t.id desc
+    </sql>
+
+    <select id="pageRedemption" resultType="com.hula.ai.gpt.pojo.vo.RedemptionVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="listRedemption" resultType="com.hula.ai.gpt.pojo.vo.RedemptionVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="getRedemption" resultType="com.hula.ai.gpt.pojo.vo.RedemptionVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+</mapper>

@@ -42,4 +42,6 @@ public interface ConfigService {
 	 * 获取系统全局配置
 	 */
 	Init getSystemInit();
+
+	<T> T getBeanByName(String name, Class<T> t);
 }

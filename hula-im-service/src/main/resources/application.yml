@@ -1,5 +1,26 @@
 server:
   port: 9190
+xss:
+  enabled: true
+  requestBodyEnabled: true
+  order: -100
+  ignorePaths:
+    - /doc.html
+    - /swagger-ui.html
+    - /v2/api-docs
+    - /v3/api-docs
+    - /csrf
+    - /webjars/**
+    - /swagger-resources/**
+    - /static/**
+    - /public/static/**
+    - /public/download/**
+    - /actuator/health
+    - /actuator/info
+    - /noxss/**
+    - /activiti/**
+    - /service/model/**
+    - /service/editor/**
 logging:
   level:
     com.hula.service.web: INFO

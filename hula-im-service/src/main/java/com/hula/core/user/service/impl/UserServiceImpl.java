@@ -2,6 +2,7 @@ package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.hula.common.event.UserBlackEvent;
 import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.user.dao.BlackDao;
@@ -82,6 +83,7 @@ public class UserServiceImpl implements UserService {
             // 改名
             userDao.modifyName(uid, req.getName());
             // 删除缓存
+			userSummaryCache.delete(uid);
             userCache.userInfoChange(uid);
 			userCache.evictFriend(userCache.getUserInfo(uid).getAccount());
         }
@@ -99,6 +101,7 @@ public class UserServiceImpl implements UserService {
         userDao.updateById(User.builder().id(user.getId()).avatar(req.getAvatar()).avatarUpdateTime(DateUtil.date()).build());
         // 删除缓存
         userCache.userInfoChange(uid);
+		userSummaryCache.delete(uid);
 		userCache.evictFriend(user.getAccount());
     }
 
@@ -125,6 +128,7 @@ public class UserServiceImpl implements UserService {
         userDao.wearingBadge(uid, req.getBadgeId());
         // 删除用户缓存
         userCache.userInfoChange(uid);
+		userSummaryCache.delete(uid);
     }
 
     @Override
@@ -230,4 +234,16 @@ public class UserServiceImpl implements UserService {
             log.error("duplicate black ip:{}", ip);
         }
     }
+
+	public Boolean subElectricity(Long uid) {
+		User user = userDao.getById(uid);
+		UpdateWrapper<User> uw = new UpdateWrapper<>();
+		uw.lambda().set(User::getNum, user.getNum() - 1).eq(User::getId, user.getId());
+		boolean success = userDao.update(uw);
+		if(success){
+			userCache.remove(uid);
+			userSummaryCache.delete(uid);
+		}
+		return success;
+	}
 }

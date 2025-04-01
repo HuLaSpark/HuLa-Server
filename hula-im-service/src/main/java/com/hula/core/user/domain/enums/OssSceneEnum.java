@@ -15,22 +15,22 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum OssSceneEnum {
-    CHAT(1, "聊天", "/chat"),
-    EMOJI(2, "表情包", "/emoji"),
-    AVATAR(3, "头像", "/avatar"),
+    CHAT("chat", "聊天", "/chat"),
+    EMOJI("emoji", "表情包", "/emoji"),
+    AVATAR("avatar", "头像", "/avatar"),
     ;
 
-    private final Integer type;
+    private final String type;
     private final String desc;
     private final String path;
 
-    private static final Map<Integer, OssSceneEnum> cache;
+    private static final Map<String, OssSceneEnum> cache;
 
     static {
         cache = Arrays.stream(OssSceneEnum.values()).collect(Collectors.toMap(OssSceneEnum::getType, Function.identity()));
     }
 
-    public static OssSceneEnum of(Integer type) {
+    public static OssSceneEnum of(String type) {
         return cache.get(type);
     }
 }

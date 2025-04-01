@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hula.ai.gpt.mapper.AssistantMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hula.ai.gpt.pojo.entity.Assistant" >
+        <result column="id" property="id"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="avatar" property="avatar"/>
+        <result column="icon" property="icon"/>
+        <result column="title" property="title"/>
+        <result column="tag" property="tag"/>
+        <result column="type_id" property="typeId"/>
+        <result column="main_model" property="mainModel"/>
+        <result column="sort" property="sort"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="system_prompt" property="systemPrompt"/>
+        <result column="first_message" property="firstMessage"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.avatar, t.icon, t.title, t.tag, t.description, t.system_prompt, t.first_message,
+            t.type_id, t.main_model, t.status, t.sort, t.del
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="BaseSelect">
+        select <include refid="Base_Column_List"></include>, t1.name as typeName
+        from gpt_assistant t
+        left join gpt_assistant_type t1 on t.type_id = t1.id
+        <where>
+            t.del = 0
+            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
+            <if test="q.title != null and q.title != ''"> and t.title like concat('%', #{q.title}, '%')</if>
+            <if test="q.typeId != null and q.typeId != '' and q.typeId != -1"> and t.type_id = #{q.typeId}</if>
+            <if test="q.mainModel != null"> and t.main_model = #{q.mainModel}</if>
+            <if test="q.sort != null"> and t.sort = #{q.sort}</if>
+            <if test="q.status != null"> and t.status = #{q.status}</if>
+            <if test="q.description != null and q.description != ''"> and t.description = #{q.description}</if>
+            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
+            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
+        </where>
+        order by t.sort desc, t.id desc
+    </sql>
+
+    <select id="pageAssistant" resultType="com.hula.ai.gpt.pojo.vo.AssistantVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="listAssistant" resultType="com.hula.ai.gpt.pojo.vo.AssistantVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="listAssistantRandom" resultType="com.hula.ai.gpt.pojo.vo.AssistantVO">
+        select <include refid="Base_Column_List"></include>
+        from gpt_assistant t
+        <where>
+            t.del = 0
+            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
+            <if test="q.title != null and q.title != ''"> and t.title = #{q.title}</if>
+            <if test="q.typeId != null and q.typeId != -1"> and t.type_id = #{q.typeId}</if>
+            <if test="q.mainModel != null"> and t.main_model = #{q.mainModel}</if>
+            <if test="q.sort != null"> and t.sort = #{q.sort}</if>
+            <if test="q.status != null"> and t.status = #{q.status}</if>
+            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
+            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
+            <if test="q.dataScope != null and q.dataScope != ''"> ${q.dataScope} </if>
+        </where>
+        ORDER BY RAND() LIMIT #{q.size}
+    </select>
+
+    <select id="getAssistant" resultType="com.hula.ai.gpt.pojo.vo.AssistantVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+</mapper>

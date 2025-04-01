@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hula.ai.gpt.mapper.ChatMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hula.ai.gpt.pojo.entity.Chat" >
+        <result column="id" property="id"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="chat_number" property="chatNumber"/>
+        <result column="assistant_id" property="assistantId"/>
+        <result column="user_id" property="userId"/>
+        <result column="title" property="title"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.chat_number, t.assistant_id, t.user_id, t.title, t.del
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="BaseSelect">
+        select <include refid="Base_Column_List"></include>, t1.nick_name as userName, t2.title as assistantTitle, t2.icon as assistantIcon, t2.avatar as assistantAvatar
+        from gpt_chat t
+        left join gpt_user t1 on t.user_id = t1.id
+        left join gpt_assistant t2 on t.assistant_id = t2.id
+        <where>
+            t.del = 0
+            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
+            <if test="q.userId != null"> and t.user_id = #{q.userId}</if>
+            <if test="q.userName != null"> and (t1.nick_name like concat('%', #{q.userName}, '%') or t1.tel like concat('%', #{q.userName}, '%') )</if>
+            <if test="q.title != null and q.title != ''"> and t.title = #{q.title}</if>
+            <if test="q.assistantId != null"> and t.assistant_id = #{q.assistantId}</if>
+            <if test="q.startDate != null and q.startDate != ''"> and t.create_time &gt;= #{q.startDate} </if>
+            <if test="q.endDate != null and q.endDate != ''"> and t.create_time &lt;= #{q.endDate} </if>
+        </where>
+        order by t.id desc
+    </sql>
+
+    <select id="pageChat" resultType="com.hula.ai.gpt.pojo.vo.ChatVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="listChat" resultType="com.hula.ai.gpt.pojo.vo.ChatVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="getChat" resultType="com.hula.ai.gpt.pojo.vo.ChatVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+</mapper>

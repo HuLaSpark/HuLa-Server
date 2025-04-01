@@ -69,4 +69,22 @@ public class ApiResult<T> {
         result.setMsg(msg);
         return result;
     }
+
+	public static ApiResult returnResult(String msg, int num){
+		if(num > 0){
+			ApiResult<Object> result = ApiResult.success();
+			result.setMsg(msg + "成功");
+			return result;
+		}
+		return ApiResult.fail(-1, msg + "失败");
+	}
+
+	public static ApiResult returnResult(String msg, boolean num){
+		if(num){
+			ApiResult<Object> result = ApiResult.success();
+			result.setMsg(msg + "成功");
+			return result;
+		}
+		return ApiResult.fail(-1, msg + "失败");
+	}
 }

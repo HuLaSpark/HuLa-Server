@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hula.ai.gpt.mapper.ModelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hula.ai.gpt.pojo.entity.Model" >
+        <result column="id" property="id"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="name" property="name"/>
+        <result column="icon" property="icon"/>
+        <result column="model" property="model"/>
+        <result column="version" property="version"/>
+        <result column="local_model_type" property="localModelType"/>
+        <result column="model_url" property="modelUrl"/>
+        <result column="knowledge" property="knowledge"/>
+        <result column="sort" property="sort"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.name, t.icon, t.model, t.version, t.local_model_type, t.model_url, t.knowledge, t.sort, t.status, t.del
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="BaseSelect">
+        select <include refid="Base_Column_List"></include>
+        from gpt_model t
+        <where>
+            t.del = 0
+            <if test="model != null and model != ''"> and t.model = #{model}</if>
+        </where>
+        order by t.sort desc, t.id desc
+    </sql>
+
+    <select id="pageModel" resultType="com.hula.ai.gpt.pojo.vo.ModelVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="listModel" resultType="com.hula.ai.gpt.pojo.vo.ModelVO">
+        <include refid="BaseSelect"></include>
+    </select>
+
+    <select id="getModel" resultType="com.hula.ai.gpt.pojo.vo.ModelVO">
+        <include refid="BaseSelect"></include>
+        limit 1
+    </select>
+
+</mapper>

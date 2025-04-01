@@ -132,6 +132,12 @@ public class User implements Serializable {
     @TableField("avatar_update_time")
     private Date avatarUpdateTime;
 
+	@Schema(description = "是否开启上下文[AI模块]")
+	private Boolean context;
+
+	@Schema(description = "调用次数[AI模块]")
+	private Integer num;
+
     public void refreshIp(String ip) {
         if (ipInfo == null) {
             ipInfo = new IpInfo();

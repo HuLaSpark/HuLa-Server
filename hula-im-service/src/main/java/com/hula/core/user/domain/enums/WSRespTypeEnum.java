@@ -1,5 +1,6 @@
 package com.hula.core.user.domain.enums;
 
+import com.hula.core.chat.domain.dto.ConverseMessageDto;
 import com.hula.core.chat.domain.vo.response.ChatMyRoomGroupChange;
 import com.hula.core.chat.domain.vo.response.ChatRoomGroupChange;
 import com.hula.core.user.domain.vo.resp.user.OffLineResp;
@@ -33,6 +34,8 @@ public enum WSRespTypeEnum {
     INVALID_USER("invalidUser", "拉黑用户", WSBlack.class),
     MSG_MARK_ITEM("msgMarkItem", "消息标记", WSMsgMark.class),
     MSG_RECALL("msgRecall", "消息撤回", WSMsgRecall.class),
+	VIDEO("video", "视频消息", ConverseMessageDto.class),
+	PHONE("phone", "语音消息", null),
 	ROOM_GROUP_NOTICE_MSG("roomGroupNoticeMsg", "群公告消息", null),
 	ROOM_GROUP_NOTICE_READ_MSG("roomGroupNoticeReadMsg", "群公告已读", null),
 	FEED_SEND_MSG("feedSendMsg", "朋友圈发布", null),
