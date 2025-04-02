@@ -88,7 +88,6 @@ public class RoomAppServiceImpl implements RoomAppService {
     
     private ContactDao contactDao;
     private RoomCache roomCache;
-	private GroupMemberInfoCache groupMemberInfoCache;
     private RoomGroupCache roomGroupCache;
     private RoomFriendCache roomFriendCache;
     private UserInfoCache userInfoCache;
@@ -488,6 +487,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), member.getUid());
         pushService.sendPushMsg(ws, memberUidList, uid);
         groupMemberCache.evictMemberUidList(room.getId());
+		groupMemberCache.evictMemberDetail(room.getId(), removedUid);
     }
 
 
@@ -634,7 +634,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                         AbstractMsgHandler strategyNoNull = MsgHandlerFactory.getStrategyNoNull(message.getType());
                         // 判断是群聊还是单聊
                         if (Objects.equals(roomBaseInfo.getType(), RoomTypeEnum.GROUP.getType())) {
-                            resp.setText(lastMsgUidMap.get(message.getFromUid()).getName() + ":" + strategyNoNull.showContactMsg(message));
+							resp.setText((StrUtil.isNotEmpty(resp.getMyName())? resp.getMyName(): lastMsgUidMap.get(message.getFromUid()).getName()) + ":" + strategyNoNull.showContactMsg(message));
                         } else {
                             resp.setText(strategyNoNull.showContactMsg(message));
                         }
@@ -697,7 +697,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                 roomBaseInfo.setName(roomGroup.getName());
                 roomBaseInfo.setAvatar(roomGroup.getAvatar());
 				roomBaseInfo.setAccount(roomGroup.getAccount());
-				GroupMember member = groupMemberInfoCache.get(roomBaseInfo.getId());
+				GroupMember member = groupMemberCache.getMemberDetail(roomBaseInfo.getId(), uid);
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
 				if(ObjectUtil.isNotNull(member)){
 					roomBaseInfo.setMyName(member.getMyName());

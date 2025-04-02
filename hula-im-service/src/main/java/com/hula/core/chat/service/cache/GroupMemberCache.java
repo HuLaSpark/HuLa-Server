@@ -1,7 +1,9 @@
 package com.hula.core.chat.service.cache;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.RoomGroupDao;
+import com.hula.core.chat.domain.entity.GroupMember;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import jakarta.annotation.Resource;
 import org.springframework.cache.annotation.CacheEvict;
@@ -49,6 +51,31 @@ public class GroupMemberCache {
 			return null;
 		}
 		return groupMemberDao.getMemberUidList(roomGroup.getId(), false);
+	}
+
+	/**
+	 * 获取指定成员在群中的详细信息
+	 * @param roomId 聊天室ID
+	 * @param memberUid 成员用户ID
+	 * @return 成员详细信息
+	 */
+	@Cacheable(cacheNames = "memberDetail", key = "'groupMemberDetail:' + #roomId + ':' + #memberUid")
+	public GroupMember getMemberDetail(Long roomId, Long memberUid) {
+		return groupMemberDao.getBaseMapper().selectOne(new QueryWrapper<GroupMember>()
+				.eq("group_id", roomId)
+				.eq("uid", memberUid)
+				.last("LIMIT 1")
+		);
+	}
+
+	@CacheEvict(cacheNames = "memberDetail", key = "'groupMemberDetail:' + #roomId + ':' + #memberUid")
+	public void evictMemberDetail(Long roomId, Long memberUid) {
+		// 清理单个成员缓存
+	}
+
+	@CacheEvict(cacheNames = "memberDetail", allEntries = true)
+	public void evictAllMemberDetails() {
+		// 清理所有成员详情缓存（慎用）
 	}
 
 	/**
