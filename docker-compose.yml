@@ -6,22 +6,22 @@ services:
 #    ports:
 #      - "3306:3306"
 #    volumes:
-#      - /docker/mysql/data:/var/lib/mysql
+#      - ./docker/mysql/data:/var/lib/mysql
 #    environment: #指定root密码
 #      TZ: Asia/Shanghai
 #      MYSQL_ROOT_PASSWORD: 123456
 
   redis:
-    image: redis:latest
+    image: redis:6.2.6
     container_name: redis
     restart: always
-    environment: #指定root密码
+    environment:
       TZ: Asia/Shanghai
     ports:
       - "6379:6379"
     volumes:
-      - /docker/redis/data:/data
-      - /docker/redis/redis.conf:/etc/redis/redis.conf
+      - ./docker/redis/data:/data
+      - ./docker/redis/redis.conf:/etc/redis/redis.conf
     command: [ "redis-server","/etc/redis/redis.conf" ]
 
   rocketmq-namesrv:
@@ -72,7 +72,7 @@ services:
     ports:
       - 8180:8080
     volumes:
-      - /docker/console/data:/tmp/rocketmq-console/data
+      - ./docker/console/data:/tmp/rocketmq-console/data
     environment:
       TZ: Asia/Shanghai
       JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Drocketmq.config.loginRequired=true -Drocketmq.config.aclEnabled=true -Drocketmq.config.accessKey=hulaspark -Drocketmq.config.secretKey=hula123456789"
@@ -97,8 +97,8 @@ services:
       MINIO_COMPRESS_EXTENSIONS: "" # 扩展名 .pdf,.doc 为空 所有类型均压缩
       MINIO_COMPRESS_MIME_TYPES: "" # mime 类型 application/pdf 为空 所有类型均压缩
     volumes:
-      - /docker/minio/data:/data/ # 映射当前目录下的data目录至容器内/data目录
-      - /docker/minio/config:/root/.minio/ # 映射配置目录
+      - ./docker/minio/data:/data/ # 映射当前目录下的data目录至容器内/data目录
+      - ./docker/minio/config:/root/.minio/ # 映射配置目录
     command: server --address ':9000' --console-address ':9001' /data  # 指定容器中的目录 /data
     privileged: true
 
