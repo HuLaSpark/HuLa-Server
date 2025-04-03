@@ -16,10 +16,10 @@ public class RoomMyInfoReq {
 	private Long id;
 
 	@Schema(description ="我在群里面的名称")
-	@Size(min = 1, max = 20, message = "我在群里面的名称称长度必须在1到20个字符之间")
+	@Size(min = 0, max = 12, message = "我在群里面的名称称长度必须在0到12个字符之间")
 	private String myName;
 
 	@Schema(description ="群备注")
-	@Size(min = 1, max = 10, message = "群备注长度必须在1到10个字符之间")
+	@Size(min = 0, max = 10, message = "群备注长度必须在0到10个字符之间")
 	private String remark;
 }

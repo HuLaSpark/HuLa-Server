@@ -25,7 +25,7 @@ public class FriendRemarkReq {
     private Long targetUid;
 
 	@NotBlank(message = "好友备注不能是空")
-	@Size(min = 1, max = 10, message = "好友备注长度必须在1到10个字符之间")
+	@Size(min = 0, max = 10, message = "好友备注长度必须在0到10个字符之间")
 	@Schema(description = "好友备注")
 	private String remark;
 }
