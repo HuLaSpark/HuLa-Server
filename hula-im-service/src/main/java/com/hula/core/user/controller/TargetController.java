@@ -47,7 +47,7 @@ public class TargetController {
 
 	@GetMapping("/detail")
 	@Operation(summary = "查看`我`创建的标签")
-	public ApiResult<Target> detail(@RequestParam("id")Long id){
+	public ApiResult<Target> detail(@RequestParam("id") Long id){
 		return ApiResult.success(targetService.detail(id));
 	}
 

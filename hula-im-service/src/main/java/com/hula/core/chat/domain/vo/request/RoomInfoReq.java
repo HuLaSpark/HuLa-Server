@@ -3,6 +3,7 @@ package com.hula.core.chat.domain.vo.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -16,6 +17,7 @@ public class RoomInfoReq {
 	private Long id;
 
 	@NotEmpty(message = "群名称不能为空")
+	@Size(min = 1, max = 10, message = "群名称长度必须在1到10个字符之间")
 	@Schema(description ="群名称")
 	private String name;
 

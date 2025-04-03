@@ -2,6 +2,7 @@ package com.hula.core.chat.domain.vo.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -15,8 +16,10 @@ public class RoomMyInfoReq {
 	private Long id;
 
 	@Schema(description ="我在群里面的名称")
+	@Size(min = 1, max = 20, message = "我在群里面的名称称长度必须在1到20个字符之间")
 	private String myName;
 
 	@Schema(description ="群备注")
+	@Size(min = 1, max = 10, message = "群备注长度必须在1到10个字符之间")
 	private String remark;
 }
