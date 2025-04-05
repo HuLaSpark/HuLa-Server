@@ -137,6 +137,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             AssertUtil.isTrue(isDelMessage, CommonErrorEnum.SYSTEM_ERROR);
 			// 4.5 告知所有人群已经被解散, 这里要走groupMemberDao查询，缓存中可能没有屏蔽群的用户
 			groupMemberCache.evictMemberUidList(room.getId());
+			groupMemberCache.evictAllMemberDetails();
 			List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
 			pushService.sendPushMsg(RoomAdapter.buildGroupDissolution(roomGroup.getName()), memberUidList, uid);
         } else {
@@ -151,6 +152,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), uid);
             pushService.sendPushMsg(ws, memberUidList, uid);
             groupMemberCache.evictMemberUidList(room.getId());
+			groupMemberCache.evictMemberDetail(room.getId(), uid);
         }
     }
 }

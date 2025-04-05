@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class FeedParam extends OperParam {
 	private Long id;
 
 	@Schema(description = "朋友圈文案")
+	@Size(min = 1, max = 2000, message = "朋友圈文案必须在1到2000个字符之间")
 	private String content;
 
 	/**
