@@ -33,6 +33,8 @@ public class ImgMsgDTO extends BaseFileDTO implements Serializable {
     @NotNull
     private Integer height;
 
+	@Schema(description ="回复的消息id")
+	private Long replyMsgId;
 }
 
 

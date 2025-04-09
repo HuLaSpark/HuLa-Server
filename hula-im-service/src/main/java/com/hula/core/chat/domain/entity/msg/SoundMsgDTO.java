@@ -28,4 +28,7 @@ public class SoundMsgDTO extends BaseFileDTO implements Serializable {
     @Schema(description ="时长（秒）")
     @NotNull
     private Integer second;
+
+	@Schema(description ="回复的消息id")
+	private Long replyMsgId;
 }

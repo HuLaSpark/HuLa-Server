@@ -30,6 +30,7 @@ public class ImgMsgHandler extends AbstractMsgHandler<ImgMsgDTO> {
         Message update = new Message();
         update.setId(msg.getId());
         update.setExtra(extra);
+		update.setReplyMsgId(body.getReplyMsgId());
         extra.setImgMsgDTO(body);
         messageDao.updateById(update);
     }

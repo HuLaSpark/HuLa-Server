@@ -28,4 +28,6 @@ public class FileMsgDTO extends BaseFileDTO implements Serializable {
     @NotBlank
     private String fileName;
 
+	@Schema(description ="回复的消息id")
+	private Long replyMsgId;
 }

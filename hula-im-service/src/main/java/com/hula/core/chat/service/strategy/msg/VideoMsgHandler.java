@@ -30,6 +30,7 @@ public class VideoMsgHandler extends AbstractMsgHandler<VideoMsgDTO> {
         Message update = new Message();
         update.setId(msg.getId());
         update.setExtra(extra);
+		update.setReplyMsgId(body.getReplyMsgId());
         extra.setVideoMsgDTO(body);
         messageDao.updateById(update);
     }
