@@ -53,7 +53,7 @@ public class EmailServiceImpl implements EmailService {
 		}
 
 		try{
-			int expireTime = 300;
+			int expireTime = 1800;
 			// 3. 发送邮箱验证码到用户邮箱
 			String systemName = configService.get("systemName");
 			String time = LocalDateTimeUtil.format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss");

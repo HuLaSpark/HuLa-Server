@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -77,7 +78,14 @@ public class LoginServiceImpl implements LoginService {
 	@Override
     @Transactional(rollbackFor = Exception.class)
     public void normalRegister(RegisterReq req) {
-		String emailCode = RedisUtils.hget("emailCode", req.getUuid()).toString();
+		String emailCode;
+		Object codeObj = RedisUtils.hget("emailCode", req.getUuid());
+		if (ObjectUtil.isNotNull(codeObj)) {
+			emailCode = codeObj.toString();
+		} else {
+			throw new BizException("验证码已过期");
+		}
+
 		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
 			throw new BizException("验证码错误!");
 		}
