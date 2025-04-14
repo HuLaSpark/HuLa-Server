@@ -635,7 +635,7 @@ public class RoomAppServiceImpl implements RoomAppService {
                         // 判断是群聊还是单聊
                         if (Objects.equals(roomBaseInfo.getType(), RoomTypeEnum.GROUP.getType())) {
 							GroupMember messageUser = groupMemberCache.getMemberDetail(roomBaseInfo.getRoomId(), message.getFromUid());
-							resp.setText((StrUtil.isNotEmpty(messageUser.getMyName())? messageUser.getMyName(): lastMsgUidMap.get(message.getFromUid()).getName()) + ":" + strategyNoNull.showContactMsg(message));
+							resp.setText(ObjectUtil.isNotNull(messageUser) && StrUtil.isNotEmpty(messageUser.getMyName())? messageUser.getMyName(): (lastMsgUidMap.get(message.getFromUid()).getName()) + ":" + strategyNoNull.showContactMsg(message));
                         } else {
                             resp.setText(strategyNoNull.showContactMsg(message));
                         }
