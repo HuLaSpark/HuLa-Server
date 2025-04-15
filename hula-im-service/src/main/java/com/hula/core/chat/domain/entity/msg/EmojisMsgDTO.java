@@ -25,6 +25,9 @@ public class EmojisMsgDTO implements Serializable {
     @Schema(description ="下载地址")
     @NotBlank
     private String url;
+
+	@Schema(description ="回复的消息id")
+	private Long replyMsgId;
 }
 
 

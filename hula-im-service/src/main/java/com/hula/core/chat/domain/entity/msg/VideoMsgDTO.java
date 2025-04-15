@@ -41,4 +41,6 @@ public class VideoMsgDTO extends BaseFileDTO implements Serializable {
     @NotBlank
     private String thumbUrl;
 
+	@Schema(description ="回复的消息id")
+	private Long replyMsgId;
 }

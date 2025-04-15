@@ -1,6 +1,7 @@
 package com.hula.core.user.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.hula.common.event.UserBlackEvent;
@@ -186,7 +187,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean bindEmail(Long uid, BindEmailReq req) {
 		// 1.校验验证码
-		String emailCode = RedisUtils.hget("emailCode", req.getUuid()).toString();
+		String emailCode;
+		Object codeObj = RedisUtils.hget("emailCode", req.getUuid());
+		if (ObjectUtil.isNotNull(codeObj)) {
+			emailCode = codeObj.toString();
+		} else {
+			throw new BizException("验证码已过期");
+		}
+
 		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
 			throw new BizException("验证码错误!");
 		}

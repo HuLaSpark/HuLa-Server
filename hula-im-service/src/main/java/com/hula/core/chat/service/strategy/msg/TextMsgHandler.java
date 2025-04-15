@@ -86,7 +86,6 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
             Integer gapCount = messageDao.getGapCount(msg.getRoomId(), body.getReplyMsgId(), msg.getId());
             update.setGapCount(gapCount);
             update.setReplyMsgId(body.getReplyMsgId());
-
         }
         //判断消息url跳转
         Map<String, UrlInfo> urlContentMap = URL_TITLE_DISCOVER.getUrlContentMap(body.getContent());

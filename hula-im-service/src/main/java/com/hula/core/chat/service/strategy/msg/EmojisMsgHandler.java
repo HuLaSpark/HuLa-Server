@@ -30,6 +30,7 @@ public class EmojisMsgHandler extends AbstractMsgHandler<EmojisMsgDTO> {
         Message update = new Message();
         update.setId(msg.getId());
         update.setExtra(extra);
+		update.setReplyMsgId(body.getReplyMsgId());
         extra.setEmojisMsgDTO(body);
         messageDao.updateById(update);
     }

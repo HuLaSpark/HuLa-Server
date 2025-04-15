@@ -29,6 +29,7 @@ public class SoundMsgHandler extends AbstractMsgHandler<SoundMsgDTO> {
         Message update = new Message();
         update.setId(msg.getId());
         update.setExtra(extra);
+		update.setReplyMsgId(body.getReplyMsgId());
         extra.setSoundMsgDTO(body);
         messageDao.updateById(update);
     }

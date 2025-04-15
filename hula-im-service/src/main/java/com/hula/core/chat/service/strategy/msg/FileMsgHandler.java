@@ -30,6 +30,7 @@ public class FileMsgHandler extends AbstractMsgHandler<FileMsgDTO> {
         Message update = new Message();
         update.setId(msg.getId());
         update.setExtra(extra);
+		update.setReplyMsgId(body.getReplyMsgId());
         extra.setFileMsg(body);
         messageDao.updateById(update);
     }
