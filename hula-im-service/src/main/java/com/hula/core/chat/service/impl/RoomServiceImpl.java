@@ -203,7 +203,7 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
-	public IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page) {
-		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("uid", uid).eq("room_id", roomId));
+	public IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page) {
+		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("room_id", roomId));
 	}
 }

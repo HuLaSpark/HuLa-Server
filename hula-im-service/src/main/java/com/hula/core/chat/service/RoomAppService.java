@@ -96,7 +96,7 @@ public interface RoomAppService {
 	 * 获取公告列表
 	 * @return
 	 */
-	IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page);
+	IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page);
 
 	/**
 	 * 已读公告

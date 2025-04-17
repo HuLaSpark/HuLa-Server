@@ -98,5 +98,5 @@ public interface RoomService {
 	 */
 	void createGroupMember(Long groupId, Long uid);
 
-	IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page);
+	IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page);
 }

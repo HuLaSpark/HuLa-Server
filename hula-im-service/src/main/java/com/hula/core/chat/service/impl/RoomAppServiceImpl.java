@@ -305,8 +305,8 @@ public class RoomAppServiceImpl implements RoomAppService {
 	}
 
 	@Override
-	public IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page) {
-		return roomService.announcementList(uid, roomId, page);
+	public IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page) {
+		return roomService.announcementList(roomId, page);
 	}
 
 	@Override

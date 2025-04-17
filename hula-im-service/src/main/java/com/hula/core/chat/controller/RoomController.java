@@ -163,7 +163,7 @@ public class RoomController {
 	@GetMapping("/announcement/list/{id}")
 	public ApiResult<IPage<Announcements>> announcementList(@PathVariable("id") Long roomId, @RequestParam("current") Long current,@RequestParam("size") Long size){
 		IPage<Announcements> page = new Page<>(current,size);
-		return ApiResult.success(roomService.announcementList(RequestHolder.get().getUid(), roomId, page));
+		return ApiResult.success(roomService.announcementList(roomId, page));
 	}
 
 	@Operation(summary = "查看公告")
