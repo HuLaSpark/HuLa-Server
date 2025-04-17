@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
+import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
@@ -27,6 +28,7 @@ import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -89,6 +91,12 @@ public interface RoomAppService {
 	 * @return
 	 */
 	Boolean pushAnnouncement(Long uid, AnnouncementsParam param);
+
+	/**
+	 * 获取公告列表
+	 * @return
+	 */
+	IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page);
 
 	/**
 	 * 已读公告

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hula.common.domain.vo.res.GroupListVO;
-import com.hula.common.enums.NormalOrNoEnum;
 import com.hula.core.chat.dao.AnnouncementsDao;
 import com.hula.core.chat.dao.AnnouncementsReadRecordDao;
 import com.hula.core.chat.domain.entity.Announcements;
@@ -201,5 +200,10 @@ public class RoomServiceImpl implements RoomService {
 		groupMember.setRole(3);
 		groupMember.setUid(uid);
 		groupMemberDao.save(groupMember);
+	}
+
+	@Override
+	public IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page) {
+		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("uid", uid).eq("room_id", roomId));
 	}
 }

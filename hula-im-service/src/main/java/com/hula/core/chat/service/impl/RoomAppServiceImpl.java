@@ -75,6 +75,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -301,6 +302,11 @@ public class RoomAppServiceImpl implements RoomAppService {
 			return roomService.saveBatchAnnouncementsRecord(announcementsReadRecordList);
 		}
 		return false;
+	}
+
+	@Override
+	public IPage<Announcements> announcementList(Long uid, Long roomId, IPage<Announcements> page) {
+		return roomService.announcementList(uid, roomId, page);
 	}
 
 	@Override
