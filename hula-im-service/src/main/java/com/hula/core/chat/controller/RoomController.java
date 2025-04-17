@@ -159,7 +159,7 @@ public class RoomController {
     }
 
 	@Operation(summary = "查看公告")
-	@GetMapping("/announcement/{id}")
+	@GetMapping("/announcement")
 	public ApiResult announcement(ReadAnnouncementsParam param){
 		return ApiResult.success(roomService.getAnnouncement(RequestHolder.get().getUid(), param));
 	}

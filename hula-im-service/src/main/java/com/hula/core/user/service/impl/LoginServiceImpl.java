@@ -14,6 +14,7 @@ import com.hula.core.chat.service.ContactService;
 import com.hula.core.chat.service.RoomService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.vo.req.user.ForgotPasswordReq;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
 import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
 import com.hula.core.user.domain.vo.req.user.RegisterReq;
@@ -78,17 +79,7 @@ public class LoginServiceImpl implements LoginService {
 	@Override
     @Transactional(rollbackFor = Exception.class)
     public void normalRegister(RegisterReq req) {
-		String emailCode;
-		Object codeObj = RedisUtils.hget("emailCode", req.getUuid());
-		if (ObjectUtil.isNotNull(codeObj)) {
-			emailCode = codeObj.toString();
-		} else {
-			throw new BizException("验证码已过期");
-		}
-
-		if(StrUtil.isEmpty(emailCode) || !emailCode.equals(req.getCode())){
-			throw new BizException("验证码错误!");
-		}
+		checkCode(req.getUuid(), req.getCode());
 
 		// 2. 检查邮箱是否已被其他用户绑定
 		if (userDao.existsByEmailAndIdNot(null, req.getEmail())) {
@@ -159,6 +150,38 @@ public class LoginServiceImpl implements LoginService {
 			applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
 		} catch (Exception e) {
 			throw TokenExceedException.expired();
+		}
+	}
+
+	@Override
+	public Boolean forgotPassword(ForgotPasswordReq req) {
+		// 1. 校验
+		checkCode(req.getUuid(), req.getCode());
+
+		// 2. 修改密码
+		User dbuUser = userDao.getByEmail(req.getEmail());
+		User user = new User();
+		user.setId(dbuUser.getId());
+		user.setPassword(req.getPassword());
+		return userDao.updateById(user);
+	}
+
+	/**
+	 * 检查验证码
+	 * @param uuid 验证码id
+	 * @param code 验证码值
+	 */
+	private static void checkCode(String uuid, String code) {
+		String emailCode;
+		Object codeObj = RedisUtils.hget("emailCode", uuid);
+		if (ObjectUtil.isNotNull(codeObj)) {
+			emailCode = codeObj.toString();
+		} else {
+			throw new BizException("验证码已过期");
+		}
+
+		if (StrUtil.isEmpty(emailCode) || !emailCode.equals(code)) {
+			throw new BizException("验证码错误!");
 		}
 	}
 
