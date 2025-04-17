@@ -75,7 +75,6 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -277,7 +276,8 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 	@Override
 	public Boolean pushAnnouncement(Long uid, AnnouncementsParam param) {
-		List<Long> uids = roomService.getGroupUsers(param.getRoomId(), false);
+		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
+		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
 		if(CollUtil.isNotEmpty(uids)){
 			LocalDateTime now = LocalDateTime.now();
 			pushService.sendPushMsg(MessageAdapter.buildRoomGroupAnnouncement(param.getContent()), uids, uid);
@@ -342,6 +342,19 @@ public class RoomAppServiceImpl implements RoomAppService {
 		// todo 需要测试看看重新加载公告已读数量对不对
 		announcement.setCount(count);
 		return announcement;
+	}
+
+	@Override
+	public Boolean announcementDelete(Long uid, Long id) {
+		// 1. 鉴权
+		RoomGroup roomGroup = roomGroupCache.get(id);
+		GroupMember groupMember = verifyGroupPermissions(uid, roomGroup);
+
+		if(GroupRoleEnum.MEMBER.getType().equals(groupMember.getRole())) {
+			return false;
+		}
+
+		return roomService.announcementDelete(id);
 	}
 
 	@Override

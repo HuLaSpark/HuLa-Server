@@ -148,6 +148,11 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
+	public Boolean announcementDelete(Long id) {
+		return announcementsDao.removeById(id);
+	}
+
+	@Override
 	public Boolean saveAnnouncements(Announcements announcements) {
 		return announcementsDao.save(announcements);
 	}

@@ -109,6 +109,11 @@ public interface RoomAppService {
 	AnnouncementsResp getAnnouncement(Long uid, ReadAnnouncementsParam param);
 
 	/**
+	 * 删除公告
+	 */
+	Boolean announcementDelete(Long uid, Long id);
+
+	/**
 	 * 隐藏会话
 	 * @return
 	 */

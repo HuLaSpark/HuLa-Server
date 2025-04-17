@@ -178,6 +178,12 @@ public class RoomController {
 		return ApiResult.success(roomService.pushAnnouncement(RequestHolder.get().getUid(), param));
 	}
 
+	@Operation(summary = "删除公告")
+	@PostMapping("announcement/delete/{id}")
+	public ApiResult announcementDelete(@PathVariable("id") Long id){
+		return ApiResult.success(roomService.announcementDelete(RequestHolder.get().getUid(), id));
+	}
+
 	@Operation(summary = "已读公告")
 	@PostMapping("announcement/read")
 	public ApiResult readAnnouncement(@RequestBody ReadAnnouncementsParam param){
