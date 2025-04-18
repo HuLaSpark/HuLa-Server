@@ -162,3 +162,4 @@ public:
     - /token/register
     - /captcha/captcha
     - /captcha/sendCode
+    - /token/forgotPassword
