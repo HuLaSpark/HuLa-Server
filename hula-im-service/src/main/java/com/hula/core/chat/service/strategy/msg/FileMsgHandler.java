@@ -37,7 +37,10 @@ public class FileMsgHandler extends AbstractMsgHandler<FileMsgDTO> {
 
     @Override
     public Object showMsg(Message msg) {
-        return msg.getExtra().getFileMsg();
+		FileMsgDTO resp = msg.getExtra().getFileMsg();
+		resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));
+		resp.setReply(replyMsg(msg));
+		return resp;
     }
 
     @Override

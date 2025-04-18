@@ -2,6 +2,7 @@ package com.hula.core.chat.service.strategy.msg;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.hula.common.enums.YesOrNoEnum;
+import com.hula.core.chat.domain.entity.msg.ReplyMsg;
 import com.hula.utils.AssertUtil;
 import com.hula.common.utils.discover.PrioritizedUrlDiscover;
 import com.hula.common.utils.discover.domain.UrlInfo;
@@ -105,24 +106,7 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
         resp.setContent(msg.getContent());
         resp.setUrlContentMap(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getUrlContentMap).orElse(null));
         resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));
-        //回复消息
-        Optional<Message> reply = Optional.ofNullable(msg.getReplyMsgId())
-                .map(msgPlusCache::get)
-                .filter(a -> Objects.equals(a.getStatus(), MessageStatusEnum.NORMAL.getStatus()));
-        // TODO 这里的缓存不会立即删除，导致撤回消息后回复的信息还有 (nyh -> 2024-07-14 03:46:34)
-        if (reply.isPresent()) {
-            Message replyMessage = reply.get();
-            TextMsgResp.ReplyMsg replyMsgVO = new TextMsgResp.ReplyMsg();
-            replyMsgVO.setId(replyMessage.getId());
-            replyMsgVO.setUid(replyMessage.getFromUid());
-            replyMsgVO.setType(replyMessage.getType());
-            replyMsgVO.setBody(MsgHandlerFactory.getStrategyNoNull(replyMessage.getType()).showReplyMsg(replyMessage));
-            User replyUser = userCache.getUserInfo(replyMessage.getFromUid());
-            replyMsgVO.setUsername(replyUser.getName());
-            replyMsgVO.setCanCallback(YesOrNoEnum.toStatus(Objects.nonNull(msg.getGapCount()) && msg.getGapCount() <= MessageAdapter.CAN_CALLBACK_GAP_COUNT));
-            replyMsgVO.setGapCount(msg.getGapCount());
-            resp.setReply(replyMsgVO);
-        }
+		resp.setReply(replyMsg(msg));
         return resp;
     }
 

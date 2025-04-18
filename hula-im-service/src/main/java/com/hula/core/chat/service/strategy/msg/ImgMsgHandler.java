@@ -37,7 +37,10 @@ public class ImgMsgHandler extends AbstractMsgHandler<ImgMsgDTO> {
 
     @Override
     public Object showMsg(Message msg) {
-        return msg.getExtra().getImgMsgDTO();
+		ImgMsgDTO resp = msg.getExtra().getImgMsgDTO();
+		resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));
+		resp.setReply(replyMsg(msg));
+		return resp;
     }
 
     @Override
