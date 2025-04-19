@@ -1,22 +1,36 @@
 package com.hula.core.chat.service.strategy.msg;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.hula.common.enums.YesOrNoEnum;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.entity.Message;
+import com.hula.core.chat.domain.entity.msg.ReplyMsg;
+import com.hula.core.chat.domain.enums.MessageStatusEnum;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
 import com.hula.core.chat.domain.vo.request.ChatMessageReq;
 import com.hula.core.chat.service.adapter.MessageAdapter;
+import com.hula.core.chat.service.cache.MsgPlusCache;
+import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.service.cache.UserCache;
 import com.hula.utils.AssertUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Objects;
+import java.util.Optional;
 
 
 public abstract class AbstractMsgHandler<T> {
     @Resource
     private MessageDao messageDao;
+
+	@Resource
+	private MsgPlusCache msgPlusCache;
+
+	@Resource
+	private UserCache userCache;
 
     private Class<T> bodyClass;
 
@@ -61,6 +75,32 @@ public abstract class AbstractMsgHandler<T> {
      * 展示消息
      */
     public abstract Object showMsg(Message msg);
+
+	/**
+	 * 回复消息
+	 * @param msg 消息主体
+	 * @return
+	 */
+	public ReplyMsg replyMsg(Message msg){
+		Optional<Message> reply = Optional.ofNullable(msg.getReplyMsgId())
+				.map(msgPlusCache::get)
+				.filter(a -> Objects.equals(a.getStatus(), MessageStatusEnum.NORMAL.getStatus()));
+		// TODO 这里的缓存不会立即删除，导致撤回消息后回复的信息还有 (nyh -> 2024-07-14 03:46:34)
+		if (reply.isPresent()) {
+			Message replyMessage = reply.get();
+			ReplyMsg replyMsgVO = new ReplyMsg();
+			replyMsgVO.setId(replyMessage.getId());
+			replyMsgVO.setUid(replyMessage.getFromUid());
+			replyMsgVO.setType(replyMessage.getType());
+			replyMsgVO.setBody(MsgHandlerFactory.getStrategyNoNull(replyMessage.getType()).showReplyMsg(replyMessage));
+			User replyUser = userCache.getUserInfo(replyMessage.getFromUid());
+			replyMsgVO.setUsername(replyUser.getName());
+			replyMsgVO.setCanCallback(YesOrNoEnum.toStatus(Objects.nonNull(msg.getGapCount()) && msg.getGapCount() <= MessageAdapter.CAN_CALLBACK_GAP_COUNT));
+			replyMsgVO.setGapCount(msg.getGapCount());
+			return replyMsgVO;
+		}
+		return null;
+	}
 
     /**
      * 被回复时——展示的消息

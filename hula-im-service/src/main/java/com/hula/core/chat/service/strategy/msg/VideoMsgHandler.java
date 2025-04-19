@@ -37,7 +37,10 @@ public class VideoMsgHandler extends AbstractMsgHandler<VideoMsgDTO> {
 
     @Override
     public Object showMsg(Message msg) {
-        return msg.getExtra().getVideoMsgDTO();
+		VideoMsgDTO resp = msg.getExtra().getVideoMsgDTO();
+		resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));
+		resp.setReply(replyMsg(msg));
+		return resp;
     }
 
     @Override

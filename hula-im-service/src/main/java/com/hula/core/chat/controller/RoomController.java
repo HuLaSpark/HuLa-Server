@@ -6,6 +6,7 @@ import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.domain.vo.res.IdRespVO;
+import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
@@ -158,8 +159,15 @@ public class RoomController {
         return ApiResult.success();
     }
 
+	@Operation(summary = "公告列表")
+	@GetMapping("/announcement/list/{id}")
+	public ApiResult<IPage<Announcements>> announcementList(@PathVariable("id") Long roomId, @RequestParam("current") Long current,@RequestParam("size") Long size){
+		IPage<Announcements> page = new Page<>(current,size);
+		return ApiResult.success(roomService.announcementList(roomId, page));
+	}
+
 	@Operation(summary = "查看公告")
-	@GetMapping("/announcement/{id}")
+	@GetMapping("/announcement")
 	public ApiResult announcement(ReadAnnouncementsParam param){
 		return ApiResult.success(roomService.getAnnouncement(RequestHolder.get().getUid(), param));
 	}
@@ -168,6 +176,12 @@ public class RoomController {
 	@PostMapping("announcement/push")
 	public ApiResult pushAnnouncement(@Valid @RequestBody AnnouncementsParam param){
 		return ApiResult.success(roomService.pushAnnouncement(RequestHolder.get().getUid(), param));
+	}
+
+	@Operation(summary = "删除公告")
+	@PostMapping("announcement/delete/{id}")
+	public ApiResult announcementDelete(@PathVariable("id") Long id){
+		return ApiResult.success(roomService.announcementDelete(RequestHolder.get().getUid(), id));
 	}
 
 	@Operation(summary = "已读公告")

@@ -1,5 +1,6 @@
 package com.hula.core.user.controller;
 
+import com.hula.core.user.domain.vo.req.user.ForgotPasswordReq;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
 import com.hula.core.user.domain.vo.req.user.LogoutReq;
 import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
@@ -48,6 +49,12 @@ public class TokenController {
         loginService.normalRegister(registerReq);
         return ApiResult.success(registerReq.getEmail());
     }
+
+	@PostMapping("/forgotPassword")
+	@Operation(summary ="忘记密码|重置密码")
+	public ApiResult<Boolean> forgotPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq) {
+		return ApiResult.success(loginService.forgotPassword(forgotPasswordReq));
+	}
 
     @PostMapping("/refreshToken")
     @Operation(summary ="token续签")

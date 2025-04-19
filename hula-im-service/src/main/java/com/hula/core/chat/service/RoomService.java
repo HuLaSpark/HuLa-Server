@@ -2,14 +2,12 @@ package com.hula.core.chat.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.hula.common.domain.po.RoomChatInfoPO;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.AnnouncementsReadRecord;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.domain.entity.RoomGroup;
 import com.hula.core.chat.domain.vo.request.GroupAddReq;
-import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 
 import java.util.List;
@@ -69,6 +67,11 @@ public interface RoomService {
 	Boolean readAnnouncement(Long uid, Long announcementId);
 
 	/**
+	 * 查询公告列表
+	 */
+	IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page);
+
+	/**
 	 * 查询公告
 	 */
 	AnnouncementsResp getAnnouncement(Long id);
@@ -77,6 +80,11 @@ public interface RoomService {
 	 * 查询公告已读数量
 	 */
 	Long getAnnouncementReadCount(Long announcementId);
+
+	/**
+	 * 删除指定公告
+	 */
+	Boolean announcementDelete(Long id);
 
 	/**
 	 * 保存群公告

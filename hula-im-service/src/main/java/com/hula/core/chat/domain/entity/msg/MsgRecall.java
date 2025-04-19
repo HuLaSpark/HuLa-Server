@@ -1,6 +1,5 @@
 package com.hula.core.chat.domain.entity.msg;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,6 @@ import java.util.Date;
  */
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class MsgRecall implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -22,4 +20,9 @@ public class MsgRecall implements Serializable {
     private Long recallUid;
     //撤回的时间点
     private Date recallTime;
+
+	public MsgRecall(Long recallUid, Date date) {
+		this.recallUid = recallUid;
+		this.recallTime = date;
+	}
 }

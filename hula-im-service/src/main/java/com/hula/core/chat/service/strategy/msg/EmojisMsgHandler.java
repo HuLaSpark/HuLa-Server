@@ -4,6 +4,7 @@ import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.msg.EmojisMsgDTO;
 import com.hula.core.chat.domain.entity.msg.MessageExtra;
+import com.hula.core.chat.domain.entity.msg.ReplyMsg;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,10 @@ public class EmojisMsgHandler extends AbstractMsgHandler<EmojisMsgDTO> {
 
     @Override
     public Object showMsg(Message msg) {
-        return msg.getExtra().getEmojisMsgDTO();
+		EmojisMsgDTO resp = msg.getExtra().getEmojisMsgDTO();
+		resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));
+		resp.setReply(replyMsg(msg));
+		return resp;
     }
 
     @Override

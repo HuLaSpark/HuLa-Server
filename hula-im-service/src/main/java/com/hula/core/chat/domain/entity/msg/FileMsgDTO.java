@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 语音消息入参
@@ -30,4 +31,10 @@ public class FileMsgDTO extends BaseFileDTO implements Serializable {
 
 	@Schema(description ="回复的消息id")
 	private Long replyMsgId;
+
+	@Schema(description ="艾特的uid")
+	private List<Long> atUidList;
+
+	@Schema(description ="父消息，如果没有父消息，返回的是null")
+	private ReplyMsg reply;
 }
