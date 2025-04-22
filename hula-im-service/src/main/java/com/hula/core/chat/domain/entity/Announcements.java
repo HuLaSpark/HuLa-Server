@@ -30,4 +30,7 @@ public class Announcements implements Serializable {
 
 	@Schema(description = "发布时间")
 	private LocalDateTime publishTime;
+
+	@Schema(description = "置顶")
+	private Boolean top;
 }

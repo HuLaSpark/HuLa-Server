@@ -12,11 +12,17 @@ import java.time.LocalDateTime;
 @Data
 public class AnnouncementsResp implements Serializable {
 
+	@Schema(description = "公告id")
+	private Long id;
+
 	@Schema(description = "群id")
 	private Long roomId;
 
-	@Schema(description = "公告发布人")
+	@Schema(description = "公告发布人id")
 	private Long uid;
+
+	@Schema(description = "公告发布人")
+	private String uName;
 
 	@Schema(description = "发布内容")
 	private String content;
@@ -26,4 +32,7 @@ public class AnnouncementsResp implements Serializable {
 
 	@Schema(description = "已读数量")
 	private Long count;
+
+	@Schema(description = "置顶")
+	private Boolean top;
 }

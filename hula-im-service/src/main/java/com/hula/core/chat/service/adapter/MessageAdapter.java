@@ -2,6 +2,7 @@ package com.hula.core.chat.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.hula.common.enums.YesOrNoEnum;
+import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.MessageMark;
 import com.hula.core.chat.domain.enums.MessageMarkTypeEnum;
@@ -107,6 +108,14 @@ public class MessageAdapter {
 		wsBaseResp.setData(msg);
 		return wsBaseResp;
 	}
+
+	public static WsBaseResp<Announcements> buildEditRoomGroupAnnouncement(Announcements msg) {
+		WsBaseResp<Announcements> WsBaseResp = new WsBaseResp<>();
+		WsBaseResp.setType(WSRespTypeEnum.ROOM_EDIT_GROUP_NOTICE_MSG.getType());
+		WsBaseResp.setData(msg);
+		return WsBaseResp;
+	}
+
 
 	/**
 	 * 已读群公告

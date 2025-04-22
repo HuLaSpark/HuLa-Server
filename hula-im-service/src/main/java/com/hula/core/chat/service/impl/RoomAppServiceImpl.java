@@ -306,6 +306,28 @@ public class RoomAppServiceImpl implements RoomAppService {
 	}
 
 	@Override
+	public Boolean announcementEdit(Long uid, AnnouncementsParam param) {
+		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
+		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
+		if(CollUtil.isNotEmpty(uids)){
+			AnnouncementsResp announcement = roomService.getAnnouncement(param.getId());
+			if(ObjectUtil.isNull(announcement)){
+				return false;
+			}
+			Announcements announcements = new Announcements();
+			announcements.setId(announcement.getId());
+			announcements.setContent(param.getContent());
+			announcements.setTop(param.getTop());
+			Boolean edit = roomService.updateAnnouncement(announcements);
+			if(edit){
+				pushService.sendPushMsg(MessageAdapter.buildEditRoomGroupAnnouncement(announcements), uids, uid);
+			}
+			return edit;
+		}
+		return false;
+	}
+
+	@Override
 	public IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page) {
 		return roomService.announcementList(roomId, page);
 	}
