@@ -275,6 +275,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean pushAnnouncement(Long uid, AnnouncementsParam param) {
 		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
 		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
@@ -347,7 +348,9 @@ public class RoomAppServiceImpl implements RoomAppService {
 	@Override
 	public Boolean announcementDelete(Long uid, Long id) {
 		// 1. 鉴权
-		RoomGroup roomGroup = roomGroupCache.get(id);
+		AnnouncementsResp resp = roomService.getAnnouncement(id);
+
+		RoomGroup roomGroup = roomGroupCache.get(resp.getRoomId());
 		GroupMember groupMember = verifyGroupPermissions(uid, roomGroup);
 
 		if(GroupRoleEnum.MEMBER.getType().equals(groupMember.getRole())) {
