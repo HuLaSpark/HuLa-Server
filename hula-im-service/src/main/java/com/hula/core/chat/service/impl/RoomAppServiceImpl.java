@@ -287,6 +287,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 			announcements.setContent(param.getContent());
 			announcements.setRoomId(param.getRoomId());
 			announcements.setUid(uid);
+			announcements.setTop(param.getTop());
 			announcements.setPublishTime(now);
 			roomService.saveAnnouncements(announcements);
 
