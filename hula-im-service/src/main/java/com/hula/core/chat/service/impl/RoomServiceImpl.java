@@ -157,7 +157,7 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public Boolean saveAnnouncements(Announcements announcements) {
 		if(announcements.getTop()){
-			announcementsDao.update().set("top", false).update();
+			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true));
 		}
 		return announcementsDao.save(announcements);
 	}
@@ -215,7 +215,7 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public Boolean updateAnnouncement(Announcements announcement) {
 		if(announcement.getTop()){
-			announcementsDao.update().set("top", false).update();
+			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true));
 		}
 		return announcementsDao.updateById(announcement);
 	}
