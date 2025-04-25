@@ -21,6 +21,8 @@ HuLa-IM:
     ACCESS-KEY: hulaspark
     SECRET-KEY: hula123456789
   mail:
+    host: smtp.qq.com
+    port: 465
     username: xxxxxxxxxxxxxxx  # 发件人邮箱
     password: xxxxxxxx    # 邮箱SMTP授权码
 

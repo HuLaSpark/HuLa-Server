@@ -4,6 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Document;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author nyh
  */
@@ -16,13 +19,30 @@ public class CommonUrlDiscover extends AbstractUrlDiscover {
 
     @Nullable
     @Override
-    public String getDescription(Document document) {
-        String description = document.head().select("meta[name=description]").attr("content");
-        String keywords = document.head().select("meta[name=keywords]").attr("content");
-        String content = StrUtil.isNotBlank(description) ? description : keywords;
-        //只保留一句话的描述
-        return StrUtil.isNotBlank(content) ? content.substring(0, content.indexOf("。")) : content;
-    }
+	public String getDescription(Document document) {
+		// 获取元数据
+		String description = document.head().select("meta[name=description]").attr("content");
+		String keywords = document.head().select("meta[name=keywords]").attr("content");
+
+		// 优先使用description，其次keywords
+		String content = StrUtil.isNotBlank(description) ? description : keywords;
+		if (StrUtil.isBlank(content)) {
+			return null;
+		}
+
+		// 使用正则表达式匹配第一个句子终止符（支持中文。！？和英文.!?）
+		Pattern pattern = Pattern.compile("[。！？.!?]");
+		Matcher matcher = pattern.matcher(content);
+
+		if (matcher.find()) {
+			int endIndex = matcher.start();
+			return content.substring(0, endIndex);
+		}
+
+		// 没有终止符时做长度截断（保留前120字符）
+		int maxLength = Math.min(content.length(), 120);
+		return content.substring(0, maxLength) + (content.length() > 120 ? "..." : "");
+	}
 
     @Nullable
     @Override

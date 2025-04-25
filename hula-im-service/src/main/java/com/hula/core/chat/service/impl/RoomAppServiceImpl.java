@@ -275,6 +275,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean pushAnnouncement(Long uid, AnnouncementsParam param) {
 		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
 		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
@@ -286,6 +287,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 			announcements.setContent(param.getContent());
 			announcements.setRoomId(param.getRoomId());
 			announcements.setUid(uid);
+			announcements.setTop(param.getTop());
 			announcements.setPublishTime(now);
 			roomService.saveAnnouncements(announcements);
 
@@ -300,6 +302,28 @@ public class RoomAppServiceImpl implements RoomAppService {
 			});
 			// 批量添加未读消息
 			return roomService.saveBatchAnnouncementsRecord(announcementsReadRecordList);
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean announcementEdit(Long uid, AnnouncementsParam param) {
+		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
+		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
+		if(CollUtil.isNotEmpty(uids)){
+			AnnouncementsResp announcement = roomService.getAnnouncement(param.getId());
+			if(ObjectUtil.isNull(announcement)){
+				return false;
+			}
+			Announcements announcements = new Announcements();
+			announcements.setId(announcement.getId());
+			announcements.setContent(param.getContent());
+			announcements.setTop(param.getTop());
+			Boolean edit = roomService.updateAnnouncement(announcements);
+			if(edit){
+				pushService.sendPushMsg(MessageAdapter.buildEditRoomGroupAnnouncement(announcements), uids, uid);
+			}
+			return edit;
 		}
 		return false;
 	}
@@ -347,7 +371,9 @@ public class RoomAppServiceImpl implements RoomAppService {
 	@Override
 	public Boolean announcementDelete(Long uid, Long id) {
 		// 1. 鉴权
-		RoomGroup roomGroup = roomGroupCache.get(id);
+		AnnouncementsResp resp = roomService.getAnnouncement(id);
+
+		RoomGroup roomGroup = roomGroupCache.get(resp.getRoomId());
 		GroupMember groupMember = verifyGroupPermissions(uid, roomGroup);
 
 		if(GroupRoleEnum.MEMBER.getType().equals(groupMember.getRole())) {

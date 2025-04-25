@@ -105,4 +105,9 @@ public interface RoomService {
 	 * 创建群成员
 	 */
 	void createGroupMember(Long groupId, Long uid);
+
+	/**
+	 * 编辑公告
+	 */
+	Boolean updateAnnouncement(Announcements announcement);
 }

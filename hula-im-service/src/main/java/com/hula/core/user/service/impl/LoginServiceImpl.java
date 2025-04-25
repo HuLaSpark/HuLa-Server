@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.hula.common.annotation.RedissonLock;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.event.UserOfflineEvent;
 import com.hula.common.event.UserOnlineEvent;
@@ -78,6 +79,7 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
     @Transactional(rollbackFor = Exception.class)
+	@RedissonLock(key = "#req.email")
     public void normalRegister(RegisterReq req) {
 		checkCode(req.getUuid(), req.getCode());
 

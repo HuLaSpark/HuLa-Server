@@ -138,6 +138,8 @@ public class RoomServiceImpl implements RoomService {
 	public AnnouncementsResp getAnnouncement(Long id) {
 		AnnouncementsResp resp = new AnnouncementsResp();
 		BeanUtils.copyProperties(announcementsDao.getById(id), resp);
+		User user = userInfoCache.get(resp.getUid());
+		resp.setUName(user.getName());
 		return resp;
 	}
 
@@ -154,6 +156,9 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	public Boolean saveAnnouncements(Announcements announcements) {
+		if(announcements.getTop()){
+			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true));
+		}
 		return announcementsDao.save(announcements);
 	}
 
@@ -208,7 +213,15 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
+	public Boolean updateAnnouncement(Announcements announcement) {
+		if(announcement.getTop()){
+			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true));
+		}
+		return announcementsDao.updateById(announcement);
+	}
+
+	@Override
 	public IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page) {
-		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("room_id", roomId));
+		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("room_id", roomId).orderByDesc("publish_time"));
 	}
 }

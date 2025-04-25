@@ -12,7 +12,6 @@ import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.PageBaseResp;
 import com.hula.common.event.UserApplyEvent;
 import com.hula.common.event.UserApprovalEvent;
-import com.hula.core.chat.domain.entity.Contact;
 import com.hula.core.chat.domain.entity.RoomFriend;
 import com.hula.core.chat.domain.vo.request.friend.FriendPermissionReq;
 import com.hula.core.chat.domain.vo.request.friend.FriendRemarkReq;

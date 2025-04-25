@@ -93,6 +93,12 @@ public interface RoomAppService {
 	Boolean pushAnnouncement(Long uid, AnnouncementsParam param);
 
 	/**
+	 * 编辑公告
+	 * @return
+	 */
+	Boolean announcementEdit(Long uid, AnnouncementsParam param);
+
+	/**
 	 * 获取公告列表
 	 * @return
 	 */
