@@ -90,6 +90,17 @@ public class MessageAdapter {
     }
 
 	/**
+	 * 群公告消息
+	 */
+	public static ChatMessageReq buildAnnouncementsMsg(Long roomId, Announcements announcements) {
+		ChatMessageReq chatMessageReq = new ChatMessageReq();
+		chatMessageReq.setRoomId(roomId);
+		chatMessageReq.setMsgType(MessageTypeEnum.NOTICE.getType());
+		chatMessageReq.setBody(announcements);
+		return chatMessageReq;
+	}
+
+	/**
 	 * 群通知
 	 */
 	public static WsBaseResp<String> buildRoomGroupMessage(String msg) {
@@ -102,10 +113,10 @@ public class MessageAdapter {
 	/**
 	 * 群公告
 	 */
-	public static WsBaseResp<String> buildRoomGroupAnnouncement(String msg) {
-		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
+	public static WsBaseResp<Announcements> buildRoomGroupAnnouncement(Announcements announcements) {
+		WsBaseResp<Announcements> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_NOTICE_MSG.getType());
-		wsBaseResp.setData(msg);
+		wsBaseResp.setData(announcements);
 		return wsBaseResp;
 	}
 

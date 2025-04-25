@@ -105,13 +105,11 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
      * @return 是否删除成功
      */
     public Boolean removeByRoomId(Long roomId, List<Long> uidList) {
+		LambdaQueryWrapper<Contact> wrapper = new QueryWrapper<Contact>().lambda().eq(Contact::getRoomId, roomId);
         if (CollectionUtil.isNotEmpty(uidList)) {
-            LambdaQueryWrapper<Contact> wrapper = new QueryWrapper<Contact>().lambda()
-                    .eq(Contact::getRoomId, roomId)
-                    .in(Contact::getUid, uidList);
-            return this.remove(wrapper);
+			wrapper.in(Contact::getUid, uidList);
         }
-        return false;
+        return this.remove(wrapper);
     }
 
 	/**
