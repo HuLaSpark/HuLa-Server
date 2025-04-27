@@ -16,6 +16,7 @@ import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.dto.RoomBaseInfo;
 import com.hula.core.chat.domain.entity.*;
+import com.hula.core.chat.domain.entity.msg.MergeMsg;
 import com.hula.core.chat.domain.enums.GroupRoleAPPEnum;
 import com.hula.core.chat.domain.enums.GroupRoleEnum;
 import com.hula.core.chat.domain.enums.HotFlagEnum;
@@ -39,6 +40,7 @@ import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
+import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.chat.domain.vo.response.ReadAnnouncementsResp;
@@ -56,6 +58,7 @@ import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
+import com.hula.core.user.domain.vo.req.MergeMessageReq;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.FriendService;
@@ -65,6 +68,7 @@ import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
 import com.hula.enums.GroupErrorEnum;
+import com.hula.exception.BizException;
 import com.hula.utils.AssertUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -436,6 +440,33 @@ public class RoomAppServiceImpl implements RoomAppService {
 		roomFriendCache.delete(request.getRoomId());
 		contact.setShield(request.getState());
 		return contactDao.updateById(contact);
+	}
+
+	@Override
+	public ChatMessageResp mergeMessage(Long uid, MergeMessageReq req) {
+		// 1. 校验人员是否在群里、或者有没有对方的好友
+		Room room = roomCache.get(req.getRoomId());
+		if(ObjectUtil.isNull(room)){
+			throw new BizException("房间不存在");
+		}
+
+		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+			RoomGroup roomGroup = roomGroupCache.get(req.getRoomId());
+			verifyGroupPermissions(uid, roomGroup);
+		} else {
+			RoomFriend roomFriend = roomFriendCache.get(req.getRoomId());
+			if(ObjectUtil.isNull(roomFriend) || !roomFriend.getUid1().equals(uid) && !roomFriend.getUid1().equals(uid)) {
+				throw new BizException("你们不是好友关系");
+			}
+		}
+
+		// 2. 当是转发单条消息的时候
+		List<Message> messagess = chatService.getMsgByIds(req.getMessageIds());
+		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userInfoCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
+
+		// 3. 发布合并消息
+		Long msgId = chatService.sendMsg(MessageAdapter.buildMergeMsg(req.getRoomId(), msgs), uid);
+		return chatService.getMsgResp(msgId, uid);
 	}
 
 	@Override

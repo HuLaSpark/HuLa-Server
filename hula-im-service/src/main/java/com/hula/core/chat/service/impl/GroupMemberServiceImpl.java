@@ -129,7 +129,8 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             // 4.2 删除会话
             Boolean isDelContact = contactDao.removeByRoomId(roomId, Collections.EMPTY_LIST);
             AssertUtil.isTrue(isDelContact, CommonErrorEnum.SYSTEM_ERROR);
-            // 4.3 删除群成员
+            // 4.3 获取并删除群成员
+			List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
             Boolean isDelGroupMember = groupMemberDao.removeByGroupId(roomGroup.getId(), Collections.EMPTY_LIST);
             AssertUtil.isTrue(isDelGroupMember, CommonErrorEnum.SYSTEM_ERROR);
             // 4.4 删除消息记录 (逻辑删除)
@@ -138,7 +139,6 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
 			// 4.5 告知所有人群已经被解散, 这里要走groupMemberDao查询，缓存中可能没有屏蔽群的用户
 			groupMemberCache.evictMemberUidList(room.getId());
 			groupMemberCache.evictAllMemberDetails();
-			List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
 			pushService.sendPushMsg(RoomAdapter.buildGroupDissolution(roomGroup.getName()), memberUidList, uid);
         } else {
             // 4.6 删除会话

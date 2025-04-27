@@ -291,11 +291,17 @@ public class ChatServiceImpl implements ChatService {
             update.setReadTime(new Date());
             contactDao.updateById(update);
         } else {
-            contactDao.save(uid, request.getRoomId());
+			log.error("uid --> ", uid, "roomId --> ", request.getRoomId());
+//            contactDao.save(uid, request.getRoomId());
         }
     }
 
-    private void checkRecall(Long uid, Message message) {
+	@Override
+	public List<Message> getMsgByIds(List<Long> msgIds) {
+		return messageDao.listByIds(msgIds);
+	}
+
+	private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
         boolean isChatManager = roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER);

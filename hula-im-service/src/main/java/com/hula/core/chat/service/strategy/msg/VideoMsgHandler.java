@@ -5,7 +5,7 @@ import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.msg.MessageExtra;
 import com.hula.core.chat.domain.entity.msg.VideoMsgDTO;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
-import jakarta.annotation.Resource;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -15,8 +15,8 @@ import java.util.Optional;
  * @author nyh
  */
 @Component
+@AllArgsConstructor
 public class VideoMsgHandler extends AbstractMsgHandler<VideoMsgDTO> {
-    @Resource
     private MessageDao messageDao;
 
     @Override

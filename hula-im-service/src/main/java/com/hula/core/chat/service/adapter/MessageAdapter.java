@@ -5,6 +5,9 @@ import com.hula.common.enums.YesOrNoEnum;
 import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.MessageMark;
+import com.hula.core.chat.domain.entity.msg.MergeMsg;
+import com.hula.core.chat.domain.entity.msg.MergeMsgDTO;
+import com.hula.core.chat.domain.entity.msg.NoticeMsgDTO;
 import com.hula.core.chat.domain.enums.MessageMarkTypeEnum;
 import com.hula.core.chat.domain.enums.MessageStatusEnum;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
@@ -90,13 +93,33 @@ public class MessageAdapter {
     }
 
 	/**
+	 * 合并消息
+	 */
+	public static ChatMessageReq buildMergeMsg(Long roomId, List<MergeMsg> messages) {
+		ChatMessageReq chatMessageReq = new ChatMessageReq();
+		chatMessageReq.setRoomId(roomId);
+		chatMessageReq.setMsgType(MessageTypeEnum.MERGE.getType());
+		MergeMsgDTO mergeMsgDTO = new MergeMsgDTO();
+		mergeMsgDTO.setMessages(messages);
+		chatMessageReq.setBody(mergeMsgDTO);
+		return chatMessageReq;
+	}
+
+	/**
 	 * 群公告消息
 	 */
 	public static ChatMessageReq buildAnnouncementsMsg(Long roomId, Announcements announcements) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
 		chatMessageReq.setMsgType(MessageTypeEnum.NOTICE.getType());
-		chatMessageReq.setBody(announcements);
+		NoticeMsgDTO noticeMsgDTO = new NoticeMsgDTO();
+		noticeMsgDTO.setId(announcements.getId());
+		noticeMsgDTO.setUid(announcements.getUid());
+		noticeMsgDTO.setTop(announcements.getTop());
+		noticeMsgDTO.setRoomId(announcements.getRoomId());
+		noticeMsgDTO.setContent(announcements.getContent());
+		noticeMsgDTO.setPublishTime(announcements.getPublishTime());
+		chatMessageReq.setBody(noticeMsgDTO);
 		return chatMessageReq;
 	}
 
