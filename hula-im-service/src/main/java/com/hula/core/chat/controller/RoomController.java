@@ -36,6 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -200,7 +201,7 @@ public class RoomController {
 
 	@Operation(summary = "合并消息")
 	@PostMapping("mergeMessage")
-	public ApiResult<ChatMessageResp> mergeMessage(@RequestBody MergeMessageReq req){
+	public ApiResult<ChatMessageResp> mergeMessage(@Validated @RequestBody MergeMessageReq req){
 		return ApiResult.success(roomService.mergeMessage(RequestHolder.get().getUid(), req));
 	}
 }

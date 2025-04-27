@@ -256,9 +256,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Collection<MsgReadInfoDTO> getMsgReadInfo(Long uid, ChatMessageReadInfoReq request) {
         List<Message> messages = messageDao.listByIds(request.getMsgIds());
-        messages.forEach(message -> {
-            AssertUtil.equal(uid, message.getFromUid(), "只能查询自己发送的消息");
-        });
+        messages.forEach(message -> AssertUtil.equal(uid, message.getFromUid(), "只能查询自己发送的消息"));
         return contactService.getMsgReadInfo(messages).values();
     }
 

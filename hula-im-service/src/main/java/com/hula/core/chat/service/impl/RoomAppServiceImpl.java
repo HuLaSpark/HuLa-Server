@@ -284,13 +284,13 @@ public class RoomAppServiceImpl implements RoomAppService {
 		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
 		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
 		if(CollUtil.isNotEmpty(uids)){
-			LocalDateTime now = LocalDateTime.now();
+			Date now = new Date();
 			Announcements announcements = new Announcements();
 			announcements.setContent(param.getContent());
 			announcements.setRoomId(param.getRoomId());
 			announcements.setUid(uid);
 			announcements.setTop(param.getTop());
-			announcements.setPublishTime(now);
+			announcements.setCreatedTime(now);
 			roomService.saveAnnouncements(announcements);
 
 			// 创建已读的信息
@@ -300,6 +300,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 				readRecord.setAnnouncementsId(announcements.getId());
 				readRecord.setUid(item);
 				readRecord.setIsCheck(false);
+				readRecord.setCreatedBy(uid);
 				announcementsReadRecordList.add(readRecord);
 			});
 			// 批量添加未读消息
@@ -307,7 +308,6 @@ public class RoomAppServiceImpl implements RoomAppService {
 			if(saved){
 				// 发送公告消息、推送群成员公告内容
 				chatService.sendMsg(MessageAdapter.buildAnnouncementsMsg(param.getRoomId(), announcements), uid);
-				pushService.sendPushMsg(MessageAdapter.buildRoomGroupAnnouncement(announcements), uids, uid);
 			}
 			return saved;
 		}
@@ -330,7 +330,6 @@ public class RoomAppServiceImpl implements RoomAppService {
 			Boolean edit = roomService.updateAnnouncement(announcements);
 			if(edit){
 				chatService.sendMsg(MessageAdapter.buildAnnouncementsMsg(param.getRoomId(), announcements), uid);
-				pushService.sendPushMsg(MessageAdapter.buildEditRoomGroupAnnouncement(announcements), uids, uid);
 			}
 			return edit;
 		}

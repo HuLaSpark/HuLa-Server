@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 公告消息入参
@@ -35,7 +36,7 @@ public class NoticeMsgDTO implements Serializable {
     private String content;
 
 	@Schema(description = "发布时间")
-	private LocalDateTime publishTime;
+	private Date createdTime;
 
 	@Schema(description = "置顶")
 	private Boolean top;

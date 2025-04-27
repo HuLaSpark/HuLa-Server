@@ -89,11 +89,10 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 		LambdaQueryChainWrapper<GroupMember> wrapper = lambdaQuery();
 		if (isSpecial){
 			wrapper.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType());
+		} else {
+			wrapper.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType(), GroupRoleEnum.MEMBER.getType());
 		}
-		return
-				wrapper.select(GroupMember::getUid)
-				.eq(GroupMember::getGroupId, id)
-				.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType()).list().stream().map(GroupMember::getUid).toList();
+		return wrapper.select(GroupMember::getUid).eq(GroupMember::getGroupId, id).list().stream().map(GroupMember::getUid).toList();
 	}
 
 	/**

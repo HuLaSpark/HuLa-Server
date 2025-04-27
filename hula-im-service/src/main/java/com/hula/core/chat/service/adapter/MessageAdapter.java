@@ -118,7 +118,7 @@ public class MessageAdapter {
 		noticeMsgDTO.setTop(announcements.getTop());
 		noticeMsgDTO.setRoomId(announcements.getRoomId());
 		noticeMsgDTO.setContent(announcements.getContent());
-		noticeMsgDTO.setPublishTime(announcements.getPublishTime());
+		noticeMsgDTO.setCreatedTime(announcements.getCreatedTime());
 		chatMessageReq.setBody(noticeMsgDTO);
 		return chatMessageReq;
 	}
@@ -132,24 +132,6 @@ public class MessageAdapter {
 		wsBaseResp.setData(msg);
 		return wsBaseResp;
 	}
-
-	/**
-	 * 群公告
-	 */
-	public static WsBaseResp<Announcements> buildRoomGroupAnnouncement(Announcements announcements) {
-		WsBaseResp<Announcements> wsBaseResp = new WsBaseResp<>();
-		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_NOTICE_MSG.getType());
-		wsBaseResp.setData(announcements);
-		return wsBaseResp;
-	}
-
-	public static WsBaseResp<Announcements> buildEditRoomGroupAnnouncement(Announcements msg) {
-		WsBaseResp<Announcements> WsBaseResp = new WsBaseResp<>();
-		WsBaseResp.setType(WSRespTypeEnum.ROOM_EDIT_GROUP_NOTICE_MSG.getType());
-		WsBaseResp.setData(msg);
-		return WsBaseResp;
-	}
-
 
 	/**
 	 * 已读群公告
