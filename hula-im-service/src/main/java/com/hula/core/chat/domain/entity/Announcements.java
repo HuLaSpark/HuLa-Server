@@ -31,6 +31,9 @@ public class Announcements implements Serializable {
 	@Schema(description = "发布时间")
 	private Date createdTime;
 
+	@Schema(description = "更新时间")
+	private Date updatedTime;
+
 	@Schema(description = "置顶")
 	private Boolean top;
 }
