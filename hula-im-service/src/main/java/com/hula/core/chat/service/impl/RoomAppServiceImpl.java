@@ -325,6 +325,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 			}
 			Announcements announcements = new Announcements();
 			announcements.setId(announcement.getId());
+			announcements.setRoomId(param.getRoomId());
 			announcements.setContent(param.getContent());
 			announcements.setTop(param.getTop());
 			Boolean edit = roomService.updateAnnouncement(announcements);
@@ -444,16 +445,16 @@ public class RoomAppServiceImpl implements RoomAppService {
 	@Override
 	public ChatMessageResp mergeMessage(Long uid, MergeMessageReq req) {
 		// 1. 校验人员是否在群里、或者有没有对方的好友
-		Room room = roomCache.get(req.getRoomId());
+		Room room = roomCache.get(req.getFromRoomId());
 		if(ObjectUtil.isNull(room)){
 			throw new BizException("房间不存在");
 		}
 
 		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
-			RoomGroup roomGroup = roomGroupCache.get(req.getRoomId());
-			verifyGroupPermissions(uid, roomGroup);
+			RoomGroup sourceRoomGroup = roomGroupCache.get(req.getFromRoomId());
+			verifyGroupPermissions(uid, sourceRoomGroup);
 		} else {
-			RoomFriend roomFriend = roomFriendCache.get(req.getRoomId());
+			RoomFriend roomFriend = roomFriendCache.get(req.getFromRoomId());
 			if(ObjectUtil.isNull(roomFriend) || !roomFriend.getUid1().equals(uid) && !roomFriend.getUid1().equals(uid)) {
 				throw new BizException("你们不是好友关系");
 			}
@@ -461,7 +462,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 		// 2. 当是转发单条消息的时候
 		List<Message> messagess = chatService.getMsgByIds(req.getMessageIds());
-		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userInfoCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
+		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getFromRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userInfoCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
 
 		// 3. 发布合并消息
 		Long msgId = chatService.sendMsg(MessageAdapter.buildMergeMsg(req.getRoomId(), msgs), uid);

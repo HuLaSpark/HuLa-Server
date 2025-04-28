@@ -102,6 +102,7 @@ public class ChatServiceImpl implements ChatService {
 
 	private void checkDeFriend(Long roomId, Long uid) {
 		Room room = roomCache.get(roomId);
+		Assert.notNull(room, "房间不存在!");
 		if (room.isRoomGroup()) {
 			RoomGroup roomGroup = roomGroupCache.get(roomId);
 			GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
