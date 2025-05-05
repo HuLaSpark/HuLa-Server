@@ -24,8 +24,10 @@ import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
 import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
+import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
+import com.hula.core.user.domain.vo.req.MergeMessageReq;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -141,4 +143,10 @@ public interface RoomAppService {
 	 * @return
 	 */
 	Boolean setShield(Long uid, ContactShieldReq request);
+
+	/**
+	 * 合并消息
+	 * @return
+	 */
+	ChatMessageResp mergeMessage(Long uid, MergeMessageReq req);
 }

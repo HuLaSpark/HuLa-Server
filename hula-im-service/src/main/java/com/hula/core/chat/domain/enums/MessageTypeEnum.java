@@ -23,6 +23,8 @@ public enum MessageTypeEnum {
     VIDEO(6, "视频"),
     EMOJI(7, "表情"),
     SYSTEM(8, "系统消息"),
+	MERGE(9, "合并消息"),
+	NOTICE(10, "公告消息"),
     ;
 
     private final Integer type;

@@ -157,7 +157,7 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public Boolean saveAnnouncements(Announcements announcements) {
 		if(announcements.getTop()){
-			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true));
+			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true).eq("room_id", announcements.getRoomId()));
 		}
 		return announcementsDao.save(announcements);
 	}
@@ -215,13 +215,13 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public Boolean updateAnnouncement(Announcements announcement) {
 		if(announcement.getTop()){
-			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true));
+			announcementsDao.update(new UpdateWrapper<Announcements>().set("top", false).eq("top", true).eq("room_id", announcement.getRoomId()));
 		}
 		return announcementsDao.updateById(announcement);
 	}
 
 	@Override
 	public IPage<Announcements> announcementList(Long roomId, IPage<Announcements> page) {
-		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("room_id", roomId).orderByDesc("publish_time"));
+		return announcementsDao.getBaseMapper().selectPage(page, new QueryWrapper<Announcements>().eq("room_id", roomId).orderByDesc("top").orderByDesc("created_time"));
 	}
 }

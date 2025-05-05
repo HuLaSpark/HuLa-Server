@@ -16,17 +16,12 @@ import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.dto.RoomBaseInfo;
 import com.hula.core.chat.domain.entity.*;
+import com.hula.core.chat.domain.entity.msg.MergeMsg;
 import com.hula.core.chat.domain.enums.GroupRoleAPPEnum;
 import com.hula.core.chat.domain.enums.GroupRoleEnum;
 import com.hula.core.chat.domain.enums.HotFlagEnum;
 import com.hula.core.chat.domain.enums.RoomTypeEnum;
-import com.hula.core.chat.domain.vo.request.ChatMessageMemberReq;
-import com.hula.core.chat.domain.vo.request.ChatMessageReq;
-import com.hula.core.chat.domain.vo.request.ContactFriendReq;
-import com.hula.core.chat.domain.vo.request.GroupAddReq;
-import com.hula.core.chat.domain.vo.request.RoomApplyReq;
-import com.hula.core.chat.domain.vo.request.RoomInfoReq;
-import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.*;
 import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
@@ -37,11 +32,7 @@ import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
-import com.hula.core.chat.domain.vo.response.AnnouncementsResp;
-import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
-import com.hula.core.chat.domain.vo.response.ChatRoomResp;
-import com.hula.core.chat.domain.vo.response.MemberResp;
-import com.hula.core.chat.domain.vo.response.ReadAnnouncementsResp;
+import com.hula.core.chat.domain.vo.response.*;
 import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.RoomAppService;
 import com.hula.core.chat.service.RoomService;
@@ -56,6 +47,7 @@ import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
+import com.hula.core.user.domain.vo.req.MergeMessageReq;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.core.user.domain.vo.resp.ws.WSMemberChange;
 import com.hula.core.user.service.FriendService;
@@ -65,6 +57,7 @@ import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import com.hula.core.user.service.impl.PushService;
 import com.hula.enums.GroupErrorEnum;
+import com.hula.exception.BizException;
 import com.hula.utils.AssertUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -76,7 +69,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -280,15 +272,13 @@ public class RoomAppServiceImpl implements RoomAppService {
 		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
 		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
 		if(CollUtil.isNotEmpty(uids)){
-			LocalDateTime now = LocalDateTime.now();
-			pushService.sendPushMsg(MessageAdapter.buildRoomGroupAnnouncement(param.getContent()), uids, uid);
-
+			Date now = new Date();
 			Announcements announcements = new Announcements();
 			announcements.setContent(param.getContent());
 			announcements.setRoomId(param.getRoomId());
 			announcements.setUid(uid);
 			announcements.setTop(param.getTop());
-			announcements.setPublishTime(now);
+			announcements.setCreatedTime(now);
 			roomService.saveAnnouncements(announcements);
 
 			// 创建已读的信息
@@ -298,10 +288,16 @@ public class RoomAppServiceImpl implements RoomAppService {
 				readRecord.setAnnouncementsId(announcements.getId());
 				readRecord.setUid(item);
 				readRecord.setIsCheck(false);
+				readRecord.setCreatedBy(uid);
 				announcementsReadRecordList.add(readRecord);
 			});
 			// 批量添加未读消息
-			return roomService.saveBatchAnnouncementsRecord(announcementsReadRecordList);
+			Boolean saved = roomService.saveBatchAnnouncementsRecord(announcementsReadRecordList);
+			if(saved){
+				// 发送公告消息、推送群成员公告内容
+				chatService.sendMsg(MessageAdapter.buildAnnouncementsMsg(param.getRoomId(), announcements), uid);
+			}
+			return saved;
 		}
 		return false;
 	}
@@ -317,11 +313,13 @@ public class RoomAppServiceImpl implements RoomAppService {
 			}
 			Announcements announcements = new Announcements();
 			announcements.setId(announcement.getId());
+			announcements.setRoomId(param.getRoomId());
 			announcements.setContent(param.getContent());
 			announcements.setTop(param.getTop());
+			announcements.setUpdatedTime(new Date());
 			Boolean edit = roomService.updateAnnouncement(announcements);
 			if(edit){
-				pushService.sendPushMsg(MessageAdapter.buildEditRoomGroupAnnouncement(announcements), uids, uid);
+				chatService.sendMsg(MessageAdapter.buildAnnouncementsMsg(param.getRoomId(), announcements), uid);
 			}
 			return edit;
 		}
@@ -431,6 +429,33 @@ public class RoomAppServiceImpl implements RoomAppService {
 		roomFriendCache.delete(request.getRoomId());
 		contact.setShield(request.getState());
 		return contactDao.updateById(contact);
+	}
+
+	@Override
+	public ChatMessageResp mergeMessage(Long uid, MergeMessageReq req) {
+		// 1. 校验人员是否在群里、或者有没有对方的好友
+		Room room = roomCache.get(req.getFromRoomId());
+		if(ObjectUtil.isNull(room)){
+			throw new BizException("房间不存在");
+		}
+
+		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+			RoomGroup sourceRoomGroup = roomGroupCache.get(req.getFromRoomId());
+			verifyGroupPermissions(uid, sourceRoomGroup);
+		} else {
+			RoomFriend roomFriend = roomFriendCache.get(req.getFromRoomId());
+			if(ObjectUtil.isNull(roomFriend) || !roomFriend.getUid1().equals(uid) && !roomFriend.getUid1().equals(uid)) {
+				throw new BizException("你们不是好友关系");
+			}
+		}
+
+		// 2. 当是转发单条消息的时候
+		List<Message> messagess = chatService.getMsgByIds(req.getMessageIds());
+		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getFromRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userInfoCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
+
+		// 3. 发布合并消息
+		Long msgId = chatService.sendMsg(MessageAdapter.buildMergeMsg(req.getRoomId(), msgs), uid);
+		return chatService.getMsgResp(msgId, uid);
 	}
 
 	@Override

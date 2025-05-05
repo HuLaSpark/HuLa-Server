@@ -89,11 +89,10 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 		LambdaQueryChainWrapper<GroupMember> wrapper = lambdaQuery();
 		if (isSpecial){
 			wrapper.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType());
+		} else {
+			wrapper.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType(), GroupRoleEnum.MEMBER.getType());
 		}
-		return
-				wrapper.select(GroupMember::getUid)
-				.eq(GroupMember::getGroupId, id)
-				.in(GroupMember::getRole, GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.LEADER.getType()).list().stream().map(GroupMember::getUid).toList();
+		return wrapper.select(GroupMember::getUid).eq(GroupMember::getGroupId, id).list().stream().map(GroupMember::getUid).toList();
 	}
 
 	/**
@@ -212,14 +211,11 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
      * @return 是否删除成功
      */
     public Boolean removeByGroupId(Long groupId, List<Long> uidList) {
+		LambdaQueryWrapper<GroupMember> wrapper = new QueryWrapper<GroupMember>().lambda().eq(GroupMember::getGroupId, groupId);
         if (CollectionUtil.isNotEmpty(uidList)) {
-            LambdaQueryWrapper<GroupMember> wrapper = new QueryWrapper<GroupMember>()
-                    .lambda()
-                    .eq(GroupMember::getGroupId, groupId)
-                    .in(GroupMember::getUid, uidList);
-            return this.remove(wrapper);
+			wrapper.in(GroupMember::getUid, uidList);
         }
-        return false;
+        return this.remove(wrapper);
     }
 
 	/**

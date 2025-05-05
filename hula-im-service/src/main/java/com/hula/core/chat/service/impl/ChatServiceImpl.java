@@ -102,6 +102,7 @@ public class ChatServiceImpl implements ChatService {
 
 	private void checkDeFriend(Long roomId, Long uid) {
 		Room room = roomCache.get(roomId);
+		Assert.notNull(room, "房间不存在!");
 		if (room.isRoomGroup()) {
 			RoomGroup roomGroup = roomGroupCache.get(roomId);
 			GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
@@ -256,9 +257,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Collection<MsgReadInfoDTO> getMsgReadInfo(Long uid, ChatMessageReadInfoReq request) {
         List<Message> messages = messageDao.listByIds(request.getMsgIds());
-        messages.forEach(message -> {
-            AssertUtil.equal(uid, message.getFromUid(), "只能查询自己发送的消息");
-        });
+        messages.forEach(message -> AssertUtil.equal(uid, message.getFromUid(), "只能查询自己发送的消息"));
         return contactService.getMsgReadInfo(messages).values();
     }
 
@@ -291,11 +290,17 @@ public class ChatServiceImpl implements ChatService {
             update.setReadTime(new Date());
             contactDao.updateById(update);
         } else {
-            contactDao.save(uid, request.getRoomId());
+			log.error("uid --> ", uid, "roomId --> ", request.getRoomId());
+//            contactDao.save(uid, request.getRoomId());
         }
     }
 
-    private void checkRecall(Long uid, Message message) {
+	@Override
+	public List<Message> getMsgByIds(List<Long> msgIds) {
+		return messageDao.listByIds(msgIds);
+	}
+
+	private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
         boolean isChatManager = roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER);

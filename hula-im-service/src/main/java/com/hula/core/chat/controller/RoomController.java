@@ -23,9 +23,11 @@ import com.hula.core.chat.domain.vo.request.room.AnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.ReadAnnouncementsParam;
 import com.hula.core.chat.domain.vo.request.room.RoomGroupReq;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
+import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.chat.service.IGroupMemberService;
 import com.hula.core.chat.service.RoomAppService;
+import com.hula.core.user.domain.vo.req.MergeMessageReq;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
@@ -34,6 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -196,4 +199,9 @@ public class RoomController {
 		return ApiResult.success(roomService.readAnnouncement(RequestHolder.get().getUid(), param));
 	}
 
+	@Operation(summary = "合并消息")
+	@PostMapping("mergeMessage")
+	public ApiResult<ChatMessageResp> mergeMessage(@Validated @RequestBody MergeMessageReq req){
+		return ApiResult.success(roomService.mergeMessage(RequestHolder.get().getUid(), req));
+	}
 }

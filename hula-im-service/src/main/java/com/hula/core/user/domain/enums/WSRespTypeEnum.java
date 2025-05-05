@@ -36,8 +36,6 @@ public enum WSRespTypeEnum {
     MSG_RECALL("msgRecall", "消息撤回", WSMsgRecall.class),
 	VIDEO("video", "视频消息", ConverseMessageDto.class),
 	PHONE("phone", "语音消息", null),
-	ROOM_GROUP_NOTICE_MSG("roomGroupNoticeMsg", "群公告消息", null),
-	ROOM_EDIT_GROUP_NOTICE_MSG("roomEditGroupNoticeMsg", "编辑群公告消息", null),
 	ROOM_GROUP_NOTICE_READ_MSG("roomGroupNoticeReadMsg", "群公告已读", null),
 	FEED_SEND_MSG("feedSendMsg", "朋友圈发布", null),
 	ROOM_DISSOLUTION("roomDissolution", "群解散", null),

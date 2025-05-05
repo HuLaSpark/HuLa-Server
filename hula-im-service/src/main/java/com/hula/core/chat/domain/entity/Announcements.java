@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 聊天公告
@@ -29,7 +29,10 @@ public class Announcements implements Serializable {
 	private String content;
 
 	@Schema(description = "发布时间")
-	private LocalDateTime publishTime;
+	private Date createdTime;
+
+	@Schema(description = "更新时间")
+	private Date updatedTime;
 
 	@Schema(description = "置顶")
 	private Boolean top;

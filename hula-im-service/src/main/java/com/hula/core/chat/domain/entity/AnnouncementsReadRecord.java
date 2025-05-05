@@ -24,6 +24,9 @@ public class AnnouncementsReadRecord implements Serializable {
     @Schema(description = "阅读人ID")
 	private Long uid;
 
+	@Schema(description = "发布人")
+	private Long createdBy;
+
     @Schema(description = "是否已读 0：未读 1：已读")
     private Boolean isCheck;
 }

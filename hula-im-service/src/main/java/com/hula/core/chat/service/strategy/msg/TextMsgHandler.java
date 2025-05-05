@@ -1,8 +1,6 @@
 package com.hula.core.chat.service.strategy.msg;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.hula.common.enums.YesOrNoEnum;
-import com.hula.core.chat.domain.entity.msg.ReplyMsg;
 import com.hula.utils.AssertUtil;
 import com.hula.common.utils.discover.PrioritizedUrlDiscover;
 import com.hula.common.utils.discover.domain.UrlInfo;
@@ -10,17 +8,12 @@ import com.hula.common.utils.sensitiveword.SensitiveWordBs;
 import com.hula.core.chat.dao.MessageDao;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.entity.msg.MessageExtra;
-import com.hula.core.chat.domain.enums.MessageStatusEnum;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
 import com.hula.core.chat.domain.vo.request.msg.TextMsgReq;
 import com.hula.core.chat.domain.vo.response.msg.TextMsgResp;
-import com.hula.core.chat.service.adapter.MessageAdapter;
-import com.hula.core.chat.service.cache.MsgCache;
-import com.hula.core.chat.service.cache.MsgPlusCache;
 import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.service.RoleService;
-import com.hula.core.user.service.cache.UserCache;
 import com.hula.core.user.service.cache.UserInfoCache;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -40,12 +33,9 @@ import java.util.stream.Collectors;
 public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
 
     private MessageDao messageDao;
-    private MsgCache msgCache;
-    private UserCache userCache;
     private UserInfoCache userInfoCache;
     private RoleService roleService;
     private SensitiveWordBs sensitiveWordBs;
-    private MsgPlusCache msgPlusCache;
 
     private static final PrioritizedUrlDiscover URL_TITLE_DISCOVER = new PrioritizedUrlDiscover();
 
@@ -94,7 +84,6 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
         //艾特功能
         if (CollectionUtil.isNotEmpty(body.getAtUidList())) {
             extra.setAtUidList(body.getAtUidList());
-
         }
 
         messageDao.updateById(update);
