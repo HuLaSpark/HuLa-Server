@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -38,6 +39,14 @@ public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroup> {
         List<RoomGroup> roomGroups = roomGroupDao.listByRoomIds(roomIds);
         return roomGroups.stream().collect(Collectors.toMap(RoomGroup::getRoomId, Function.identity()));
     }
+
+	public RoomGroup getByRoomId(Long roomId) {
+		return roomGroupDao.getByRoomId(roomId);
+	}
+
+	public boolean removeById(Serializable id) {
+		return roomGroupDao.removeById(id);
+	}
 
 	/**
 	 * 根据群号查询群信息

@@ -84,7 +84,6 @@ public class ChatServiceImpl implements ChatService {
     private RoomCache roomCache;
     private GroupMemberDao groupMemberDao;
     private RoomGroupCache roomGroupCache;
-    private RoomGroupDao roomGroupDao;
 
     /**
      * 发送消息
@@ -172,7 +171,7 @@ public class ChatServiceImpl implements ChatService {
         }
         // 获取群成员角色ID
         List<Long> uidList = resultList.stream().map(item -> Long.parseLong(item.getUid())).collect(Collectors.toList());
-        RoomGroup roomGroup = roomGroupDao.getByRoomId(request.getRoomId());
+        RoomGroup roomGroup = roomGroupCache.getByRoomId(request.getRoomId());
         Map<String, Integer> uidMapRole = groupMemberDao.getMemberMapRole(roomGroup.getId(), uidList);
         resultList.forEach(member -> member.setRoleId(uidMapRole.get(member.getUid())));
         // 组装结果
