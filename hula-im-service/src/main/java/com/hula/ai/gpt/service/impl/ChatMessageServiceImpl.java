@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,6 +126,7 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
                 .content(command.getPrompt()).contentType(ChatContentEnum.TEXT.getValue()).role(ChatRoleEnum.USER.getValue()).status(ChatStatusEnum.REPLY.getValue())
                 .build();
         chatMessage.setCreatedBy(command.getOperater());
+        chatMessage.setCreatedTime(LocalDateTime.now());
         chatMessageMapper.insert(chatMessage);
         return chatMessage.getMessageId();
     }

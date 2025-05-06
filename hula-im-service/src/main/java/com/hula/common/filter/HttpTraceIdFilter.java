@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author nyh
  */
 @Slf4j
-@WebFilter(urlPatterns = "/*")
+@WebFilter(urlPatterns = "/*", asyncSupported = true)
 public class HttpTraceIdFilter implements Filter {
 
     @Override
