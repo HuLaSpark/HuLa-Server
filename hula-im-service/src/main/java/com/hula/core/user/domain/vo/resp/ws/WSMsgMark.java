@@ -24,7 +24,9 @@ public class WSMsgMark {
         private Long uid;
         @Schema(description ="消息id")
         private Long msgId;
-        @Schema(description ="标记类型 1点赞 2举报")
+		/**
+		 * @see com.hula.core.chat.domain.enums.MessageMarkTypeEnum
+		 */
         private Integer markType;
         @Schema(description ="被标记的数量")
         private Integer markCount;

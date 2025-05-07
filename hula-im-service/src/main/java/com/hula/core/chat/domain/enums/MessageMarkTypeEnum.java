@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 public enum MessageMarkTypeEnum {
 	LIKE(1, "点赞", 10),
-	DISLIKE(2, "点踩", 5),
+	DISLIKE(2, "不满", 5),
 	// 新增表情互动类型
 	HEART(3, "爱心", 15),       // 表达喜爱
 	ANGRY(4, "愤怒", 20),      // 表达不满
