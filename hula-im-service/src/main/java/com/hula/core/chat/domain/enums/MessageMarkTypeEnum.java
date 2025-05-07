@@ -33,7 +33,7 @@ public enum MessageMarkTypeEnum {
 
 	private final Integer type;
 	private final String desc;
-	private final Integer riseNum; // 需要多少个标记升级
+	private final Integer riseNum; // 需要多少个标记升级 TODO 达到多少次数之后触发的效果
 
 	private static final Map<Integer, MessageMarkTypeEnum> CACHE;
 

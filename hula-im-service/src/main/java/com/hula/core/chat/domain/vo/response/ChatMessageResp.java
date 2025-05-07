@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 消息
@@ -48,13 +49,16 @@ public class ChatMessageResp extends BaseEntity {
 
     @Data
     public static class MessageMark {
-        @Schema(description ="点赞数")
-        private Integer likeCount;
-        @Schema(description ="该用户是否已经点赞 0否 1是")
-        private Integer userLike;
-        @Schema(description ="举报数")
-        private Integer dislikeCount;
-        @Schema(description ="该用户是否已经举报 0否 1是")
-        private Integer userDislike;
+		@Schema(description = "扩展标记统计（type为MessageMarkTypeEnum的type字段）")
+		private Map<Integer, MarkItem> markStats;
+
+		@Data
+		@AllArgsConstructor
+		public static class MarkItem {
+			@Schema(description = "标记数量")
+			private Integer count;
+			@Schema(description = "当前用户是否标记")
+			private Boolean userMarked;
+		}
     }
 }

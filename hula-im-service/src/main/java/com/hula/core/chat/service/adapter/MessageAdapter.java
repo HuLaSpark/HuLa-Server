@@ -64,17 +64,26 @@ public class MessageAdapter {
         return messageVO;
     }
 
-    private static ChatMessageResp.MessageMark buildMsgMark(List<MessageMark> marks, Long receiveUid) {
-        Map<Integer, List<MessageMark>> typeMap = marks.stream().collect(Collectors.groupingBy(MessageMark::getType));
-        List<MessageMark> likeMarks = typeMap.getOrDefault(MessageMarkTypeEnum.LIKE.getType(), new ArrayList<>());
-        List<MessageMark> dislikeMarks = typeMap.getOrDefault(MessageMarkTypeEnum.DISLIKE.getType(), new ArrayList<>());
-        ChatMessageResp.MessageMark mark = new ChatMessageResp.MessageMark();
-        mark.setLikeCount(likeMarks.size());
-        mark.setUserLike(Optional.ofNullable(receiveUid).filter(uid -> likeMarks.stream().anyMatch(a -> Objects.equals(a.getUid(), uid))).map(a -> YesOrNoEnum.YES.getStatus()).orElse(YesOrNoEnum.NO.getStatus()));
-        mark.setDislikeCount(dislikeMarks.size());
-        mark.setUserDislike(Optional.ofNullable(receiveUid).filter(uid -> dislikeMarks.stream().anyMatch(a -> Objects.equals(a.getUid(), uid))).map(a -> YesOrNoEnum.YES.getStatus()).orElse(YesOrNoEnum.NO.getStatus()));
-        return mark;
-    }
+	private static ChatMessageResp.MessageMark buildMsgMark(List<MessageMark> marks, Long receiveUid) {
+		Map<Integer, List<MessageMark>> typeMap = marks.stream().collect(Collectors.groupingBy(MessageMark::getType));
+
+		ChatMessageResp.MessageMark mark = new ChatMessageResp.MessageMark();
+		Map<Integer, ChatMessageResp.MessageMark.MarkItem> stats = new HashMap<>();
+
+		// 批量映射操作数量
+		Arrays.stream(MessageMarkTypeEnum.values()).forEach(typeEnum -> {
+			List<MessageMark> list = typeMap.getOrDefault(typeEnum.getType(), Collections.emptyList());
+
+			stats.put(typeEnum.getType(), new ChatMessageResp.MessageMark.MarkItem(list.size(), Optional.ofNullable(receiveUid)
+					.filter(uid -> list.stream().anyMatch(m -> m != null && Objects.equals(m.getUid(), uid)))
+					.map(uid -> YesOrNoEnum.YES.getBool())
+					.orElse(YesOrNoEnum.NO.getBool())));
+		});
+
+		// 设置动态统计为主数据源
+		mark.setMarkStats(stats);
+		return mark;
+	}
 
     private static ChatMessageResp.UserInfo buildFromUser(Long fromUid) {
         ChatMessageResp.UserInfo userInfo = new ChatMessageResp.UserInfo();
