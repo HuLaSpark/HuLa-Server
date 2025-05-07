@@ -1,5 +1,6 @@
 package com.hula.core.chat.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.hula.core.chat.service.adapter.RoomAdapter;
 import com.hula.core.chat.service.cache.RoomGroupCache;
 import com.hula.enums.CommonErrorEnum;
@@ -128,6 +129,9 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
             boolean isDelRoom = roomDao.removeById(roomId);
 			roomGroupCache.removeById(roomGroup.getId());
 			roomGroupCache.evictGroup(roomGroup.getAccount());
+			if(StrUtil.isNotEmpty(request.getAccount())){
+				roomGroupCache.evictGroup(request.getAccount());
+			}
             AssertUtil.isTrue(isDelRoom, CommonErrorEnum.SYSTEM_ERROR);
             // 4.2 删除会话
             Boolean isDelContact = contactDao.removeByRoomId(roomId, Collections.EMPTY_LIST);

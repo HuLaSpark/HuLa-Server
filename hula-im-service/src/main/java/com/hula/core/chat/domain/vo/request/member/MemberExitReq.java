@@ -20,4 +20,7 @@ public class MemberExitReq {
     @NotNull
     @Schema(description ="会话id")
     private Long roomId;
+
+	@Schema(description ="搜索关键字")
+	private String account;
 }
