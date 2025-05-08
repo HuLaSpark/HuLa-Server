@@ -39,18 +39,21 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public boolean verify(String token) {
-        Long uid = JwtUtils.getUidOrNull(token);
-        if (Objects.isNull(uid)) {
-            return false;
-        }
-        return Objects.equals(token, RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), uid)));
+		Map<String, Claim> claim = JwtUtils.verifyToken(token);
+		if (Objects.isNull(claim)) {
+			return false;
+		}
+		Long uid = claim.get(JwtUtils.UID_CLAIM).asLong();
+		String loginType = claim.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+		String uuid = claim.get(JwtUtils.UUID_CLAIM).asString();
+        return Objects.equals(token, RedisUtils.getStr(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid, uuid)));
     }
 
     @Override
     public LoginResultVO createToken(Long uid, String loginType) {
 		// 1. uuid用于后续区分续签是给哪个token续签
 		String uuid = UUID.randomUUID().toString(true);
-        String tokenKey = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid);
+        String tokenKey = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid, uuid);
 		String refreshTokenKey = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, loginType, uid, uuid);
 		String token = RedisUtils.getStr(tokenKey), refreshToken;
 		String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_UID_FORMAT, loginType, uid);
@@ -58,7 +61,7 @@ public class TokenServiceImpl implements TokenService {
 
 		// 1.2 token存在 旧设备下线
         if (StrUtil.isNotBlank(token)) {
-            applicationEventPublisher.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, loginType, RequestHolder.get().getIp())));
+            applicationEventPublisher.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, loginType, RequestHolder.get().getIp(), uuid)));
         }
 
         // 2. 创建用户token

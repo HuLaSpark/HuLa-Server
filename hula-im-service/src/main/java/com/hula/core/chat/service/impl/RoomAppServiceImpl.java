@@ -600,6 +600,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 		groupMemberDao.saveBatch(groupMembers);
 
         // 发送邀请加群消息 ==> 触发每个人的会话
+		roomGroupCache.evictAllCaches();
         applicationEventPublisher.publishEvent(new GroupMemberAddEvent(this, roomGroup, groupMembers, uid));
 		return roomGroup.getRoomId();
     }

@@ -183,7 +183,7 @@ public class WXMsgServiceImpl implements WebSocketService {
         }
         // 让前端的token失效
         else {
-            sendMsg(channel, WsAdapter.buildInvalidateTokenResp(new OffLineResp(JwtUtils.getUidOrNull(wsAuthorize.getToken()),  LoginTypeEnum.PC.getType(), null)));
+            sendMsg(channel, WsAdapter.buildInvalidateTokenResp(new OffLineResp(JwtUtils.getUidOrNull(wsAuthorize.getToken()),  LoginTypeEnum.PC.getType(), null, null)));
         }
     }
 

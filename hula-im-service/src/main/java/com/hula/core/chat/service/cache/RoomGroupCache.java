@@ -65,4 +65,11 @@ public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroup> {
 	public List<Long> evictGroup(String account) {
 		return null;
 	}
+
+	/**
+	 * 清除所有群组相关缓存
+	 */
+	@CacheEvict(cacheNames = "room", allEntries = true)
+	public void evictAllCaches() {
+	}
 }

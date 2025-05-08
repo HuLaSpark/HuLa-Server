@@ -136,19 +136,19 @@ public class LoginServiceImpl implements LoginService {
 		// 1. 拿到token
 		String token = RequestHolder.get().getToken();
 
-		// 2. 解析token里面的数据，精准拿到当前用户的refreshToken
 		try {
+			// 2. 解析token里面的数据，精准拿到当前用户的refreshToken
+			Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
+			Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
+			String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
+			String uuid = verifyToken.get(JwtUtils.UUID_CLAIM).asString();
+
 			if(!autoLogin){
-				// 2.1 用户启用自动登录，删除refreshToken
-				Map<String, Claim> verifyToken = JwtUtils.verifyToken(token);
-				Long uid = verifyToken.get(JwtUtils.UID_CLAIM).asLong();
-				String type = verifyToken.get(JwtUtils.LOGIN_TYPE_CLAIM).asString();
-				String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, verifyToken.get(JwtUtils.UUID_CLAIM).asString());
-				RedisUtils.del(key);
+				RedisUtils.del(RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, type, uid, uuid));
 			}
 
 			// 3. 删除token
-			RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, JwtUtils.getLoginType(token), RequestHolder.get().getUid()));
+			RedisUtils.del(RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, type, uid, uuid));
 			applicationEventPublisher.publishEvent(new UserOfflineEvent(this, User.builder().id(RequestHolder.get().getUid()).lastOptTime(DateUtil.date()).build()));
 		} catch (Exception e) {
 			throw TokenExceedException.expired();
