@@ -64,4 +64,14 @@ public class ChatParam implements Serializable {
 	 * 结束原因
 	 */
 	private String finishReason;
+
+	public Integer getOffset() {
+		if (current == null || current < 1) {
+			current = 1; // 默认第一页
+		}
+		if (size == null || size < 1) {
+			size = 10; // 默认每页10条
+		}
+		return (current - 1) * size;
+	}
 }

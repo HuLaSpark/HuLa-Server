@@ -29,4 +29,7 @@ public class BindEmailReq implements Serializable {
 
 	@Schema(description = "uuid")
 	private String uuid;
+
+	@Schema(description = "操作类型")
+	private String operationType = "register";
 }

@@ -45,8 +45,12 @@
             <if test="q.appKey != null and q.appKey != ''"> and t.app_key = #{q.appKey}</if>
             <if test="q.finishReason != null and q.finishReason != ''"> and t.finish_reason = #{q.finishReason}</if>
             <if test="q.status != null"> and t.status = #{q.status}</if>
-<!--            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>-->
-<!--            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>-->
+            <if test="q.size != null and q.size > 0">
+                LIMIT #{q.size}
+                <if test="q.current != null and q.current > 0">
+                    OFFSET #{q.offset}
+                </if>
+            </if>
         </where>
     </sql>
 

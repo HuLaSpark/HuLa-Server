@@ -38,7 +38,6 @@ public interface ChatMessageMapper extends BaseMapper<ChatMessage> {
 	 */
 	List<ChatMessageVO> listChatMessage(@Param("q") ChatParam query);
 
-
     /**
      * 更新消息状态
      *
