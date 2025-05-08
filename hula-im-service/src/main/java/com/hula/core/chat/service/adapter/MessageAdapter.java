@@ -60,29 +60,27 @@ public class MessageAdapter {
             messageVO.setBody(msgHandler.showMsg(message));
         }
         //消息标记
-        messageVO.setMessageMark(buildMsgMark(marks, receiveUid));
+        messageVO.setMessageMarks(buildMsgMark(marks, receiveUid));
         return messageVO;
     }
 
-	private static ChatMessageResp.MessageMark buildMsgMark(List<MessageMark> marks, Long receiveUid) {
+	private static Map<Integer, ChatMessageResp.MarkItem> buildMsgMark(List<MessageMark> marks, Long receiveUid) {
 		Map<Integer, List<MessageMark>> typeMap = marks.stream().collect(Collectors.groupingBy(MessageMark::getType));
 
-		ChatMessageResp.MessageMark mark = new ChatMessageResp.MessageMark();
-		Map<Integer, ChatMessageResp.MessageMark.MarkItem> stats = new HashMap<>();
+		// 构造动态统计为主数据源
+		Map<Integer, ChatMessageResp.MarkItem> stats = new HashMap<>();
 
 		// 批量映射操作数量
 		Arrays.stream(MessageMarkTypeEnum.values()).forEach(typeEnum -> {
 			List<MessageMark> list = typeMap.getOrDefault(typeEnum.getType(), Collections.emptyList());
 
-			stats.put(typeEnum.getType(), new ChatMessageResp.MessageMark.MarkItem(list.size(), Optional.ofNullable(receiveUid)
+			stats.put(typeEnum.getType(), new ChatMessageResp.MarkItem(list.size(), Optional.ofNullable(receiveUid)
 					.filter(uid -> list.stream().anyMatch(m -> m != null && Objects.equals(m.getUid(), uid)))
 					.map(uid -> YesOrNoEnum.YES.getBool())
 					.orElse(YesOrNoEnum.NO.getBool())));
 		});
 
-		// 设置动态统计为主数据源
-		mark.setMarkStats(stats);
-		return mark;
+		return stats;
 	}
 
     private static ChatMessageResp.UserInfo buildFromUser(Long fromUid) {
