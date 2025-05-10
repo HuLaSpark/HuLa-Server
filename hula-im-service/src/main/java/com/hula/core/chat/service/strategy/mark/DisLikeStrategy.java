@@ -4,7 +4,7 @@ import com.hula.core.chat.domain.enums.MessageMarkTypeEnum;
 import org.springframework.stereotype.Component;
 
 /**
- * 点踩标记策略类
+ * 不满标记策略类
  * @author nyh
  */
 @Component

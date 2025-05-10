@@ -35,23 +35,22 @@
         left join ai_gpt_chat t1 on t.chat_id = t1.id
         <where>
             t.is_del = 0
-<!--            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>-->
             <if test="q.chatId != null"> and t1.id = #{q.chatId}</if>
             <if test="q.chatNumber != null"> and t1.chat_number = #{q.chatNumber}</if>
-<!--            <if test="q.userId != null and q.userId != ''"> and t1.user_id = #{q.userId}</if>-->
             <if test="q.messageId != null"> and t.message_id = #{q.messageId}</if>
             <if test="q.model != null and q.model != ''"> and t.model = #{q.model}</if>
             <if test="q.role != null and q.role != ''"> and t.role = #{q.role}</if>
             <if test="q.appKey != null and q.appKey != ''"> and t.app_key = #{q.appKey}</if>
             <if test="q.finishReason != null and q.finishReason != ''"> and t.finish_reason = #{q.finishReason}</if>
             <if test="q.status != null"> and t.status = #{q.status}</if>
-            <if test="q.size != null and q.size > 0">
-                LIMIT #{q.size}
-                <if test="q.current != null and q.current > 0">
-                    OFFSET #{q.offset}
-                </if>
-            </if>
         </where>
+        order by t.created_time desc
+        <if test="q.size != null and q.size > 0">
+            LIMIT #{q.size}
+            <if test="q.current != null and q.current > 0">
+                OFFSET #{q.offset}
+            </if>
+        </if>
     </sql>
 
     <select id="pageChatMessage" resultType="com.hula.ai.gpt.pojo.vo.ChatMessageVO">

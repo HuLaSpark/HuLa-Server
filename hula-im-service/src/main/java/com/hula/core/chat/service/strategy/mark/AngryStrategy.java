@@ -14,11 +14,12 @@ public class AngryStrategy extends AbstractMsgMarkStrategy {
         return MessageMarkTypeEnum.ANGRY;
     }
 
-    @Override
-    public void doMark(Long uid, Long msgId) {
-        super.doMark(uid, msgId);
-        // 标记愤怒时清除正向表情
-        MsgMarkFactory.getStrategyNoNull(MessageMarkTypeEnum.LIKE.getType()).unMark(uid, msgId);
-        MsgMarkFactory.getStrategyNoNull(MessageMarkTypeEnum.HEART.getType()).unMark(uid, msgId);
-    }
+//    @Override
+//    public void doMark(Long uid, Long msgId) {
+//        super.doMark(uid, msgId);
+//        // 标记愤怒时清除正向表情
+//        MsgMarkFactory.getStrategyNoNull(MessageMarkTypeEnum.LIKE.getType()).unMark(uid, msgId);
+//        MsgMarkFactory.getStrategyNoNull(MessageMarkTypeEnum.HEART.getType()).unMark(uid, msgId);
+//		MsgMarkFactory.getStrategyNoNull(MessageMarkTypeEnum.MONEY.getType()).unMark(uid, msgId);
+//    }
 }
