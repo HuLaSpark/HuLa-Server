@@ -71,6 +71,11 @@ public class RedisKey {
 	 */
 	public static final String GROUP_ANNOUNCEMENTS_FORMAT = "groupInfo:announcements_%d";
 
+	/**
+	 * 用户token存放 格式：终端:uid
+	 */
+	public static final String USER_TOKEN_UID_FORMAT = "userToken:%s:uid_%d";
+
     /**
      * 用户token存放 格式：终端:uid:uuid
      */
