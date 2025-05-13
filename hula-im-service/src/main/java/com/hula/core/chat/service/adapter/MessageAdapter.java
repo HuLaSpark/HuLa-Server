@@ -17,6 +17,7 @@ import com.hula.core.chat.domain.vo.response.ChatMessageResp;
 import com.hula.core.chat.domain.vo.response.ReadAnnouncementsResp;
 import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
+import com.hula.core.user.domain.enums.UserTypeEnum;
 import com.hula.core.user.domain.enums.WSRespTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 
@@ -89,12 +90,27 @@ public class MessageAdapter {
         return userInfo;
     }
 
-    public static ChatMessageReq buildAgreeMsg(Long roomId) {
+    public static ChatMessageReq buildAgreeMsg(Long roomId, UserTypeEnum userTypeEnum) {
         ChatMessageReq chatMessageReq = new ChatMessageReq();
         chatMessageReq.setRoomId(roomId);
         chatMessageReq.setMsgType(MessageTypeEnum.TEXT.getType());
         TextMsgReq textMsgReq = new TextMsgReq();
-        textMsgReq.setContent("我们已经成为好友了，开始聊天吧");
+        if (userTypeEnum == UserTypeEnum.NORMAL){
+            textMsgReq.setContent("我们已经成为好友了，开始聊天吧");
+        }else if (userTypeEnum == UserTypeEnum.SYSTEM){
+            textMsgReq.setContent("欢迎来到Hula");
+        }
+        chatMessageReq.setBody(textMsgReq);
+        return chatMessageReq;
+    }
+
+    public static ChatMessageReq buildAgreeMsg4Group(Long roomId, String userName) {
+        ChatMessageReq chatMessageReq = new ChatMessageReq();
+        chatMessageReq.setRoomId(roomId);
+        chatMessageReq.setMsgType(MessageTypeEnum.TEXT.getType());
+        chatMessageReq.setSkip(true);
+        TextMsgReq textMsgReq = new TextMsgReq();
+        textMsgReq.setContent(String.format("欢迎[%s]加入群聊", userName));
         chatMessageReq.setBody(textMsgReq);
         return chatMessageReq;
     }

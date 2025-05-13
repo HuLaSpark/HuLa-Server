@@ -28,6 +28,7 @@ import com.hula.core.user.domain.entity.UserApply;
 import com.hula.core.user.domain.entity.UserFriend;
 import com.hula.core.user.domain.enums.ApplyDeletedEnum;
 import com.hula.core.user.domain.enums.ApplyStatusEnum;
+import com.hula.core.user.domain.enums.UserTypeEnum;
 import com.hula.core.user.domain.vo.req.friend.FriendApplyReq;
 import com.hula.core.user.domain.vo.req.friend.FriendApproveReq;
 import com.hula.core.user.domain.vo.req.friend.FriendCheckReq;
@@ -222,7 +223,21 @@ public class FriendServiceImpl implements FriendService {
         // 通知请求方已处理好友申请
         applicationEventPublisher.publishEvent(new UserApprovalEvent(this, RequestApprovalDto.builder().uid(uid).targetUid(userApply.getUid()).build()));
         // 发送一条同意消息。。我们已经是好友了，开始聊天吧
-        chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId()), uid);
+        chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.NORMAL), uid);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createSystemFriend(Long uid){
+        //创建双方好友关系
+        createFriend(uid, 1L);
+        // 创建一个聊天房间
+        RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, 1L));
+        // 发送一条同意消息。。我们已经是好友了，开始聊天吧
+        chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.SYSTEM), uid);
+        // 系统账号在群内发送一条欢迎消息
+        User user = userDao.getById(uid);
+        chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(1L, user.getName()), 1L);
     }
 
     /**
