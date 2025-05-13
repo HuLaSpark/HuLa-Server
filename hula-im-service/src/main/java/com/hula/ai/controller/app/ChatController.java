@@ -17,6 +17,7 @@ import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -134,6 +136,7 @@ public class ChatController {
     @PostMapping("/message")
     public ApiResult sendMessage(@Validated @RequestBody ChatCommand command) {
         command.setUid(RequestHolder.get().getUid());
+        command.setOperater(command.getUid());
         command = gptService.validateGptCommand(command);
         return ApiResult.success(gptService.chatMessage(command));
     }
@@ -162,7 +165,7 @@ public class ChatController {
 	 * @date: 2025/03/16
 	 * @version: 1.0.0
 	 */
-    @PostMapping("/completions")
+    @PostMapping(value = "/completions", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public void completions(HttpServletResponse response, @RequestBody CompletionsParam completionsParam) {
         Boolean isWs = false;
         if (StrUtil.isNotEmpty(completionsParam.getWs())) {

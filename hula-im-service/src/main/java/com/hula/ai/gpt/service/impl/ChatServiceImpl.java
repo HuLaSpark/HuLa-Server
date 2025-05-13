@@ -21,6 +21,8 @@ import com.hula.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -104,6 +106,8 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat> implements IC
         int maxLength = 30;
         chat.setTitle(command.getPrompt().substring(0, command.getPrompt().length() > maxLength ? maxLength : command.getPrompt().length()));
 		chat.setUid(command.getUid());
+        chat.setCreatedBy(command.getUid());
+        chat.setCreatedTime(LocalDateTime.now());
         chatMapper.insert(chat);
         return ChatVO.builder().chatNumber(chat.getChatNumber()).prompt(command.getPrompt()).build();
     }

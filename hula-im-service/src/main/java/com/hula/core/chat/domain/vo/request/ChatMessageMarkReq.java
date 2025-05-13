@@ -21,8 +21,10 @@ public class ChatMessageMarkReq {
     @Schema(description ="消息id")
     private Long msgId;
 
+	/**
+	 * @see com.hula.core.chat.domain.enums.MessageMarkTypeEnum
+	 */
     @NotNull
-    @Schema(description ="标记类型 1点赞 2举报")
     private Integer markType;
 
     @NotNull

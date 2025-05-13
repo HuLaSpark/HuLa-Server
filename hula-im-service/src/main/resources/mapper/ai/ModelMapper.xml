@@ -22,18 +22,31 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.name, t.icon, t.model, t.version, t.local_model_type, t.model_url, t.knowledge, t.sort, t.status, t.del
+        t.id, t.created_by, t.created_time, t.updated_by, t.updated_time, t.name, t.icon, t.model, t.version, t.local_model_type, t.model_url, t.knowledge, t.sort, t.status, t.is_del
     </sql>
 
     <!-- 通用查询条件 -->
     <sql id="BaseSelect">
         select <include refid="Base_Column_List"></include>
-        from gpt_model t
+        from ai_gpt_model t
         <where>
-            t.del = 0
-            <if test="model != null and model != ''"> and t.model = #{model}</if>
+            t.is_del = 0
+            <!-- 针对 pageModel 和 listModel -->
+            <if test="q != null and q.model != null and q.model != ''"> and t.model = #{q.model}</if>
         </where>
         order by t.sort desc, t.id desc
+    </sql>
+
+    <!-- 单条查询条件 -->
+    <sql id="GetSelect">
+        select <include refid="Base_Column_List"></include>
+        from ai_gpt_model t
+        where t.is_del = 0
+        <if test="model != null and model != ''">
+            and t.model = #{model}
+        </if>
+        order by t.sort desc, t.id desc
+        limit 1
     </sql>
 
     <select id="pageModel" resultType="com.hula.ai.gpt.pojo.vo.ModelVO">
@@ -45,8 +58,7 @@
     </select>
 
     <select id="getModel" resultType="com.hula.ai.gpt.pojo.vo.ModelVO">
-        <include refid="BaseSelect"></include>
-        limit 1
+        <include refid="GetSelect"></include>
     </select>
 
 </mapper>

@@ -48,7 +48,7 @@ public class EmailServiceImpl implements EmailService {
 		}
 
 		// 2. 校验邮箱是否存在
-		if (userDao.existsByEmailAndIdNot(null, req.getEmail())) {
+		if ("register".equals(req.getOperationType()) && userDao.existsByEmailAndIdNot(null, req.getEmail())) {
 			throw new BizException("该邮箱已被其他账号绑定");
 		}
 

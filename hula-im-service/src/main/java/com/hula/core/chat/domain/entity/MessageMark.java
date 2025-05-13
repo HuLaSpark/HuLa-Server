@@ -42,7 +42,7 @@ public class MessageMark implements Serializable {
     private Long uid;
 
     /**
-     * 标记类型 1点赞 2举报
+     * 标记类型 @see com.hula.core.chat.domain.enums.MessageMarkTypeEnum
      */
     @TableField("type")
     private Integer type;

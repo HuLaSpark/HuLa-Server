@@ -28,12 +28,16 @@ public class OffLineResp {
 	@Schema(description = "登录ip")
 	private String ip;
 
+	@Schema(description = "本次登录uuid (不需要被清空)")
+	private String uuid;
+
 	public OffLineResp() {
 	}
 
-	public OffLineResp(Long uid, String client, String ip) {
+	public OffLineResp(Long uid, String client, String ip, String uuid) {
 		this.ip = ip;
 		this.uid = uid;
 		this.client = client;
+		this.uuid = uuid;
 	}
 }

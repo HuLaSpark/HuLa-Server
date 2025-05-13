@@ -25,29 +25,32 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         t.id, t.created_by, t.created_time, t.chat_id, parent_message_id, t.message_id, t.model, t.model_version, t.role, t.content, t.content_type, t.finish_reason,
-            t.status, t.app_key, t.used_tokens, t.response, t.del
+            t.status, t.app_key, t.used_tokens, t.response, t.is_del
     </sql>
 
     <!-- 通用查询条件 -->
     <sql id="BaseSelect">
         select <include refid="Base_Column_List"></include>, t1.title as chatTitle
-        from gpt_chat_message t
-        left join gpt_chat t1 on t.chat_id = t1.id
+        from ai_gpt_chat_message t
+        left join ai_gpt_chat t1 on t.chat_id = t1.id
         <where>
-            t.del = 0
-            <if test="q.id != null and q.id != ''"> and t.id = #{q.id} </if>
+            t.is_del = 0
             <if test="q.chatId != null"> and t1.id = #{q.chatId}</if>
             <if test="q.chatNumber != null"> and t1.chat_number = #{q.chatNumber}</if>
-            <if test="q.userId != null and q.userId != ''"> and t1.user_id = #{q.userId}</if>
             <if test="q.messageId != null"> and t.message_id = #{q.messageId}</if>
             <if test="q.model != null and q.model != ''"> and t.model = #{q.model}</if>
             <if test="q.role != null and q.role != ''"> and t.role = #{q.role}</if>
             <if test="q.appKey != null and q.appKey != ''"> and t.app_key = #{q.appKey}</if>
             <if test="q.finishReason != null and q.finishReason != ''"> and t.finish_reason = #{q.finishReason}</if>
             <if test="q.status != null"> and t.status = #{q.status}</if>
-            <if test="q.startDate != null and q.startDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &gt;= #{q.startDate} </if>
-            <if test="q.endDate != null and q.endDate != ''"> and date_format(t.created_time,'%Y-%m-%d') &lt;= #{q.endDate} </if>
         </where>
+        order by t.created_time desc
+        <if test="q.size != null and q.size > 0">
+            LIMIT #{q.size}
+            <if test="q.current != null and q.current > 0">
+                OFFSET #{q.offset}
+            </if>
+        </if>
     </sql>
 
     <select id="pageChatMessage" resultType="com.hula.ai.gpt.pojo.vo.ChatMessageVO">

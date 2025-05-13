@@ -1,6 +1,8 @@
 package com.hula.core.chat.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.hula.core.chat.service.adapter.RoomAdapter;
+import com.hula.core.chat.service.cache.RoomGroupCache;
 import com.hula.enums.CommonErrorEnum;
 import com.hula.enums.GroupErrorEnum;
 import com.hula.utils.AssertUtil;
@@ -35,10 +37,10 @@ import static com.hula.core.chat.constant.GroupConst.MAX_MANAGE_COUNT;
 public class GroupMemberServiceImpl implements IGroupMemberService {
 
     private GroupMemberDao groupMemberDao;
-    private RoomGroupDao roomGroupDao;
     private RoomDao roomDao;
     private ContactDao contactDao;
     private MessageDao messageDao;
+	private RoomGroupCache roomGroupCache;
     private GroupMemberCache groupMemberCache;
     private PushService pushService;
 
@@ -51,7 +53,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
     @Override
     public void addAdmin(Long uid, AdminAddReq request) {
         // 1. 判断群聊是否存在
-        RoomGroup roomGroup = roomGroupDao.getByRoomId(request.getRoomId());
+        RoomGroup roomGroup = roomGroupCache.getByRoomId(request.getRoomId());
         AssertUtil.isNotEmpty(roomGroup, GroupErrorEnum.GROUP_NOT_EXIST);
 
         // 2. 判断该用户是否是群主
@@ -83,7 +85,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
     @Override
     public void revokeAdmin(Long uid, AdminRevokeReq request) {
         // 1. 判断群聊是否存在
-        RoomGroup roomGroup = roomGroupDao.getByRoomId(request.getRoomId());
+        RoomGroup roomGroup = roomGroupCache.getByRoomId(request.getRoomId());
         AssertUtil.isNotEmpty(roomGroup, GroupErrorEnum.GROUP_NOT_EXIST);
 
         // 2. 判断该用户是否是群主
@@ -109,7 +111,7 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
     public void exitGroup(Long uid, MemberExitReq request) {
         Long roomId = request.getRoomId();
         // 1. 判断群聊是否存在
-        RoomGroup roomGroup = roomGroupDao.getByRoomId(roomId);
+        RoomGroup roomGroup = roomGroupCache.getByRoomId(roomId);
         AssertUtil.isNotEmpty(roomGroup, GroupErrorEnum.GROUP_NOT_EXIST);
 
         // 2. 判断房间是否是大群聊 （大群聊禁止退出）
@@ -123,8 +125,13 @@ public class GroupMemberServiceImpl implements IGroupMemberService {
         // 4. 判断该用户是否是群主
         Boolean isLord = groupMemberDao.isLord(roomGroup.getId(), uid);
         if (isLord) {
-            // 4.1 删除房间
+            // 4.1 删除房间和群并清除缓存
             boolean isDelRoom = roomDao.removeById(roomId);
+			roomGroupCache.removeById(roomGroup.getId());
+			roomGroupCache.evictGroup(roomGroup.getAccount());
+			if(StrUtil.isNotEmpty(request.getAccount())){
+				roomGroupCache.evictGroup(request.getAccount());
+			}
             AssertUtil.isTrue(isDelRoom, CommonErrorEnum.SYSTEM_ERROR);
             // 4.2 删除会话
             Boolean isDelContact = contactDao.removeByRoomId(roomId, Collections.EMPTY_LIST);

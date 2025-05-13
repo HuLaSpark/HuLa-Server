@@ -16,10 +16,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum YesOrNoEnum {
-    NO(0, "否"),
-    YES(1, "是"),
+    NO(false,0, "否"),
+    YES(true,1, "是"),
     ;
 
+	private final Boolean bool;
     private final Integer status;
     private final String desc;
 
