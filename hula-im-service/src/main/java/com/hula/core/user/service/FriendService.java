@@ -72,6 +72,15 @@ public interface FriendService {
      */
     FriendUnreadResp unread(Long uid);
 
+	/**
+	 * 与系统用户创建好友关系
+	 * 与系统用户创建聊天框
+	 * 系统用户发送欢迎消息
+	 * 系统用户在群内发送欢迎消息
+	 * @param uid uid
+	 */
+	void createSystemFriend(Long uid);
+
     /**
      * 同意好友申请
      *

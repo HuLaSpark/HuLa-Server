@@ -15,11 +15,13 @@ import com.hula.core.chat.service.ContactService;
 import com.hula.core.chat.service.RoomService;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.enums.UserTypeEnum;
 import com.hula.core.user.domain.vo.req.user.ForgotPasswordReq;
 import com.hula.core.user.domain.vo.req.user.LoginReq;
 import com.hula.core.user.domain.vo.req.user.RefreshTokenReq;
 import com.hula.core.user.domain.vo.req.user.RegisterReq;
 import com.hula.core.user.domain.vo.resp.user.LoginResultVO;
+import com.hula.core.user.service.FriendService;
 import com.hula.core.user.service.LoginService;
 import com.hula.core.user.service.TokenService;
 import com.hula.core.user.service.cache.UserCache;
@@ -58,10 +60,15 @@ public class LoginServiceImpl implements LoginService {
     private UserCache userCache;
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
+	@Resource
+	private FriendService friendService;
 
     @Override
     public LoginResultVO login(LoginReq loginReq, HttpServletRequest request) {
-        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda().and(w -> w.eq(User::getEmail, loginReq.getAccount()).or().eq(User::getAccount, loginReq.getAccount())));
+        User queryUser = userDao.getOne(new QueryWrapper<User>().lambda()
+				.and(w -> w.eq(User::getEmail, loginReq.getAccount()).or().eq(User::getAccount, loginReq.getAccount()))
+				.eq(User::getUserType, UserTypeEnum.NORMAL.getValue())
+		);
         AssertUtil.isNotEmpty(queryUser, "账号或密码错误");
         AssertUtil.equal(queryUser.getPassword(), loginReq.getPassword(), "账号或密码错误");
         // 上线通知
@@ -99,6 +106,7 @@ public class LoginServiceImpl implements LoginService {
                 .password(req.getPassword())
                 .name(req.getName())
                 .openId(req.getOpenId())
+				.userType(UserTypeEnum.NORMAL.getValue())
                 .build();
         // 保存用户
         userDao.save(newUser);
@@ -106,6 +114,8 @@ public class LoginServiceImpl implements LoginService {
         contactService.createContact(newUser.getId(), 1L);
 		// 创建群成员
 		roomService.createGroupMember(1L, newUser.getId());
+		// 与系统用户创建好友关系
+		friendService.createSystemFriend(newUser.getId());
         // 发布用户注册消息
         applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
 		// 移除验证码
