@@ -7,15 +7,19 @@ import com.hula.ai.client.model.command.ChatCommand;
 import com.hula.ai.client.model.command.CompletionsParam;
 import com.hula.ai.client.service.GptService;
 import com.hula.ai.framework.validator.base.BaseAssert;
+import com.hula.ai.gpt.pojo.entity.ChatMessage;
 import com.hula.ai.gpt.pojo.param.ChatParam;
 import com.hula.ai.gpt.pojo.vo.ChatMessageVO;
 import com.hula.ai.gpt.pojo.vo.ChatVO;
 import com.hula.ai.gpt.service.IChatMessageService;
 import com.hula.ai.gpt.service.IChatService;
 import com.hula.ai.llm.base.service.LLMService;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.core.chat.domain.vo.request.ChatMessagePageReq;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -87,6 +91,11 @@ public class ChatController {
         BaseAssert.isBlankOrNull(param.getChatNumber(), "缺少会话标识");
 		param.setStatus(ChatStatusEnum.SUCCESS.getValue());
         return ApiResult.success(chatMessageService.listChatMessage(param));
+    }
+
+    @GetMapping("/ai/message")
+    public ApiResult<CursorPageBaseResp<ChatMessage>> getChatMessagePage(@Valid ChatMessagePageReq request) {
+        return ApiResult.success(chatMessageService.getChatMessagePage(request));
     }
 
     /**

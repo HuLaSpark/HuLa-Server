@@ -24,6 +24,10 @@ import com.hula.ai.gpt.pojo.param.ChatMessageParam;
 import com.hula.ai.gpt.pojo.param.ChatParam;
 import com.hula.ai.gpt.pojo.vo.ChatMessageVO;
 import com.hula.ai.gpt.service.IChatMessageService;
+import com.hula.common.domain.vo.req.CursorPageBaseReq;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.common.utils.CursorUtils;
+import com.hula.core.chat.domain.vo.request.ChatMessagePageReq;
 import com.hula.exception.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +91,25 @@ public class ChatMessageServiceImpl extends ServiceImpl<ChatMessageMapper, ChatM
     @Override
     public List<ChatMessageVO> listChatMessage(ChatParam param) {
 		return chatMessageMapper.listChatMessage(param);
+    }
+
+    @Override
+    public CursorPageBaseResp<ChatMessage> getChatMessagePage(ChatMessagePageReq request) {
+        Long lastMsgId = getLastMsgId(request.getRoomId());
+
+        return CursorUtils.getCursorPageByMysql(this, request, wrapper -> {
+            wrapper.eq(ChatMessage::getChatId, request.getRoomId());
+            wrapper.le(Objects.nonNull(lastMsgId), ChatMessage::getId, lastMsgId);
+        }, ChatMessage::getId);
+    }
+
+    private Long getLastMsgId(Long chatId) {
+        ChatMessage chatMessage = chatMessageMapper.selectOne(new LambdaQueryWrapper<ChatMessage>()
+                .eq(ChatMessage::getChatId, chatId)
+                .orderByDesc(ChatMessage::getCreatedTime)
+                .last("limit 1")
+        );
+        return chatMessage.getId();
     }
 
     @Override

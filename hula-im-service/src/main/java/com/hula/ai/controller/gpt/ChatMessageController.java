@@ -1,10 +1,12 @@
 package com.hula.ai.controller.gpt;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.hula.ai.gpt.pojo.entity.ChatMessage;
 import com.hula.ai.gpt.pojo.param.ChatMessageParam;
 import com.hula.ai.gpt.pojo.param.ChatParam;
 import com.hula.ai.gpt.pojo.vo.ChatMessageVO;
 import com.hula.ai.gpt.service.IChatMessageService;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.domain.vo.res.ApiResult;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;

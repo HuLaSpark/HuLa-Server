@@ -9,6 +9,8 @@ import com.hula.ai.gpt.pojo.entity.ChatMessage;
 import com.hula.ai.gpt.pojo.param.ChatMessageParam;
 import com.hula.ai.gpt.pojo.param.ChatParam;
 import com.hula.ai.gpt.pojo.vo.ChatMessageVO;
+import com.hula.common.domain.vo.res.CursorPageBaseResp;
+import com.hula.core.chat.domain.vo.request.ChatMessagePageReq;
 
 import java.util.List;
 
@@ -38,6 +40,8 @@ public interface IChatMessageService extends IService<ChatMessage> {
      * @return 对话消息集合
      */
 	List<ChatMessageVO> listChatMessage(ChatParam param);
+
+    CursorPageBaseResp<ChatMessage> getChatMessagePage(ChatMessagePageReq param);
 
     /**
      * 查询对话消息列表
