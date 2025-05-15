@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SummeryInfoReq extends BaseEntity {
     @ApiModelProperty(value = "用户信息入参")
-    @Size(max = 50)
+    @Size(max = 50, message = "一次最多查询50个用户数据")
     private List<infoReq> reqList;
 
     @Data

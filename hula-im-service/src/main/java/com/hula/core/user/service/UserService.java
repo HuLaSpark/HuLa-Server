@@ -2,6 +2,7 @@ package com.hula.core.user.service;
 
 import com.hula.core.user.domain.dto.ItemInfoDTO;
 import com.hula.core.user.domain.dto.SummeryInfoDTO;
+import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.req.user.*;
 import com.hula.core.user.domain.vo.resp.user.BadgeResp;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
@@ -17,6 +18,13 @@ import java.util.List;
  */
 public interface UserService {
 
+	/**
+	 * 获取用户基础信息 [DB]
+	 *
+	 * @param uid
+	 *
+	 */
+	User getUserById(Long uid);
 
     /**
      * 获取前端展示信息
