@@ -90,9 +90,7 @@ public class TongYiServiceImpl implements ModelService {
             throw new BizException("未加载到密钥信息");
         }
         MessageManager msgManager = new MessageManager(20);
-        chatMessages.stream().forEach(v -> {
-            msgManager.add(Message.builder().role(v.getRole()).content(v.getContent()).build());
-        });
+        chatMessages.stream().forEach(v -> msgManager.add(Message.builder().role(v.getRole()).content(v.getContent()).build()));
         Generation gen = new Generation();
         QwenParam param = QwenParam.builder().apiKey(tongYiClient.getAppKey())
                 .model(ObjectUtil.isNotNull(version) ? version : Generation.Models.QWEN_TURBO)

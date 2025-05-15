@@ -58,6 +58,11 @@ public class UserServiceImpl implements UserService {
     private UserSummaryCache userSummaryCache;
     private SensitiveWordBs sensitiveWordBs;
 
+	@Override
+	public User getUserById(Long uid) {
+		return userDao.getById(uid);
+	}
+
     @Override
     public UserInfoResp getUserInfo(Long uid) {
         User userInfo = userCache.getUserInfo(uid);
