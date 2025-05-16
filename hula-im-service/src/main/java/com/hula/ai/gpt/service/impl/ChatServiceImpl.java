@@ -108,6 +108,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMapper, Chat> implements IC
 		chat.setUid(command.getUid());
         chat.setCreatedBy(command.getUid());
         chat.setCreatedTime(LocalDateTime.now());
+		chat.setId(null);
         chatMapper.insert(chat);
         return ChatVO.builder().chatNumber(chat.getChatNumber()).prompt(command.getPrompt()).build();
     }

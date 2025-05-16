@@ -215,7 +215,7 @@ public class FriendServiceImpl implements FriendService {
         AssertUtil.equal(userApply.getStatus(), WAIT_APPROVAL.getCode(), "已同意好友申请");
         // 同意申请
         userApplyDao.agree(request.getApplyId());
-        //创建双方好友关系
+        // 创建双方好友关系
         createFriend(uid, userApply.getUid());
         // 创建一个聊天房间
         RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));

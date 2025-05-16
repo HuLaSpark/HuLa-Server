@@ -1,5 +1,6 @@
 package com.hula.core.user.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.interfaces.Claim;
@@ -55,17 +56,17 @@ public class TokenServiceImpl implements TokenService {
 		String uuid = UUID.randomUUID().toString(true);
         String tokenKey = RedisKey.getKey(RedisKey.USER_TOKEN_FORMAT, loginType, uid, uuid);
 		String refreshTokenKey = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_FORMAT, loginType, uid, uuid);
-		String token = RedisUtils.getStr(tokenKey), refreshToken;
-		String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_UID_FORMAT, loginType, uid);
-		RedisUtils.del(tokenKey, key);
+		String key = RedisKey.getKey(RedisKey.USER_REFRESH_TOKEN_UID_FORMAT, loginType, uid) + "*";
+		RedisUtils.multiDelete(RedisKey.getKey(RedisKey.USER_TOKEN_UID_FORMAT, loginType, uid) + "*");
 
 		// 1.2 token存在 旧设备下线
-        if (StrUtil.isNotBlank(token)) {
+        if (CollUtil.isNotEmpty(RedisUtils.multiGet(key))) {
+			RedisUtils.multiDelete(key);
             applicationEventPublisher.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, loginType, RequestHolder.get().getIp(), uuid)));
         }
 
         // 2. 创建用户token
-		token = JwtUtils.createToken(uid, loginType, uuid, TOKEN_EXPIRE_DAYS);
+		String token = JwtUtils.createToken(uid, loginType, uuid, TOKEN_EXPIRE_DAYS), refreshToken;
 		refreshToken = JwtUtils.createToken(uid, loginType, uuid, TOKEN_RENEWAL_DAYS);
 
 		// 3. 刷新存放时间

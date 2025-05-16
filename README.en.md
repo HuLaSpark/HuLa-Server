@@ -127,11 +127,15 @@ Thanks to the following sponsors for their support!
 
 | Date | Sponsor | Amount | Platform |
 |------|---------|---------|----------|
+| 2025-04-25 | 上官俊斌 | ￥200 | 微信赞赏码 |
+| 2025-04-20 | 姜兴(Simon) | ￥188 | 微信赞赏码 |
 | 2025-02-17 | 禾硕 | ￥168 | 支付宝赞赏 |
 | 2025-02-8 | Boom.... | ￥100 | 微信赞赏码 |
+| 2025-05-09 | 犹豫，就会败北。| ￥88.00 | 微信红包 |
 | 2025-04-01 | 墨       | ￥88.88 | 微信转账 |
 | 2025-02-8 | 邓伟 | ￥88 | 微信赞赏码 |
 | 2025-02-7 | dennis | ￥80 | gitee码云赞赏 |
+| 2025-05-15 | 孤鸿影 | ￥56 | 微信红包 |
 | 2025-02-6 | 小二 | ￥62 | 微信转账 |
 
 > Note: This list is manually updated. If you have sponsored but are not shown in the list, please contact us through:

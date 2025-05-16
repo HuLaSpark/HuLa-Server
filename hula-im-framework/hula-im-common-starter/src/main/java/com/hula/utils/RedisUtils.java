@@ -1,13 +1,13 @@
 package com.hula.utils;
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -274,7 +274,51 @@ public class RedisUtils {
         return list.stream().map(o -> toBeanOrNull(o, tClass)).collect(Collectors.toList());
     }
 
-    static <T> T toBeanOrNull(String json, Class<T> tClass) {
+	/**
+	 * 查询key下面的所有key值
+	 * @param keyPattern
+	 * @return
+	 */
+	public static List<String> multiGet(String keyPattern) {
+		Set<String> keys = stringRedisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+			Set<String> result = new HashSet<>();
+			Cursor<byte[]> cursor = connection.scan(ScanOptions.scanOptions().match(keyPattern).count(100).build());
+			while (cursor.hasNext()) {
+				result.add(new String(cursor.next()));
+			}
+			return result;
+		});
+
+		return stringRedisTemplate.opsForValue().multiGet(keys);
+	}
+
+	/**
+	 * 匹配所有key并删除
+	 * @param keyPattern
+	 */
+	public static void multiDelete(String keyPattern) {
+		// 1. 使用SCAN获取所有匹配的键
+		Set<String> keys = stringRedisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+			Set<String> result = new HashSet<>();
+			Cursor<byte[]> cursor = connection.scan(
+					ScanOptions.scanOptions()
+							.match(keyPattern)
+							.count(100)
+							.build()
+			);
+			while (cursor.hasNext()) {
+				result.add(new String(cursor.next()));
+			}
+			return result;
+		});
+
+		// 2. 批量删除所有键
+		if (keys != null && !keys.isEmpty()) {
+			stringRedisTemplate.delete(keys);
+		}
+	}
+
+	static <T> T toBeanOrNull(String json, Class<T> tClass) {
         return json == null ? null : JsonUtils.toObj(json, tClass);
     }
 
@@ -285,9 +329,7 @@ public class RedisUtils {
     public static <T> void multiSet(Map<String, T> map, long time) {
         Map<String, String> collect = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, (e) -> objToStr(e.getValue())));
         stringRedisTemplate.opsForValue().multiSet(collect);
-        map.forEach((key, value) -> {
-            expire(key, time);
-        });
+        map.forEach((key, value) -> expire(key, time));
     }
 
 

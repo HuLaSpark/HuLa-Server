@@ -21,6 +21,7 @@ import com.hula.ai.gpt.pojo.entity.Assistant;
 import com.hula.ai.gpt.pojo.vo.ChatVO;
 import com.hula.ai.gpt.service.IChatMessageService;
 import com.hula.ai.gpt.service.IChatService;
+import com.hula.core.user.domain.entity.User;
 import com.hula.core.user.domain.vo.resp.user.UserInfoResp;
 import com.hula.core.user.service.ConfigService;
 import com.hula.core.user.service.UserService;
@@ -160,7 +161,7 @@ public class GptServiceImpl implements GptService {
      * @param command
      */
     private void validateUser(ChatCommand command) {
-		UserInfoResp user = userService.getUserInfo(command.getUid());
+		User user = userService.getUserById(command.getUid());
 		if (ObjectUtil.isNull(user)) {
 			throw new BizException("用户不存在!");
 		}
