@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+	public static final LocalDateTime MAX_DATE = LocalDateTime.of(2099, 12, 31, 00, 00, 00);
     private UserCache userCache;
     private UserBackpackDao userBackpackDao;
     private UserDao userDao;
@@ -143,6 +145,11 @@ public class UserServiceImpl implements UserService {
         Black user = new Black();
         user.setTarget(uid.toString());
         user.setType(BlackTypeEnum.UID.getType());
+		if(ObjectUtil.isNull(req.getDeadline()) || req.getDeadline().equals(0L)){
+			user.setDeadline(MAX_DATE);
+		} else {
+			user.setDeadline(LocalDateTime.now().plusMinutes(req.getDeadline()));
+		}
         blackDao.save(user);
         User byId = userDao.getById(uid);
         blackIp(byId.getIpInfo().getCreateIp());

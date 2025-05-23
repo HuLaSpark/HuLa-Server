@@ -38,6 +38,12 @@ public class Black implements Serializable {
     @TableField("target")
     private String target;
 
+	/**
+	 * 截止时间
+	 */
+	@TableField("deadline")
+	private LocalDateTime deadline;
+
     /**
      * 创建时间
      */
@@ -49,6 +55,4 @@ public class Black implements Serializable {
      */
     @TableField("update_time")
     private LocalDateTime updateTime;
-
-
 }
