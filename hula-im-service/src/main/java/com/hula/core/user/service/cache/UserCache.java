@@ -2,6 +2,7 @@ package com.hula.core.user.service.cache;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Pair;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.common.constant.RedisKey;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
@@ -18,8 +19,10 @@ import com.hula.core.user.domain.entity.UserRole;
 import jakarta.annotation.Resource;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,6 +44,14 @@ public class UserCache {
     private UserRoleDao userRoleDao;
     @Resource
     private UserSummaryCache userSummaryCache;
+
+	/**
+	 * 每小时一执行
+	 */
+	@Scheduled(cron = "0 0 * * * ?")
+	public void cleanExpiredBlacks() {
+		evictBlackMap();
+	}
 
     public Long getOnlineNum() {
         String onlineKey = RedisKey.getKey(RedisKey.ONLINE_UID_ZET);
@@ -159,7 +170,8 @@ public class UserCache {
 
     @Cacheable(cacheNames = "user", key = "'blackList'")
     public Map<Integer, Set<String>> getBlackMap() {
-        Map<Integer, List<Black>> collect = blackDao.list().stream().collect(Collectors.groupingBy(Black::getType));
+		LocalDateTime now = LocalDateTime.now();
+		Map<Integer, List<Black>> collect = blackDao.getBaseMapper().selectList(new QueryWrapper<Black>().gt("deadline", now)).stream().collect(Collectors.groupingBy(Black::getType));
         Map<Integer, Set<String>> result = new HashMap<>(collect.size());
         for (Map.Entry<Integer, List<Black>> entry : collect.entrySet()) {
             result.put(entry.getKey(), entry.getValue().stream().map(Black::getTarget).collect(Collectors.toSet()));
