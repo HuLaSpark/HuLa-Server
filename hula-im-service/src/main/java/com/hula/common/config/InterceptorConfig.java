@@ -24,7 +24,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/wx/**");
+                .excludePathPatterns("/wx/**", "/webjars/**", "/doc.html", "/v3/api-docs");
         registry.addInterceptor(collectorInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/wx/**");

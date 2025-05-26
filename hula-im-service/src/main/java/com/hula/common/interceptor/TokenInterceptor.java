@@ -1,5 +1,6 @@
 package com.hula.common.interceptor;
 
+import com.hula.ai.config.SecurityProperties;
 import com.hula.common.config.PublicUrlProperties;
 import com.hula.core.user.service.TokenService;
 import com.hula.enums.HttpErrorEnum;
@@ -29,6 +30,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     public static final String ATTRIBUTE_TOKEN = "token";
     private final PublicUrlProperties publicUrlProperties;
     private final TokenService tokenService;
+    private final SecurityProperties securityProperties;
 
     /**
      * 前置拦截
@@ -39,6 +41,11 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = getToken(request);
+        if (securityProperties.getMockEnable()){
+            Long userId = mockLoginUser(token);
+            request.setAttribute(ATTRIBUTE_UID, userId);
+            return true;
+        }
         if (!tokenService.verify(token)){
             HttpErrorEnum.JWT_TOKEN_EXCEED.sendHttpError(response);
             return false;
@@ -64,5 +71,25 @@ public class TokenInterceptor implements HandlerInterceptor {
                 .filter(h -> h.startsWith(AUTHORIZATION_SCHEMA))
                 .map(h -> h.replaceFirst(AUTHORIZATION_SCHEMA, ""))
                 .orElse(null);
+    }
+
+    /**
+     * 模拟登录用户，方便日常开发调试
+     *
+     * 注意，在线上环境下，一定要关闭该功能！！！
+     *
+     * @param token 模拟的 token，格式为 {@link SecurityProperties#getMockSecret()} + 用户编号
+     * @return 模拟的 LoginUser
+     */
+    private Long mockLoginUser(String token) {
+        if (!securityProperties.getMockEnable()) {
+            return null;
+        }
+        // 必须以 mockSecret 开头
+        if (!token.startsWith(securityProperties.getMockSecret())) {
+            return null;
+        }
+        // 构建模拟用户
+        return Long.valueOf(token.substring(securityProperties.getMockSecret().length()));
     }
 }
