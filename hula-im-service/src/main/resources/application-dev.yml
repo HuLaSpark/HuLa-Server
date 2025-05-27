@@ -98,7 +98,7 @@ uid:
 
 hula:
   security:
-    mock-enable: true
+    mock-enable: false
   ai:
     deep-seek: # DeepSeek
       enable: true

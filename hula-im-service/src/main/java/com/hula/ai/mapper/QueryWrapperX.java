@@ -1,6 +1,5 @@
 package com.hula.ai.mapper;
 
-import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ArrayUtils;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -10,7 +9,7 @@ import java.util.Collection;
 
 /**
  * 拓展 MyBatis Plus QueryWrapper 类，主要增加如下功能：
- *
+ * <p>
  * 1. 拼接条件的方法，增加 xxxIfPresent 方法，用于判断值不存在的时候，不要拼接到条件中。
  *
  * @param <T> 数据类型
@@ -94,13 +93,13 @@ public class QueryWrapperX<T> extends QueryWrapper<T> {
     }
 
     public QueryWrapperX<T> betweenIfPresent(String column, Object[] values) {
-        if (values!= null && values.length != 0 && values[0] != null && values[1] != null) {
+        if (values != null && values.length != 0 && values[0] != null && values[1] != null) {
             return (QueryWrapperX<T>) super.between(column, values[0], values[1]);
         }
-        if (values!= null && values.length != 0 && values[0] != null) {
+        if (values != null && values.length != 0 && values[0] != null) {
             return (QueryWrapperX<T>) ge(column, values[0]);
         }
-        if (values!= null && values.length != 0 && values[1] != null) {
+        if (values != null && values.length != 0 && values[1] != null) {
             return (QueryWrapperX<T>) le(column, values[1]);
         }
         return this;
@@ -140,13 +139,13 @@ public class QueryWrapperX<T> extends QueryWrapper<T> {
 
     /**
      * 设置只返回最后一条
-     *
+     * <p>
      * TODO 芋艿：不是完美解，需要在思考下。如果使用多数据源，并且数据源是多种类型时，可能会存在问题：实现之返回一条的语法不同
      *
      * @return this
      */
     public QueryWrapperX<T> limitN(int n) {
-        return this;
+        return this.last("LIMIT " + n);
     }
 
 }
