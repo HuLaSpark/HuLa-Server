@@ -11,7 +11,7 @@
  Target Server Version : 80031 (8.0.31)
  File Encoding         : 65001
 
- Date: 27/04/2025 16:00:45
+ Date: 28/05/2025 14:53:35
 */
 
 SET NAMES utf8mb4;
@@ -175,6 +175,7 @@ CREATE TABLE `ai_gpt_chat_message`  (
 -- Records of ai_gpt_chat_message
 -- ----------------------------
 INSERT INTO `ai_gpt_chat_message` VALUES (78095167005053952, 78094677378781184, 'f34e52b5-c853-4355-b70d-f0186fe2d356', '', 'LocalLM', 'chatglm3-6b', '32131', 'text', 'user', '', 1, '', 0, NULL, '', 3, '2025-03-06 10:49:40', NULL, NULL, 0);
+
 -- ----------------------------
 -- Table structure for ai_gpt_comb
 -- ----------------------------
@@ -188,8 +189,8 @@ CREATE TABLE `ai_gpt_comb`  (
   `price` decimal(10, 2) NULL DEFAULT 0.00 COMMENT '价格',
   `status` smallint NULL DEFAULT 1 COMMENT '状态 0 禁用 1 启用',
   `remark` varchar(250) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '' COMMENT '备注',
-  `created_by` bigint DEFAULT 0 NOT NULL COMMENT '创建者',
-  `created_time` datetime DEFAULT (now()) NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint NOT NULL DEFAULT 0 COMMENT '创建者',
+  `created_time` datetime NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
@@ -403,6 +404,7 @@ CREATE TABLE `black`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
   `type` int NOT NULL COMMENT '拉黑目标类型 1.ip 2uid',
   `target` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '拉黑目标',
+  `deadline` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '截止时间',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE,

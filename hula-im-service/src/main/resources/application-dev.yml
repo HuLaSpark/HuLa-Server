@@ -51,11 +51,11 @@ spring:
       api-key: sk-abc
 
 HuLa-IM:
-  HOST: localhost #域名
+  HOST: 127.0.0.1 #域名
   MYSQL_PORT: 3306 #端口
   DATABASE_NAME: hula-im #数据库名
   MYSQL_USER_NAME: root #数据库用户名
-  MYSQL_PASSWORD: root #数据库密码
+  MYSQL_PASSWORD: 123456 #数据库密码
   REDIS:
     PAW: 123456 #redis密码, 如果是数字密码最好用引号包裹起来
     PORT: 6379 # redis端口号
@@ -68,14 +68,14 @@ HuLa-IM:
   JWT: #JWT配置
     SECRET: dsfsdfsdfsdfsd
   ROCKETMQ: #rocketmq配置
-    NAME-SERVER: 192.168.2.200:9876  # nameserver地址
-    ACCESS-KEY: hula-server
-    SECRET-KEY: 123456789
+    NAME-SERVER: 127.0.0.1:9876  # nameserver地址
+    ACCESS-KEY: hulaspark
+    SECRET-KEY: hula123456789
   mail:
     host: smtp.qq.com
-    port: 587
-    username: 11  # 发件人邮箱
-    password: 11   # 邮箱SMTP授权码
+    port: 465
+    username: xxxxxxxxxxxxxxx  # 发件人邮箱
+    password: xxxxxxxx    # 邮箱SMTP授权码
 
 uid:
   database:
