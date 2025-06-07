@@ -843,10 +843,13 @@ CREATE TABLE `user`  (
   INDEX `account_UNIQUE`(`account` ASC) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 20876670062082 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
+alter table user add user_type int not null comment '用户类型';
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (10937855681024, 'Dawn', 'https://cdn.hulaspark.com/avatar/2439646234/ae862ed84ac12da587d79c93ebbe9045.webp', '2439646234@qq.com', 'Dawn', NULL, '', 1, 11, '2025-04-27 16:00:09.374', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"127.0.0.1\", \"createIpDetail\": {\"ip\": \"206.237.119.215\", \"isp\": \"XX\", \"area\": \"\", \"city\": \"XX\", \"isp_id\": \"xx\", \"region\": \"XX\", \"city_id\": \"xx\", \"country\": \"美国\", \"region_id\": \"xx\", \"country_id\": \"US\"}, \"updateIpDetail\": {\"ip\": \"127.0.0.1\", \"isp\": \"内网IP\", \"area\": \"\", \"city\": \"内网IP\", \"isp_id\": \"local\", \"region\": \"XX\", \"city_id\": \"local\", \"country\": \"XX\", \"region_id\": \"xx\", \"country_id\": \"xx\"}}', 6, 0, '2025-03-27 04:23:08.393', '2025-04-27 16:00:23.918', '123456', '2025-03-29 13:24:17.085', 0, 0);
+INSERT INTO user (id, name, avatar, email, account, sex, open_id, active_status, user_state_id, last_opt_time, ip_info, item_id, status, user_type, create_time, update_time, password, avatar_update_time, num, context) VALUES (10937855681024, 'Dawn', 'https://cdn.hulaspark.com/avatar/2439646234/ae862ed84ac12da587d79c93ebbe9045.webp', '2439646234@qq.com', 'Dawn', null, '', 2, 11, '2025-05-12 15:30:36.089', '{"createIp": "206.237.119.215", "updateIp": "127.0.0.1", "createIpDetail": {"ip": "206.237.119.215", "isp": "XX", "area": "", "city": "XX", "isp_id": "xx", "region": "XX", "city_id": "xx", "country": "美国", "region_id": "xx", "country_id": "US"}, "updateIpDetail": {"ip": "127.0.0.1", "isp": "内网IP", "area": "", "city": "内网IP", "isp_id": "local", "region": "XX", "city_id": "local", "country": "XX", "region_id": "xx", "country_id": "xx"}}', 6, 0, 3, '2025-03-27 04:23:08.393', '2025-05-13 10:34:23.651', '123456', '2025-03-29 13:24:17.085', 10000, 0);
+INSERT INTO user (id, name, avatar, email, account, sex, open_id, active_status, user_state_id, last_opt_time, ip_info, item_id, status, user_type, create_time, update_time, password, avatar_update_time, num, context) VALUES (1, '官方', '013', '', 'system', null, '', 2, 0, '2025-05-12 14:44:20.124', null, null, 0, 1, '2025-05-12 14:44:20.124', '2025-05-13 10:34:23.625', '', null, 10000, 0);
+
 
 -- ----------------------------
 -- Table structure for user_apply
