@@ -188,6 +188,8 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
                             .setContent(newContent).setSegments(segments)));
         }).doOnComplete(() -> {
             // 忽略租户，因为 Flux 异步无法透传租户
+            String content = contentBuffer.toString();
+            chatMessageMapper.updateById(new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content));
         }).doOnError(throwable -> {
             log.error("[sendChatMessageStream][userId({}) sendReqVO({}) 发生异常]", userId, sendReqVO, throwable);
             // 忽略租户，因为 Flux 异步无法透传租户
