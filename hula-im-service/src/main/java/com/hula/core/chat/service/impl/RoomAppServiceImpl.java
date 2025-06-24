@@ -43,8 +43,10 @@ import com.hula.core.chat.service.adapter.RoomAdapter;
 import com.hula.core.chat.service.cache.*;
 import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
+import com.hula.core.user.dao.UserBackpackDao;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.entity.UserBackpack;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.MergeMessageReq;
@@ -77,8 +79,9 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class RoomAppServiceImpl implements RoomAppService {
-    
-    private ContactDao contactDao;
+
+	private final UserBackpackDao userBackpackDao;
+	private ContactDao contactDao;
     private RoomCache roomCache;
     private RoomGroupCache roomGroupCache;
     private RoomFriendCache roomFriendCache;
@@ -374,7 +377,9 @@ public class RoomAppServiceImpl implements RoomAppService {
 		RoomGroup roomGroup = roomGroupCache.get(resp.getRoomId());
 		GroupMember groupMember = verifyGroupPermissions(uid, roomGroup);
 
-		if(GroupRoleEnum.MEMBER.getType().equals(groupMember.getRole())) {
+		long count = userBackpackDao.countByUidAndItemId(uid, "HuLa项目贡献者专属徽章");
+
+		if(count == 0 && GroupRoleEnum.MEMBER.getType().equals(groupMember.getRole())) {
 			return false;
 		}
 
