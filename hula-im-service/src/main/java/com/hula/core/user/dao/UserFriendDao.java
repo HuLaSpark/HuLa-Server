@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
-    public List<UserFriend> getByFriends(Long uid, List<Long> uidList) {
+    public List<UserFriend> getByFriends(Long uid, Collection<Long> uidList) {
         return lambdaQuery().eq(UserFriend::getUid, uid)
                 .in(UserFriend::getFriendUid, uidList)
                 .list();

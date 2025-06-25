@@ -14,6 +14,7 @@ import com.hula.common.event.GroupMemberAddEvent;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
+import com.hula.core.chat.dao.RoomGroupDao;
 import com.hula.core.chat.domain.dto.RoomBaseInfo;
 import com.hula.core.chat.domain.entity.*;
 import com.hula.core.chat.domain.entity.msg.MergeMsg;
@@ -81,6 +82,7 @@ import java.util.stream.Collectors;
 public class RoomAppServiceImpl implements RoomAppService {
 
 	private final UserBackpackDao userBackpackDao;
+	private final RoomGroupDao roomGroupDao;
 	private ContactDao contactDao;
     private RoomCache roomCache;
     private RoomGroupCache roomGroupCache;
@@ -577,8 +579,8 @@ public class RoomAppServiceImpl implements RoomAppService {
         AssertUtil.isNotEmpty(roomGroup, "房间号有误");
         GroupMember self = groupMemberDao.getMember(roomGroup.getId(), uid);
         AssertUtil.isNotEmpty(self, "您不是群成员");
-        List<Long> memberBatch = groupMemberDao.getMemberBatch(roomGroup.getId(), request.getUidList());
-        Set<Long> existUid = new HashSet<>(memberBatch);
+		List<Long> memberBatch = groupMemberDao.getMemberBatch(roomGroup.getId(), request.getUidList()).stream().map(GroupMember::getUid).toList();
+		Set<Long> existUid = new HashSet<>(memberBatch);
         List<Long> waitAddUidList = request.getUidList().stream().filter(a -> !existUid.contains(a)).distinct().collect(Collectors.toList());
         if (CollectionUtils.isEmpty(waitAddUidList)) {
             return;
@@ -678,7 +680,9 @@ public class RoomAppServiceImpl implements RoomAppService {
         Map<Long, User> lastMsgUidMap = userInfoCache.getBatch(messages.stream().map(Message::getFromUid).collect(Collectors.toList()));
         // 消息未读数
         Map<Long, Integer> unReadCountMap = getUnReadCountMap(uid, roomIds);
-        return roomBaseInfoMap.values().stream().map(room -> {
+		Map<Long, RoomGroup> roomGroupMapByRoomId = roomGroupDao.listByRoomIds(roomIds).stream().collect(Collectors.toMap(RoomGroup::getRoomId, Function.identity()));
+
+		return roomBaseInfoMap.values().stream().map(room -> {
                     ChatRoomResp resp = new ChatRoomResp();
                     Long roomId = room.getRoomId();
                     RoomBaseInfo roomBaseInfo = roomBaseInfoMap.get(roomId);
@@ -710,8 +714,14 @@ public class RoomAppServiceImpl implements RoomAppService {
                         AbstractMsgHandler strategyNoNull = MsgHandlerFactory.getStrategyNoNull(message.getType());
                         // 判断是群聊还是单聊
                         if (Objects.equals(roomBaseInfo.getType(), RoomTypeEnum.GROUP.getType())) {
-							GroupMember messageUser = groupMemberCache.getMemberDetail(roomBaseInfo.getRoomId(), message.getFromUid());
-							resp.setText(ObjectUtil.isNotNull(messageUser) && StrUtil.isNotEmpty(messageUser.getMyName())? messageUser.getMyName(): (lastMsgUidMap.get(message.getFromUid()).getName()) + ":" + strategyNoNull.showContactMsg(message));
+							RoomGroup roomGroup = roomGroupMapByRoomId.get(roomId);
+							GroupMember messageUser = groupMemberCache.getMemberDetail(roomGroup.getId(), message.getFromUid());
+
+							if (ObjectUtil.isNotNull(messageUser) && StrUtil.isNotEmpty(messageUser.getMyName())){
+								resp.setText(messageUser.getMyName() + ":" + strategyNoNull.showContactMsg(message));
+							}else {
+								resp.setText((lastMsgUidMap.get(message.getFromUid()).getName()) + ":" + strategyNoNull.showContactMsg(message));
+							}
                         } else {
                             resp.setText(strategyNoNull.showContactMsg(message));
                         }

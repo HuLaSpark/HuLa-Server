@@ -29,6 +29,7 @@ public class ChatMessageResp extends BaseEntity {
     public static class UserInfo {
         @Schema(description ="用户id")
         private String uid;
+        private String nickname;
     }
 
     @Data

@@ -16,6 +16,7 @@ import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,13 +53,11 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 		return wrapper.list().stream().map(GroupMember::getUid).collect(Collectors.toList());
     }
 
-    public List<Long> getMemberBatch(Long groupId, List<Long> uidList) {
-        List<GroupMember> list = lambdaQuery()
+    public List<GroupMember> getMemberBatch(Long groupId, Collection<Long> uidList) {
+        return lambdaQuery()
                 .eq(GroupMember::getGroupId, groupId)
                 .in(GroupMember::getUid, uidList)
-                .select(GroupMember::getUid)
                 .list();
-        return list.stream().map(GroupMember::getUid).collect(Collectors.toList());
     }
 
     /**
