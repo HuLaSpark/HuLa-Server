@@ -9,7 +9,6 @@ import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactTopReq;
 import com.hula.core.chat.domain.vo.response.ChatRoomResp;
-import com.hula.core.chat.service.ChatService;
 import com.hula.core.chat.service.RoomAppService;
 import com.hula.domain.vo.res.ApiResult;
 import com.hula.utils.RequestHolder;
@@ -33,8 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "聊天室相关接口")
 @Slf4j
 public class ContactController {
-    @Resource
-    private ChatService chatService;
     @Resource
     private RoomAppService roomService;
 

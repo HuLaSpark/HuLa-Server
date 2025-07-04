@@ -50,6 +50,6 @@ public class FileMsgHandler extends AbstractMsgHandler<FileMsgDTO> {
 
     @Override
     public String showContactMsg(Message msg) {
-        return "[文件]" + msg.getExtra().getFileMsg().getFileName();
+        return "[文件] " + msg.getExtra().getFileMsg().getFileName();
     }
 }

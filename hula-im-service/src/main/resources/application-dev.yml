@@ -1,4 +1,4 @@
-version: 2.6.12
+version: 2.6.13
 HuLa-IM:
   HOST: 127.0.0.1 #域名
   MYSQL_PORT: 3306 #端口

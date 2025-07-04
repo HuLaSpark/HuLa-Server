@@ -366,9 +366,5 @@ public class ChatServiceImpl implements ChatService {
 
         return chatMessageResp;
     }
-//
-//    public String getUserName(Boolean isGroup, ) {
-//
-//    }
 
 }
