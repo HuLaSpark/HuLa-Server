@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hula.common.enums.YesOrNoEnum;
+import com.hula.core.user.domain.entity.ItemConfig;
 import com.hula.core.user.domain.entity.UserBackpack;
 import com.hula.core.user.mapper.UserBackpackMapper;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,12 @@ import java.util.List;
  */
 @Service
 public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpack> {
+
+    private final ItemConfigDao itemConfigDao;
+
+    public UserBackpackDao(ItemConfigDao itemConfigDao) {
+        this.itemConfigDao = itemConfigDao;
+    }
 
     public Integer getCountByValidItemId(Long uid, Long itemId) {
         return Math.toIntExact(lambdaQuery().eq(UserBackpack::getUid, uid)
@@ -59,5 +66,13 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
 
     public UserBackpack getByIdp(String idempotent) {
         return lambdaQuery().eq(UserBackpack::getIdempotent, idempotent).one();
+    }
+
+    public long countByUidAndItemId(Long uid, String desc) {
+        ItemConfig itemConfig = itemConfigDao.getByDesc(desc);
+        return baseMapper.selectCount(new LambdaQueryWrapper<UserBackpack>()
+                .eq(UserBackpack::getUid, uid)
+                .eq(UserBackpack::getItemId, itemConfig.getId())
+        );
     }
 }

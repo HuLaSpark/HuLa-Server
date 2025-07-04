@@ -1,6 +1,7 @@
 package com.hula.core.chat.service.adapter;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import com.hula.common.enums.YesOrNoEnum;
 import com.hula.core.chat.domain.entity.Announcements;
 import com.hula.core.chat.domain.entity.Message;
@@ -34,6 +35,8 @@ public class MessageAdapter {
                 .roomId(request.getRoomId())
                 .type(request.getMsgType())
                 .status(MessageStatusEnum.NORMAL.getStatus())
+				.createTime(DateUtil.date())
+				.updateTime(DateUtil.date())
                 .build();
 
     }

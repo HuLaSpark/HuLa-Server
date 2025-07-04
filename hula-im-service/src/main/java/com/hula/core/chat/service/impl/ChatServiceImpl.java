@@ -16,6 +16,7 @@ import com.hula.core.chat.domain.dto.MsgReadInfoDTO;
 import com.hula.core.chat.domain.entity.*;
 import com.hula.core.chat.domain.enums.MessageMarkActTypeEnum;
 import com.hula.core.chat.domain.enums.MessageTypeEnum;
+import com.hula.core.chat.domain.enums.RoomTypeEnum;
 import com.hula.core.chat.domain.vo.request.*;
 import com.hula.core.chat.domain.vo.request.member.MemberReq;
 import com.hula.core.chat.domain.vo.response.ChatMemberListResp;
@@ -36,7 +37,9 @@ import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.chat.service.strategy.msg.RecallMsgHandler;
 import com.hula.core.user.dao.UserDao;
+import com.hula.core.user.dao.UserFriendDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.entity.UserFriend;
 import com.hula.core.user.domain.enums.ChatActiveStatusEnum;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
@@ -47,6 +50,7 @@ import com.hula.utils.AssertUtil;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
@@ -55,6 +59,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
@@ -70,6 +75,9 @@ import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 @AllArgsConstructor
 public class ChatServiceImpl implements ChatService {
     public static final long ROOM_GROUP_ID = 1L;
+    private final RoomDao roomDao;
+    private final UserFriendDao userFriendDao;
+    private final RoomGroupDao roomGroupDao;
 
     private MessageDao messageDao;
     private UserDao userDao;
@@ -91,7 +99,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Long sendMsg(ChatMessageReq request, Long uid) {
-		check(request.getSkip(), request.getRoomId(), uid);
+        check(request.getSkip(), request.getRoomId(), uid);
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(request.getMsgType());
         Long msgId = msgHandler.checkAndSaveMsg(request, uid);
         // 发布消息发送事件
@@ -99,37 +107,37 @@ public class ChatServiceImpl implements ChatService {
         return msgId;
     }
 
-	private void checkDeFriend(Long roomId, Long uid) {
-		Room room = roomCache.get(roomId);
-		Assert.notNull(room, "房间不存在!");
-		if (room.isRoomGroup()) {
-			RoomGroup roomGroup = roomGroupCache.get(roomId);
-			GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
-			Assert.notNull(member, "您已经被移除该群");
-			Assert.isFalse(member.getDeFriend(), "您已经屏蔽群聊!");
-		} else {
-			RoomFriend roomFriend = roomFriendDao.getByRoomId(roomId);
-			boolean u1State = uid.equals(roomFriend.getUid1());
-			boolean u2State = uid.equals(roomFriend.getUid2());
+    private void checkDeFriend(Long roomId, Long uid) {
+        Room room = roomCache.get(roomId);
+        Assert.notNull(room, "房间不存在!");
+        if (room.isRoomGroup()) {
+            RoomGroup roomGroup = roomGroupCache.get(roomId);
+            GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
+            Assert.notNull(member, "您已经被移除该群");
+            Assert.isFalse(member.getDeFriend(), "您已经屏蔽群聊!");
+        } else {
+            RoomFriend roomFriend = roomFriendDao.getByRoomId(roomId);
+            boolean u1State = uid.equals(roomFriend.getUid1());
+            boolean u2State = uid.equals(roomFriend.getUid2());
 
-			if (roomFriend.getDeFriend1() && u1State || roomFriend.getDeFriend2() && u2State){
-				throw new BizException("已屏蔽对方!");
-			}
+            if (roomFriend.getDeFriend1() && u1State || roomFriend.getDeFriend2() && u2State) {
+                throw new BizException("已屏蔽对方!");
+            }
 
-			Assert.isTrue(u1State || u2State, "消息已发送, 但对方拒收了");
-		}
-	}
+            Assert.isTrue(u1State || u2State, "消息已发送, 但对方拒收了");
+        }
+    }
 
     private void check(Boolean skip, Long roomId, Long uid) {
-		if(skip){
-			return;
-		}
-		checkDeFriend(roomId, uid);
+        if (skip) {
+            return;
+        }
+        checkDeFriend(roomId, uid);
     }
 
     @Override
     public ChatMessageResp getMsgResp(Message message, Long receiveUid) {
-        return CollUtil.getFirst(getMsgRespBatch(Collections.singletonList(message), receiveUid));
+        return CollUtil.getFirst(getMsgRespBatch(message.getRoomId(), Collections.singletonList(message), receiveUid));
     }
 
     @Override
@@ -181,15 +189,16 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public CursorPageBaseResp<ChatMessageResp> getMsgPage(ChatMessagePageReq request, Long receiveUid) {
-		// 1. 用最后一条消息id，来限制被踢出的人能看见的最大一条消息
+        // 1. 用最后一条消息id，来限制被踢出的人能看见的最大一条消息
         Long lastMsgId = getLastMsgId(request.getRoomId(), receiveUid);
-		// 2. 判断我屏蔽会话没有权限
-		check(request.getSkip(), request.getRoomId(), receiveUid);
+        // 2. 判断我屏蔽会话没有权限
+        check(request.getSkip(), request.getRoomId(), receiveUid);
         CursorPageBaseResp<Message> cursorPage = messageDao.getCursorPage(request.getRoomId(), request, lastMsgId);
+
         if (cursorPage.isEmpty()) {
             return CursorPageBaseResp.empty();
         }
-        return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(cursorPage.getList(), receiveUid), cursorPage.getTotal());
+        return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(request.getRoomId(), cursorPage.getList(), receiveUid), cursorPage.getTotal());
     }
 
     private Long getLastMsgId(Long roomId, Long receiveUid) {
@@ -289,17 +298,17 @@ public class ChatServiceImpl implements ChatService {
             update.setReadTime(new Date());
             contactDao.updateById(update);
         } else {
-			log.error("uid --> ", uid, "roomId --> ", request.getRoomId());
+            log.error("uid --> ", uid, "roomId --> ", request.getRoomId());
 //            contactDao.save(uid, request.getRoomId());
         }
     }
 
-	@Override
-	public List<Message> getMsgByIds(List<Long> msgIds) {
-		return messageDao.listByIds(msgIds);
-	}
+    @Override
+    public List<Message> getMsgByIds(List<Long> msgIds) {
+        return messageDao.listByIds(msgIds);
+    }
 
-	private void checkRecall(Long uid, Message message) {
+    private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
         boolean isChatManager = roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER);
@@ -312,13 +321,50 @@ public class ChatServiceImpl implements ChatService {
         AssertUtil.isTrue(between < 2, "超过2分钟的消息不能撤回");
     }
 
-    public List<ChatMessageResp> getMsgRespBatch(List<Message> messages, Long receiveUid) {
+    public List<ChatMessageResp> getMsgRespBatch(Long roomId, List<Message> messages, Long receiveUid) {
         if (CollectionUtil.isEmpty(messages)) {
             return new ArrayList<>();
         }
         // 查询消息标志
         List<MessageMark> msgMark = messageMarkDao.getValidMarkByMsgIdBatch(messages.stream().map(Message::getId).collect(Collectors.toList()));
-        return MessageAdapter.buildMsgResp(messages, msgMark, receiveUid);
+        List<ChatMessageResp> chatMessageResp = MessageAdapter.buildMsgResp(messages, msgMark, receiveUid);
+
+        Room room = roomDao.getById(roomId);
+        // 如果是群聊，设置消息的发送人的名称显示
+        if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
+            Set<Long> uidSet = messages.stream().map(Message::getFromUid).collect(Collectors.toSet());
+            RoomGroup roomGroup = roomGroupDao.getByRoomId(roomId);
+            Map<Long, GroupMember> groupMemberMap = groupMemberDao.getMemberBatch(roomGroup.getId(), uidSet).stream().collect(Collectors.toMap(GroupMember::getUid, Function.identity()));
+            Map<Long, User> userMap = userDao.getByIds(uidSet).stream().collect(Collectors.toMap(User::getId, Function.identity()));
+            Map<Long, String> userFriendMapByFriendUid = userFriendDao.getByFriends(receiveUid, uidSet)
+                    .stream()
+                    .filter(item -> item.getDeleteStatus() == 0 && StringUtils.isNotEmpty(item.getRemark()))
+                    .collect(Collectors.toMap(UserFriend::getFriendUid, UserFriend::getRemark));
+
+            // 设置 user 名称
+            chatMessageResp.forEach(item -> {
+                ChatMessageResp.UserInfo fromUser = item.getFromUser();
+                long uid = Long.parseLong(fromUser.getUid());
+                GroupMember groupMember = groupMemberMap.get(uid);
+                String friendRemark = userFriendMapByFriendUid.get(uid);
+
+                // 优先显示好友备注
+                if (StringUtils.isNotEmpty(friendRemark)){
+                    fromUser.setNickname(friendRemark);
+                }
+                else if (groupMember != null){
+                    String myName = groupMember.getMyName();
+                    if (StringUtils.isNotEmpty(myName)){
+                        fromUser.setNickname(myName);
+                    }else {
+                        User user = userMap.get(uid);
+                        fromUser.setNickname(user.getName());
+                    }
+                }
+            });
+        }
+
+        return chatMessageResp;
     }
 
 }
