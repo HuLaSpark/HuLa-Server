@@ -21,6 +21,7 @@ public enum HttpErrorEnum implements ErrorEnum {
     ACCESS_DENIED(401, "登录失效，请重新登录"),
 	BLACK_ERROR(360, "对不起，不在白名单内"),
 	SYSTEM_ERROR(1001, "系统出小差了，请稍后再试哦~~"),
+    BIZ_ERROR(2001, "业务异常，请稍后再试哦~~"),
 	JWT_TOKEN_EXCEED(40004, "token已过期"),
     ;
     private Integer code;

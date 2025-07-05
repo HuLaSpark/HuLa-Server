@@ -2,13 +2,14 @@ package com.hula.core.user.service.impl;
 
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.res.IdRespVO;
-import com.hula.domain.vo.res.ApiResult;
-import com.hula.utils.AssertUtil;
 import com.hula.core.user.dao.UserEmojiDao;
 import com.hula.core.user.domain.entity.UserEmoji;
 import com.hula.core.user.domain.vo.req.user.UserEmojiReq;
 import com.hula.core.user.domain.vo.resp.user.UserEmojiResp;
 import com.hula.core.user.service.UserEmojiService;
+import com.hula.domain.vo.res.ApiResult;
+import com.hula.enums.HttpErrorEnum;
+import com.hula.utils.AssertUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class UserEmojiServiceImpl implements UserEmojiService {
     public ApiResult<IdRespVO> insert(UserEmojiReq req, Long uid) {
         //校验表情数量是否超过30
         int count = userEmojiDao.countByUid(uid);
-        AssertUtil.isFalse(count > 500, "最多只能添加500个表情哦~~");
+        AssertUtil.isFalse(count > 500, HttpErrorEnum.BIZ_ERROR, "最多只能添加500个表情哦~~");
         //校验表情是否存在
         int existsCount = Math.toIntExact(userEmojiDao.lambdaQuery()
                 .eq(UserEmoji::getExpressionUrl, req.getExpressionUrl())
