@@ -51,7 +51,7 @@ public class UserEmojiServiceImpl implements UserEmojiService {
     public ApiResult<IdRespVO> insert(UserEmojiReq req, Long uid) {
         //校验表情数量是否超过30
         int count = userEmojiDao.countByUid(uid);
-        AssertUtil.isFalse(count > 30, "最多只能添加30个表情哦~~");
+        AssertUtil.isFalse(count > 500, "最多只能添加500个表情哦~~");
         //校验表情是否存在
         int existsCount = Math.toIntExact(userEmojiDao.lambdaQuery()
                 .eq(UserEmoji::getExpressionUrl, req.getExpressionUrl())
