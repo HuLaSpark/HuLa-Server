@@ -1,6 +1,5 @@
 package com.hula.core.chat.service.strategy.mark;
 
-
 import com.hula.enums.CommonErrorEnum;
 import com.hula.utils.AssertUtil;
 

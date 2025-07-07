@@ -23,7 +23,7 @@ public class TokenBucketDTO extends FrequencyControlDTO {
 
     public TokenBucketDTO(long capacity, double refillRate) {
         if (capacity <= 0 || refillRate <= 0) {
-            throw new BizException(HttpErrorEnum.SYSTEM_ERROR);
+            throw new BizException(HttpErrorEnum.RATE_LIMIT_EXCEEDED);
         }
         this.capacity = capacity;
         this.refillRate = refillRate;

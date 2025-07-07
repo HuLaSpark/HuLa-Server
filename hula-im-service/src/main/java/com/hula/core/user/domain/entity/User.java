@@ -138,6 +138,13 @@ public class User implements Serializable {
 	@Schema(description = "调用次数[AI模块]")
 	private Integer num;
 
+	/**
+	 * 用户类型 UserTypeEnum
+	 * 参见 {@link com.hula.core.user.domain.enums.UserTypeEnum}
+	 */
+	@TableField("user_type")
+	private Integer userType;
+
     public void refreshIp(String ip) {
         if (ipInfo == null) {
             ipInfo = new IpInfo();

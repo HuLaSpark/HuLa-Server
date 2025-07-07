@@ -39,6 +39,8 @@ public class SummeryInfoDTO {
 	private Long userStateId;
     @Schema(description = "佩戴的徽章id")
     private Long wearingItemId;
+	@Schema(description = "用户类型")
+	private Integer userType;
 
     public static SummeryInfoDTO skip(Long uid) {
         SummeryInfoDTO dto = new SummeryInfoDTO();

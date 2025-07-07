@@ -588,10 +588,8 @@ public class RoomAppServiceImpl implements RoomAppService {
         List<GroupMember> groupMembers = MemberAdapter.buildMemberAdd(roomGroup.getId(), waitAddUidList);
         groupMemberDao.saveBatch(groupMembers);
 
-        User user = userInfoCache.get(uid);
-        List<Long> uidList = groupMembers.stream().map(GroupMember::getUid).collect(Collectors.toList());
-        ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(roomGroup, user, userInfoCache.getBatch(uidList));
-        chatService.sendMsg(chatMessageReq, User.UID_SYSTEM);
+//		// 系统下发加群信息
+//		friendService.createSystemFriend(request.getUidList());
 
         applicationEventPublisher.publishEvent(new GroupMemberAddEvent(this, roomGroup, groupMembers, uid));
     }
