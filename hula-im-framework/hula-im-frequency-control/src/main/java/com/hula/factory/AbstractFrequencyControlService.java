@@ -1,7 +1,7 @@
 package com.hula.factory;
 
 import com.hula.domain.dto.FrequencyControlDTO;
-import com.hula.enums.CommonErrorEnum;
+import com.hula.enums.HttpErrorEnum;
 import com.hula.exception.FrequencyControlException;
 import com.hula.utils.AssertUtil;
 import jakarta.annotation.PostConstruct;
@@ -34,7 +34,7 @@ public abstract class AbstractFrequencyControlService<K extends FrequencyControl
      */
     private <T> T executeWithFrequencyControlMap(Map<String, K> frequencyControlMap, SupplierThrowWithoutParam<T> supplier) throws Throwable {
         if (reachRateLimit(frequencyControlMap)) {
-            throw new FrequencyControlException(CommonErrorEnum.FREQUENCY_LIMIT);
+            throw new FrequencyControlException(HttpErrorEnum.FREQUENCY_LIMIT);
         }
         try {
             return supplier.get();

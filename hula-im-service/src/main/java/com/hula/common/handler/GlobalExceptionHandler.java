@@ -1,8 +1,9 @@
 package com.hula.common.handler;
 
 import com.hula.domain.vo.res.ApiResult;
-import com.hula.exception.BizException;
 import com.hula.enums.CommonErrorEnum;
+import com.hula.enums.HttpErrorEnum;
+import com.hula.exception.BizException;
 import com.hula.exception.TokenExceedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(IllegalArgumentException.class)
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult illegalArgumentException(IllegalArgumentException ex) {
-		return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR.getCode(), ex.getMessage());
+		return ApiResult.fail(HttpErrorEnum.SYSTEM_ERROR.getCode(), ex.getMessage());
 	}
 
 	/**
@@ -59,6 +60,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Throwable.class)
     public ApiResult<String> throwableExceptionHandler(Throwable e) {
         log.error(String.format("system error！The reason is: %s", e.getMessage()), e);
-        return ApiResult.fail(CommonErrorEnum.SYSTEM_ERROR.getErrorCode(), CommonErrorEnum.SYSTEM_ERROR.getErrorMsg());
+        return ApiResult.fail(HttpErrorEnum.SYSTEM_ERROR.getErrorCode(), HttpErrorEnum.SYSTEM_ERROR.getErrorMsg());
     }
 }
