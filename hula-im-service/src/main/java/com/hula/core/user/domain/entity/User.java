@@ -115,13 +115,6 @@ public class User implements Serializable {
     private Integer status;
 
     /**
-     * 用户类型 UserTypeEnum
-     * 参见 {@link com.hula.core.user.domain.enums.UserTypeEnum}
-     */
-    @TableField("user_type")
-    private Integer userType;
-
-    /**
      * 创建时间
      */
     @TableField("create_time")

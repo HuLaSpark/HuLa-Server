@@ -88,6 +88,13 @@ public class RoomController {
         return ApiResult.success(roomService.getMemberPage(request));
     }
 
+    @GetMapping("/group/listMember")
+    @Operation(summary ="群成员列表")
+    public ApiResult<List<ChatMemberResp>> listMember(@Valid MemberReq request) {
+        List<ChatMemberResp> list = roomService.listMember(request);
+        return ApiResult.success(list);
+    }
+
     @GetMapping("/group/member/list")
     @Operation(summary ="房间内的所有群成员列表-@专用")
     public ApiResult<List<ChatMemberListResp>> getMemberList(@Valid ChatMessageMemberReq request) {

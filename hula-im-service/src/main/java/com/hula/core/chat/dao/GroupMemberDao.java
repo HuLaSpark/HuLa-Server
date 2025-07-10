@@ -228,4 +228,9 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 		updateById(member);
 		groupMemberCache.evictMemberUidList(roomId);
 	}
+
+    public List<GroupMember> getMemberListByGroupId(Long groupId) {
+        return list(new LambdaQueryWrapper<GroupMember>()
+                .eq(GroupMember::getGroupId, groupId));
+    }
 }

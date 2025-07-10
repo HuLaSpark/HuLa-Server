@@ -10,10 +10,10 @@ public class BaseEntity implements Serializable {
 
     private Long createId;
 
-    private Date CreateTime;
+    private Date createTime;
 
     private Long updateId;
 
-    private Date UpdateTime;
+    private Date updateTime;
 
 }

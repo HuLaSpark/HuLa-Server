@@ -149,4 +149,6 @@ public interface RoomAppService {
 	 * @return
 	 */
 	ChatMessageResp mergeMessage(Long uid, MergeMessageReq req);
+
+	List<ChatMemberResp> listMember(@Valid MemberReq request);
 }

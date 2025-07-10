@@ -1,5 +1,6 @@
 package com.hula.core.chat.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Pair;
@@ -516,6 +517,29 @@ public class RoomAppServiceImpl implements RoomAppService {
         }
         return chatService.getMemberPage(memberUidList, request);
     }
+
+	@Override
+	public List<ChatMemberResp> listMember(MemberReq request) {
+		Room room = roomCache.get(request.getRoomId());
+		AssertUtil.isNotEmpty(room, "房间号有误");
+
+		RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
+		List<GroupMember> groupMembers = groupMemberDao.getMemberListByGroupId(roomGroup.getId());
+
+		List<ChatMemberResp> chatMemberResps = BeanUtil.copyToList(groupMembers, ChatMemberResp.class);
+		Map<String, ChatMemberResp> chatMemberRespMap = chatMemberResps.stream()
+				.collect(Collectors.toMap(ChatMemberResp::getUid, Function.identity()));
+		Set<Long> chatMemberUidSet = chatMemberRespMap.keySet().stream().map(Long::parseLong).collect(Collectors.toSet());
+
+		Map<Long, User> userInfoBatch = userCache.getUserInfoBatch(chatMemberUidSet);
+		chatMemberResps.forEach(item -> {
+			User user = userInfoBatch.get(Long.valueOf(item.getUid()));
+			if (user != null) {
+				item.setActiveStatus(user.getActiveStatus());
+			}
+		});
+		return chatMemberResps;
+	}
 
     @Override
     public List<ChatMemberListResp> getMemberList(ChatMessageMemberReq request) {

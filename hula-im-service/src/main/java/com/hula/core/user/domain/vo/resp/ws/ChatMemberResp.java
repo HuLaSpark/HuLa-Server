@@ -19,6 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMemberResp extends BaseEntity {
+    private Long id;
 
     @Schema(description = "uid")
     private String uid;
@@ -37,5 +38,11 @@ public class ChatMemberResp extends BaseEntity {
 
     @Schema(description = "最后一次上下线时间")
     private Date lastOptTime;
+
+    @Schema(description = "我的群昵称")
+    private String myName;
+
+    @Schema(description = "群角色")
+    private Integer groupRole;
 
 }
