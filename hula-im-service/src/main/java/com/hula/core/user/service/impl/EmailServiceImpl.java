@@ -12,6 +12,7 @@ import com.hula.utils.RedisUtils;
 import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
  * 邮箱服务
  */
 @Service
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 	@Resource
 	private JavaMailSender mailSender;
@@ -70,6 +72,7 @@ public class EmailServiceImpl implements EmailService {
 			String htmlContent = StrUtil.format(htmlTemplate, systemName, systemName, systemName, emailCode, expireTime / 60,fromEmail, systemName, time);
 			helper.setText(htmlContent, true);
 
+			log.info("验证码: {}", emailCode);
 			mailSender.send(message);
 			RedisUtils.hset("emailCode", req.getUuid(), emailCode, expireTime);
 		} catch (MessagingException e) {

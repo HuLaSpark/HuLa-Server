@@ -26,6 +26,7 @@ logging:
     com.hula.service.web: INFO
     com.github.binarywang.demo.wx.mp: DEBUG
     me.chanjar.weixin: DEBUG
+    com.hula.ai.gpt.mapper: DEBUG
   pattern:
     dateformat: "yyyy-MM-dd HH:mm:ss"
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread]-[%-3level ]-[tid：%X{tid}]-[%c]：%L：%m%n"
@@ -166,3 +167,6 @@ public:
     - /captcha/captcha
     - /captcha/sendCode
     - /token/forgotPassword
+    - /doc.html
+    - /webjars/**
+    - /v3/api-docs

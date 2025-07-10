@@ -77,11 +77,11 @@ public interface FriendService {
 	 * 与系统用户创建聊天框
 	 * 系统用户发送欢迎消息
 	 * 系统用户在群内发送欢迎消息
-	 * @param uidList 加上系统机器人的所有uid
+	 * @param uid uid
 	 */
-	 void createSystemFriend(List<Long> uidList);
+	void createSystemFriend(Long uid);
 
-	/**
+    /**
      * 同意好友申请
      *
      * @param uid     uid
