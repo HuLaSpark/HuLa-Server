@@ -45,4 +45,12 @@ public class ChatMemberResp extends BaseEntity {
     @Schema(description = "群角色")
     private Integer groupRole;
 
+    @Schema(description = "用户昵称")
+    private String name;
+
+    @Schema(description = "头像")
+    private String avatar;
+
+    @Schema(description = "用户状态id")
+    private Long userStateId;
 }

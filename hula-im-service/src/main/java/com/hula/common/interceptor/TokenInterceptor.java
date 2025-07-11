@@ -3,8 +3,10 @@ package com.hula.common.interceptor;
 import com.hula.ai.config.SecurityProperties;
 import com.hula.common.config.PublicUrlProperties;
 import com.hula.core.user.service.TokenService;
+import com.hula.domain.dto.RequestInfo;
 import com.hula.enums.HttpErrorEnum;
 import com.hula.utils.JwtUtils;
+import com.hula.utils.RequestHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = getToken(request);
-        if (securityProperties.getMockEnable()){
+        if (securityProperties.getMockEnable() && token.startsWith(securityProperties.getMockSecret())){
             Long userId = mockLoginUser(token);
             request.setAttribute(ATTRIBUTE_UID, userId);
             return true;

@@ -7,6 +7,7 @@ import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.hula.ai.utils.BeanUtils;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
@@ -526,19 +527,30 @@ public class RoomAppServiceImpl implements RoomAppService {
 		RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
 		List<GroupMember> groupMembers = groupMemberDao.getMemberListByGroupId(roomGroup.getId());
 
-		List<ChatMemberResp> chatMemberResps = BeanUtil.copyToList(groupMembers, ChatMemberResp.class);
+		List<ChatMemberResp> chatMemberResps = groupMembers.stream().map(item -> {
+			ChatMemberResp chatMemberResp = BeanUtil.toBean(item, ChatMemberResp.class);
+			chatMemberResp.setGroupRole(item.getRole());
+			return chatMemberResp;
+		}).toList();
 		Map<String, ChatMemberResp> chatMemberRespMap = chatMemberResps.stream()
 				.collect(Collectors.toMap(ChatMemberResp::getUid, Function.identity()));
 		Set<Long> chatMemberUidSet = chatMemberRespMap.keySet().stream().map(Long::parseLong).collect(Collectors.toSet());
 
 		Map<Long, User> userInfoBatch = userCache.getUserInfoBatch(chatMemberUidSet);
-		chatMemberResps.forEach(item -> {
+		List<ChatMemberResp> result = chatMemberResps.stream().filter(item -> {
 			User user = userInfoBatch.get(Long.valueOf(item.getUid()));
-			if (user != null) {
-				item.setActiveStatus(user.getActiveStatus());
-			}
+			return user != null;
+		}).toList();
+		result.forEach(item -> {
+			User user = userInfoBatch.get(Long.valueOf(item.getUid()));
+			item.setActiveStatus(user.getActiveStatus());
+			item.setLastOptTime(user.getLastOptTime());
+			item.setName(user.getName());
+			item.setAvatar(user.getAvatar());
+			item.setAccount(user.getAccount());
+			item.setUserStateId(user.getUserStateId());
 		});
-		return chatMemberResps;
+		return result;
 	}
 
     @Override
