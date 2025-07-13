@@ -173,7 +173,7 @@ public class LoginServiceImpl implements LoginService {
 		checkCode(req.getUuid(), req.getCode());
 
 		// 2. 修改密码
-		User dbuUser = userDao.getByEmail(req.getEmail());
+		User dbuUser = userDao.getByEmail(req.getEmail(), UserTypeEnum.NORMAL.getValue());
 		User user = new User();
 		user.setId(dbuUser.getId());
 		user.setPassword(req.getPassword());

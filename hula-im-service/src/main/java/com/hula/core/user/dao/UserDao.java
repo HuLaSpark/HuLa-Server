@@ -47,8 +47,8 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
         updateById(update);
     }
 
-    public User getByEmail(String email) {
-        return lambdaQuery().eq(User::getEmail, email).one();
+    public User getByEmail(String email, Integer userType) {
+        return lambdaQuery().eq(User::getEmail, email).eq(User::getUserType, userType).one();
     }
 
     public List<User> getMemberList() {
