@@ -17,8 +17,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatRoomResp {
-	@Schema(description ="单聊时对方的id，群聊是groupId")
+	@Schema(description ="会话id")
 	private Long id;
+	@Schema(description ="单聊时对方的id，群聊是groupId")
+	private Long detailId;
     @Schema(description ="房间id")
     private Long roomId;
     @Schema(description ="房间类型 1群聊 2单聊")
