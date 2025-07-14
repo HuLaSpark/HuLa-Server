@@ -43,6 +43,11 @@ public interface RoomAppService {
      */
     CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid);
 
+	/**
+	 * 获取会话列表
+	 */
+	List<ChatRoomResp> getContactPage(Long uid);
+
     /**
      * 获取群组信息
      */

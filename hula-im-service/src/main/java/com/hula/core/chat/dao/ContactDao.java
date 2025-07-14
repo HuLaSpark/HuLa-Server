@@ -82,7 +82,16 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
         return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(Contact::getUid, uid).eq(Contact::getHide, false), Contact::getActiveTime);
     }
 
-    public List<Contact> getByRoomIds(List<Long> roomIds, Long uid) {
+	/**
+	 * 查询用户的所有会话
+	 * @param uid
+	 * @return
+	 */
+	public List<Contact> getAllContactsByUid(Long uid) {
+		return lambdaQuery().eq(Contact::getUid, uid).list();
+	}
+
+    public List<Contact> getAllContactsByUid(List<Long> roomIds, Long uid) {
         return lambdaQuery()
                 .in(Contact::getRoomId, roomIds)
 				.eq(Contact::getHide, false)

@@ -7,7 +7,6 @@ import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.hula.ai.utils.BeanUtils;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
@@ -49,7 +48,6 @@ import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.dao.UserBackpackDao;
 import com.hula.core.user.dao.UserDao;
 import com.hula.core.user.domain.entity.User;
-import com.hula.core.user.domain.entity.UserBackpack;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.MergeMessageReq;
@@ -106,38 +104,69 @@ public class RoomAppServiceImpl implements RoomAppService {
     @Override
     public CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid) {
         // 查出用户要展示的会话列表
-        CursorPageBaseResp<Long> page;
-		HashMap<String, Contact> contactHashMap = new HashMap<>();
-        if (Objects.nonNull(uid)) {
-            Double hotEnd = getCursorOrNull(request.getCursor());
-            Double hotStart = null;
-            // 用户基础会话
-            CursorPageBaseResp<Contact> contactPage = contactDao.getContactPage(uid, request);
-			contactHashMap = contactPage.getList().stream().collect(Collectors.toMap(
-					contact -> StrUtil.format("{}_{}", contact.getUid(), contact.getRoomId()),
-					contact -> contact, (existing, replacement) -> existing, HashMap::new
-			));
-            List<Long> baseRoomIds = contactPage.getList().stream().map(Contact::getRoomId).collect(Collectors.toList());
-            if (!contactPage.getIsLast()) {
-                hotStart = getCursorOrNull(contactPage.getCursor());
-            }
-            // 热门房间
-            Set<ZSetOperations.TypedTuple<String>> typedTuples = hotRoomCache.getRoomRange(hotStart, hotEnd);
-            List<Long> hotRoomIds = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).filter(Objects::nonNull).map(Long::parseLong).collect(Collectors.toList());
-            baseRoomIds.addAll(hotRoomIds);
-            // 基础会话和热门房间合并
-            page = CursorPageBaseResp.init(contactPage, baseRoomIds, 0L);
-        } else {// 用户未登录，只查全局房间
-            CursorPageBaseResp<Pair<Long, Double>> roomCursorPage = hotRoomCache.getRoomCursorPage(request);
-            List<Long> roomIds = roomCursorPage.getList().stream().map(Pair::getKey).collect(Collectors.toList());
-            page = CursorPageBaseResp.init(roomCursorPage, roomIds,0L);
-        }
+		Double hotEnd = getCursorOrNull(request.getCursor());
+		Double hotStart = null;
+		// 用户基础会话
+		CursorPageBaseResp<Contact> contactPage = contactDao.getContactPage(uid, request);
+		HashMap<String, Contact> contactHashMap = contactPage.getList().stream().collect(Collectors.toMap(
+				contact -> StrUtil.format("{}_{}", contact.getUid(), contact.getRoomId()),
+				contact -> contact, (existing, replacement) -> existing, HashMap::new
+		));
+		List<Long> baseRoomIds = contactPage.getList().stream().map(Contact::getRoomId).collect(Collectors.toList());
+		if (!contactPage.getIsLast()) {
+			hotStart = getCursorOrNull(contactPage.getCursor());
+		}
+		// 热门房间
+		Set<ZSetOperations.TypedTuple<String>> typedTuples = hotRoomCache.getRoomRange(hotStart, hotEnd);
+		List<Long> hotRoomIds = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).filter(Objects::nonNull).map(Long::parseLong).collect(Collectors.toList());
+		baseRoomIds.addAll(hotRoomIds);
+		// 基础会话和热门房间合并
+		CursorPageBaseResp<Long> page = CursorPageBaseResp.init(contactPage, baseRoomIds, 0L);
+
         // 最后组装会话信息（名称，头像，未读数等）
         List<ChatRoomResp> result = buildContactResp(contactHashMap, uid, page.getList());
         return CursorPageBaseResp.init(page, result,0L);
     }
 
-    @Override
+	/**
+	 * 返回当前登录用户的全部会话
+	 * @param uid
+	 * @return
+	 */
+	@Override
+	public List<ChatRoomResp> getContactPage(Long uid) {
+		// 1. 查出用户要展示的会话列表
+		List<Contact> contacts = contactDao.getAllContactsByUid(uid);
+
+		// 2. 构建会话映射表（uid_roomId -> Contact）
+		HashMap<String, Contact> contactMap = contacts.stream()
+				.collect(Collectors.toMap(
+						contact -> StrUtil.format("{}_{}", contact.getUid(), contact.getRoomId()),
+						contact -> contact,
+						(existing, replacement) -> existing,
+						HashMap::new
+				));
+
+		// 3. 提取所有基础会话的 roomId
+		List<Long> baseRoomIds = contacts.stream().map(Contact::getRoomId).collect(Collectors.toList());
+
+		// 4. 查询所有热门房间
+//		Set<ZSetOperations.TypedTuple<String>> hotRooms = hotRoomCache.getAllRooms();
+//		List<Long> hotRoomIds = hotRooms.stream()
+//				.map(ZSetOperations.TypedTuple::getValue)
+//				.filter(Objects::nonNull)
+//				.map(Long::parseLong)
+//				.collect(Collectors.toList());
+
+		// 5. 合并基础会话和热门房间的 roomId
+		baseRoomIds.addAll(baseRoomIds);
+//		baseRoomIds.addAll(hotRoomIds);
+
+		// 6. 组装最终会话信息（名称、头像、未读数等）
+		return buildContactResp(contactMap, uid, baseRoomIds);
+	}
+
+	@Override
     public ChatRoomResp getContactDetail(Long uid, Long roomId) {
         Room room = roomCache.get(roomId);
         AssertUtil.isNotEmpty(room, "房间号有误");
@@ -672,7 +701,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         Map<Long, Room> batch = roomCache.getBatch(roomIds);
         Map<Long, Contact> contactMap = new HashMap<>();
         if (Objects.nonNull(uid)) {
-            List<Contact> byRoomIds = contactDao.getByRoomIds(roomIds, uid);
+            List<Contact> byRoomIds = contactDao.getAllContactsByUid(roomIds, uid);
             contactMap = byRoomIds.stream().collect(Collectors.toMap(Contact::getRoomId, Function.identity()));
         }
         Map<Long, Contact> finalContactMap = contactMap;
@@ -773,7 +802,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         if (Objects.isNull(uid)) {
             return new HashMap<>();
         }
-        List<Contact> contacts = contactDao.getByRoomIds(roomIds, uid);
+        List<Contact> contacts = contactDao.getAllContactsByUid(roomIds, uid);
         return contacts.parallelStream()
                 .map(contact -> Pair.of(contact.getRoomId(), messageDao.getUnReadCount(contact.getRoomId(), contact.getReadTime())))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
@@ -804,40 +833,53 @@ public class RoomAppServiceImpl implements RoomAppService {
         // 获取好友信息
         List<Long> friendRoomId = groupRoomIdMap.get(RoomTypeEnum.FRIEND.getType());
         Map<Long, User> friendRoomMap = getFriendRoomMap(friendRoomId, uid);
+		// 处理脏数据
+		Set<Long> dirtyRoomIds = new HashSet<>();
 
-        return roomMap.values().stream().filter(Objects::nonNull).map(room -> {
-            RoomBaseInfo roomBaseInfo = new RoomBaseInfo();
-            roomBaseInfo.setRoomId(room.getId());
-            roomBaseInfo.setType(room.getType());
-            roomBaseInfo.setHotFlag(room.getHotFlag());
-            roomBaseInfo.setLastMsgId(room.getLastMsgId());
-            roomBaseInfo.setActiveTime(room.getActiveTime());
-            if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.GROUP) {
-                RoomGroup roomGroup = roomInfoBatch.get(room.getId());
+		Map<Long, RoomBaseInfo> collect = roomMap.values().stream().filter(Objects::nonNull).map(room -> {
+			RoomBaseInfo roomBaseInfo = new RoomBaseInfo();
+			roomBaseInfo.setRoomId(room.getId());
+			roomBaseInfo.setType(room.getType());
+			roomBaseInfo.setHotFlag(room.getHotFlag());
+			roomBaseInfo.setLastMsgId(room.getLastMsgId());
+			roomBaseInfo.setActiveTime(room.getActiveTime());
+			if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.GROUP) {
+				RoomGroup roomGroup = roomInfoBatch.get(room.getId());
 				roomBaseInfo.setId(roomGroup.getId());
-                roomBaseInfo.setName(roomGroup.getName());
-                roomBaseInfo.setAvatar(roomGroup.getAvatar());
+				roomBaseInfo.setName(roomGroup.getName());
+				roomBaseInfo.setAvatar(roomGroup.getAvatar());
 				roomBaseInfo.setAccount(roomGroup.getAccount());
-				GroupMember member = groupMemberCache.getMemberDetail(roomBaseInfo.getId(), uid);
+				GroupMember member = null;
+				try {
+					member = groupMemberCache.getMemberDetail(roomBaseInfo.getId(), uid);
+				} catch (Exception e) {
+					dirtyRoomIds.add(room.getId()); // 记录脏数据
+				}
 				// todo 稳定了这里可以不用判空，理论上100% 在群里
-				if(ObjectUtil.isNotNull(member)){
+				if (ObjectUtil.isNotNull(member)) {
 					roomBaseInfo.setMyName(member.getMyName());
 					roomBaseInfo.setRemark(member.getRemark());
 					roomBaseInfo.setRole(member.getRole());
-				}else {
+				} else {
 					roomBaseInfo.setMyName("会话异常");
 					roomBaseInfo.setRemark("会话异常");
 					roomBaseInfo.setRole(0);
 				}
-            } else if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.FRIEND) {
-                User user = friendRoomMap.get(room.getId());
+			} else if (RoomTypeEnum.of(room.getType()) == RoomTypeEnum.FRIEND) {
+				User user = friendRoomMap.get(room.getId());
 				roomBaseInfo.setId(user.getId());
 				roomBaseInfo.setRole(0);
-                roomBaseInfo.setName(user.getName());
-                roomBaseInfo.setAvatar(user.getAvatar());
+				roomBaseInfo.setName(user.getName());
+				roomBaseInfo.setAvatar(user.getAvatar());
 				roomBaseInfo.setAccount(user.getAccount());
-            }
-            return roomBaseInfo;
-        }).collect(Collectors.toMap(RoomBaseInfo::getRoomId, Function.identity()));
-    }
+			}
+			return roomBaseInfo;
+		}).collect(Collectors.toMap(RoomBaseInfo::getRoomId, Function.identity()));
+
+		// 统一打印脏数据
+		if (!dirtyRoomIds.isEmpty()) {
+			System.out.println(dirtyRoomIds);
+		}
+		return collect;
+	}
 }

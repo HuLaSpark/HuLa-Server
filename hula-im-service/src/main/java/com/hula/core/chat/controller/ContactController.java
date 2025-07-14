@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 会话相关接口
  * @author nyh
@@ -41,6 +43,12 @@ public class ContactController {
         Long uid = RequestHolder.get().getUid();
         return ApiResult.success(roomService.getContactPage(request, uid));
     }
+
+	@GetMapping("/contact/list")
+	@Operation(summary ="会话列表")
+	public ApiResult<List<ChatRoomResp>> getRoomList() {
+		return ApiResult.success(roomService.getContactPage(RequestHolder.get().getUid()));
+	}
 
     @GetMapping("/contact/detail")
     @Operation(summary ="会话详情")
