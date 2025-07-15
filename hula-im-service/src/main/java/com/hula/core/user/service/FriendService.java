@@ -29,7 +29,14 @@ import java.util.List;
  */
 public interface FriendService {
 
-    /**
+	/**
+	 * 创建双方好友关系
+	 * @param uid 我自己
+	 * @param targetUid 好友
+	 */
+	void createFriend(Long roomId, Long uid, Long targetUid);
+
+	/**
      * 检查
      * 检查是否是自己好友
      *

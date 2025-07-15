@@ -78,6 +78,9 @@ public class Contact implements Serializable {
     @TableField("last_msg_id")
     private Long lastMsgId;
 
+	@Schema(description = "true -> 屏蔽 false -> 正常")
+	private Boolean shield;
+
     /**
      * 创建时间
      */
@@ -89,7 +92,4 @@ public class Contact implements Serializable {
      */
     @TableField("update_time")
     private Date updateTime;
-
-	@Schema(description = "true -> 屏蔽 false -> 正常")
-	private Boolean shield;
 }

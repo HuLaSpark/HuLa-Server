@@ -99,15 +99,28 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Long sendMsg(ChatMessageReq request, Long uid) {
-        check(request.getSkip(), request.getRoomId(), uid);
+        check(request.getSkip(), request.getIsTemp(), request.getRoomId(), uid);
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(request.getMsgType());
         Long msgId = msgHandler.checkAndSaveMsg(request, uid);
+
+		// 临时会话单独处理一下消息计数器
+		if (request.getIsTemp()) {
+			Room room = roomCache.get(request.getRoomId());
+			if(room != null && room.isRoomFriend() && !request.getIsPushMessage()){
+				UserFriend userFriend = userFriendDao.getByRoomId(request.getRoomId(), uid);
+				if (userFriend != null && userFriend.getIsTemp()) {
+					userFriend.setTempMsgCount(userFriend.getTempMsgCount() + 1);
+					userFriendDao.updateById(userFriend);
+				}
+			}
+		}
+
         // 发布消息发送事件
         applicationEventPublisher.publishEvent(new MessageSendEvent(this, new ChatMsgSendDto(msgId, uid)));
         return msgId;
     }
 
-    private void checkDeFriend(Long roomId, Long uid) {
+    private void checkDeFriend(Boolean isTemp, Long roomId, Long uid) {
         Room room = roomCache.get(roomId);
         Assert.notNull(room, "房间不存在!");
         if (room.isRoomGroup()) {
@@ -120,19 +133,40 @@ public class ChatServiceImpl implements ChatService {
             boolean u1State = uid.equals(roomFriend.getUid1());
             boolean u2State = uid.equals(roomFriend.getUid2());
 
-            if (roomFriend.getDeFriend1() && u1State || roomFriend.getDeFriend2() && u2State) {
-                throw new BizException("已屏蔽对方!");
-            }
+			if(isTemp){
+				// 临时会话的消息校验，整合 UserFriend、RoomFriend 的功能
+				UserFriend userFriend = userFriendDao.getByRoomId(roomId, uid);
+				if (userFriend == null || !userFriend.getIsTemp()) {
+					throw new BizException("当前会话不存在或不是临时会话");
+				}
+
+				if (uid.equals(roomFriend.getUid1()) && !userFriend.getTempStatus() && userFriend.getTempMsgCount() >= 1) {
+					throw new BizException("对方未回复前只能发送一条打招呼信息");
+				}
+
+				if (uid.equals(userFriend.getUid()) && userFriend.getTempMsgCount() >= 5) {
+					throw new BizException("临时会话最多只能发送5条消息");
+				}
+			}
+			if (roomFriend.getDeFriend1() && u1State || roomFriend.getDeFriend2() && u2State) {
+				throw new BizException("已屏蔽对方!");
+			}
 
             Assert.isTrue(u1State || u2State, "消息已发送, 但对方拒收了");
         }
     }
 
-    private void check(Boolean skip, Long roomId, Long uid) {
+	/**
+	 * @param skip 是否跳过检查
+	 * @param isTemp 当前检查的会话是否是临时会话【特殊处理】
+	 * @param roomId 房间id
+	 * @param uid 当前登录用户id
+	 */
+    private void check(Boolean skip, Boolean isTemp, Long roomId, Long uid) {
         if (skip) {
             return;
         }
-        checkDeFriend(roomId, uid);
+        checkDeFriend(isTemp, roomId, uid);
     }
 
     @Override
@@ -192,7 +226,7 @@ public class ChatServiceImpl implements ChatService {
         // 1. 用最后一条消息id，来限制被踢出的人能看见的最大一条消息
         Long lastMsgId = getLastMsgId(request.getRoomId(), receiveUid);
         // 2. 判断我屏蔽会话没有权限
-        check(request.getSkip(), request.getRoomId(), receiveUid);
+        check(request.getSkip(), false, request.getRoomId(), receiveUid);
         CursorPageBaseResp<Message> cursorPage = messageDao.getCursorPage(request.getRoomId(), request, lastMsgId);
 
         if (cursorPage.isEmpty()) {

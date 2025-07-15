@@ -135,4 +135,27 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 	public List<Long> evictGroup(Long uid) {
 		return null;
 	}
+
+	/**
+	 * 根据房间号+自己的id 定位好友关系
+	 * @param roomId
+	 * @param uid
+	 * @return
+	 */
+	@Cacheable(cacheNames = "userFriend", key = "'room:'+#roomId+':uid:'+#uid", unless = "#result == null")
+	public UserFriend getByRoomId(Long roomId, Long uid) {
+		return lambdaQuery()
+				.eq(UserFriend::getRoomId, roomId)
+				.eq(UserFriend::getUid, uid)
+				.one();
+	}
+
+	/**
+	 * 当好友关系变更时清除缓存
+	 * @param roomId 房间ID
+	 * @param uid 用户ID
+	 */
+	@CacheEvict(cacheNames = "userFriend", key = "'room:'+#roomId+':uid:'+#uid")
+	public void evictFriendCache(Long roomId, Long uid) {
+	}
 }

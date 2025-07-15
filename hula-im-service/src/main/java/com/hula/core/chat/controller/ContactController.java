@@ -4,6 +4,7 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.req.IdReqVO;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.core.chat.domain.vo.request.ContactFriendReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactAddReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
@@ -36,6 +37,13 @@ import java.util.List;
 public class ContactController {
     @Resource
     private RoomAppService roomService;
+
+	@PostMapping("createContact")
+	@Operation(summary = "创建临时会话")
+	public ApiResult<Boolean> createContact(@RequestBody @Valid ContactAddReq request) {
+		Long uid = RequestHolder.get().getUid();
+		return ApiResult.success(roomService.createContact(uid, request));
+	}
 
     @GetMapping("/contact/page")
     @Operation(summary ="会话列表")

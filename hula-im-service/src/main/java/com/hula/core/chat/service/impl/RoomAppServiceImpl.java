@@ -12,6 +12,7 @@ import com.hula.common.domain.vo.req.CursorPageBaseReq;
 import com.hula.common.domain.vo.res.CursorPageBaseResp;
 import com.hula.common.domain.vo.res.GroupListVO;
 import com.hula.common.event.GroupMemberAddEvent;
+import com.hula.common.event.UserApprovalEvent;
 import com.hula.core.chat.dao.ContactDao;
 import com.hula.core.chat.dao.GroupMemberDao;
 import com.hula.core.chat.dao.MessageDao;
@@ -24,6 +25,7 @@ import com.hula.core.chat.domain.enums.GroupRoleEnum;
 import com.hula.core.chat.domain.enums.HotFlagEnum;
 import com.hula.core.chat.domain.enums.RoomTypeEnum;
 import com.hula.core.chat.domain.vo.request.*;
+import com.hula.core.chat.domain.vo.request.contact.ContactAddReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
@@ -47,8 +49,13 @@ import com.hula.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.hula.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.hula.core.user.dao.UserBackpackDao;
 import com.hula.core.user.dao.UserDao;
+import com.hula.core.user.dao.UserFriendDao;
+import com.hula.core.user.dao.UserPrivacyDao;
+import com.hula.core.user.domain.dto.RequestApprovalDto;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.entity.UserFriend;
 import com.hula.core.user.domain.enums.RoleTypeEnum;
+import com.hula.core.user.domain.enums.UserTypeEnum;
 import com.hula.core.user.domain.enums.WsBaseResp;
 import com.hula.core.user.domain.vo.req.MergeMessageReq;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
@@ -83,6 +90,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 
 	private final UserBackpackDao userBackpackDao;
 	private final RoomGroupDao roomGroupDao;
+	private final UserFriendDao userFriendDao;
 	private ContactDao contactDao;
     private RoomCache roomCache;
     private RoomGroupCache roomGroupCache;
@@ -94,6 +102,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 	private RoomAnnouncementsCache roomAnnouncementsCache;
     private GroupMemberDao groupMemberDao;
     private UserDao userDao;
+	private UserPrivacyDao userPrivacyDao;
     private ChatService chatService;
     private RoleService roleService;
     private ApplicationEventPublisher applicationEventPublisher;
@@ -101,7 +110,31 @@ public class RoomAppServiceImpl implements RoomAppService {
     private GroupMemberCache groupMemberCache;
     private PushService pushService;
 	private FriendService friendService;
-    @Override
+
+	@Override
+	public Boolean createContact(Long uid, ContactAddReq request) {
+		// 1. 检查对方是否允许临时会话
+		UserPrivacy privacy = userPrivacyDao.getByUid(request.getToUid());
+		if (privacy != null && (privacy.getIsPrivate() || !privacy.getAllowTempSession())) {
+			throw new BizException("对方设置了不接受临时会话");
+		}
+
+		// 2. 检查是否已存在临时会话
+		UserFriend userFriend = userFriendDao.getByFriend(uid, request.getToUid());
+		if (userFriend != null && userFriend.getIsTemp()) {
+			throw new BizException("已存在临时会话，请勿重复创建");
+		}
+
+		// 创建一个聊天房间
+		RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, request.getToUid()));
+		// 创建双方好友关系
+		friendService.createFriend(roomFriend.getRoomId(), uid, request.getToUid());
+		// 发送一条临时会话消息
+		chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.NORMAL, true), uid);
+		return true;
+	}
+
+	@Override
     public CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid) {
         // 查出用户要展示的会话列表
 		Double hotEnd = getCursorOrNull(request.getCursor());

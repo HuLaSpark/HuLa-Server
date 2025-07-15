@@ -12,6 +12,7 @@ import com.hula.core.chat.domain.vo.request.GroupAddReq;
 import com.hula.core.chat.domain.vo.request.RoomApplyReq;
 import com.hula.core.chat.domain.vo.request.RoomInfoReq;
 import com.hula.core.chat.domain.vo.request.RoomMyInfoReq;
+import com.hula.core.chat.domain.vo.request.contact.ContactAddReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactHideReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactNotificationReq;
 import com.hula.core.chat.domain.vo.request.contact.ContactShieldReq;
@@ -30,14 +31,17 @@ import com.hula.core.chat.domain.vo.response.MemberResp;
 import com.hula.core.user.domain.vo.req.MergeMessageReq;
 import com.hula.core.user.domain.vo.resp.ws.ChatMemberResp;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 
 /**
  * @author nyh
  */
 public interface RoomAppService {
+	/**
+	 * 创建会话
+	 * @return
+	 */
+	Boolean createContact(Long uid, @Valid ContactAddReq request);
     /**
      * 获取会话列表--支持未登录态
      */

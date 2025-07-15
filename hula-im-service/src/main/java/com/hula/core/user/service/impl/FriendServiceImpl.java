@@ -215,26 +215,39 @@ public class FriendServiceImpl implements FriendService {
         AssertUtil.equal(userApply.getStatus(), WAIT_APPROVAL.getCode(), "已同意好友申请");
         // 同意申请
         userApplyDao.agree(request.getApplyId());
-        // 创建双方好友关系
-        createFriend(uid, userApply.getUid());
-        // 创建一个聊天房间
-        RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));
-        // 通知请求方已处理好友申请
+
+		// 检查是否是临时会话升级
+		UserFriend userFriend = userFriendDao.getByFriend(uid, userApply.getUid());
+		boolean isFromTempSession = userFriend != null && userFriend.getIsTemp();
+		// 如果是从临时会话升级，则修改会话状态；否则创建新会话
+		if (isFromTempSession) {
+			userFriend.setIsTemp(false);
+			userFriendDao.updateById(userFriend);
+		} else {
+			// 创建一个聊天房间
+			RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, userApply.getUid()));
+
+			// 创建双方好友关系
+			createFriend(roomFriend.getRoomId(), uid, userApply.getUid());
+
+			// 发送一条同意消息。。我们已经是好友了，开始聊天吧
+			chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.NORMAL, true), uid);
+		}
+
+		 // 通知请求方已处理好友申请
         applicationEventPublisher.publishEvent(new UserApprovalEvent(this, RequestApprovalDto.builder().uid(uid).targetUid(userApply.getUid()).build()));
-        // 发送一条同意消息。。我们已经是好友了，开始聊天吧
-		chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.NORMAL), uid);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void createSystemFriend(List<Long> uidList){
 		for (Long uid : uidList) {
-			// 创建双方好友关系
-			createFriend(uid, 1L);
 			// 创建一个聊天房间
 			RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, 1L));
+			// 创建双方好友关系
+			createFriend(roomFriend.getRoomId(), uid, 1L);
 			// 发送一条同意消息。。我们已经是好友了，开始聊天吧
-			chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.SYSTEM), uid);
+			chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.SYSTEM, true), uid);
 			// 系统账号在群内发送一条欢迎消息
 			User user = userCache.getUserInfo(uid);
 			chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(1L, user.getName()), 1L);
@@ -315,13 +328,15 @@ public class FriendServiceImpl implements FriendService {
         return userApply;
     }
 
-    private void createFriend(Long uid, Long targetUid) {
+    public void createFriend(Long roomId, Long uid, Long targetUid) {
         UserFriend userFriend1 = new UserFriend();
         userFriend1.setUid(uid);
         userFriend1.setFriendUid(targetUid);
+		userFriend1.setRoomId(roomId);
         UserFriend userFriend2 = new UserFriend();
         userFriend2.setUid(targetUid);
         userFriend2.setFriendUid(uid);
+		userFriend2.setRoomId(roomId);
         userFriendDao.saveBatch(Lists.newArrayList(userFriend1, userFriend2));
     }
 
