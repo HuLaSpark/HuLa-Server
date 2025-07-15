@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,6 +49,16 @@ public class ChatController {
         filterBlackMsg(msgPage);
         return ApiResult.success(msgPage);
     }
+
+	@GetMapping("/msg/list")
+	@Operation(summary ="消息列表")
+//    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
+	public ApiResult<List<ChatMessageResp>> getMsgPage() {
+		List<ChatMessageResp> msgPage = chatService.getMsgList(RequestHolder.get().getUid());
+		Set<String> blackMembers = getBlackUidSet();
+		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
+		return ApiResult.success(msgPage);
+	}
 
     private void filterBlackMsg(CursorPageBaseResp<ChatMessageResp> memberPage) {
         Set<String> blackMembers = getBlackUidSet();

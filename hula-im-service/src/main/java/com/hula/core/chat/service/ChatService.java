@@ -58,6 +58,8 @@ public interface ChatService {
      */
     CursorPageBaseResp<ChatMessageResp> getMsgPage(ChatMessagePageReq request, @Nullable Long receiveUid);
 
+	List<ChatMessageResp> getMsgList(Long receiveUid);
+
     ChatMemberStatisticResp getMemberStatistic();
 
     void setMsgMark(Long uid, ChatMessageMarkReq request);

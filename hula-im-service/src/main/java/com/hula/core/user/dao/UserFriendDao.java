@@ -158,4 +158,10 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 	@CacheEvict(cacheNames = "userFriend", key = "'room:'+#roomId+':uid:'+#uid")
 	public void evictFriendCache(Long roomId, Long uid) {
 	}
+
+	public List<Long> getAllRoomIdsByUid(Long uid) {
+		return lambdaQuery()
+				.eq(UserFriend::getUid, uid)
+				.list().stream().map(UserFriend::getRoomId).collect(Collectors.toList());
+	}
 }

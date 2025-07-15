@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 群成员相关缓存
@@ -96,5 +97,11 @@ public class GroupMemberCache {
 	@CacheEvict(cacheNames = "member", key = "'groupMember:'+#roomId")
 	public List<Long> evictMemberList(Long roomId) {
 		return null;
+	}
+
+	public List<Long> getJoinedRoomIds(Long uid) {
+		List<Long> groupIds = groupMemberDao.getBaseMapper().selectList(new QueryWrapper<GroupMember>().eq("uid", uid)).stream().map(GroupMember::getGroupId).collect(Collectors.toList());
+
+		return roomGroupDao.getRoomIdByGroupId(groupIds);
 	}
 }

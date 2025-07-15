@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -135,5 +136,9 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
 	public Boolean setHide(Long uid, Long roomId, Boolean hide) {
 		return update(new UpdateWrapper<Contact>().lambda()
 				.eq(Contact::getRoomId, roomId).eq(Contact::getUid, uid).set(Contact::getHide, hide));
+	}
+
+	public Map<Long, Long> getLastMsgIds(Long receiveUid, List<Long> roomIds) {
+		return baseMapper.getLastMsgIds(receiveUid, roomIds);
 	}
 }

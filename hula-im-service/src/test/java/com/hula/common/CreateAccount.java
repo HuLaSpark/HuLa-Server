@@ -3,6 +3,7 @@ package com.hula.common;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hula.HuLaImServiceApplication;
 import com.hula.core.chat.dao.ContactDao;
+import com.hula.core.chat.dao.RoomFriendDao;
 import com.hula.core.chat.dao.RoomGroupDao;
 import com.hula.core.chat.domain.entity.Contact;
 import com.hula.core.chat.domain.entity.Room;
@@ -13,18 +14,24 @@ import com.hula.core.chat.service.cache.GroupMemberCache;
 import com.hula.core.chat.service.cache.RoomCache;
 import com.hula.core.chat.service.cache.RoomFriendCache;
 import com.hula.core.user.dao.UserDao;
+import com.hula.core.user.dao.UserFriendDao;
 import com.hula.core.user.domain.entity.User;
+import com.hula.core.user.domain.entity.UserFriend;
 import com.hula.snowflake.uid.UidGenerator;
 import com.hula.snowflake.uid.utils.Base62Encoder;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.hula.core.chat.service.adapter.ChatAdapter.SEPARATOR;
 
 
 @SpringBootTest(classes = HuLaImServiceApplication.class)
@@ -43,12 +50,16 @@ public class CreateAccount {
 
 	@Resource
 	private RoomCache roomCache;
+	@Resource
+	private UserFriendDao userFriendDao;
 
 	@Resource
 	private RoomFriendCache roomFriendCache;
 
 	@Resource
 	private GroupMemberCache groupMemberCache;
+	@Autowired
+	private RoomFriendDao roomFriendDao;
 
 	/**
 	 * 移除不存在的会话
@@ -78,6 +89,29 @@ public class CreateAccount {
 			}
 		}
 		System.out.println("需要移除的会话：" + ids);
+	}
+
+	@Test
+	public void syncRoomId() {
+		List<UserFriend> list = userFriendDao.list();
+
+		for (UserFriend userFriend : list) {
+			ArrayList<Long> uidList = new ArrayList<>();
+			uidList.add(userFriend.getUid());
+			uidList.add(userFriend.getFriendUid());
+			RoomFriend roomFriend = new RoomFriend();
+			roomFriend.setRoomKey(uidList.stream()
+					.sorted()
+					.map(String::valueOf)
+					.collect(Collectors.joining(SEPARATOR)));
+
+			RoomFriend friend = roomFriendDao.getByKey(roomFriend.getRoomKey());
+
+			UserFriend userFriendDb = new UserFriend();
+			userFriendDb.setId(userFriend.getId());
+			userFriendDb.setRoomId(friend.getRoomId());
+			userFriendDao.updateById(userFriendDb);
+		}
 	}
 
 

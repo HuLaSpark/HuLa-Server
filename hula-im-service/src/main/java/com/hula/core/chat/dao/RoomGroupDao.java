@@ -6,6 +6,7 @@ import com.hula.core.chat.mapper.RoomGroupMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -37,5 +38,11 @@ public class RoomGroupDao extends ServiceImpl<RoomGroupMapper, RoomGroup> {
 		return lambdaQuery()
 				.like(RoomGroup::getAccount, account)
 				.list();
+	}
+
+	public List<Long> getRoomIdByGroupId(List<Long> groupIds) {
+		return lambdaQuery()
+				.like(RoomGroup::getId, groupIds)
+				.list().stream().map(RoomGroup::getRoomId).collect(Collectors.toList());
 	}
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -84,4 +85,9 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
         }
 		return this.update(wrapper);
     }
+
+
+	public List<Message> getMessagesByRoomIds(List<Long> roomIds, Map<Long, Long> lastMsgIds) {
+		return baseMapper.selectMessagesByRoomIds(roomIds, lastMsgIds);
+	}
 }

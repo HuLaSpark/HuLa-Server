@@ -13,4 +13,13 @@
         `last_msg_id`=VALUES(last_msg_id),
         `active_time`=VALUES(active_time)
     </insert>
+
+    <select id="getLastMsgIds">
+        SELECT  room_id, MAX(last_msg_id) AS last_msg_id
+        FROM contact
+        WHERE room_id IN
+        <foreach item="roomId" collection="roomIds" open="(" separator="," close=")">
+            #{roomId}
+        </foreach> AND shield = 0 GROUP BY room_id
+    </select>
 </mapper>

@@ -28,6 +28,7 @@ import com.hula.core.chat.service.ContactService;
 import com.hula.core.chat.service.adapter.MemberAdapter;
 import com.hula.core.chat.service.adapter.MessageAdapter;
 import com.hula.core.chat.service.adapter.RoomAdapter;
+import com.hula.core.chat.service.cache.GroupMemberCache;
 import com.hula.core.chat.service.cache.RoomCache;
 import com.hula.core.chat.service.cache.RoomGroupCache;
 import com.hula.core.chat.service.helper.ChatMemberHelper;
@@ -61,6 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.hula.common.config.ThreadPoolConfig.HULA_EXECUTOR;
 
@@ -78,8 +80,9 @@ public class ChatServiceImpl implements ChatService {
     private final RoomDao roomDao;
     private final UserFriendDao userFriendDao;
     private final RoomGroupDao roomGroupDao;
+	private final GroupMemberCache groupMemberCache;
 
-    private MessageDao messageDao;
+	private MessageDao messageDao;
     private UserDao userDao;
     private ApplicationEventPublisher applicationEventPublisher;
     private UserCache userCache;
@@ -235,7 +238,42 @@ public class ChatServiceImpl implements ChatService {
         return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(request.getRoomId(), cursorPage.getList(), receiveUid), cursorPage.getTotal());
     }
 
-    private Long getLastMsgId(Long roomId, Long receiveUid) {
+//	@Cacheable(value = "userRooms", key = "#uid", unless = "#result == null")
+	public List<Long> getAccessibleRoomIds(Long uid) {
+		// 从群成员缓存和好友关系表中获取有效房间ID
+		List<Long> groupRoomIds = groupMemberCache.getJoinedRoomIds(uid);
+		List<Long> friendRoomIds = userFriendDao.getAllRoomIdsByUid(uid);
+
+		return Stream.concat(groupRoomIds.stream(), friendRoomIds.stream()).distinct().collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ChatMessageResp> getMsgList(Long receiveUid) {
+		// 1. 获取用户所有未屏蔽的聊天室ID列表
+		List<Long> roomIds = getAccessibleRoomIds(receiveUid);
+		if (CollectionUtil.isEmpty(roomIds)) {
+			return Collections.emptyList();
+		}
+
+		// 2. 批量查询所有房间的最后一条消息ID（用于权限过滤）
+		Map<Long, Long> lastMsgIds = contactService.getLastMsgIds(receiveUid, roomIds);
+
+		// 3. 批量查询所有符合条件的消息
+		List<Message> messages = messageDao.getMessagesByRoomIds(roomIds, lastMsgIds);
+
+		Map<Long, List<Message>> messageMap = messages.stream()
+				.filter(message -> message.getRoomId() != null)
+				.collect(Collectors.groupingBy(Message::getRoomId, LinkedHashMap::new, Collectors.toList()));
+
+		// 4. 转换为响应对象并返回
+		List<ChatMessageResp> baseMessages = new ArrayList<>();
+		for (Long roomId : messageMap.keySet()) {
+			baseMessages.addAll(getMsgRespBatch(roomId, messageMap.get(roomId), receiveUid));
+		}
+		return baseMessages;
+	}
+
+	private Long getLastMsgId(Long roomId, Long receiveUid) {
         Room room = roomCache.get(roomId);
         AssertUtil.isNotEmpty(room, "房间号有误");
         if (room.isHotRoom()) {

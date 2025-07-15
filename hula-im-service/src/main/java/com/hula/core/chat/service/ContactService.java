@@ -26,4 +26,6 @@ public interface ContactService {
     Integer getMsgUnReadCount(Message message);
 
     Map<Long, MsgReadInfoDTO> getMsgReadInfo(List<Message> messages);
+
+	Map<Long, Long> getLastMsgIds(Long receiveUid, List<Long> roomIds);
 }

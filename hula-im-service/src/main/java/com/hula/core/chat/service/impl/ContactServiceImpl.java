@@ -61,4 +61,9 @@ public class ContactServiceImpl implements ContactService {
             return readInfoDTO;
         }).collect(Collectors.toMap(MsgReadInfoDTO::getMsgId, Function.identity()));
     }
+
+	@Override
+	public Map<Long, Long> getLastMsgIds(Long receiveUid, List<Long> roomIds) {
+		return contactDao.getLastMsgIds(receiveUid, roomIds);
+	}
 }
