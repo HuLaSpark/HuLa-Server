@@ -85,9 +85,4 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
         }
 		return this.update(wrapper);
     }
-
-
-	public List<Message> getMessagesByRoomIds(List<Long> roomIds, Map<Long, Long> lastMsgIds) {
-		return baseMapper.selectMessagesByRoomIds(roomIds, lastMsgIds);
-	}
 }
