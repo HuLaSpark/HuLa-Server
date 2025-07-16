@@ -25,6 +25,7 @@ public enum MessageTypeEnum {
     SYSTEM(8, "系统消息"),
 	MERGE(9, "合并消息"),
 	NOTICE(10, "公告消息"),
+	BOT(11, "机器人"),
     ;
 
     private final Integer type;

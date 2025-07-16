@@ -111,7 +111,7 @@ public class MessageAdapter {
 	public static ChatMessageReq buildAgreeMsg4Group(Long roomId, String userName) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
-		chatMessageReq.setMsgType(MessageTypeEnum.TEXT.getType());
+		chatMessageReq.setMsgType(MessageTypeEnum.BOT.getType());
 		chatMessageReq.setSkip(true);
 		TextMsgReq textMsgReq = new TextMsgReq();
 		textMsgReq.setContent(String.format("欢迎[%s]加入群聊", userName));
