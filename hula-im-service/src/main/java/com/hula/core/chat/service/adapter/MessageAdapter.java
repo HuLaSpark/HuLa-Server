@@ -97,7 +97,7 @@ public class MessageAdapter {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
 		chatMessageReq.setMsgType(MessageTypeEnum.TEXT.getType());
-		chatMessageReq.setIsPushMessage(isPush);
+		chatMessageReq.setPushMessage(isPush);
 		TextMsgReq textMsgReq = new TextMsgReq();
 		if (userTypeEnum == UserTypeEnum.NORMAL){
 			textMsgReq.setContent("我们已经成为好友了，开始聊天吧");

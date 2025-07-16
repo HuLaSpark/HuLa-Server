@@ -30,12 +30,11 @@ public class ChatMessageReq {
     private Object body;
 
 	@Schema(description ="跳过消息校验")
-	private Boolean skip = false;
+	private boolean skip = false;
 
 	@Schema(description ="临时消息 [前端需要传过来]")
-	@NotNull
-	private Boolean isTemp = false;
+	private boolean isTemp = false;
 
 	@Schema(description ="系统推送消息")
-	private Boolean isPushMessage = false;
+	private boolean isPushMessage = false;
 }

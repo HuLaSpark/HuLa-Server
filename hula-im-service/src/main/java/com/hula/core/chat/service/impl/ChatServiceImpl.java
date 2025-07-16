@@ -104,14 +104,14 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public Long sendMsg(ChatMessageReq request, Long uid) {
-        check(request.getSkip(), request.getIsTemp(), request.getRoomId(), uid);
+        check(request.isSkip(), request.isTemp(), request.getRoomId(), uid);
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(request.getMsgType());
         Long msgId = msgHandler.checkAndSaveMsg(request, uid);
 
 		// 临时会话单独处理一下消息计数器
-		if (request.getIsTemp()) {
+		if (request.isTemp()) {
 			Room room = roomCache.get(request.getRoomId());
-			if(room != null && room.isRoomFriend() && !request.getIsPushMessage()){
+			if(room != null && room.isRoomFriend() && !request.isPushMessage()){
 				UserFriend userFriend = userFriendDao.getByRoomId(request.getRoomId(), uid);
 				if (userFriend != null && userFriend.getIsTemp()) {
 					userFriend.setTempMsgCount(userFriend.getTempMsgCount() + 1);
