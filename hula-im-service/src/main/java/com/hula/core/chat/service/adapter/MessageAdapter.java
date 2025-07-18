@@ -58,7 +58,7 @@ public class MessageAdapter {
     private static ChatMessageResp.Message buildMessage(Message message, List<MessageMark> marks, Long receiveUid) {
         ChatMessageResp.Message messageVO = new ChatMessageResp.Message();
         BeanUtil.copyProperties(message, messageVO);
-        messageVO.setSendTime(message.getCreateTime());
+        messageVO.setSendTime(message.getCreateTime().getTime());
         AbstractMsgHandler<?> msgHandler = MsgHandlerFactory.getStrategyNoNull(message.getType());
         if (Objects.nonNull(msgHandler)) {
             messageVO.setBody(msgHandler.showMsg(message));
@@ -108,13 +108,13 @@ public class MessageAdapter {
 		return chatMessageReq;
 	}
 
-	public static ChatMessageReq buildAgreeMsg4Group(Long roomId, String userName) {
+	public static ChatMessageReq buildAgreeMsg4Group(Long roomId, Long count, String userName) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
 		chatMessageReq.setMsgType(MessageTypeEnum.BOT.getType());
 		chatMessageReq.setSkip(true);
 		TextMsgReq textMsgReq = new TextMsgReq();
-		textMsgReq.setContent(String.format("欢迎[%s]加入群聊", userName));
+		textMsgReq.setContent(String.format("欢迎[%s]第%d位加入HuLa", userName, count));
 		chatMessageReq.setBody(textMsgReq);
 		return chatMessageReq;
 	}

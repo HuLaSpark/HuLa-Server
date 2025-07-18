@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -39,7 +38,7 @@ public class ChatMessageResp extends BaseEntity {
         @Schema(description ="房间id")
         private String roomId;
         @Schema(description ="消息发送时间")
-        private Date sendTime;
+        private Long sendTime;
         @Schema(description ="消息类型 1正常文本 2.撤回消息")
         private Integer type;
         @Schema(description ="消息内容不同的消息类型，内容体不同")

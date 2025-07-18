@@ -41,6 +41,8 @@ import com.hula.core.user.service.FriendService;
 import com.hula.core.user.service.adapter.FriendAdapter;
 import com.hula.core.user.service.cache.UserCache;
 import com.hula.utils.AssertUtil;
+import com.hula.utils.RedisUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -52,6 +54,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.hula.core.user.domain.enums.ApplyStatusEnum.WAIT_APPROVAL;
@@ -71,6 +74,15 @@ public class FriendServiceImpl implements FriendService {
     private ChatService chatService;
     private UserDao userDao;
 	private UserCache userCache;
+
+	/**
+	 * 初始化系统注册总人数
+	 */
+	@PostConstruct
+	public void initUserCount() {
+		Long dbCount = userDao.count();
+		RedisUtils.set("user:total_count", dbCount);
+	}
 
     /**
      * 检查
@@ -247,10 +259,11 @@ public class FriendServiceImpl implements FriendService {
 			// 创建双方好友关系
 			createFriend(roomFriend.getRoomId(), uid, 1L);
 			// 发送一条同意消息。。我们已经是好友了，开始聊天吧
-			chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.SYSTEM, true), uid);
+			chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), UserTypeEnum.NORMAL,true), 1L);
 			// 系统账号在群内发送一条欢迎消息
 			User user = userCache.getUserInfo(uid);
-			chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(1L, user.getName()), 1L);
+			Long total = RedisUtils.inc("user:total_count", 0, TimeUnit.DAYS); // 不设置过期时间
+			chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(1L, total, user.getName()), 1L);
 		}
 	}
 
