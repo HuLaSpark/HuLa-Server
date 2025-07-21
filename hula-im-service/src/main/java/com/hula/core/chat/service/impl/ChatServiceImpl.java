@@ -263,29 +263,29 @@ public class ChatServiceImpl implements ChatService {
 
 		LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<>();
 		if(ObjectUtil.isNotNull(lastOptTime) && lastOptTime > 0) {
-			wrapper.ge(Message::getCreateTime, new Date(lastOptTime)).le(Message::getCreateTime, LocalDate.now());
+			wrapper.ge(Message::getCreateTime, new Date(lastOptTime)).le(Message::getCreateTime, new Date());
 		}else {
-			wrapper.ge(Message::getCreateTime, LocalDate.now().minusMonths(3));
+			wrapper.ge(Message::getCreateTime, LocalDate.now().minusDays(15));
 		}
 
 		List<Message> messages = messageDao.list(wrapper);
         Map<Long, List<Message>> groupedMessages = messages.stream()
                 .collect(Collectors.groupingBy(Message::getRoomId));
 
-        Map<Long, List<Message>> filteredMessageMap = new HashMap<>();
+//        Map<Long, List<Message>> filteredMessageMap = new HashMap<>();
 
-        groupedMessages.forEach((roomId, messageList) -> {
-            Long lastMsgId = lastMsgIds.get(roomId) == null ? 0L : lastMsgIds.get(roomId);
-            List<Message> filteredList = messageList.stream()
-                    .filter(item -> item.getId() > lastMsgId)
-                    .toList();
-            filteredMessageMap.put(roomId, filteredList);
-        });
+//        groupedMessages.forEach((roomId, messageList) -> {
+//            Long lastMsgId = lastMsgIds.get(roomId) == null ? 0L : lastMsgIds.get(roomId);
+//            List<Message> filteredList = messageList.stream()
+//                    .filter(item -> item.getId() > lastMsgId)
+//                    .toList();
+//            filteredMessageMap.put(roomId, filteredList);
+//        });
 
 		// 4. 转换为响应对象并返回
 		List<ChatMessageResp> baseMessages = new ArrayList<>();
-		for (Long roomId : filteredMessageMap.keySet()) {
-			baseMessages.addAll(getMsgRespBatch(roomId, filteredMessageMap.get(roomId), receiveUid));
+		for (Long roomId : groupedMessages.keySet()) {
+			baseMessages.addAll(getMsgRespBatch(roomId, groupedMessages.get(roomId), receiveUid));
 		}
 		return baseMessages;
 	}
