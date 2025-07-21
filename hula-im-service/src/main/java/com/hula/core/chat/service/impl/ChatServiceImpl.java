@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.Pair;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hula.common.annotation.RedissonLock;
 import com.hula.common.domain.vo.req.CursorPageBaseReq;
@@ -250,7 +251,7 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public List<ChatMessageResp> getMsgList(Long receiveUid) {
+	public List<ChatMessageResp> getMsgList(Long lastOptTime, Long receiveUid) {
 		// 1. 获取用户所有未屏蔽的聊天室ID列表
 		List<Long> roomIds = getAccessibleRoomIds(receiveUid);
 		if (CollectionUtil.isEmpty(roomIds)) {
@@ -260,9 +261,14 @@ public class ChatServiceImpl implements ChatService {
 		// 2. 批量查询所有房间的最后一条消息ID（用于权限过滤）
 		Map<Long, Long> lastMsgIds = contactService.getLastMsgIds(receiveUid, roomIds);
 
-        List<Message> messages = messageDao.list(new LambdaQueryWrapper<Message>()
-                .ge(Message::getCreateTime, LocalDate.now().minusMonths(3)));
+		LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<>();
+		if(ObjectUtil.isNotNull(lastOptTime) && lastOptTime > 0) {
+			wrapper.ge(Message::getCreateTime, new Date(lastOptTime)).le(Message::getCreateTime, LocalDate.now());
+		}else {
+			wrapper.ge(Message::getCreateTime, LocalDate.now().minusMonths(3));
+		}
 
+		List<Message> messages = messageDao.list(wrapper);
         Map<Long, List<Message>> groupedMessages = messages.stream()
                 .collect(Collectors.groupingBy(Message::getRoomId));
 

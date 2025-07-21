@@ -794,7 +794,8 @@ public class RoomAppServiceImpl implements RoomAppService {
 						resp.setMuteNotification(2);
 						resp.setTop(false);
 					}
-					resp.setId(room.getId());
+					resp.setId(contact.getId());
+					resp.setDetailId(room.getId());
                     resp.setAvatar(roomBaseInfo.getAvatar());
                     resp.setRoomId(roomId);
 					resp.setAccount(room.getAccount());

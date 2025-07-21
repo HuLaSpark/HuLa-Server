@@ -53,8 +53,8 @@ public class ChatController {
 	@GetMapping("/msg/list")
 	@Operation(summary ="消息列表")
 //    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
-	public ApiResult<List<ChatMessageResp>> getMsgPage() {
-		List<ChatMessageResp> msgPage = chatService.getMsgList(RequestHolder.get().getUid());
+	public ApiResult<List<ChatMessageResp>> getMsgPage(@RequestParam(value = "lastOptTime", required = false) Long lastOptTime) {
+		List<ChatMessageResp> msgPage = chatService.getMsgList(lastOptTime, RequestHolder.get().getUid());
 		Set<String> blackMembers = getBlackUidSet();
 		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
 		return ApiResult.success(msgPage);

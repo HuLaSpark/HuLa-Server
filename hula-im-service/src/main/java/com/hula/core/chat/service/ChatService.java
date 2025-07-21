@@ -58,7 +58,7 @@ public interface ChatService {
      */
     CursorPageBaseResp<ChatMessageResp> getMsgPage(ChatMessagePageReq request, @Nullable Long receiveUid);
 
-	List<ChatMessageResp> getMsgList(Long receiveUid);
+	List<ChatMessageResp> getMsgList(Long lastOptTime, Long receiveUid);
 
     ChatMemberStatisticResp getMemberStatistic();
 
