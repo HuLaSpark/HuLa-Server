@@ -1,6 +1,7 @@
 package com.hula.core.chat.dao;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -92,6 +93,20 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
      */
     public List<Contact> getAllContactsByUid(Long uid) {
         return lambdaQuery().eq(Contact::getUid, uid).list();
+    }
+
+    public Map<String, Contact> getContactMapByUid(Long uid) {
+        // 1. 查出用户要展示的会话列表
+        List<Contact> contacts = getAllContactsByUid(uid);
+
+        return contacts.stream()
+                .distinct()
+                .collect(Collectors.toMap(
+                        contact -> StrUtil.format("{}_{}", contact.getUid(), contact.getRoomId()),
+                        contact -> contact,
+                        (existing, replacement) -> existing,
+                        HashMap::new
+                ));
     }
 
     public List<Contact> getAllContactsByUid(List<Long> roomIds, Long uid) {

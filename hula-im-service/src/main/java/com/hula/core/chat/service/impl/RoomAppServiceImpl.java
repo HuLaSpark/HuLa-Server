@@ -208,14 +208,15 @@ public class RoomAppServiceImpl implements RoomAppService {
 
     @Override
     public ChatRoomResp getContactDetailByFriend(Long uid, @Valid ContactFriendReq req) {
-        //处理群聊
+		Map<String, Contact> contactMap = contactDao.getContactMapByUid(uid);
+		//处理群聊
         if (Objects.equals(req.getRoomType(), RoomTypeEnum.GROUP.getType())) {
             roomService.checkUser(uid, req.getId());
-            return buildContactResp(new HashMap<>(), uid, Collections.singletonList(req.getId())).getFirst();
+            return buildContactResp(contactMap, uid, Collections.singletonList(req.getId())).getFirst();
         }
         RoomFriend friendRoom = roomService.getFriendRoom(uid, req.getId());
         AssertUtil.isNotEmpty(friendRoom, "他不是您的好友");
-        return buildContactResp(new HashMap<>(), uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
+        return buildContactResp(contactMap, uid, Collections.singletonList(friendRoom.getRoomId())).getFirst();
     }
 
     @Override
@@ -549,7 +550,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         }
 
 		// 获取群成员数、备注、我的群名称
-		Integer memberNum = groupMemberCache.getMemberUidList(roomId).size();
+		Integer memberNum = groupMemberCache.getMemberUidList(roomId) == null ? 0 : groupMemberCache.getMemberUidList(roomId).size();
 		GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
 
         GroupRoleAPPEnum groupRole = getGroupRole(uid, roomGroup, room);
@@ -766,7 +767,7 @@ public class RoomAppServiceImpl implements RoomAppService {
 	 * @return
 	 */
     @NotNull
-    private List<ChatRoomResp> buildContactResp(HashMap<String, Contact> contactMap, Long uid, List<Long> roomIds) {
+    private List<ChatRoomResp> buildContactResp(Map<String, Contact> contactMap, Long uid, List<Long> roomIds) {
         // 表情和头像
         Map<Long, RoomBaseInfo> roomBaseInfoMap = getRoomBaseInfoMap(roomIds, uid);
         // 最后一条消息
