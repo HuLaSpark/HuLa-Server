@@ -10,6 +10,7 @@ import com.hula.common.utils.CursorUtils;
 import com.hula.core.chat.domain.entity.Message;
 import com.hula.core.chat.domain.enums.MessageStatusEnum;
 import com.hula.core.chat.mapper.MessageMapper;
+import com.hula.utils.RequestHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -61,10 +62,11 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
                 .update();
     }
 
-    public Integer getUnReadCount(Long roomId, Date readTime) {
+    public Integer getUnReadCount(Long roomId, Date readTime, Long uid) {
         return Math.toIntExact(lambdaQuery()
                 .eq(Message::getRoomId, roomId)
                 .gt(Objects.nonNull(readTime), Message::getCreateTime, readTime)
+                .ne(Message::getFromUid, uid)
                 .count());
     }
 

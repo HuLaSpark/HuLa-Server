@@ -839,7 +839,7 @@ public class RoomAppServiceImpl implements RoomAppService {
         }
         List<Contact> contacts = contactDao.getAllContactsByUid(roomIds, uid);
         return contacts.parallelStream()
-                .map(contact -> Pair.of(contact.getRoomId(), messageDao.getUnReadCount(contact.getRoomId(), contact.getReadTime())))
+                .map(contact -> Pair.of(contact.getRoomId(), messageDao.getUnReadCount(contact.getRoomId(), contact.getReadTime(), uid)))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
