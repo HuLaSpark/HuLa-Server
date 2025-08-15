@@ -1,0 +1,235 @@
+luohuo:
+  rabbitmq:
+    enabled: false
+    ip: 127.0.0.1
+    port: 5672
+    username: 'luohuo'
+    password: 'luohuo'
+  cache:
+    type: REDIS
+  redis:
+    ip: 127.0.0.1
+    port: 16379
+    database: 0
+    password: SbtyMveYNfLzTks7H0apCmyStPzWJqjy
+  mysql: &db-mysql
+    username: 'root'
+    password: 'root'
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/luohuo_none?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
+  database: # 字段介绍参考 DatabaseProperties
+    multiTenantType: COLUMN
+    tenantIdColumn: 'tenant_id'
+    isNotWrite: false
+    isBlockAttack: false
+    isDataScope: true
+    p6spy: true
+    isSeata: false
+    id-type: CACHE
+    hutoolId:
+      workerId: 0
+      dataCenterId: 0
+    cache-id:
+      time-bits: 31
+      worker-bits: 22
+      seq-bits: 10
+      epochStr: '2020-09-15'
+      boost-power: 3
+      padding-factor: 50
+  echo:  #详情看: EchoProperties
+    # 是否启用 远程数据 手动注入
+    enabled: true
+    # 是否启用 远程数据 注解AOP注入
+    aop-enabled: true
+    # 字典类型 和 code 的分隔符
+    dictSeparator: '###'
+    # 多个字典code 之间的的分隔符
+    dictItemSeparator: ','
+    # 递归最大深度
+    maxDepth: 3
+    # 本地缓存配置信息 生产慎用
+    guavaCache:
+      enabled: false
+      maximumSize: 1000
+      refreshWriteTime: 2
+      refreshThreadPoolSize: 10
+  log:
+    enabled: false
+    type: DB
+  xss:
+    enabled: false
+    requestBodyEnabled: false
+  swagger:
+    license: Powered By zuihou
+    licenseUrl: https://github.com/qianqian
+    termsOfServiceUrl: https://github.com/qianqian
+    version: @project.version@
+    contact: # 联系人信息
+      url: https://github.com/qianqian
+      name: qianqian
+      email: xxxxx@qq.com
+    global-operation-parameters: # 全局参数
+      - name: Token
+        description: 用户信息
+        modelRef: String
+        parameterType: header
+        required: true
+        # 默认值只是方便本地开发时，少填参数，生产环境请禁用swagger或者禁用默认参数
+        defaultValue: "test"
+      - name: Authorization
+        description: 客户端信息
+        modelRef: String
+        parameterType: header
+        required: true
+        defaultValue: "bGFtcF93ZWI6bGFtcF93ZWJfc2VjcmV0"
+      - name: TenantId
+        description: 租户ID
+        modelRef: String
+        parameterType: header
+        required: true
+        defaultValue: "1"
+      - name: ApplicationId
+        description: 应用ID
+        modelRef: String
+        parameterType: header
+        required: true
+        defaultValue: "1"
+
+### xxl-job email
+xxl.job:
+  #设置一：调度中心和执行器，均不设置AccessToken；关闭安全性校验；
+  #设置二：调度中心和执行器，设置了相同的AccessToken；
+  accessToken:
+  # 以下是client 执行器端配置（注意：若不想配置调度器也是执行器，请自行参考xxl）
+  admin:
+    addresses: http://${JOBS_IP:127.0.0.1}:${JOBS_PORT:8767}/xxl-job-admin
+  executor:
+    # 执行器名
+    appname: ${spring.application.name}
+    address: ''
+    # 调度器通过XXL-RPC跟执行器通信的IP
+    ip: ${EXECUTOR_IP:127.0.0.1}
+    # 调度器通过XXL-RPC跟执行器通信的端口
+    port: ${EXECUTOR_PORT:8777}
+    # 日志路径
+    logpath: ${logging.file.path}/${spring.application.name}/jobhandler
+    # 日志保留天数
+    logretentiondays: 30
+
+
+server:
+  shutdown: GRACEFUL
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+    context-path: /${spring.application.name}
+  port: 8776
+  undertow:
+    threads:
+      io: 4 # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      worker: 80  # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    buffer-size: 2048  # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理 , 每块buffer的空间大小,越小的空间被利用越充分
+    direct-buffers: true  # 是否分配的直接内存
+
+# mysql 通用配置
+spring:
+  profiles:
+    active: dev
+  lifecycle:
+    # 优雅停机宽限期时间
+    timeout-per-shutdown-phase: 30s
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  datasource:
+    dynamic:
+      enabled: false  # 这里一定要写成false，无论是什么模式
+    # 从这里结束(dynamic)，中间的这段配置用于 luohuo.database.multiTenantType == DATASOURCE 时
+    druid:
+      enable: true
+      # 从这里开始(druid)，中间的这段配置用于 luohuo.database.multiTenantType != DATASOURCE 时
+      <<: *db-mysql
+      db-type: mysql
+      initialSize: 10
+      minIdle: 10
+      maxActive: 200
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      validation-query: SELECT 'x'
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000  #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      min-evictable-idle-time-millis: 300000    #配置一个连接在池中最小生存的时间，单位是毫秒
+      filters: stat,wall
+      filter:
+        wall:
+          enabled: true
+          config:
+            commentAllow: true
+            multiStatementAllow: true
+            noneBaseStatementAllow: true
+      # 从这里结束(druid)，中间的这段配置用于 luohuo.database.multiTenantType != DATASOURCE 时
+
+      # 以下的2段配置，同时适用于所有模式
+      web-stat-filter:  # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js , *.gif ,*.jpg ,*.png ,*.css ,*.ico , /druid/*"
+        session-stat-max-count: 1000
+        profile-enable: true
+        session-stat-enable: false
+      stat-view-servlet:  #展示Druid的统计信息,StatViewServlet的用途包括：1.提供监控信息展示的html页面2.提供监控信息的JSON API
+        enabled: true
+        url-pattern: /druid/*   #根据配置中的url-pattern来访问内置监控页面，如果是上面的配置，内置监控页面的首页是/druid/index.html例如：http://127.0.0.1:9000/druid/index.html
+        reset-enable: true    #允许清空统计数据
+        login-username: luohuo
+        login-password: luohuo
+  cache:
+    type: GENERIC
+  data:
+    redis:
+      host: ${luohuo.redis.ip}
+      password: ${luohuo.redis.password}
+      port: ${luohuo.redis.port}
+      database: ${luohuo.redis.database}
+  rabbitmq:
+    enabled: ${luohuo.rabbitmq.enabled}
+    host: ${luohuo.rabbitmq.ip}
+    port: ${luohuo.rabbitmq.port}
+    username: ${luohuo.rabbitmq.username}
+    password: ${luohuo.rabbitmq.password}
+    listener:
+      type: direct # simple direct
+
+mybatis-plus:
+  mapper-locations:
+    - classpath*:mapper_**/**/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.luohuo.flex.*.entity;com.luohuo.basic.database.mybatis.typehandler
+  typeEnumsPackage: com.luohuo.flex.*.enumeration
+  global-config:
+    db-config:
+      id-type: INPUT
+      insert-strategy: NOT_NULL
+      update-strategy: NOT_NULL
+      select-strategy: NOT_EMPTY
+  configuration:
+    #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    #配置JdbcTypeForNull, oracle数据库必须配置
+    jdbc-type-for-null: 'null'
+
+# knife4j 文档通用配置 详情看: Knife4jProperties
+knife4j:
+  enable: true
+  setting:
+    enableReloadCacheParameter: true
+    enableVersion: true
+    enableDynamicParameter: true
+    enableFooter: false
+    enableFooterCustom: true
+    footerCustomContent: Apache License 2.0 | Copyright  2025 [luohuo-cloud](https://github.com/qianqian)

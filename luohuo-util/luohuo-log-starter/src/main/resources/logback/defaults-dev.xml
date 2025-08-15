@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <include resource="logback/defaults.xml"/>
+
+    <!-- 同步记录，建议本地使用 -->
+    <root level="${log.level.console}">
+        <appender-ref ref="CONSOLE_APPENDER"/>
+        <appender-ref ref="ROOT_APPENDER"/>
+    </root>
+    <logger name="com.luohuo.basic" additivity="true" level="${log.level.console}">
+        <appender-ref ref="PROJECT_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.basic.boot.handler" additivity="true" level="${log.level.console}">
+        <appender-ref ref="EXCEPTION_APPENDER"/>
+    </logger>
+
+    <logger name="com.luohuo.basic.log.monitor" level="debug" addtivity="false">
+        <appender-ref ref="POINT_LOG_APPENDER"/>
+    </logger>
+</included>

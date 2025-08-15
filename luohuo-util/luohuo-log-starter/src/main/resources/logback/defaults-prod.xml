@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <include resource="logback/defaults.xml"/>
+    <!-- 异步记录，建议生成环境使用 -->
+    <root level="${log.level.console}">
+        <appender-ref ref="ASYNC_ROOT_APPENDER"/>
+        <appender-ref ref="ASYNC_CONSOLE_APPENDER"/>
+    </root>
+    <logger name="com.luohuo.basic" additivity="true" level="${log.level.console}">
+        <appender-ref ref="ASYNC_PROJECT_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.basic.boot.handler" additivity="true" level="${log.level.console}">
+        <appender-ref ref="ASYNC_EXCEPTION_APPENDER"/>
+    </logger>
+
+    <logger name="com.alibaba.nacos.client" level="${log.level.nacos}" additivity="false">
+        <appender-ref ref="ASYNC_THIRD_PARTY_APPENDER"/>
+    </logger>
+
+    <logger name="com.alibaba.nacos.client.config" level="${log.level.nacos}" additivity="false">
+        <appender-ref ref="ASYNC_THIRD_PARTY_APPENDER"/>
+    </logger>
+
+    <logger name="com.alibaba.nacos.client.naming" level="${log.level.nacos}" additivity="false">
+        <appender-ref ref="ASYNC_THIRD_PARTY_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.basic.log.monitor" level="debug" addtivity="false">
+        <appender-ref ref="ASYNC_POINT_LOG_APPENDER"/>
+    </logger>
+</included>

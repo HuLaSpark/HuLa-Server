@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- defaults-biz-prod.xml 文件位于luohuo-cloud或luohuo-boot 的 luohuo-public/luohuo-common/src/main/resources -->
+    <include resource="defaults-biz-prod.xml"/>
+
+    <!-- 可以在这里自定义规则 -->
+
+</configuration>

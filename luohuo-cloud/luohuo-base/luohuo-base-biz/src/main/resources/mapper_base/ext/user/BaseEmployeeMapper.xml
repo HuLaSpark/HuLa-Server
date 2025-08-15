@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.base.mapper.user.BaseEmployeeMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.luohuo.flex.base.entity.user.BaseEmployee">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="position_id" jdbcType="BIGINT" property="positionId"/>
+        <result column="position_status" jdbcType="CHAR" property="positionStatus"/>
+        <result column="active_status" jdbcType="CHAR" property="activeStatus"/>
+        <result column="state" jdbcType="BIT" property="state"/>
+        <result column="last_company_id" jdbcType="BIGINT" property="lastCompanyId"/>
+        <result column="last_dept_id" jdbcType="BIGINT" property="lastDeptId"/>
+        <result column="created_org_id" jdbcType="BIGINT" property="createdOrgId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , create_by, create_time, update_by, update_time,  active_status, last_company_id, last_dept_id,
+        is_default, user_id, position_id, real_name, position_status, state, created_org_id
+    </sql>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ResultVOResultMap" type="com.luohuo.flex.base.vo.result.user.BaseEmployeeResultVO"
+               extends="BaseResultMap">
+
+        <collection property="orgIdList"
+                    select="com.luohuo.flex.base.mapper.user.BaseEmployeeOrgRelMapper.selectOrgByEmployeeId"
+                    ofType="long"
+                    column="{employeeId=id}"/>
+    </resultMap>
+
+
+    <select id="selectPageResultVO" resultMap="ResultVOResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from base_employee e
+        <where>
+            ${ew.sqlSegment}
+            <if test="model.orgIdList != null and model.orgIdList.size() > 0">
+                and e.id in (
+                select eor.employee_id from base_employee_org_rel eor where eor.employee_id = e.id and eor.org_id in
+                <foreach close=")" collection="model.orgIdList" item="id" open="(" separator=",">
+                    #{id}
+                </foreach>
+                )
+            </if>
+            <if test='model.roleId != null and model.scope != null and model.scope != "-1"'>
+                and
+                <choose>
+                    <when test='"1" == model.scope'>
+                        EXISTS
+                    </when>
+                    <otherwise>
+                        NOT EXISTS
+                    </otherwise>
+                </choose>
+                (
+                select 1 from base_employee_role_rel err where err.employee_id = e.id and err.role_id =
+                #{model.roleId}
+                )
+            </if>
+        </where>
+    </select>
+
+    <sql id="Uar_Column_List">
+        utr
+        .
+        id
+        , utr.create_by, utr.create_time, utr.update_by, utr.update_time,
+        utr.is_default, utr.user_id, utr.state
+    </sql>
+
+    <select id="listEmployeeByUserId" resultMap="ResultVOResultMap">
+        SELECT
+        <include refid="Uar_Column_List"/>
+        FROM base_employee utr
+        where utr.user_id = ${userId}
+        order by utr.state desc, utr.is_default desc
+    </select>
+</mapper>

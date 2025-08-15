@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-public</artifactId>
+        <version>2.6.15</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>luohuo-login-user-facade</artifactId>
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>登录用户自动注入模块</description>
+
+    <modules>
+        <module>luohuo-login-user-resolver</module>
+        <module>luohuo-login-user-boot-impl</module>
+        <module>luohuo-login-user-cloud-impl</module>
+    </modules>
+
+</project>

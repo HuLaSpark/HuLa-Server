@@ -1,0 +1,22 @@
+luohuo:
+  rabbitmq:
+    enabled: false
+    ip: 127.0.0.1
+    port: 5672
+    username: 'luohuo'
+    password: 'luohuo'
+  cache:
+    type: REDIS
+  redis:
+    ip: 127.0.0.1
+    port: 16379
+    database: 0
+    password: SbtyMveYNfLzTks7H0apCmyStPzWJqjy
+  mysql:
+    ip: 127.0.0.1
+    port: 3218
+    driverClassName: com.mysql.cj.jdbc.Driver
+    database: luohuo_none
+    username: 'root'
+    password: 'ZHadmin123.'
+    url: jdbc:mysql://${luohuo.mysql.ip}:${luohuo.mysql.port}/${luohuo.mysql.database}?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true

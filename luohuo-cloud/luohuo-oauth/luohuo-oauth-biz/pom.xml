@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>luohuo-oauth</artifactId>
+        <groupId>com.luohuo.flex</groupId>
+        <version>2.6.15</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>luohuo-oauth-biz</artifactId>
+    <name>${project.artifactId}</name>
+    <description>认证服务-业务模块</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-base-biz</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-oauth-entity</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <!-- jwt 只有认证服务需要使用 -->
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-webmvc</artifactId>
+        </dependency>
+        <!-- log 只有认证服务biz模块引用，其他服务都在controller模块 -->
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-log-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-captcha-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-im-cloud-impl</artifactId>
+            <version>${luohuo-project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-transaction-starter</artifactId>
+            <version>${luohuo-project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-tenant</artifactId>
+        </dependency>
+    </dependencies>
+</project>

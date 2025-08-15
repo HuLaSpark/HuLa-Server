@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-dependencies-parent</artifactId>
+        <version>2.6.15</version>
+        <relativePath>../luohuo-dependencies-parent/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>luohuo-support</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>支撑模块</description>
+
+    <modules>
+        <!-- 监控和全链路调用监控 开发环境可以不用启动 -->
+        <module>luohuo-monitor</module>
+        <!-- 定时任务执行器，启动该项目时，需要先启动 luohuo-job（开源版） 或 luohuo-job-pro -->
+        <module>luohuo-job-executor</module>
+        <!-- 单体版 -->
+        <module>luohuo-boot-server</module>
+    </modules>
+
+</project>

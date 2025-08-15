@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <!-- 本地开发时，在bootstrap-xxx.yml中通过 logging.config=classpath:logback-spring-dev.xml 文件，表示本地的日志实时打印出来 -->
+    <!-- logback/defaults-dev.xml 文件位于luohuo-util/luohuo-log-starter/src/main/resources -->
+    <include resource="logback/defaults-dev.xml"/>
+
+    <logger name="com.luohuo.flex.im.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.im.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="SERVICE_APPENDER"/>
+    </logger>
+
+    <logger name="com.luohuo.flex.base.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.base.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="SERVICE_APPENDER"/>
+    </logger>
+
+    <logger name="com.luohuo.flex.oauth.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.oauth.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="SERVICE_APPENDER"/>
+    </logger>
+
+    <logger name="com.luohuo.flex.file.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.file.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="SERVICE_APPENDER"/>
+    </logger>
+
+
+    <logger name="com.luohuo.flex.msg.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.msg.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="SERVICE_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.sms.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.sms.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="SERVICE_APPENDER"/>
+    </logger>
+</included>

@@ -1,0 +1,38 @@
+luohuo:
+  version: 2.6.5
+  generator:
+    outputDir: /Users/luohuo/gitlab/luohuo-boot-pro-column
+    frontOutputDir: /Users/luohuo/gitlab/luohuo-web-pro
+    frontSoyOutputDir: /Users/luohuo/gitlab/luohuo-web-pro-soybean
+    frontVben5OutputDir: /Users/luohuo/github/luohuo-web-vben-max/apps/web-antd
+    # 作者
+    author: qianqian
+    # 默认项目
+    projectType: BOOT
+  # 微信扫码配置
+  wx:
+    mp:
+      callback: https://468ov9ww8878.vicp.fun
+      configs:
+        - appId: wxb28a0fd6d1cae6ba                           # 第一个公众号的appid
+          secret: 9c215f8d078422805218221144b9095b            # 公众号的appsecret
+          token: nongyehong
+          aesKey: 7iNecFLZ8nbtCaMntHYEruSHP1Mk8FmGvrkHwnJzwug # 接口配置里的EncodingAESKey值
+spring:
+  mail:
+    host: smtp.qq.com            # 邮箱SMTP服务器
+    port: 465                    # SSL端口
+    username: xxxxxxxxxxxxxxx    # 发件人邮箱
+    password: xxxxxxxx           # 邮箱SMTP授权码
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: false
+            protocols: TLSv1.2 # 加密协议
+
+server:
+  port: 18760

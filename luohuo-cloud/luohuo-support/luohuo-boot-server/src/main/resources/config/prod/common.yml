@@ -1,0 +1,15 @@
+luohuo:
+  generator:
+    outputDir: /Users/luohuo/gitlab/luohuo-boot-pro-column
+    frontOutputDir: /Users/luohuo/gitlab/luohuo-web-pro
+    frontSoyOutputDir: /Users/luohuo/gitlab/luohuo-web-pro-soybean
+    frontVben5OutputDir: /Users/luohuo/github/luohuo-web-vben-max/apps/web-antd
+    # 作者
+    author: qianqian
+    # 默认项目
+    projectType: BOOT
+  system:
+    # 演示环境启用
+    notAllowWrite: true
+server:
+  port: 28760

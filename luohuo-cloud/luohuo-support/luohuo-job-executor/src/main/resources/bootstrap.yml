@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: @project.artifactId@
+  main:
+    allow-bean-definition-overriding: true
+logging:
+  file:
+    path: /Users/tangyh/data/projects/logs
+    name: ${logging.file.path}/${spring.application.name}/root.log
+  level:
+    com.baomidou.dynamic: debug
+  config: classpath:logback-spring.xml

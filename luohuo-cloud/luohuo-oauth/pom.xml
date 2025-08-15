@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-dependencies-parent</artifactId>
+        <version>2.6.15</version>
+        <relativePath>../luohuo-dependencies-parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>luohuo-oauth</artifactId>
+    <name>${project.artifactId}</name>
+    <description>认证服务-处理登录认证，颁发令牌，依赖base服务</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>luohuo-oauth-facade</module>
+        <module>luohuo-oauth-entity</module>
+        <module>luohuo-oauth-controller</module>
+        <module>luohuo-oauth-biz</module>
+        <module>luohuo-oauth-server</module>
+    </modules>
+
+</project>
