@@ -2,78 +2,71 @@
   <img width="350px" height="150px" src="preview/hula.png" />
 </p>
 
-<p align="center">一款基于Tauri、Vite 6、Vue 3 和 TypeScript 构建的即时通讯系统</p>
+<p align="center">一款基于SpringCloud、SpringBoot3、Netty、MyBatis-Plus和RocketMQ构建的即时通讯系统服务端</p>
 
 <div align="center">
-  <a href="https://hellogithub.com/repository/743b101346c54f6cb5c20eed2edbaa40" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=743b101346c54f6cb5c20eed2edbaa40&claim_uid=WsQaY6SlnL7qxG3&theme=neutral" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-</div>
-
-<div align="center">
-  <a href="https://deepwiki.com/HuLaSpark/HuLa"><img src="https://deepwiki.com/badge.svg" alt=""></a>
-  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FHuLaSpark%2FHuLa?ref=badge_shield"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FHuLaSpark%2FHuLa.svg?type=shield" alt=""></a>
-  <a href="https://www.bestpractices.dev/zh-CN/projects/9692"><img src="https://bestpractices.coreinfrastructure.org/projects/9692/badge" alt="CI"></a>
-  <img src="https://img.shields.io/badge/TypeScript-blue?logo=Typescript&style=flat&logoColor=fff">
-  <img src="https://img.shields.io/badge/Vue3-35495E?logo=vue.js&logoColor=4FC08D">
-  <img src="https://img.shields.io/badge/Tauri-24C8DB?logo=tauri&logoColor=FFC131">
-  <img src="https://img.shields.io/badge/Rust-c57c54?logo=rust&logoColor=E34F26">
-  <img src="https://img.shields.io/badge/Vite6-35495E?logo=vite&logoColor=41D1FF">
-  <img src="https://img.shields.io/badge/UnoCss-efefef?logo=UnoCss&logoColor=606060">
-  <img src="https://img.shields.io/badge/pnpm-909090?logo=pnpm&logoColor=FFC131">
-  <img src="https://img.shields.io/badge/Sass-CC6699?logo=sass&logoColor=fff">
+  <img src="https://img.shields.io/badge/Spring_Cloud-2024-blue?logo=springcloud&logoColor=white">
+  <img src="https://img.shields.io/badge/spring-boot3-brightgreen?logo=spring">
+  <img src="https://img.shields.io/badge/Netty-343434?logo=netty&logoColor=white">
+  <img src="https://img.shields.io/badge/MyBatis--Plus-00A1E9?logo=mybatis&logoColor=white">
+  <img src="https://img.shields.io/badge/RocketMQ-D77310?logo=apacherocketmq&logoColor=white">
+  <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white">
+  <img src="https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white">
+  <img src="https://img.shields.io/badge/WebSocket-010101?logo=websocket&logoColor=white">
+  <img src="https://img.shields.io/badge/Java21-FF0000?logo=openjdk&logoColor=white">
+  <img src="https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white">
 </div>
 
 <p align="center">
-  gitee：<a href="https://gitee.com/HulaSpark/HuLa/stargazers"><img src="https://gitee.com/HulaSpark/HuLa/badge/star.svg?theme=gvp" alt="star"></a>
-  github：<a href="https://gitee.com/link?target=https://github.com/HulaSpark/HuLa/stargazers"><img src="https://img.shields.io/github/stars/HulaSpark/HuLa" alt="star"></a>
-  gitcode：<a href="https://gitcode.com/HuLaSpark/HuLa"><img src="https://gitcode.com/HuLaSpark/HuLa/star/badge.svg" alt="star"></a>
+  gitee：<a href="https://gitee.com/HulaSpark/HuLa-Server/stargazers"><img src="https://gitee.com/HulaSpark/HuLa-Server/badge/star.svg?theme=gvp" alt="star"></a>
+  github：<a href="https://github.com/HulaSpark/HuLa-Server/stargazers"><img src="https://img.shields.io/github/stars/HulaSpark/HuLa-Server" alt="star"></a>
+  gitcode：<a href="https://gitcode.com/HuLaSpark/HuLa-Server"><img src="https://gitcode.com/HuLaSpark/HuLa-Server/star/badge.svg" alt="star"></a>
 </p>
 <p align="center">
   微信: <img src="https://img.shields.io/badge/cy2439646234-07C160?logo=wechat&logoColor=fff">
 </p>
 
 <p align="center">
-  💻 官网：<a href="https://hulaspark.com">HuLaSpark</a>
+  🖥️ 客户端：<a href="https://github.com/HuLaSpark/HuLa-Server">github HuLa-Server</a> | <a href="https://gitee.com/HulaSpark/HuLa-Server">gitee HuLa-Server</a>
 </p>
 
-<p align="center">
-  ☕️ HuLa：<a href="https://github.com/HulaSpark/HuLa">github HuLa</a> | <a href="https://gitee.com/HulaSpark/HuLa">gitee HuLa</a>
-</p>
+<p align="center"><a href="README.en.md">English</a> | 中文</p>
 
-<p align="center">
-  中文 | 
-  <a href="README.en.md">English</a> | 
-  <!-- Keep these links. Translations will automatically update with the README. -->
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=de">Deutsch</a> | 
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=es">Español</a> | 
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=fr">français</a> | 
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=ja">日本語</a> | 
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=ko">한국어</a> | 
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=pt">Português</a> | 
-  <a href="https://www.readme-i18n.com/HuLaSpark/HuLa?lang=ru">Русский</a>
-</p>
+## 项目介绍
 
-## 🌐 支持平台
+HuLa-Server 是一款基于 SpringCloud、SpringBoot3、Netty、MyBatis-Plus 和 RocketMQ 构建的高性能即时通讯系统服务端。它采用了微服务架构设计，提供高性能的实时通信能力，支持单聊、群聊、消息推送等核心功能。系统具有高可扩展性和可靠性，适用于各类即时通讯场景。
 
-| 平台 | 支持版本 |
-|------|---------|
-| Windows | Windows 10, Windows 11 |
-| macOS | macOS 10.5+ |
-| Linux | Ubuntu 22.0+ |
-| iOS/iPadOS | iOS 9.0+, iPadOS 9.0+ |
-| Android | Android 8.0+ |
+## 核心优势
 
-## 📝 项目介绍
+- **模块化与高内聚**: 服务按功能拆分为独立模块（网关、认证、IM、AI、ws、base、system、presence等），通过<modules>清晰隔离，降低耦合度，提升开发与维护效率。
 
-HuLa 是一款基于 Tauri、Vite 6、Vue 3 和 TypeScript 构建的即时通讯系统。它利用了 Tauri 的跨平台能力和 Vue 3 的响应式设计，结合了 TypeScript 的类型安全特性和 Vite 6 的快速构建，为用户提供了一个高效、安全和易用的通讯解决方案。
+- **弹性扩展能力**: webflux异步架构，基于Spring Cloud 2024 & Spring Boot 3.x构建，支持动态扩缩容。如luohuo-gateway可通过增加节点应对高并发流量。
 
-## 🛠️ 技术栈
+- **技术栈统一管理**: luohuo-dependencies-parent集中管控依赖版本，避免冲突，提升协作效率。
 
-- **Tauri**: 为本项目提供了一款轻量级的、高性能的桌面应用容器，使得我们可以使用前端技术栈来开发跨平台的桌面应用。Tauri 的设计哲学是在保证安全性的前提下，尽可能减少资源占用。
-- **Vite 6**: Vite 是一个现代化的前端构建工具，它利用原生 ES 模块导入的能力来提供一个快速的开发服务器，与此同时，它也为生产环境打包提供了强大的支持。Vite 6 是其最新的版本，带来了更多的优化和特性。
-- **Vue 3**: Vue 3 是一个渐进式JavaScript框架，用于构建用户界面。它的组合式API、更好的TypeScript集成和对移动端的优化使得开发复杂的单页应用变得更加简单和高效。
-- **TypeScript**: TypeScript 是 JavaScript 的一个超集，它在 JavaScript 的基础上增加了类型系统。这让我们能够在开发过程中捕获更多的错误，并且提供更好的编辑器支持。
+## 技术栈
 
-## 🖼️ 项目预览
+- **Redis**: 高性能的内存数据库，用于存储用户会话信息、消息缓存等数据，提供了高速的数据访问能力。
+
+- **MySQL**: 可靠的关系型数据库，用于存储用户信息、消息记录等持久化数据。
+
+- **Netty**: Reactor 线程模型，高并发连接管理，零拷贝优化，支持实时消息推送。
+
+- **RocketMQ**: 高性能消息中间件，各项服务之间解耦的关键，im场景下实现事务消息保障、顺序消费
+
+## 全链路分布式能力
+
+- **网关层**：luohuo-gateway实现路由鉴权，支持OAuth2.0安全认证，SA-Token权限框架 + XSS过滤（luohuo-xss-starter）保障系统安全。
+
+- **通信层**：WebFlux + Netty 异步模型，基于Reactor响应式编程模型，用户在线状态指纹级别映射，实时消息推送低延迟。
+
+- **数据层**：MyBatis-Plus + Dynamic Datasource支持多租户分库分表。
+
+## AI与IM深度集成
+
+• 集成Spring AI（deepseek、OpenAI、通义千问等），luohuo-ai-biz调用ai服务，提供调用第三方ai、工作流（TinyFlow）能力，扩展业务场景。
+
+## 客户端预览
 
 ![img.png](preview/img.png)
 
@@ -103,103 +96,19 @@ HuLa 是一款基于 Tauri、Vite 6、Vue 3 和 TypeScript 构建的即时通讯
   <img src="preview/img_8.png" alt="img_8.png" style="border-radius: 8px; display: block;"  />
 </div>
 
-<div style="padding: 28px; display: inline-block;">
-  <img src="preview/img_9.png" alt="img_9.png" style="border-radius: 8px; display: block;"  />
-</div>
+## 核心功能
 
-## ✨ 已完成功能
+- 即时通讯：支持单聊、群聊、消息推送等基础通讯功能
+- 消息管理：支持消息存储、历史记录查询、消息撤回等功能
+- 用户系统：提供用户注册、登录、个人信息管理等功能
+- 群组管理：支持群组创建、成员管理、群公告等功能
+- 好友系统：支持好友添加、删除、分组等功能
+- 消息通知：支持离线消息、系统通知等功能
+- 朋友圈：支持朋友圈发布、点赞、评论、转发等功能
 
-| 功能分类 | 功能描述 | 状态 |
-|---------|---------|------|
-| 🔐 **用户认证** | 账号密码登录 | ✅ 已完成 |
-| | 二维码扫码登录 | ✅ 已完成 |
-| | 多设备登录管理 | ✅ 已完成 |
-| 💬 **消息功能** | 一对一私聊 | ✅ 已完成 |
-| | 群组聊天 | ✅ 已完成 |
-| | 消息撤回 | ✅ 已完成 |
-| | @提醒、回复功能 | ✅ 已完成 |
-| | 消息已读状态 | ✅ 已完成 |
-| | 表情包功能 | ✅ 已完成 |
-| | 根据消息类型右键菜单 | ✅ 已完成 |
-| | 支持解析链接为预览卡片 | ✅ 已完成 |
-| | 消息点赞和不满状态 | ✅ 已完成 |
-| 👥 **联系人、群聊管理** | 好友添加与删除 | ✅ 已完成 |
-| | 好友搜索 | ✅ 已完成 |
-| | 群组创建与管理 | ✅ 已完成 |
-| | 好友在线状态 | ✅ 已完成 |
-| | 好友徽章 | ✅ 已完成 |
-| | 屏蔽、拉黑、免打扰功能 | ✅ 已完成 |
-| | 消息逐条\合并转发 | 🚧 进行中 |
-| | 群公告 | ✅ 已完成 |
-| | 群聊、单聊备注、昵称等 | ✅ 已完成 |
-| 🎨 **UI界面** | 现代化界面设计 | ✅ 已完成 |
-| | 深色/浅色主题支持 | ✅ 已完成 |
-| | 皮肤主题切换 | ✅ 已完成 |
-| 🛠️ **系统功能** | 多窗口管理 | ✅ 已完成 |
-| | 系统托盘、托盘闪烁提醒支持 | ✅ 已完成 |
-| | 消息通知 | ✅ 已完成 |
-| | 图片查看器 | ✅ 已完成 |
-| | 截图功能 | 🚧 进行中 |
-| | 文件上传（支持七牛云存储） | ✅ 已完成 |
-| | 支持自动、强制更新 | ✅ 已完成 |
-| | 自定义更新页面 | ✅ 已完成 |
-| 🌐 **跨平台支持** | win10、win11/macOS/linux | ✅ 已完成 |
-| | iOS/Android适配 | 🚧 进行中 |
-| 🤖 **AI** | deepseek、chatgpt、claude、qwen、自定义 | 🚧 进行中 |
+持续开发中...
 
-## 👏 感谢以下贡献者们！
-
-<a href="https://github.com/HuLaSpark/HuLa/graphs/contributors">
-  <img src="https://opencollective.com/HuLaSpark/contributors.svg?width=890" />
-</a>
-
-## 📥 安装与运行
-
-```bash
-# 克隆项目
-git clone https://gitee.com/HuLaSpark/HuLa.git
-或者
-git clone https://github.com/HuLaSpark/HuLa.git
-
-# 进入项目目录
-cd HuLa
-
-# 安装依赖
-pnpm install
-
-# 运行开发服务器
-pnpm run tauri:dev
-
-# 构建生产版本
-pnpm run tauri:build
-```
-
-## ⚠️ 注意事项(macOS用户)
-
-网页上下载安装包会提示安装包已损坏，可能会遇到证书问题，这是因为 macOS 系统的安全机制导致的。请按照以下步骤解决：
-
-#### 1. 打开 "系统设置" - "安全性与隐私"，如图勾选：允许 "任何来源" 下载的 App 运行：
-
-<div style="padding: 28px; display: inline-block;">
-  <img src="preview/img_10.png" alt="img_10.png" style="border-radius: 8px; display: block;"  />
-</div>
-
-#### 2. 如果还报错，请在终端执行以下命令解决：
-
-```bash
-## 安装前执行
-sudo xattr -rd com.apple.quarantine 你的安装包路径/下载的安装包名称
-```
-```bash
-## 如果已经安装，则执行下面
-sudo xattr -r -d com.apple.quarantine /Applications/应用名称.app
-```
-
-## 📋 提交规范
-
-执行 **pnpm run commit** 唤起 _git commit_ 交互，根据提示完成信息的输入和选择
-
-## ⚖️ 免责声明
+## 免责声明
 
 1. 本项目是作为一款开源项目提供的，开发者在法律允许的范围内不对软件的功能性、安全性或适用性提供任何形式的明示或暗示的保证
 2. 用户明确理解并同意，使用本软件的风险完全由用户自己承担，软件以"现状"和"现有"基础提供。开发者不提供任何形式的担保，无论是明示还是暗示的，包括但不限于适销性、特定用途的适用性和非侵权的担保
@@ -209,7 +118,7 @@ sudo xattr -r -d com.apple.quarantine /Applications/应用名称.app
 
 **本免责声明的最终解释权归开发者所有**
 
-## 🎁 赞助HuLa
+## 赞助HuLa
 如果您觉得HuLa对您有帮助，欢迎赞助HuLa，您的支持是我们不断前进的动力
 
 <div style="display: flex;">
@@ -218,34 +127,91 @@ sudo xattr -r -d com.apple.quarantine /Applications/应用名称.app
 <img src="preview/zfb.png" width="260" height="280" alt="赞助码" style="border-radius: 12px; margin-left: 40px" />
 </div>
 
-## 💬 HuLa社区讨论群
-<img src="preview/wx.png" width="260" height="300" alt="微信群二维码" style="border-radius: 12px;" />
 
-## 🙏 赞助者名单
-感谢以下赞助者的支持！
+## 💬 加入社区
 
-| 日期 | 赞助者 | 金额 | 平台 |
-|------|--------|------|------|
-| 2025-04-25 | 上官俊斌 | ￥200 | 微信赞赏码 |
-| 2025-05-27 | 临安居士 | ￥188 | 微信赞赏码 |
-| 2025-04-20 | 姜兴(Simon) | ￥188 | 微信赞赏码 |
-| 2025-02-17 | 禾硕 | ￥168 | 支付宝赞赏 |
-| 2025-02-8 | Boom.... | ￥100 | 微信赞赏码 |
-| 2025-06-26 | m udDy🐖 | ￥88 | 微信赞赏码 |
-| 2025-05-09 | 犹豫，就会败北。| ￥88.00 | 微信红包 |
-| 2025-04-01 | 墨       | ￥88.88 | 微信转账 |
-| 2025-02-8 | 邓伟 | ￥88 | 微信赞赏码 |
-| 2025-02-7 | dennis | ￥80 | gitee码云赞赏 |
-| 2025-05-15 | 孤鸿影 | ￥56 | 微信红包 |
-| 2025-02-6 | 小二 | ￥62 | 微信转账 |
-| 2025-06-03 | 洪流 | ￥20 | 微信赞赏码 |
-| 2025-05-27 | 刘启成 | ￥20 | 微信赞赏码 |
-| 2025-05-20 | 没有留名的赞助者 | ￥20 | 微信赞赏码 |
+<div align="center">
+  <h3>🤝 HuLa 社区讨论群</h3>
+  <p><em>与开发者和用户一起交流讨论，获取最新资讯和技术支持</em></p>
 
-> 注：该名单为手动更新。如果您已赞助但未显示在列表中，请通过以下方式联系我们：
- 1. 在GitHub上提交Issue
- 2. 发送邮件至: 2439646234@qq.com
- 3. 通过微信联系: cy2439646234
+  <div>
+    <img src="preview/wx.png" width="220" height="260" alt="微信群二维码">
+  </div>
 
-## 📄 许可证
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHuLaSpark%2FHuLa.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FHuLaSpark%2FHuLa?ref=badge_large)
+  <p><strong>📱 扫码加入微信讨论群</strong></p>
+</div>
+
+## 🙏 感谢赞助者
+
+<div align="center">
+  <h3>💎 贡献者荣誉榜</h3>
+  <p><em>感谢以下朋友对 HuLa 项目的慷慨支持！</em></p>
+</div>
+
+### 🏆 金牌赞助者 (￥100+)
+| 💝 日期 | 👤 赞助者 | 💰 金额 | 🏷️ 平台 |
+|---------|----------|--------|---------|
+| 2025-04-25 | **上官俊斌** | `¥200` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-05-27 | **临安居士** | `¥188` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-04-20 | **姜兴(Simon)** | `¥188` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-02-17 | **禾硕** | `¥168` | ![支付宝赞赏](https://img.shields.io/badge/支付宝赞赏-1677FF?style=flat&logo=alipay&logoColor=white) |
+| 2025-08-13 | **zhongjing** | `¥100` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-07-15 | **粉兔** | `¥100` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-02-8 | **Boom....** | `¥100` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+
+### 🥈 银牌赞助者 (￥50-99)
+| 💝 日期 | 👤 赞助者 | 💰 金额 | 🏷️ 平台 |
+|---------|----------|--------|---------|
+| 2025-06-26 | **m udDy🐖** | `¥88` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-05-09 | **犹豫，就会败北。** | `¥88` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-04-01 | **墨** | `¥88.88` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-02-8 | **邓伟** | `¥88` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-02-7 | **dennis** | `¥80` | ![Gitee赞赏](https://img.shields.io/badge/Gitee赞赏-C71D23?style=flat&logo=gitee&logoColor=white) |
+| 2025-02-6 | **小二** | `¥62` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-05-15 | **孤鸿影** | `¥56` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+
+### 🥉 铜牌赞助者 (￥20-49)
+| 💝 日期 | 👤 赞助者 | 💰 金额 | 🏷️ 平台 |
+|---------|----------|--------|---------|
+| 2025-08-12 | ***持** | `¥20` | ![支付宝赞赏](https://img.shields.io/badge/支付宝赞赏-1677FF?style=flat&logo=alipay&logoColor=white) |
+| 2025-06-03 | **洪流** | `¥20` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-05-27 | **刘启成** | `¥20` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-05-20 | **匿名赞助者** | `¥20` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+
+<div align="center">
+  <br>
+
+> 📝 **温馨提示**
+> 该名单为手动更新，如果您已赞助但未在列表中，请联系我们：
+> 🐛 [GitHub Issue](https://github.com/HuLaSpark/HuLa-Server/issues) | 📧 邮箱: `2439646234@qq.com` | 💬 微信: `cy2439646234`
+
+  <br>
+</div>
+
+---
+
+## 📄 开源许可
+
+<div align="center">
+  <h3>⚖️ 许可证信息</h3>
+
+  <p>
+    <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FHuLaSpark%2FHuLa?ref=badge_large">
+      <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FHuLaSpark%2FHuLa.svg?type=large" alt="FOSSA Status" style="max-width: 100%; border-radius: 8px;">
+    </a>
+  </p>
+
+  <p><em>本项目遵循开源许可协议，详细信息请查看上方许可证报告</em></p>
+</div>
+
+---
+
+<div align="center">
+  <h3>🌟 感谢您的关注</h3>
+  <p>
+    <em>如果您觉得 HuLa 有价值，请给我们一个 ⭐ Star，这是对我们最大的鼓励！</em>
+  </p>
+  <p>
+    <strong>让我们一起构建更好的即时通讯体验 🚀</strong>
+  </p>
+</div>

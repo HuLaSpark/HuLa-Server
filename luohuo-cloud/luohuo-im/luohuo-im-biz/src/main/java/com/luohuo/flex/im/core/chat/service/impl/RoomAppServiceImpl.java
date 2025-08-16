@@ -866,7 +866,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		}
 
 		// 2. 创建邀请记录
-		List<UserApply> invites = validUids.stream().map(inviteeUid -> new UserApply(uid, ApplyEnum.GROUP.getCode(), roomGroup.getRoomId(), inviteeUid, null, ApplyStatusEnum.WAIT_APPROVAL.getCode(), 1, 0)).collect(Collectors.toList());
+		List<UserApply> invites = validUids.stream().map(inviteeUid -> new UserApply(uid, ApplyEnum.GROUP.getCode(), roomGroup.getRoomId(), inviteeUid, StrUtil.format("{}邀请你加入{}", userCache.getUserInfo(uid).getName(), roomGroup.getName()), ApplyStatusEnum.WAIT_APPROVAL.getCode(), 1, 0)).collect(Collectors.toList());
 		userApplyDao.saveBatch(invites);
 
 		// 3. 通知被邀请的人进群

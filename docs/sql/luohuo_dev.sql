@@ -3,15 +3,15 @@
 
  Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 80030 (8.0.30)
- Source Host           : 127.0.0.1:13306
+ Source Server Version : 80405 (8.4.5)
+ Source Host           : localhost:3306
  Source Schema         : luohuo_dev
 
  Target Server Type    : MySQL
- Target Server Version : 80030 (8.0.30)
+ Target Server Version : 80405 (8.4.5)
  File Encoding         : 65001
 
- Date: 15/08/2025 20:00:12
+ Date: 16/08/2025 00:27:04
 */
 
 SET NAMES utf8mb4;
