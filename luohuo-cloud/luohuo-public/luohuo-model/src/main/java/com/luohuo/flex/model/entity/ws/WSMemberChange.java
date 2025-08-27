@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -20,22 +19,11 @@ import java.util.List;
 public class WSMemberChange implements Serializable {
     public static final Integer CHANGE_TYPE_ADD = 1;
     public static final Integer CHANGE_TYPE_REMOVE = 2;
+	public static final Integer CHANGE_TYPE_QUIT = 3;
     @Schema(description ="群组id")
-    private Long roomId;
-	@Schema(description ="变动类型 1加入群组 2移除群组")
+    private String roomId;
+	@Schema(description ="变动类型 1加入群组 2移除群组 3退出群聊")
 	private Integer changeType;
     @Schema(description ="变动uid集合")
-    private List<UserState> userList;
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class UserState implements Serializable {
-		@Schema(description ="变动uid")
-		private Long uid;
-		@Schema(description ="在线状态 1在线 2离线")
-		private Integer activeStatus;
-		@Schema(description ="最后一次上下线时间")
-		private LocalDateTime lastOptTime;
-	}
+    private List<ChatMember> userList;
 }

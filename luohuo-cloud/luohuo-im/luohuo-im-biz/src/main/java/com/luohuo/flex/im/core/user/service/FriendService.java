@@ -9,7 +9,6 @@ import com.luohuo.flex.im.domain.vo.req.friend.FriendCheckReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendReq;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendCheckResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadResp;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -46,13 +45,6 @@ public interface FriendService {
 	 * @return
 	 */
 	void createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type);
-
-    /**
-     * 申请未读数
-     *
-     * @return {@link FriendUnreadResp}
-     */
-    FriendUnreadResp unread(Long uid);
 
 	/**
 	 * 与系统用户创建好友关系

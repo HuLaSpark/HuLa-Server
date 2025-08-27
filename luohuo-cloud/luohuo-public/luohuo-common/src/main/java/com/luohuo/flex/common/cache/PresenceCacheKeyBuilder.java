@@ -91,6 +91,9 @@ public class PresenceCacheKeyBuilder implements CacheKeyBuilder {
 		return new GlobalOnlineDevicesKeyBuilder().key();
 	}
 
+	/**
+	 * 系统在线的所有用户 uid:clientId 的映射方式
+	 */
 	private static class GlobalOnlineDevicesKeyBuilder implements CacheKeyBuilder {
 		@Override public String getPrefix() { return CacheKeyModular.PREFIX; }
 		@Override public String getTenant() { return StrPool.EMPTY; }

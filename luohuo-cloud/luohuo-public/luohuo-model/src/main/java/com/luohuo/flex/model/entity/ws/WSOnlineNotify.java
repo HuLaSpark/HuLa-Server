@@ -36,4 +36,13 @@ public class WSOnlineNotify {
 		this.onlineNum = onlineNum;
 		this.type = type;
 	}
+
+	public WSOnlineNotify(Long roomId, Long uid, String clientId, Long lastOptTime, Long onlineNum, Integer type) {
+		this.roomId = roomId;
+		this.uid = uid;
+		this.clientId = clientId;
+		this.lastOptTime = lastOptTime;
+		this.onlineNum = onlineNum;
+		this.type = type;
+	}
 }

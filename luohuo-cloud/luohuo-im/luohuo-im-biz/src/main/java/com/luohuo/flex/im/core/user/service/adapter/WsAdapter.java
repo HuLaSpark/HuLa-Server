@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.core.user.service.adapter;
 
 import cn.hutool.core.util.StrUtil;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
 import com.luohuo.flex.model.entity.ws.*;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
@@ -56,7 +57,9 @@ public class WsAdapter {
         WsBaseResp<WSMsgRecall> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.MSG_RECALL.getType());
         WSMsgRecall recall = new WSMsgRecall();
-        BeanUtils.copyProperties(recallDTO, recall);
+		recall.setRecallUid(recallDTO.getRecallUid()+"");
+		recall.setMsgId(recallDTO.getMsgId()+"");
+		recall.setRoomId(recallDTO.getRoomId()+"");
         wsBaseResp.setData(recall);
         return wsBaseResp;
     }
@@ -84,7 +87,7 @@ public class WsAdapter {
 
     public static WsBaseResp<WSFriendApply> buildApplySend(WSFriendApply resp) {
         WsBaseResp<WSFriendApply> wsBaseResp = new WsBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.REQUEST_NEW_FRIEND.getType());
+        wsBaseResp.setType(WSRespTypeEnum.NEW_APPLY.getType());
         wsBaseResp.setData(resp);
         return wsBaseResp;
     }
@@ -116,7 +119,7 @@ public class WsAdapter {
 	public static WsBaseResp<UserApplyResp> buildApplyResultWS(Long uid, Long roomId, Long targetId, String msg, Integer status, Integer readStatus) {
 		WsBaseResp<UserApplyResp> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.GROUP_APPLY_NOTICE.getType());
-		wsBaseResp.setData(new UserApplyResp(uid, 2, roomId, targetId, msg, status, readStatus, LocalDateTime.now()));
+		wsBaseResp.setData(new UserApplyResp(uid, RoomTypeEnum.GROUP.getType(), roomId, targetId, msg, status, readStatus, true, LocalDateTime.now()));
 		return wsBaseResp;
 	}
 }

@@ -8,6 +8,8 @@ import com.luohuo.basic.model.cache.CacheKey;
 import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.im.api.PresenceApi;
+import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
+import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,6 @@ import com.luohuo.flex.im.domain.vo.req.friend.FriendCheckReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendReq;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendCheckResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadResp;
 import com.luohuo.flex.im.core.user.service.FriendService;
 import com.luohuo.flex.im.core.user.service.adapter.FriendAdapter;
 import com.luohuo.flex.im.core.user.service.cache.UserCache;
@@ -128,8 +129,9 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		userApply.setType(type);
 		userApply.setRoomId(roomId);
 		userApply.setTargetId(targetId);
-		userApply.setStatus(1);
-		userApply.setReadStatus(1);
+		userApply.setStatus(ApplyStatusEnum.WAIT_APPROVAL.getCode());
+		userApply.setReadStatus(ApplyReadStatusEnum.UNREAD.getCode());
+		userApply.setApplyFor(true);
 		userApplyDao.save(userApply);
 	}
 
@@ -164,17 +166,6 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		userFriend.setHideTheirPosts(request.getHideTheirPosts());
 		return userFriendDao.updateById(userFriend);
 	}
-
-    /**
-     * 申请未读数
-     *
-     * @return {@link FriendUnreadResp}
-     */
-    @Override
-    public FriendUnreadResp unread(Long uid) {
-        Integer unReadCount = userApplyDao.getUnReadCount(uid);
-        return new FriendUnreadResp(unReadCount);
-    }
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -221,8 +212,8 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
         }
 
 		List<Long> friendUids = friendPage.getList().stream().map(UserFriend::getFriendUid).collect(Collectors.toList());
-		Map<Long, Boolean> map = presenceApi.getUsersOnlineStatus(friendUids).getData();
-		return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), map), 0L);
+		Set<Long> onlineList = presenceApi.getOnlineUsersList(friendUids).getData();
+		return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), onlineList), 0L);
     }
 
 	public void createFriend(Long roomId, Long uid, Long targetUid) {

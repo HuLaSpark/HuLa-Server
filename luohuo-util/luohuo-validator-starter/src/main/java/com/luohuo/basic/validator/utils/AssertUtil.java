@@ -86,7 +86,7 @@ public class AssertUtil {
 
 	public static void isTrue(boolean expression, GroupErrorEnum errorEnum) {
 		if (!expression) {
-			throwException(errorEnum, (Object) null);
+			throwException(errorEnum, "");
 		}
 	}
 

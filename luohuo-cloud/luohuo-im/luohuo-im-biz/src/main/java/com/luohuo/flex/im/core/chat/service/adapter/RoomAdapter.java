@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.luohuo.flex.im.domain.entity.Contact;
 import com.luohuo.flex.im.domain.entity.GroupMember;
 import com.luohuo.flex.im.domain.entity.Room;
-import com.luohuo.flex.im.domain.entity.RoomGroup;
 import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;

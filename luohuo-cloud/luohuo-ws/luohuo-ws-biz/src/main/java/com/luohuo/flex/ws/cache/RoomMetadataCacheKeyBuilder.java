@@ -6,18 +6,12 @@ import com.luohuo.basic.model.cache.CacheKeyBuilder;
 import com.luohuo.flex.common.cache.CacheKeyModular;
 import com.luohuo.flex.common.cache.CacheKeyTable;
 
-import java.io.Serializable;
-
 /**
  * 房间元数据服务参数 KEY
  *
  * @author 乾乾
  */
 public class RoomMetadataCacheKeyBuilder implements CacheKeyBuilder {
-    public static CacheHashKey builder(Serializable roomId) {
-        return new RoomMetadataCacheKeyBuilder().hashKey(roomId);
-    }
-
     public static CacheHashKey builder(Long roomId, String itemKey) {
         return new RoomMetadataCacheKeyBuilder().hashFieldKey(itemKey, roomId);
     }

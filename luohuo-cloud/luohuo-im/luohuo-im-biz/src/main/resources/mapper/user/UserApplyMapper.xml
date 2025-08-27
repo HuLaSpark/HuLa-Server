@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.luohuo.flex.im.core.user.mapper.UserApplyMapper">
 
+    <select id="getUnReadCountByType" resultType="com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadDto">
+        SELECT type, COUNT(*) as count
+        FROM im_user_apply
+        WHERE target_id = #{targetId} AND deleted = #{normal} AND read_status = #{readStatus}
+        GROUP BY type, `status` order by `status`
+    </select>
 </mapper>

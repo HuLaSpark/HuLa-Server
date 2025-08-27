@@ -13,7 +13,6 @@ import com.luohuo.flex.im.domain.vo.req.friend.FriendDeleteReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendReq;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendCheckResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadResp;
 import com.luohuo.flex.im.core.user.service.FriendService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -55,13 +54,6 @@ public class FriendController {
         Long uid = ContextUtil.getUid();
         friendService.deleteFriend(uid, request.getTargetUid());
         return R.success();
-    }
-
-    @GetMapping("/apply/unread")
-    @Operation(summary = "申请未读数")
-    public R<FriendUnreadResp> unread() {
-        Long uid = ContextUtil.getUid();
-        return R.success(friendService.unread(uid));
     }
 
     @GetMapping("/page")

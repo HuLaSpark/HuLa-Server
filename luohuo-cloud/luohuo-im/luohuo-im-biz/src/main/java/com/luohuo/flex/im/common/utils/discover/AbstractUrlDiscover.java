@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class AbstractUrlDiscover implements UrlDiscover {
     //链接识别的正则
-	private static final Pattern PATTERN = Pattern.compile("https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern PATTERN = Pattern.compile(
+			"((https?:\\/\\/|www\\.)[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*))", Pattern.CASE_INSENSITIVE
+	);
 
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(
 			Math.max(4, Runtime.getRuntime().availableProcessors() * 2),
@@ -104,7 +106,6 @@ public abstract class AbstractUrlDiscover implements UrlDiscover {
 
 
     private String assemble(String url) {
-
         if (!StrUtil.startWith(url, "http")) {
             return "http://" + url;
         }

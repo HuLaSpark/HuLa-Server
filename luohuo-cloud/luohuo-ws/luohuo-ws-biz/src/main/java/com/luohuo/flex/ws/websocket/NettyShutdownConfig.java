@@ -6,7 +6,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.web.reactive.socket.CloseStatus;
 
 /**
  * 优雅停机  --> 清理三套会话系统
@@ -20,6 +19,6 @@ public class NettyShutdownConfig {
 
 	@Bean
 	public ApplicationListener<ContextClosedEvent> shutdownListener() {
-		return event -> sessionManager.clean(CloseStatus.GOING_AWAY);
+		return event -> sessionManager.clean();
 	}
 }

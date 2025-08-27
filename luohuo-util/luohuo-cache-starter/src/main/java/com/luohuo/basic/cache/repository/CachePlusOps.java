@@ -1,5 +1,6 @@
 package com.luohuo.basic.cache.repository;
 
+import org.springframework.data.domain.Range;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.lang.NonNull;
 import com.luohuo.basic.cache.redis2.CacheResult;
@@ -284,7 +285,7 @@ public interface CachePlusOps extends CacheOps {
 	List<Long> sMultiCard(List<String> keys);
 
 	/**
-	 * 新增批量查询 Set 集合大小的方法
+	 * 批量查询 Set 集合大小的方法
 	 * @param key 单个Set 类型的key
 	 * @param fields 要查询的key的字段
 	 * @return 返回内容是key里面每个field 的状态
@@ -292,9 +293,21 @@ public interface CachePlusOps extends CacheOps {
 	List<Object> getZSetScores(String key, List<Long> fields);
 
 	/**
+	 * 批量获取key 对应的值， 并指定类型
+	 */
+	<T> List<T> mGet(Collection<String> keys, Class<T> tClass);
+
+	/**
 	 * 批量获取key 对应的值
 	 */
 	<T> List<CacheResult<T>> mGet(List<String> frequencyKeys);
+
+	/**
+	 * 批量设置缓存
+	 *
+	 * @param map
+	 */
+	<T> void mSet(Map<String, T> map, long time);
 
 	/**
 	 * 限流脚本
@@ -305,18 +318,6 @@ public interface CachePlusOps extends CacheOps {
 	 * @return
 	 */
 	Long inc(String k, Integer time, TimeUnit unit);
-
-	/**
-	 * 批量获取key 对应的值， 并指定类型
-	 */
-	<T> List<T> mGet(Collection<String> keys, Class<T> tClass);
-
-	/**
-	 * 批量设置缓存
-	 *
-	 * @param map
-	 */
-	<T> void mSet(Map<String, T> map, long time);
 
 	/**
 	 * 获取集合大小
@@ -400,6 +401,18 @@ public interface CachePlusOps extends CacheOps {
 	Set<ZSetOperations.TypedTuple<Object>> zRangeByScoreWithScores(String key, Double hotStart, Double hotEnd);
 
 	/**
+	 * 根据Score值查询集合元素, 从小到大排序
+	 *
+	 * @param key
+	 * @param hotStart 最小值
+	 * @param hotEnd 最大值
+	 * @param offset 游标
+	 * @param count 数量
+	 * @return
+	 */
+	Set<ZSetOperations.TypedTuple<Object>> zRangeByScoreWithScores(String key, Double hotStart, Double hotEnd, long offset, long count);
+
+	/**
 	 * 获取有序集合（ZSet）中指定分数范围内的元素及其分数（从大到小排序）
 	 *
 	 * @param redisKey 有序集合的键名
@@ -409,6 +422,11 @@ public interface CachePlusOps extends CacheOps {
 	 * @implNote 典型场景：获取热度排行榜前N名
 	 */
 	Set<ZSetOperations.TypedTuple<Object>> zReverseRangeByScoreWithScores(String redisKey, double v, Integer pageSize);
+
+	/**
+	 * 获取有序集合（ZSet）中range范围内的数据
+	 */
+	Long lexCount(String key, Range<String> range);
 
 	/**
 	 * 对整数值进行原子自增操作并设置过期时间

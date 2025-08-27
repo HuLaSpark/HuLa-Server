@@ -34,6 +34,7 @@
         <dependency>
             <artifactId>redisson-spring-boot-starter</artifactId>
             <groupId>org.redisson</groupId>
+            <version>${redisson.version}</version>
         </dependency>
 
         <!-- 必须有这个jar 才能提示 -->

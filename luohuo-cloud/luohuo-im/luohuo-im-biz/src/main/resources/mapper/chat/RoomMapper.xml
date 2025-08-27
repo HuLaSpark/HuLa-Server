@@ -3,13 +3,14 @@
 <mapper namespace="com.luohuo.flex.im.core.chat.mapper.RoomMapper">
 
     <select id="groupList" resultType="com.luohuo.flex.im.domain.vo.res.GroupListVO">
-        select r.id     as roomId,
+        select distinct r.id     as roomId,
                g.name   as roomName,
                g.avatar as avatar,
-               g.id     as groupId
+               g.id     as groupId,
+               r.update_time
         from im_room_group g
                  inner join im_room r on g.room_id = r.id
-                 inner join im_group_member m on g.id = m.group_id
+                 inner join im_group_member m on g.id = m.group_id and m.is_del = 0
         where m.uid = #{uid}
           and g.is_del = 0
         order by r.update_time,

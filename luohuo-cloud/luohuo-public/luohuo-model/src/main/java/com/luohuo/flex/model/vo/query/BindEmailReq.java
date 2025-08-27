@@ -27,6 +27,9 @@ public class BindEmailReq implements Serializable {
 	@Schema(description = "验证码")
 	private String code;
 
+	@Schema(description = "指纹信息 [配合验证码使用的]")
+	private String clientId;
+
 	@Schema(description = "uuid")
 	private String uuid;
 

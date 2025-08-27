@@ -160,8 +160,8 @@ public class RoomController {
     }
 
 	@Operation(summary = "公告列表")
-	@GetMapping("/announcement/list/{id}")
-	public R<IPage<Announcements>> announcementList(@PathVariable("id") Long roomId, @RequestParam("current") Long current,@RequestParam("size") Long size){
+	@GetMapping("/announcement/list")
+	public R<IPage<Announcements>> announcementList(@RequestParam("roomId") Long roomId, @RequestParam("current") Long current,@RequestParam("size") Long size){
 		IPage<Announcements> page = new Page<>(current,size);
 		return R.success(roomService.announcementList(roomId, page));
 	}
@@ -185,8 +185,8 @@ public class RoomController {
 	}
 
 	@Operation(summary = "删除公告")
-	@PostMapping("announcement/delete/{id}")
-	public R announcementDelete(@PathVariable("id") Long id){
+	@PostMapping("announcement/delete")
+	public R announcementDelete(@RequestParam("id") Long id){
 		return R.success(roomService.announcementDelete(ContextUtil.getUid(), id));
 	}
 

@@ -13,13 +13,15 @@ public class GroupMemberAddEvent extends ApplicationEvent {
 	// 变动的成员
     private final List<Long> memberList;
     private final Long roomId;
-	private final Long cUid;
 
-    public GroupMemberAddEvent(Object source, Long roomId, List<Long> memberList, Long cUid) {
+	// 消息接收人
+	private final Long uid;
+
+    public GroupMemberAddEvent(Object source, Long roomId, List<Long> memberList, Long uid) {
         super(source);
         this.memberList = memberList;
-        this.roomId = roomId;
-		this.cUid = cUid;
+		this.roomId = roomId;
+		this.uid = uid;
     }
 
 }

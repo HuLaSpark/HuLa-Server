@@ -1,4 +1,4 @@
-package com.luohuo.flex.oauth.service.storage.engine;
+package com.luohuo.flex.storage.engine;
 
 import com.alibaba.fastjson.JSONObject;
 import com.qiniu.util.Auth;

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
+import com.luohuo.flex.im.domain.entity.Contact;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.common.utils.CursorUtils;
@@ -14,7 +15,9 @@ import com.luohuo.flex.im.core.chat.mapper.MessageMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -61,15 +64,6 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
                 .update();
     }
 
-	@TenantIgnore
-    public Integer getUnReadCount(Long roomId, LocalDateTime readTime, Long uid) {
-        return Math.toIntExact(lambdaQuery()
-                .eq(Message::getRoomId, roomId)
-                .gt(Objects.nonNull(readTime), Message::getCreateTime, readTime)
-				.ne(Message::getFromUid, uid)
-                .count());
-    }
-
     /**
      * 根据房间ID逻辑删除消息
      *
@@ -87,4 +81,17 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
         }
 		return this.update(wrapper);
     }
+
+	@TenantIgnore
+	public Integer getUnReadCount(Long roomId, LocalDateTime readTime, Long uid) {
+		return Math.toIntExact(lambdaQuery()
+				.eq(Message::getRoomId, roomId)
+				.gt(Objects.nonNull(readTime), Message::getCreateTime, readTime)
+				.ne(Message::getFromUid, uid)
+				.count());
+	}
+
+	public Map<Long, Integer> batchGetUnReadCount(Collection<Contact> contactList) {
+		return baseMapper.batchGetUnReadCount(contactList);
+	}
 }

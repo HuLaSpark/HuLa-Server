@@ -96,7 +96,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
         if (!result.getsuccess()) {
             return result;
         }
-        result = checkClient();
+        result = checkAuthorization();
         if (!result.getsuccess()) {
             return result;
         }
@@ -132,7 +132,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 		defUser.refreshIp(ContextUtil.getIP());
 
         // 10. 封装token
-        LoginResultVO loginResultVO = buildResult(uid, defUser, org, loginParam.getDeviceType());
+        LoginResultVO loginResultVO = buildResult(uid, defUser, org, loginParam.getDeviceType(), loginParam.getClientId());
         LoginStatusDTO loginStatus = LoginStatusDTO.success(defUser.getId(), uid, defUser.getSystemType(), loginParam.getDeviceType());
 		SpringUtils.publishEvent(new UserOnlineEvent(this, ContextUtil.getTenantId(), uid, defUser.getId(), defUser.getLastLoginTime(), defUser.getIpInfo()));
 		SpringUtils.publishEvent(new LoginEvent(loginStatus));
@@ -172,16 +172,16 @@ public abstract class AbstractTokenGranter implements TokenGranter {
      * @date 2022/10/5 12:38 PM
      * @create [2022/10/5 12:38 PM ] [tangyh] [初始创建]
      */
-    protected R<LoginResultVO> checkClient() {
-        String basicHeader = JakartaServletUtil.getHeader(WebUtils.request(), CLIENT_KEY, StrPool.UTF_8);
-        String[] client = Base64Util.getClient(basicHeader);
-        DefClient defClient = defClientService.getClient(client[0], client[1]);
+    protected R<LoginResultVO> checkAuthorization() {
+        String basicHeader = JakartaServletUtil.getHeader(WebUtils.request(), AUTHORIZATION_KEY, StrPool.UTF_8);
+        String[] authorization = Base64Util.getAuthorization(basicHeader);
+        DefClient defAuthorization = defClientService.getClient(authorization[0], authorization[1]);
 
-        if (defClient == null) {
+        if (defAuthorization == null) {
             return R.fail("请在.env文件中配置正确的客户端ID或者客户端秘钥");
         }
-        if (!defClient.getState()) {
-            return R.fail("客户端[%s]已被禁用", defClient.getClientId());
+        if (!defAuthorization.getState()) {
+            return R.fail("客户端[%s]已被禁用", defAuthorization.getClientId());
         }
         return R.success(null);
     }
@@ -370,23 +370,24 @@ public abstract class AbstractTokenGranter implements TokenGranter {
      * @param userInfo 员工信息
      * @param org      机构信息
 	 * @param deviceType   登录设备
+	 * @param clientId   设备指纹
      * @return com.luohuo.flex.oauth.vo.result.LoginResultVO
      * @author 乾乾
      */
-    protected LoginResultVO buildResult(Long uid, DefUser userInfo, Org org, String deviceType) {
+    protected LoginResultVO buildResult(Long uid, DefUser userInfo, Org org, String deviceType, String clientId) {
 		// 0. 处理同设备登录用户
 		String combinedDeviceType = kickout(uid, userInfo, deviceType);
 
 		// 1. 拿到登录用户的id
 		String loginId = userInfo.getId().toString();
 		StpUtil.login(loginId, combinedDeviceType);
-//		StpUtil.login(loginId, deviceType);
 
 		// 2. 配置登录设备、租户信息等等
         SaSession tokenSession = StpUtil.getTokenSession();
         tokenSession.setLoginId(userInfo.getId());
 		tokenSession.set(JWT_KEY_SYSTEM_TYPE, userInfo.getSystemType());
 		tokenSession.set(JWT_KEY_DEVICE, deviceType);
+		tokenSession.set(CLIENT_HEADER, clientId);
         if (org.getCurrentTopCompanyId() != null) {
             tokenSession.set(JWT_KEY_TOP_COMPANY_ID, org.getCurrentTopCompanyId());
         } else {
@@ -472,10 +473,11 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 		if (CollUtil.isNotEmpty(sameDeviceTokens)) {
 			for (String token : sameDeviceTokens) {
 				try {
+					String clientId = StpUtil.getTokenSessionByToken(token).getString(CLIENT_HEADER);
 					StpUtil.kickout(token);
 					log.info("已踢出会话: token={}", token);
 
-					SpringUtils.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, deviceType, ContextUtil.getIP(), token)));
+					SpringUtils.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, deviceType, clientId, ContextUtil.getIP(), token)));
 				} catch (Exception e) {
 					log.error("踢出会话失败: token={}", token, e);
 				}
@@ -525,7 +527,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
     }
 
     @Override
-    public LoginResultVO switchOrg(Long orgId) {
+    public LoginResultVO switchOrg(Long orgId, String clientId) {
         StpUtil.checkLogin();
         Long userId = ContextUtil.getUserId();
         DefUser defUser = defUserService.getByIdCache(userId);
@@ -588,7 +590,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
                 .currentDeptId(deptId)
                 .build();
 
-        LoginResultVO loginResultVO = buildResult(ContextUtil.getUid(), defUser, org, StpUtil.getLoginType());
+        LoginResultVO loginResultVO = buildResult(ContextUtil.getUid(), defUser, org, StpUtil.getLoginType(), clientId);
 
         LoginStatusDTO loginStatus = LoginStatusDTO.switchOrg(defUser.getId(), employee.getId());
         SpringUtils.publishEvent(new LoginEvent(loginStatus));

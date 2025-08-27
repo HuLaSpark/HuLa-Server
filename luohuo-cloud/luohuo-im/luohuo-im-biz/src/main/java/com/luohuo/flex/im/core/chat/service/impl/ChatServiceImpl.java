@@ -8,6 +8,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
+import com.luohuo.basic.base.R;
+import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.im.api.PresenceApi;
 import com.luohuo.flex.im.core.chat.dao.*;
@@ -20,8 +22,6 @@ import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +64,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,14 +73,11 @@ import static com.luohuo.flex.im.common.config.ThreadPoolConfig.LUOHUO_EXECUTOR;
 @Slf4j
 @AllArgsConstructor
 public class ChatServiceImpl implements ChatService {
-    private final RoomDao roomDao;
     private final UserFriendDao userFriendDao;
-    private final RoomGroupDao roomGroupDao;
 	private final GroupMemberCache groupMemberCache;
 	private MsgCache msgCache;
     private MessageDao messageDao;
     private UserDao userDao;
-    private ApplicationEventPublisher applicationEventPublisher;
     private MessageMarkDao messageMarkDao;
     private RoomFriendDao roomFriendDao;
     private RoleService roleService;
@@ -116,7 +112,7 @@ public class ChatServiceImpl implements ChatService {
 		}
 
         // 发布消息发送事件
-        applicationEventPublisher.publishEvent(new MessageSendEvent(this, new ChatMsgSendDto(msgId, uid)));
+        SpringUtils.publishEvent(new MessageSendEvent(this, new ChatMsgSendDto(msgId, uid)));
         return msgId;
     }
 
@@ -124,10 +120,13 @@ public class ChatServiceImpl implements ChatService {
         Room room = roomCache.get(roomId);
         Assert.notNull(room, "房间不存在!");
         if (room.isRoomGroup()) {
-            RoomGroup roomGroup = roomGroupCache.get(roomId);
-            GroupMember member = groupMemberDao.getMember(roomGroup.getId(), uid);
+//			GroupMember	member = groupMemberCache.getMemberDetail(roomId, uid);
+            GroupMember member = groupMemberDao.getMember(roomId, uid);
             Assert.notNull(member, "您已经被移除该群");
             Assert.isFalse(!isSend && member.getDeFriend(), "您已经屏蔽群聊!");
+			if (member.getDeFriend()) {
+				throw new BizException("你已屏蔽群聊，无法发送消息");
+			}
         } else {
             RoomFriend roomFriend = roomFriendDao.getByRoomId(roomId);
             boolean u1State = uid.equals(roomFriend.getUid1());
@@ -182,7 +181,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatMessageResp getMsgResp(Message message, Long receiveUid) {
-        return CollUtil.getFirst(getMsgRespBatch(message.getRoomId(), Collections.singletonList(message), receiveUid));
+        return CollUtil.getFirst(getMsgRespBatch(Collections.singletonList(message), receiveUid));
     }
 
     @Override
@@ -190,14 +189,6 @@ public class ChatServiceImpl implements ChatService {
         Message msg = messageDao.getById(msgId);
         return getMsgResp(msg, receiveUid);
     }
-
-	public Map<Long, Boolean> batchGetOnlineStatus(List<Long> uidList) {
-		if (CollectionUtils.isEmpty(uidList)) return Collections.emptyMap();
-		// 分页批量查询
-		return Lists.partition(uidList, 500).stream()
-				.map(chunk -> presenceApi.getUsersOnlineStatus(chunk.stream().collect(Collectors.toList())).getData())
-				.collect(HashMap::new, Map::putAll, Map::putAll);
-	}
 
 	private String generateCursor(ChatActiveStatusEnum type, String innerCursor) {
 		return type.name() + "_" + innerCursor;
@@ -209,12 +200,9 @@ public class ChatServiceImpl implements ChatService {
         ChatActiveStatusEnum activeStatusEnum = pair.getKey();
         String timeCursor = pair.getValue();
 
-		// 1. 批量获取所有成员在线状态（本地缓存优化）
-		Map<Long, Boolean> onlineStatusMap = batchGetOnlineStatus(memberUidList);
-
-		// 2. 分离在线用户与离线用户
-		List<Long> onlineUids = memberUidList.stream().filter(uid -> onlineStatusMap.get(uid)).collect(Collectors.toList());
-		List<Long> offlineUids = memberUidList.stream().filter(uid -> !onlineUids.contains(uid)).collect(Collectors.toList());
+		// 1. 批量获取所有成员在线状态、分离在线用户与离线用户
+		Set<Long> onlineUids = presenceApi.getOnlineUsersList(memberUidList).getData();
+		Set<Long> offlineUids = memberUidList.stream().filter(uid -> !onlineUids.contains(uid)).collect(Collectors.toSet());
 
         // 3. 动态分页组装
         List<ChatMemberResp> resultList = new ArrayList<>();
@@ -223,12 +211,12 @@ public class ChatServiceImpl implements ChatService {
             // 在线列表
             CursorPageBaseResp<User> onlinePage = userDao.getCursorPage(onlineUids, new CursorPageBaseReq(request.getPageSize(), timeCursor));
             // 添加在线列表
-            resultList.addAll(MemberAdapter.buildMember(onlinePage.getList(), onlineStatusMap));
+            resultList.addAll(MemberAdapter.buildMember(onlinePage.getList(), onlineUids));
 
             if (onlinePage.getIsLast()) {
                 // 如果是最后一页,从离线列表再补点数据
 				CursorPageBaseResp<User> offlinePage = userDao.getCursorPage(offlineUids, new CursorPageBaseReq(request.getPageSize() - onlinePage.getList().size(), null));
-				resultList.addAll(MemberAdapter.buildMember(offlinePage.getList(), onlineStatusMap));
+				resultList.addAll(MemberAdapter.buildMember(offlinePage.getList(), onlineUids));
 				timeCursor = generateCursor(ChatActiveStatusEnum.OFFLINE, offlinePage.getCursor());
 				isLast = offlinePage.getIsLast();
             } else {
@@ -239,7 +227,7 @@ public class ChatServiceImpl implements ChatService {
             // 离线列表
             CursorPageBaseResp<User> cursorPage = userDao.getCursorPage(offlineUids, new CursorPageBaseReq(request.getPageSize(), timeCursor));
             // 添加离线线列表
-            resultList.addAll(MemberAdapter.buildMember(cursorPage.getList(), onlineStatusMap));
+            resultList.addAll(MemberAdapter.buildMember(cursorPage.getList(), onlineUids));
             timeCursor = cursorPage.getCursor();
             isLast = cursorPage.getIsLast();
         }
@@ -270,7 +258,7 @@ public class ChatServiceImpl implements ChatService {
         if (cursorPage.isEmpty()) {
             return CursorPageBaseResp.empty();
         }
-        return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(request.getRoomId(), cursorPage.getList(), receiveUid), cursorPage.getTotal());
+        return CursorPageBaseResp.init(cursorPage, getMsgRespBatch(cursorPage.getList(), receiveUid), cursorPage.getTotal());
     }
 
 	//	@Cacheable(value = "userRooms", key = "#uid", unless = "#result == null")
@@ -291,7 +279,7 @@ public class ChatServiceImpl implements ChatService {
 		}
 
 		// 2. 批量查询所有房间的最后一条消息ID（用于权限过滤）
-		LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<>();
+		LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<Message>().in(Message::getRoomId, roomIds);
 		if(ObjectUtil.isNotNull(lastOptTime) && lastOptTime > 0) {
 			wrapper.ge(Message::getCreateTime, TimeUtils.getDateTimeOfTimestamp(lastOptTime)).le(Message::getCreateTime, LocalDateTime.now());
 		}else {
@@ -304,7 +292,7 @@ public class ChatServiceImpl implements ChatService {
 		// 4. 转换为响应对象并返回
 		List<ChatMessageResp> baseMessages = new ArrayList<>();
 		for (Long roomId : groupedMessages.keySet()) {
-			baseMessages.addAll(getMsgRespBatch(roomId, groupedMessages.get(roomId), receiveUid));
+			baseMessages.addAll(getMsgRespBatch(groupedMessages.get(roomId), receiveUid));
 		}
 		return baseMessages;
 	}
@@ -416,7 +404,7 @@ public class ChatServiceImpl implements ChatService {
         return messageDao.listByIds(msgIds);
     }
 
-    private void checkRecall(Long uid, Message message) {
+	private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
         boolean isChatManager = roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER);
@@ -429,54 +417,13 @@ public class ChatServiceImpl implements ChatService {
         AssertUtil.isTrue(between < 2, "超过2分钟的消息不能撤回");
     }
 
-    public List<ChatMessageResp> getMsgRespBatch(Long roomId, List<Message> messages, Long receiveUid) {
+    public List<ChatMessageResp> getMsgRespBatch(List<Message> messages, Long receiveUid) {
         if (CollectionUtil.isEmpty(messages)) {
             return new ArrayList<>();
         }
         // 查询消息标志
 		List<MessageMark> msgMark = messageMarkDao.getValidMarkByMsgIdBatch(messages.stream().map(Message::getId).collect(Collectors.toList()));
-		List<ChatMessageResp> chatMessageResp = MessageAdapter.buildMsgResp(messages, msgMark, receiveUid);
-
-        Room room = roomDao.getById(roomId);
-        // 如果是群聊，设置消息的发送人的名称显示
-		try {
-			if (Objects.equals(room.getType(), RoomTypeEnum.GROUP.getType())) {
-				Set<Long> uidSet = messages.stream().map(Message::getFromUid).collect(Collectors.toSet());
-				RoomGroup roomGroup = roomGroupDao.getByRoomId(roomId);
-				Map<Long, GroupMember> groupMemberMap = groupMemberDao.getMemberBatch(roomGroup.getId(), uidSet).stream().collect(Collectors.toMap(GroupMember::getUid, Function.identity()));
-				Map<Long, User> userMap = userDao.getByIds(uidSet).stream().collect(Collectors.toMap(User::getId, Function.identity()));
-				Map<Long, String> userFriendMapByFriendUid = userFriendDao.getByFriends(receiveUid, uidSet)
-						.stream()
-						.filter(item ->StringUtils.isNotEmpty(item.getRemark()))
-						.collect(Collectors.toMap(UserFriend::getFriendUid, UserFriend::getRemark));
-
-				// 设置 user 名称
-				chatMessageResp.forEach(item -> {
-					ChatMessageResp.UserInfo fromUser = item.getFromUser();
-					long uid = Long.parseLong(fromUser.getUid());
-					GroupMember groupMember = groupMemberMap.get(uid);
-					String friendRemark = userFriendMapByFriendUid.get(uid);
-
-					// 优先显示好友备注
-					if (StringUtils.isNotEmpty(friendRemark)){
-						fromUser.setNickname(friendRemark);
-					}
-					else if (groupMember != null){
-						String myName = groupMember.getMyName();
-						if (StringUtils.isNotEmpty(myName)){
-							fromUser.setNickname(myName);
-						}else {
-							User user = userMap.get(uid);
-							fromUser.setNickname(user.getName());
-						}
-					}
-				});
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-
-		return chatMessageResp;
+		return MessageAdapter.buildMsgResp(messages, msgMark, receiveUid);
     }
 
 }

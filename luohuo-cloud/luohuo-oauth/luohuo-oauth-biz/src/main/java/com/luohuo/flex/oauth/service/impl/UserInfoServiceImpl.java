@@ -95,7 +95,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     public String registerByEmail(SysUser sysUser, RegisterByEmailVO register) {
 		// 1. 校验数据保存defUser
         if (systemProperties.getVerifyCaptcha()) {
-//            短信验证码
             CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(register.getEmail(), register.getKey());
             CacheResult<String> code = cacheOps.get(cacheKey);
             ArgumentAssert.equals(code.getValue(), register.getCode(), "验证码不正确");
@@ -158,4 +157,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 			}
 		};
     }
+
+	@Override
+	public Boolean checkEmail(String email) {
+		// 1. 判断系统邮箱是否存在
+		boolean systemEmail = defUserService.checkEmail(email, null);
+
+		// 2. 判断Im邮箱是否存在
+		boolean imEmail = imUserApi.checkEmail(email).getData();
+		return systemEmail || imEmail;
+	}
 }

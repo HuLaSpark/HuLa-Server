@@ -11,8 +11,11 @@ import com.luohuo.flex.im.domain.entity.msg.VideoCallMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.MergeMsg;
 import com.luohuo.flex.im.domain.entity.msg.MergeMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.NoticeMsgDTO;
+import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
+import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
-import com.luohuo.flex.model.entity.ws.PendingInviteWs;
+import com.luohuo.flex.model.entity.ws.WSFriendApply;
 import com.luohuo.flex.model.enums.MessageMarkTypeEnum;
 import com.luohuo.flex.im.domain.enums.MessageStatusEnum;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
@@ -185,7 +188,7 @@ public class MessageAdapter {
 		noticeMsgDTO.setTop(announcements.getTop());
 		noticeMsgDTO.setRoomId(announcements.getRoomId());
 		noticeMsgDTO.setContent(announcements.getContent());
-		noticeMsgDTO.setCreateTime(TimeUtils.getTime(announcements.getCreateTime()));
+		noticeMsgDTO.setCreateTime(TimeUtils.getTime(announcements.getUpdateTime()));
 		chatMessageReq.setBody(noticeMsgDTO);
 		return chatMessageReq;
 	}
@@ -196,17 +199,18 @@ public class MessageAdapter {
 	public static WsBaseResp<UserApplyResp> buildRoomGroupMessage(Long uid, Long roomId, Long groupAdminId, String msg) {
 		WsBaseResp<UserApplyResp> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_MSG.getType());
-		wsBaseResp.setData(new UserApplyResp(uid, 2, roomId, groupAdminId, msg, 1, 1, LocalDateTime.now()));
+		wsBaseResp.setData(new UserApplyResp(uid, RoomTypeEnum.GROUP.getType(), roomId, groupAdminId, msg, ApplyStatusEnum.WAIT_APPROVAL.getCode(), ApplyReadStatusEnum.UNREAD.getCode(), false, LocalDateTime.now()));
 		return wsBaseResp;
 	}
 
 	/**
 	 * 邀请用户进群通知
+	 * @param resp 通知数据
 	 */
-	public static WsBaseResp<PendingInviteWs> buildInviteeUserAddGroupMessage(Long uid, Long inviteId, Long groupId) {
-		WsBaseResp<PendingInviteWs> wsBaseResp = new WsBaseResp<>();
-		wsBaseResp.setType(WSRespTypeEnum.INVITEE_USER_ADD_GROUP.getType());
-		wsBaseResp.setData(new PendingInviteWs(uid.toString(), groupId.toString(), inviteId.toString(), LocalDateTime.now()));
+	public static WsBaseResp<WSFriendApply> buildInviteeUserAddGroupMessage(WSFriendApply resp) {
+		WsBaseResp<WSFriendApply> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.NEW_APPLY.getType());
+		wsBaseResp.setData(resp);
 		return wsBaseResp;
 	}
 

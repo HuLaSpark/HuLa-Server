@@ -21,6 +21,6 @@ public class ApplyReq {
     private Long applyId;
 
 	@NotNull(message = "请选择邀请记录")
-	@Schema(description ="1 = 同意 2 = 拒绝")
+	@Schema(description ="0 = 拒绝 2 = 同意 3 = 忽略")
 	private Integer state;
 }

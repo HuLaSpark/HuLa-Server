@@ -25,6 +25,9 @@ public class OffLineResp {
 	@Schema(description = "客户端")
 	private String client;
 
+	@Schema(description = "客户端指纹")
+	private String clientId;
+
 	@Schema(description = "登录ip")
 	private String ip;
 
@@ -34,10 +37,11 @@ public class OffLineResp {
 	public OffLineResp() {
 	}
 
-	public OffLineResp(Long uid, String client, String ip, String uuid) {
+	public OffLineResp(Long uid, String client, String clientId, String ip, String uuid) {
 		this.ip = ip;
 		this.uid = uid;
 		this.client = client;
+		this.clientId = clientId;
 		this.uuid = uuid;
 	}
 }

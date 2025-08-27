@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Range;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.*;
@@ -1972,6 +1973,10 @@ public abstract class BaseRedis {
         return zSetOps.rangeByScoreWithScores(key, min, max);
     }
 
+	public Set<ZSetOperations.TypedTuple<Object>> zRangeByScoreWithScores(@NonNull String key, double min, double max, long offset, long count) {
+		return zSetOps.rangeByScoreWithScores(key, min, max, offset, count);
+	}
+
     /**
      * 返回有序集 key 中， score 值介于 max 和 min 之间(默认包括等于 max 或 min )的所有的成员。有序集成员按 score 值递减(从大到小)的次序排列。
      * 具有相同 score 值的成员按字典序的逆序(reverse lexicographical order )排列。
@@ -2002,6 +2007,10 @@ public abstract class BaseRedis {
 
 	public Set<ZSetOperations.TypedTuple<Object>> zReverseRangeByScoreWithScores(String key, double min, double max, int offset, long pageSize) {
 		return zSetOps.reverseRangeByScoreWithScores(key, min, max, offset, pageSize);
+	}
+
+	public Long lexCount(String key, Range<String> range) {
+		return zSetOps.lexCount(key, range);
 	}
 
     /**

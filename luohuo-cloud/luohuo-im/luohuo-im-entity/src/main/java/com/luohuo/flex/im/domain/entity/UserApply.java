@@ -3,6 +3,8 @@ package com.luohuo.flex.im.domain.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.luohuo.basic.base.entity.Entity;
+import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,7 +33,8 @@ public class UserApply extends Entity<Long> {
     private Long uid;
 
     /**
-     * 申请类型 1加好友 2群聊
+	 * 申请类型
+	 * @see RoomTypeEnum
      */
     @TableField("type")
     private Integer type;
@@ -55,13 +58,15 @@ public class UserApply extends Entity<Long> {
     private String msg;
 
     /**
-     * 申请状态 1待审批 2同意 3拒绝
+	 * 申请状态
+     * @see ApplyStatusEnum
      */
     @TableField("status")
     private Integer status;
 
     /**
-     * 阅读状态 1未读 2已读
+	 * 阅读状态
+	 * @see com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum
      */
     @TableField("read_status")
     private Integer readStatus;
@@ -71,4 +76,10 @@ public class UserApply extends Entity<Long> {
      */
     @TableField("deleted")
     private Integer deleted;
+
+	/**
+	 * 主动申请加群
+	 */
+	@TableField("apply_for")
+	private Boolean applyFor;
 }

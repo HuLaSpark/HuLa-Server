@@ -15,8 +15,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WSFriendApply implements Serializable {
-    @Schema(description ="申请人")
+    @Schema(description ="申请人、被邀请人")
     private Long uid;
-    @Schema(description ="申请未读数")
-    private Integer unreadCount;
+	@Schema(description ="好友申请列表的未读数")
+	private Integer unReadCount4Friend;
+	@Schema(description ="群聊申请列表的未读数")
+	private Integer unReadCount4Group;
 }

@@ -263,8 +263,20 @@ public interface CacheKeyTable {
 		 * 朋友圈权限
 		 */
 		String FEED_TARGET = "feedTarget";
+
+		/**
+		 * 会话信息
+		 */
+		String USER_CONTACT = "user_contact";
 	}
 
+	interface OAUTH {
+
+		/**
+		 * 租户自定义字典
+		 */
+		String QR = "qr_status";
+	}
 
     /**
      * 消息服务缓存 start

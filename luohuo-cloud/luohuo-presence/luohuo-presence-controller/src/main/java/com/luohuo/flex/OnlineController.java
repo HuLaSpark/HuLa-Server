@@ -1,5 +1,7 @@
 package com.luohuo.flex;
 
+import cn.hutool.core.collection.CollUtil;
+import com.google.common.collect.Lists;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.model.cache.CacheKey;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +39,36 @@ import java.util.stream.Collectors;
 public class OnlineController {
 
 	private CachePlusOps cachePlusOps;
+
+	/**
+	 * 查询在线用户ID集合
+	 * @param uids 待查询的用户ID列表
+	 * @return 在线的用户ID集合
+	 */
+	@PostMapping("/user/online-users-list")
+	public R<Set<Long>> getOnlineUsersList(@RequestBody List<Long> uids) {
+		if (CollUtil.isEmpty(uids)) {
+			return R.success(Collections.emptySet());
+		}
+
+		String onlineKey = PresenceCacheKeyBuilder.globalOnlineUsersKey().getKey();
+		Set<Long> onlineUsers = new HashSet<>();
+
+		// 分页批量查询
+		Lists.partition(uids, 500).forEach(batch -> {
+			// 1. 批量查询分数
+			List<Object> scores = cachePlusOps.getZSetScores(onlineKey, batch);
+
+			// 2. 过滤在线用户
+			for (int i = 0; i < batch.size(); i++) {
+				if (scores.get(i) != null) {
+					onlineUsers.add(batch.get(i));
+				}
+			}
+		});
+
+		return R.success(onlineUsers);
+	}
 
 	/**
 	 * 查询在线的人员

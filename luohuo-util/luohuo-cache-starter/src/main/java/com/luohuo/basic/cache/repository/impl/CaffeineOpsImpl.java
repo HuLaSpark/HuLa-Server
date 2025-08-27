@@ -3,6 +3,7 @@ package com.luohuo.basic.cache.repository.impl;
 import cn.hutool.core.util.StrUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.data.domain.Range;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.lang.NonNull;
 import com.luohuo.basic.cache.redis2.CacheResult;
@@ -438,8 +439,18 @@ public class CaffeineOpsImpl implements CacheOps, CachePlusOps {
 	}
 
 	@Override
+	public Set<ZSetOperations.TypedTuple<Object>> zRangeByScoreWithScores(String key, Double hotStart, Double hotEnd, long offset, long count) {
+		return Set.of();
+	}
+
+	@Override
 	public Set<ZSetOperations.TypedTuple<Object>> zReverseRangeByScoreWithScores(String redisKey, double v, Integer pageSize) {
 		return Set.of();
+	}
+
+	@Override
+	public Long lexCount(String key, Range<String> range) {
+		return 0L;
 	}
 
 	@Override

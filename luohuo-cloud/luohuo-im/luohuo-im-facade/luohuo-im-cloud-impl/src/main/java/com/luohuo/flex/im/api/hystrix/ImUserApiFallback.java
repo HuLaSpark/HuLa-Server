@@ -6,14 +6,8 @@ import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.luohuo.basic.base.R;
-import com.luohuo.flex.model.entity.system.SysUser;
-import com.luohuo.flex.model.vo.result.UserQuery;
 import com.luohuo.flex.im.api.ImUserApi;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 用户API熔断
@@ -26,6 +20,11 @@ import java.util.Set;
 public class ImUserApiFallback implements ImUserApi {
 
 	@Override
+	public R<Boolean> checkEmail(String email) {
+		return R.success(true);
+	}
+
+	@Override
 	public R<UserInfoResp> getById(Long id) {
 		return R.success(new UserInfoResp());
 	}
@@ -34,16 +33,6 @@ public class ImUserApiFallback implements ImUserApi {
 	public R<Long> findById(@RequestParam("id") Long id, @RequestParam("tenantId") Long tenantId){
         throw BizException.wrap("ID: " + id + "用户不存在");
 	}
-
-	@Override
-    public Map<Serializable, Object> findByIds(Set<Serializable> ids) {
-        return Map.of();
-    }
-
-    @Override
-    public R<SysUser> getById(UserQuery userQuery) {
-        return R.timeout();
-    }
 
     @Override
     public R<Boolean> register(UserRegisterVo userRegisterVo) {

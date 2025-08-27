@@ -3,7 +3,9 @@ package com.luohuo.basic.cache.repository.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.luohuo.basic.jackson.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Range;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -17,6 +19,7 @@ import com.luohuo.basic.model.cache.CacheKey;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +37,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class RedisOpsImpl implements CacheOps, CachePlusOps {
+
+	private static final ObjectMapper mapper = JsonUtil.newInstance();
 
     /**
      * Spring Redis Template
@@ -315,21 +320,17 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
 	}
 
 	public static <T> List<T> toBeanOrNull(List<Object> list, Class<T> tClass) {
-		// 创建并配置ObjectMapper
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());
-		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		if (list == null || list.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		List<T> result = new ArrayList<>();
+		List<T> result = new ArrayList<>(list.size());
 		for (Object obj : list) {
 			try {
-				// 将每个对象转换为指定的类型
-				String jsonString = mapper.writeValueAsString(obj);
-				T convertedObj = mapper.readValue(jsonString, tClass);
+				T convertedObj = mapper.convertValue(obj, tClass);
 				result.add(convertedObj);
 			} catch (Exception e) {
-				e.printStackTrace();
-				// 如果转换失败，返回null
+				log.error("Failed to convert object to type {}: {}", tClass.getSimpleName(), e.getMessage());
 				return null;
 			}
 		}
@@ -399,6 +400,26 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
 	}
 
 	/**
+	 * 根据Score值查询集合元素, 从小到大排序
+	 *
+	 * @param key
+	 * @param min 最小值
+	 * @param max 最大值
+	 * @param offset 游标
+	 * @param count 数量
+	 * @return
+	 */
+	public Set<ZSetOperations.TypedTuple<Object>> zRangeByScoreWithScores(String key, Double min, Double max, long offset, long count) {
+		if (Objects.isNull(min)) {
+			min = Double.MIN_VALUE;
+		}
+		if (Objects.isNull(max)) {
+			max = Double.MAX_VALUE;
+		}
+		return redisOps.zRangeByScoreWithScores(key, min, max, offset, count);
+	}
+
+	/**
 	 * 获取集合的元素, 从大到小排序, 并返回score值
 	 *
 	 * @param key
@@ -411,6 +432,10 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
 
 	public Set<ZSetOperations.TypedTuple<Object>> zReverseRangeByScoreWithScores(String redisKey, double max, Integer pageSize) {
 		return redisOps.zReverseRangeByScoreWithScores(redisKey, Double.MIN_VALUE, max, 1, pageSize);
+	}
+
+	public Long lexCount(String key, Range<String> range) {
+		return redisOps.lexCount(key, range);
 	}
 
 	public int integerInc(String loginCode, int minutes, TimeUnit timeUnit) {

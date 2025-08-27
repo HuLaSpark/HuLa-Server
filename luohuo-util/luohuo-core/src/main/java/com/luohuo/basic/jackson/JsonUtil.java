@@ -35,7 +35,7 @@ import static com.luohuo.basic.utils.DateUtils.DEFAULT_DATE_TIME_FORMAT;
  */
 @Slf4j
 public final class JsonUtil {
-	private static final ObjectMapper jsonMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	private static final ObjectMapper jsonMapper = newInstance();
 
     private JsonUtil() {
     }
@@ -62,7 +62,7 @@ public final class JsonUtil {
             return null;
         }
         try {
-            return getInstance().readValue(content, valueType);
+            return getInstance().convertValue(content, valueType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -73,84 +73,49 @@ public final class JsonUtil {
         if (StrUtil.isEmpty(content)) {
             return null;
         }
-        try {
-            return getInstance().readValue(content, typeReference);
-        } catch (IOException e) {
-            throw new BizException(ResponseEnum.JSON_PARSE_ERROR.getCode(), e);
-        }
-    }
+		return getInstance().convertValue(content, typeReference);
+	}
 
     public static <T> T parse(byte[] bytes, Class<T> valueType) {
-        try {
-            return getInstance().readValue(bytes, valueType);
-        } catch (IOException e) {
-            throw new BizException(ResponseEnum.JSON_PARSE_ERROR.getCode(), e);
-        }
+		return getInstance().convertValue(bytes, valueType);
     }
 
     public static <T> T parse(byte[] bytes, TypeReference<T> typeReference) {
-        try {
-            return getInstance().readValue(bytes, typeReference);
-        } catch (IOException e) {
-            throw new BizException(ResponseEnum.JSON_PARSE_ERROR.getCode(), e);
-        }
+		return getInstance().convertValue(bytes, typeReference);
     }
 
     public static <T> T parse(InputStream in, Class<T> valueType) {
-        try {
-            return getInstance().readValue(in, valueType);
-        } catch (IOException e) {
-            throw new BizException(ResponseEnum.JSON_PARSE_ERROR.getCode(), e);
-        }
+		return getInstance().convertValue(in, valueType);
     }
 
     public static <T> T parse(InputStream in, TypeReference<T> typeReference) {
-        try {
-            return getInstance().readValue(in, typeReference);
-        } catch (IOException e) {
-            throw new BizException(ResponseEnum.JSON_PARSE_ERROR.getCode(), e);
-        }
+		return getInstance().convertValue(in, typeReference);
     }
 
     public static <T> List<T> parseArray(String content, Class<T> valueTypeRef) {
         if (StrUtil.isEmpty(content)) {
             return Collections.emptyList();
         }
-        try {
-            if (!StrUtil.startWith(content, StrPool.LEFT_SQ_BRACKET)) {
-                content = StrPool.LEFT_SQ_BRACKET + content + StrPool.RIGHT_SQ_BRACKET;
-            }
-            List<Map<String, Object>> list = getInstance().readValue(content, new TypeReference<List<Map<String, Object>>>() {
-            });
+		if (!StrUtil.startWith(content, StrPool.LEFT_SQ_BRACKET)) {
+			content = StrPool.LEFT_SQ_BRACKET + content + StrPool.RIGHT_SQ_BRACKET;
+		}
+		List<Map<String, Object>> list = getInstance().convertValue(content, new TypeReference<>() {
+		});
 
-            return list.stream().map((map) -> toPojo(map, valueTypeRef)).toList();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return Collections.emptyList();
+		return list.stream().map((map) -> toPojo(map, valueTypeRef)).toList();
     }
 
     public static Map<String, Object> toMap(String content) {
-        try {
-            return getInstance().readValue(content, Map.class);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return Collections.emptyMap();
+		return getInstance().convertValue(content, Map.class);
     }
 
     public static <T> Map<String, T> toMap(String content, Class<T> valueTypeRef) {
-        try {
-            Map<String, Map<String, Object>> map = getInstance().readValue(content, new TypeReference<Map<String, Map<String, Object>>>() {
-            });
-            Map<String, T> result = new HashMap<>(CollHelper.initialCapacity(map.size()));
-            map.forEach((key, value) -> result.put(key, toPojo(value, valueTypeRef)));
+		Map<String, Map<String, Object>> map = getInstance().convertValue(content, new TypeReference<>() {
+		});
+		Map<String, T> result = new HashMap<>(CollHelper.initialCapacity(map.size()));
+		map.forEach((key, value) -> result.put(key, toPojo(value, valueTypeRef)));
 
-            return result;
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return Collections.emptyMap();
+		return result;
     }
 
     public static <T> T toPojo(Map fromValue, Class<T> toValueType) {

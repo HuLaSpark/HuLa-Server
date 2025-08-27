@@ -19,7 +19,7 @@
         <dependency>
             <artifactId>redisson-spring-boot-starter</artifactId>
             <groupId>org.redisson</groupId>
-            <version>3.26.0</version>
+            <version>${redisson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>

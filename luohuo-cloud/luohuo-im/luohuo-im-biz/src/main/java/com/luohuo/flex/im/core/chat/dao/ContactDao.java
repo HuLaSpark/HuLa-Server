@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.extension.toolkit.SimpleQuery;
+import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
+import com.luohuo.flex.im.core.chat.cache.UserContactCacheKeyBuilder;
+import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
@@ -18,10 +20,8 @@ import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.core.chat.mapper.ContactMapper;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
+
+	@Resource
+	private CachePlusOps cachePlusOps;
 
     public Contact get(Long uid, Long roomId) {
         return lambdaQuery()
@@ -158,21 +161,7 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
 	 * @return
 	 */
 	public List<Contact> getAllContactsByUid(Long uid) {
-		return lambdaQuery().eq(Contact::getUid, uid).list();
+		return cachePlusOps.hGet(UserContactCacheKeyBuilder.build(uid), x -> lambdaQuery().eq(Contact::getUid, uid).list(), true).getValue();
 	}
 
-	public Map<Long, Long> getLastMsgIds(List<Long> roomIds) {
-		LambdaQueryWrapper<Contact> wrapper = new LambdaQueryWrapper<Contact>()
-				.in(Contact::getRoomId, roomIds);
-
-		return SimpleQuery
-				.group(wrapper, Contact::getRoomId,
-						Collectors.collectingAndThen(
-								Collectors.maxBy(Comparator.comparing(
-										Contact::getLastMsgId,
-										Comparator.nullsLast(Comparator.naturalOrder())
-								)),
-								opt -> opt.map(Contact::getLastMsgId).orElse(null)
-						));
-	}
 }

@@ -288,14 +288,6 @@ public final class ContextUtil {
         set(ContextConstants.CURRENT_DEPT_ID_HEADER, val);
     }
 
-    public static String getClientId() {
-        return get(ContextConstants.CLIENT_ID_HEADER, String.class);
-    }
-
-    public static void setClientId(String val) {
-        set(ContextConstants.CLIENT_ID_HEADER, val);
-    }
-
     private static boolean isEmptyLong(String key) {
         String val = getLocalMap().get(key);
         return StrUtil.isEmpty(val) || StrPool.NULL.equals(val) || StrPool.ZERO.equals(val);

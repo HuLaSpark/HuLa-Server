@@ -53,6 +53,6 @@ public interface TokenGranter {
      * @date 2022/9/16 1:14 PM
      * @create [2022/9/16 1:14 PM ] [tangyh] [初始创建]
      */
-    LoginResultVO switchOrg(Long orgId);
+    LoginResultVO switchOrg(Long orgId, String clientId);
 
 }

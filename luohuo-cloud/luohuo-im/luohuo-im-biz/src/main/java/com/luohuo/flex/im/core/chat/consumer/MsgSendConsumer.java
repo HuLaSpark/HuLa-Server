@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.core.chat.consumer;
 
 import com.luohuo.basic.context.ContextUtil;
+import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.common.constant.MqConstant;
 import com.luohuo.flex.im.core.chat.dao.ContactDao;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
@@ -31,8 +32,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 发送消息更新房间收信箱，并同步给房间成员信箱
@@ -75,7 +78,7 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
 		}
 
 		// 2. 更新所有群成员的会话时间, 并推送房间成员
-		contactDao.refreshOrCreateActiveTime(room.getId(), memberUidList, message.getId(), message.getCreateTime());
+		refreshContactActiveTimeEnhanced(room.getId(), memberUidList, message.getId(), TimeUtils.getTime(message.getCreateTime()));
 
 		// 3. 与在线人员交集并进行路由
 		switch (MessageTypeEnum.of(message.getType())) {
@@ -117,4 +120,35 @@ public class MsgSendConsumer implements RocketMQListener<MsgSendMessageDTO> {
 			}
 		}
     }
+
+	// 增强版防抖控制
+	private final Map<Long, DebounceInfo> roomDebounceInfo = new ConcurrentHashMap<>();
+	private static final long MAX_DEBOUNCE_TIME = 10000;
+	private static final int MAX_DEBOUNCE_COUNT = 1000;
+
+	private void refreshContactActiveTimeEnhanced(Long roomId, List<Long> memberUidList, Long messageId, Long createTime) {
+		Long currentTime = System.currentTimeMillis();
+		DebounceInfo info = roomDebounceInfo.get(roomId);
+
+		if (info == null) {
+			// 首次更新
+			contactDao.refreshOrCreateActiveTime(roomId, memberUidList, messageId, TimeUtils.timestampToLocalDateTime(createTime));
+			roomDebounceInfo.put(roomId, new DebounceInfo(messageId, currentTime, 0));
+			return;
+		}
+
+		// 检查是否需要立即更新
+		boolean shouldUpdate = (currentTime - info.getLastUpdateTime()) >= MAX_DEBOUNCE_TIME || info.getPendingCount() >= MAX_DEBOUNCE_COUNT;
+
+		if (shouldUpdate) {
+			// 执行更新并使用最新消息ID
+			contactDao.refreshOrCreateActiveTime(roomId, memberUidList, messageId, TimeUtils.timestampToLocalDateTime(createTime));
+			roomDebounceInfo.put(roomId, new DebounceInfo(messageId, currentTime, 0));
+			log.debug("强制更新会话时间 roomId: {}, 消息ID: {}", roomId, messageId);
+		} else {
+			// 累积防抖计数
+			roomDebounceInfo.put(roomId, new DebounceInfo(messageId, info.getLastUpdateTime(), info.getPendingCount() + 1));
+			log.debug("防抖中 roomId: {}, 累积消息: {}", roomId, info.getPendingCount() + 1);
+		}
+	}
 }

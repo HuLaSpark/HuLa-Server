@@ -40,30 +40,33 @@ import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.entity.UserFriend;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
-import com.luohuo.flex.im.domain.enums.ApplyEnum;
+import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
-import com.luohuo.flex.im.domain.vo.req.friend.FriendApproveReq;
 import com.luohuo.flex.im.domain.vo.request.RoomApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.ApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.GroupApplyHandleReq;
 import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendApplyResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadResp;
+import com.luohuo.flex.model.entity.ws.WSFriendApply;
 import com.luohuo.flex.model.redis.annotation.RedissonLock;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.AGREE;
 import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.WAIT_APPROVAL;
 
 /**
@@ -89,6 +92,7 @@ public class ApplyServiceImpl implements ApplyService {
 	private FriendService friendService;
 	private CachePlusOps cachePlusOps;
 	private RoomAppService roomAppService;
+	private TransactionTemplate transactionTemplate;
 
     /**
      * 申请好友
@@ -96,9 +100,8 @@ public class ApplyServiceImpl implements ApplyService {
      * @param request 请求
      */
     @Override
-	@RedissonLock(prefixKey = "friend:apply", key = "#uid")
-	@Transactional(rollbackFor = Exception.class)
-    public UserApply apply(Long uid, FriendApplyReq request) {
+	@RedissonLock(prefixKey = "friend:handlerApply", key = "#uid")
+    public UserApply handlerApply(Long uid, FriendApplyReq request) {
         //是否有好友关系
         UserFriend friend = userFriendDao.getByFriend(uid, request.getTargetUid());
         AssertUtil.isEmpty(friend, "你们已经是好友了");
@@ -111,7 +114,7 @@ public class ApplyServiceImpl implements ApplyService {
         // 是否有待审批的申请记录(别人请求自己的)
         UserApply friendApproving = userApplyDao.getFriendApproving(request.getTargetUid(), uid, false);
         if (Objects.nonNull(friendApproving)) {
-			acceptInvite(uid, new ApplyReq(friendApproving.getId(), ApplyStatusEnum.AGREE.getCode()));
+			handlerApply(uid, new ApplyReq(friendApproving.getId(), AGREE.getCode()));
             return null;
         }
         // 申请入库
@@ -147,7 +150,7 @@ public class ApplyServiceImpl implements ApplyService {
 		String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
 
 		for (Long groupAdminId : groupAdminIds) {
-			friendService.createUserApply(uid, roomGroup.getRoomId(), groupAdminId, msg, 2);
+			friendService.createUserApply(uid, roomGroup.getRoomId(), groupAdminId, msg, RoomTypeEnum.GROUP.getType());
 
 			// 给群里的管理员发送申请
 			pushService.sendPushMsg(MessageAdapter.buildRoomGroupMessage(uid, roomGroup.getRoomId(), groupAdminId, msg), groupAdminId, uid);
@@ -156,75 +159,107 @@ public class ApplyServiceImpl implements ApplyService {
 	}
 
 	@Override
-	@RedissonLock(key = "#request.roomId")
-	@Transactional(rollbackFor = Exception.class)
-	public void acceptInvite(Long uid, ApplyReq request) {
+	@RedissonLock(key = "#request.applyId")
+	public void handlerApply(Long uid, ApplyReq request) {
 		// 1. 校验邀请记录
 		UserApply invite = userApplyDao.getById(request.getApplyId());
 		if (invite == null || !invite.getTargetId().equals(uid)) {
 			throw new BizException("无效的邀请");
 		}
 
-		if (!invite.getStatus().equals(ApplyStatusEnum.WAIT_APPROVAL.getCode())) {
+		if (request.getState().equals(WAIT_APPROVAL.getCode())) {
+			throw new BizException("无效的审批状态");
+		}
+
+		if (!invite.getStatus().equals(WAIT_APPROVAL.getCode())) {
 			throw new BizException("无效的审批");
 		}
 
-		// 处理加好友
-		invite.setStatus(request.getState());
-		if(invite.getType().equals(ApplyEnum.USER_FRIEND.getCode())){
-			AssertUtil.equal(invite.getStatus(), WAIT_APPROVAL.getCode(), "已同意好友申请");
-			// 同意申请
-			userApplyDao.agree(request.getApplyId());
+		switch (request.getState()){
+			case 0 -> userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.REJECT);
+			case 2 -> {
+				// 处理加好友
+				invite.setStatus(request.getState());
+				if(invite.getType().equals(RoomTypeEnum.FRIEND.getType())){
+					AssertUtil.equal(invite.getStatus(), AGREE.getCode(), "已同意好友申请");
+					// 同意申请
+					AtomicReference<Long> atomicRoomId = null;
+					AtomicReference<Boolean> atomicIsFromTempSession = null;
+					transactionTemplate.execute(e -> {
+						userApplyDao.agree(request.getApplyId());
+						UserFriend userFriend = userFriendDao.getByFriend(uid, invite.getUid());
+						atomicIsFromTempSession.set(userFriend != null && userFriend.getIsTemp());
+						// 如果是从临时会话升级，则修改会话状态；否则创建新会话
+						if (atomicIsFromTempSession.get()) {
+							userFriend.setIsTemp(false);
+							userFriendDao.updateById(userFriend);
+						} else {
+							// 创建一个聊天房间
+							RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, invite.getUid()));
 
-			// 检查是否是临时会话升级
-			UserFriend userFriend = userFriendDao.getByFriend(uid, invite.getUid());
-			boolean isFromTempSession = userFriend != null && userFriend.getIsTemp();
-			// 如果是从临时会话升级，则修改会话状态；否则创建新会话
-			if (isFromTempSession) {
-				userFriend.setIsTemp(false);
-				userFriendDao.updateById(userFriend);
-			} else {
-				// 创建一个聊天房间
-				RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, invite.getUid()));
+							// 创建双方好友关系
+							friendService.createFriend(roomFriend.getRoomId(), uid, invite.getUid());
+							atomicRoomId.set(roomFriend.getRoomId());
+						}
+						// 更新邀请状态
+						userApplyDao.updateById(invite);
+						return true;
+					});
 
-				// 创建双方好友关系
-				friendService.createFriend(roomFriend.getRoomId(), uid, invite.getUid());
+					// 如果是从临时会话升级，则修改会话状态；否则创建新会话
+					if (!atomicIsFromTempSession.get()) {
+						// 添加双方好友主动关系、被动关系
+						cachePlusOps.sAdd(FriendCacheKeyBuilder.userFriendsKey(uid), invite.getUid());
+						cachePlusOps.sAdd(FriendCacheKeyBuilder.reverseFriendsKey(invite.getUid()), uid);
+						cachePlusOps.sAdd(FriendCacheKeyBuilder.userFriendsKey(invite.getUid()), uid);
+						cachePlusOps.sAdd(FriendCacheKeyBuilder.reverseFriendsKey(uid), invite.getUid());
+						friendService.warmUpRoomMemberCache(Arrays.asList(atomicRoomId.get()));
 
-				// 添加双方好友主动关系、被动关系
-				cachePlusOps.sAdd(FriendCacheKeyBuilder.userFriendsKey(uid), invite.getUid());
-				cachePlusOps.sAdd(FriendCacheKeyBuilder.reverseFriendsKey(invite.getUid()), uid);
-				cachePlusOps.sAdd(FriendCacheKeyBuilder.userFriendsKey(invite.getUid()), uid);
-				cachePlusOps.sAdd(FriendCacheKeyBuilder.reverseFriendsKey(uid), invite.getUid());
-				friendService.warmUpRoomMemberCache(Arrays.asList(roomFriend.getRoomId()));
+						// 发送一条同意消息。。我们已经是好友了，开始聊天吧
+						chatService.sendMsg(MessageAdapter.buildAgreeMsg(atomicRoomId.get(), true), uid);
+					}
 
-				// 发送一条同意消息。。我们已经是好友了，开始聊天吧
-				chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), true), uid);
+					// 通知请求方已处理好友申请
+					SpringUtils.publishEvent(new UserApprovalEvent(this, RequestApprovalDto.builder().uid(uid).targetUid(invite.getUid()).build()));
+				} else {
+					// 处理加群
+					RoomGroup roomGroup = roomGroupCache.getByRoomId(invite.getRoomId());
+					Room room = roomCache.get(invite.getRoomId());
+					GroupMember member = groupMemberDao.getMemberByGroupId(roomGroup.getId(), uid);
+					if(ObjectUtil.isNotNull(member)){
+						throw new BizException(StrUtil.format("{}已经在{}里", userCache.getUserInfo(invite.getTargetId()).getName(), roomGroup.getName()));
+					}
+
+					transactionTemplate.execute(e -> {
+						groupMemberDao.save(MemberAdapter.buildMemberAdd(roomGroup.getId(), invite.getTargetId()));
+
+						// 3.2 系统下发加群信息
+						if(room.isHotRoom()){
+							friendService.createSystemFriend(request.getApplyId());
+						}
+
+						// 更新邀请状态
+						userApplyDao.updateById(invite);
+						return true;
+					});
+
+					// 3.3 写入缓存
+					groupMemberCache.evictMemberList(invite.getRoomId());
+					groupMemberCache.evictExceptMemberList(invite.getRoomId());
+					CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(invite.getTargetId());
+					CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
+					cachePlusOps.sAdd(uKey, room.getId());
+					cachePlusOps.sAdd(gKey, invite.getTargetId());
+					roomAppService.asyncOnline(Arrays.asList(invite.getTargetId()), room.getId(), true);
+
+					SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Arrays.asList(invite.getTargetId()), invite.getUid()));
+				}
 			}
-
-			// 通知请求方已处理好友申请
-			SpringUtils.publishEvent(new UserApprovalEvent(this, RequestApprovalDto.builder().uid(uid).targetUid(invite.getUid()).build()));
-		} else {
-			// 处理加群
-			groupMemberDao.save(MemberAdapter.buildMemberAdd(invite.getTargetId(), invite.getTargetId()));
-
-			// 3.2 系统下发加群信息
-			Room room = roomCache.get(invite.getRoomId());
-			if(room.isHotRoom()){
-				friendService.createSystemFriend(request.getApplyId());
+			case 3 -> {
+				checkRecord(request);
+				userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.IGNORE);
 			}
-
-			// 3.3 写入缓存
-			CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(invite.getRoomId());
-			CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
-			cachePlusOps.sAdd(uKey, room.getId());
-			cachePlusOps.sAdd(gKey, invite.getTargetId());
-			roomAppService.asyncOnline(Arrays.asList(invite.getTargetId()), room.getId(), true);
-
-			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Arrays.asList(request.getApplyId()), uid));
 		}
-
-		// 2.1 更新邀请状态
-		userApplyDao.updateById(invite);
 	}
 
 	/**
@@ -238,35 +273,43 @@ public class ApplyServiceImpl implements ApplyService {
 	public void handleApply(Long uid, GroupApplyHandleReq req) {
 		// 1. 校验申请记录
 		UserApply apply = userApplyDao.getById(req.getApplyId());
-		if (apply == null || !apply.getType().equals(2)) {
+		if (apply == null || !apply.getType().equals(RoomTypeEnum.GROUP.getType())) {
 			throw new BizException("无效的申请记录");
 		}
 
 		// 2. 校验管理员权限
 		RoomGroup group = roomGroupCache.get(apply.getRoomId());
-		GroupMember member = groupMemberDao.getMember(group.getId(), uid);
-		if (member == null || (member.getRoleId().equals(GroupRoleEnum.LEADER.getType()) &&
-				!member.getRoleId().equals(GroupRoleEnum.MANAGER.getType()))) {
+		GroupMember member = groupMemberDao.getMemberByGroupId(group.getId(), uid);
+		if (member == null || (member.getRoleId().equals(GroupRoleEnum.LEADER.getType()) && !member.getRoleId().equals(GroupRoleEnum.MANAGER.getType()))) {
 			throw new BizException("无审批权限");
 		}
 
-		// 3. 更新申请状态
+		Room room = roomCache.get(group.getRoomId());
 		apply.setStatus(req.getStatus());
-		apply.setReadStatus(1);
-		userApplyDao.updateById(apply);
+		apply.setReadStatus(ApplyReadStatusEnum.READ.getCode());
 
-		// 5. 同意则加群
-		if (req.getStatus().equals(2)) {
-			// 5.1 加入群聊
-			groupMemberDao.save(MemberAdapter.buildMemberAdd(group.getId(), apply.getUid()));
+		// 3. 更新申请状态
+		transactionTemplate.execute(e -> {
+			userApplyDao.updateById(apply);
 
-			// 5.2 处理热点群机器人好友
-			Room room = roomCache.get(group.getRoomId());
-			if (room.isHotRoom()) {
-				friendService.createSystemFriend(apply.getUid());
+			// 5. 同意则加群
+			if (req.getStatus().equals(2)) {
+				// 5.1 加入群聊
+				groupMemberDao.save(MemberAdapter.buildMemberAdd(group.getId(), apply.getTargetId()));
+
+				// 5.2 处理热点群机器人好友
+				if (room.isHotRoom()) {
+					friendService.createSystemFriend(apply.getUid());
+				}
 			}
+			return true;
+		});
 
-			// 5.3 写入缓存
+		// 5.3 写入缓存
+		if (req.getStatus().equals(2)) {
+			groupMemberCache.evictMemberList(group.getRoomId());
+			groupMemberCache.evictExceptMemberList(group.getRoomId());
+
 			CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(apply.getUid());
 			CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
 			cachePlusOps.sAdd(uKey, room.getId());
@@ -274,7 +317,7 @@ public class ApplyServiceImpl implements ApplyService {
 			roomAppService.asyncOnline(Arrays.asList(apply.getUid()), room.getId(), true);
 
 			// 5.5 发布成员增加事件
-			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Collections.singletonList(apply.getUid()), uid));
+			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Collections.singletonList(apply.getUid()), apply.getUid()));
 		}
 
 		// 6. 通知申请人 [这条消息需要覆盖前端]
@@ -309,29 +352,16 @@ public class ApplyServiceImpl implements ApplyService {
     /**
      * 申请未读数
      *
-     * @return {@link FriendUnreadResp}
+     * @return {@link WSFriendApply}
      */
     @Override
-    public FriendUnreadResp unread(Long uid) {
-        Integer unReadCount = userApplyDao.getUnReadCount(uid);
-        return new FriendUnreadResp(unReadCount);
-    }
-
-    @Override
-    public void reject(Long uid, FriendApproveReq request) {
-        UserApply userApply = checkRecord(request);
-        userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.REJECT);
-    }
-
-    @Override
-    public void ignore(Long uid, FriendApproveReq request) {
-        checkRecord(request);
-        userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.IGNORE);
+    public WSFriendApply unread(Long uid) {
+		return userApplyDao.getUnReadCount(uid, uid);
     }
 
     @Override
 	@RedissonLock(prefixKey = "friend:deleteApprove", key = "#uid")
-    public void deleteApprove(Long uid, FriendApproveReq request) {
+    public void deleteApprove(Long uid, ApplyReq request) {
         UserApply userApply = checkRecord(request);
         ApplyDeletedEnum deletedEnum;
         //判断谁删了这条记录
@@ -351,7 +381,7 @@ public class ApplyServiceImpl implements ApplyService {
         userApplyDao.deleteApprove(request.getApplyId(), deletedEnum);
     }
 
-    private UserApply checkRecord(FriendApproveReq request) {
+    private UserApply checkRecord(ApplyReq request) {
         UserApply userApply = userApplyDao.getById(request.getApplyId());
         AssertUtil.isNotEmpty(userApply, "不存在申请记录");
         AssertUtil.equal(userApply.getStatus(), WAIT_APPROVAL.getCode(), "对方已是您的好友");

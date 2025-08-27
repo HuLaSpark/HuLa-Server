@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
+import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
+import com.luohuo.flex.common.constant.DefValConstants;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.common.event.UserRegisterEvent;
 import com.luohuo.flex.im.core.chat.service.ContactService;
@@ -14,7 +16,6 @@ import com.luohuo.flex.im.core.chat.service.RoomService;
 import com.luohuo.flex.im.core.user.service.cache.DefUserCache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.luohuo.basic.cache.redis2.CacheResult;
@@ -71,7 +72,6 @@ public class UserServiceImpl implements UserService {
 	public static final LocalDateTime MAX_DATE = LocalDateTime.of(2099, 12, 31, 00, 00, 00);
     private final ContactService contactService;
     private final RoomService roomService;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private UserCache userCache;
 	private DefUserCache defUserCache;
     private UserBackpackDao userBackpackDao;
@@ -82,6 +82,12 @@ public class UserServiceImpl implements UserService {
 	private final CachePlusOps cachePlusOps;
     private UserSummaryCache userSummaryCache;
     private SensitiveWordBs sensitiveWordBs;
+
+	@Override
+	public Boolean checkEmail(String email) {
+		User user = userDao.getByEmail(email);
+		return user != null;
+	}
 
 	@Override
 	public Long getUIdByUserId(Long defUserId, Long tenantId) {
@@ -107,7 +113,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void modifyName(Long uid, ModifyNameReq req) {
+    public void modifyInfo(Long uid, ModifyNameReq req) {
         // 判断名字是不是重复
         String newName = req.getName();
         AssertUtil.isFalse(sensitiveWordBs.hasSensitiveWord(newName), "名字中包含敏感词，请重新输入"); // 判断名字中有没有敏感词
@@ -122,7 +128,7 @@ public class UserServiceImpl implements UserService {
         // 用乐观锁，就不用分布式锁了
         if (useSuccess) {
             // 改名
-            userDao.modifyName(uid, req.getName());
+            userDao.modifyName(uid, req);
             // 删除缓存
 			userSummaryCache.delete(uid);
             userCache.userInfoChange(uid);
@@ -322,6 +328,7 @@ public class UserServiceImpl implements UserService {
 				.sex(userRegisterVo.getSex())
 				.userType(userRegisterVo.getUserType())
                 .name(userRegisterVo.getName())
+				.resume("这个人还没有填写个人简介呢")
                 .openId(userRegisterVo.getOpenId())
 				.tenantId(userRegisterVo.getTenantId())
                 .build();
@@ -330,11 +337,16 @@ public class UserServiceImpl implements UserService {
 		newUser.setCreateBy(1L);
         userDao.save(newUser);
         // 创建会话
-        contactService.createContact(newUser.getId(), 1L);
+        contactService.createContact(newUser.getId(), DefValConstants.DEF_ROOM_ID);
         // 创建群成员
-        roomService.createGroupMember(1L, newUser.getId());
+        roomService.createGroupMember(DefValConstants.DEF_GROUP_ID, newUser.getId());
+
+		// 注入群组信息
+		cachePlusOps.sAdd(PresenceCacheKeyBuilder.groupMembersKey(DefValConstants.DEF_ROOM_ID), newUser.getId());
+		cachePlusOps.sAdd(PresenceCacheKeyBuilder.userGroupsKey(newUser.getId()), DefValConstants.DEF_ROOM_ID);
+
         // 发布用户注册消息
-        applicationEventPublisher.publishEvent(new UserRegisterEvent(this, newUser));
+        SpringUtils.publishEvent(new UserRegisterEvent(this, newUser));
 		return true;
     }
 }

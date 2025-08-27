@@ -26,6 +26,12 @@ import java.util.List;
 public interface UserService {
 
 	/**
+	 * 校验邮箱是否存在
+	 * @param email 邮箱
+	 */
+	Boolean checkEmail(String email);
+
+	/**
 	 * @param defUserId 主系统的userId
 	 * @param tenantId
 	 * @return
@@ -54,7 +60,7 @@ public interface UserService {
      * @param uid
      * @param req
      */
-    void modifyName(Long uid, ModifyNameReq req);
+    void modifyInfo(Long uid, ModifyNameReq req);
 
 
     /**

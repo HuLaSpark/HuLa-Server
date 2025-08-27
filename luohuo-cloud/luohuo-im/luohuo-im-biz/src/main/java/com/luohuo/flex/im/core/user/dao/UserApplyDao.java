@@ -7,14 +7,18 @@ import com.luohuo.flex.im.common.utils.CursorUtils;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
-import com.luohuo.flex.im.domain.enums.ApplyTypeEnum;
 import com.luohuo.flex.im.core.user.mapper.UserApplyMapper;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
+import com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadDto;
+import com.luohuo.flex.model.entity.ws.WSFriendApply;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.READ;
 import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.UNREAD;
@@ -34,7 +38,7 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
 	 * 获取用户进群审批列表
 	 */
 	public CursorPageBaseResp<UserApply> getApplyPage(Long uid, Integer type, CursorPageBaseReq request) {
-		return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(UserApply::getTargetId, uid).eq(UserApply::getType, type), UserApply::getCreateTime);
+		return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(UserApply::getTargetId, uid).eq(UserApply::getType, type).eq(UserApply::getApplyFor, true), UserApply::getCreateTime);
 	}
 
     /**
@@ -48,17 +52,31 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
         return lambdaQuery().eq(UserApply::getUid, uid)
                 .eq(UserApply::getTargetId, targetUid)
                 .eq(UserApply::getStatus, ApplyStatusEnum.WAIT_APPROVAL.getCode())
-                .eq(UserApply::getType, ApplyTypeEnum.ADD_FRIEND.getCode())
+                .eq(UserApply::getType, RoomTypeEnum.FRIEND.getType())
                 .notIn(initiator,UserApply::getDeleted,ApplyDeletedEnum.applyDeleted())
                 .notIn(!initiator,UserApply::getDeleted,ApplyDeletedEnum.targetDeleted())
                 .one();
     }
 
-    public Integer getUnReadCount(Long targetId) {
-        return Math.toIntExact(lambdaQuery().eq(UserApply::getTargetId, targetId)
-                .eq(UserApply::getReadStatus, UNREAD.getCode())
-                .eq(UserApply::getDeleted,ApplyDeletedEnum.NORMAL.getCode())
-                .count());
+	/**
+	 * 返回好友、群聊申请的未读数量
+	 * @param targetId
+	 * @return
+	 */
+    public WSFriendApply getUnReadCount(Long uid, Long targetId) {
+		List<FriendUnreadDto> unReadCountByTypeMap = baseMapper.getUnReadCountByType(targetId, UNREAD.getCode(), ApplyDeletedEnum.NORMAL.getCode());
+		WSFriendApply wsFriendApply = new WSFriendApply();
+		wsFriendApply.setUid(uid);
+
+		// 构造需要的数据
+		for (FriendUnreadDto friendUnreadDto : unReadCountByTypeMap) {
+			if(friendUnreadDto.getType().equals(RoomTypeEnum.FRIEND.getType())){
+				wsFriendApply.setUnReadCount4Friend(friendUnreadDto.getCount());
+			} else {
+				wsFriendApply.setUnReadCount4Group(friendUnreadDto.getCount());
+			}
+		}
+		return wsFriendApply;
     }
 
     public IPage<UserApply> friendApplyPage(Long uid, Page<UserApply> page) {
@@ -86,7 +104,7 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
                 .update();
     }
 
-    public void updateStatus(Long applyId,ApplyStatusEnum statusEnum) {
+    public void updateStatus(Long applyId, ApplyStatusEnum statusEnum) {
         lambdaUpdate().set(UserApply::getStatus, statusEnum.getCode())
                 .set(UserApply::getUpdateTime, LocalDateTime.now())
                 .eq(UserApply::getId,applyId)
@@ -99,4 +117,12 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
                 .eq(UserApply::getId, applyId)
                 .update();
     }
+
+	public List<Long> getExistingUsers(Long roomId, HashSet<Long> uidList) {
+		return lambdaQuery()
+				.eq(UserApply::getRoomId, roomId)
+				.eq(UserApply::getStatus, ApplyStatusEnum.WAIT_APPROVAL.getCode())
+				.in(UserApply::getTargetId, uidList)
+				.list().stream().map(UserApply::getTargetId).collect(Collectors.toList());
+	}
 }

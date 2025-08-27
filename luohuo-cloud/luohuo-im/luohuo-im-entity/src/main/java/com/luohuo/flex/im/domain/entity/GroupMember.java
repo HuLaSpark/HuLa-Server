@@ -1,6 +1,5 @@
 package com.luohuo.flex.im.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.luohuo.basic.base.entity.Entity;
 import lombok.AllArgsConstructor;
@@ -29,19 +28,16 @@ public class GroupMember extends Entity<Long> {
     /**
      * 群组id
      */
-    @TableField("group_id")
     private Long groupId;
 
     /**
      * 成员uid
      */
-    @TableField("uid")
     private Long uid;
 
     /**
      * 成员角色1群主(可撤回，可移除，可解散) 2管理员(可撤回，可移除) 3普通成员
      */
-    @TableField("role_id")
 	private Integer roleId;
 
 	/**

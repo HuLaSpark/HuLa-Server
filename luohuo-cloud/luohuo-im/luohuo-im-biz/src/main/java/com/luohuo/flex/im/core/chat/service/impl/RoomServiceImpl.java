@@ -86,7 +86,7 @@ public class RoomServiceImpl implements RoomService {
 	@Transactional(rollbackFor = Exception.class)
     public RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq) {
         List<GroupMember> selfGroup = groupMemberDao.getSelfGroup(uid);
-        AssertUtil.isTrue(selfGroup.size() < 60, "每个人只能创建五个群");
+        AssertUtil.isTrue(selfGroup.size() < 5, "每个人只能创建五个群");
         User user = userInfoCache.get(uid);
         Room room = createRoom(RoomTypeEnum.GROUP);
         // 插入群

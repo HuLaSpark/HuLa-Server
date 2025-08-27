@@ -68,8 +68,8 @@ public class ChatController {
 //    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
 	public R<List<ChatMessageResp>> getMsgPage(@RequestParam(value = "lastOptTime", required = false) Long lastOptTime) {
 		List<ChatMessageResp> msgPage = chatService.getMsgList(lastOptTime, ContextUtil.getUid());
-		Set<String> blackMembers = getBlackUidSet();
-		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
+//		Set<String> blackMembers = getBlackUidSet();
+//		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
 		return R.success(msgPage);
 	}
 

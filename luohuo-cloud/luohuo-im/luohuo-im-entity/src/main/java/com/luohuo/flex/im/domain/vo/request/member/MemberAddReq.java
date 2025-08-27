@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * 移除群成员
@@ -26,5 +26,5 @@ public class MemberAddReq {
     @NotNull
     @Size(min = 1, max = 50)
     @Schema(description ="邀请的uid")
-    private List<Long> uidList;
+    private HashSet<Long> uidList;
 }

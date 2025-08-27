@@ -2,6 +2,7 @@ package com.luohuo.flex.im.common.event.listener;
 
 import com.luohuo.flex.im.api.PresenceApi;
 import com.luohuo.flex.im.common.event.GroupMemberAddEvent;
+import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.core.chat.service.ChatService;
 import com.luohuo.flex.im.core.chat.service.adapter.MemberAdapter;
@@ -10,6 +11,7 @@ import com.luohuo.flex.im.core.chat.service.cache.GroupMemberCache;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.core.user.service.cache.UserInfoCache;
 import com.luohuo.flex.im.core.user.service.impl.PushService;
+import com.luohuo.flex.model.entity.ws.ChatMember;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -33,6 +35,7 @@ public class GroupMemberAddListener {
 
     private ChatService chatService;
     private UserInfoCache userInfoCache;
+	private GroupMemberDao groupMemberDao;
     private GroupMemberCache groupMemberCache;
 	private PresenceApi presenceApi;
     private PushService pushService;
@@ -46,7 +49,7 @@ public class GroupMemberAddListener {
     public void sendAddMsg(GroupMemberAddEvent event) {
 		List<Long> uidList = event.getMemberList();
 		Long roomId = event.getRoomId();
-		User user = userInfoCache.get(event.getCUid());
+		User user = userInfoCache.get(event.getUid());
 		ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(roomId, user, userInfoCache.getBatch(uidList));
 		chatService.sendMsg(chatMessageReq, user.getId());
     }
@@ -64,7 +67,9 @@ public class GroupMemberAddListener {
 		// 在线的用户
 		List<Long> onlineUids = presenceApi.getGroupOnlineMembers(roomId).getData();
 		Map<Long, User> map = userInfoCache.getBatch(event.getMemberList());
-		pushService.sendPushMsg(MemberAdapter.buildMemberAddWS(roomId, onlineUids, map), memberUidList, event.getCUid());
+
+		List<ChatMember> memberResps = groupMemberDao.getMemberListByUid(event.getMemberList());
+		pushService.sendPushMsg(MemberAdapter.buildMemberAddWS(roomId, onlineUids, memberResps, map), memberUidList, event.getUid());
 
         // 移除缓存
         groupMemberCache.evictMemberUidList(roomId);

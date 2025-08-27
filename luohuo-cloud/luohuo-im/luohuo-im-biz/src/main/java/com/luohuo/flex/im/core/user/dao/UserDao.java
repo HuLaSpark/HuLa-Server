@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.luohuo.flex.im.common.enums.NormalOrNoEnum;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
+import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.common.utils.CursorUtils;
 import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
@@ -31,10 +32,11 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
         return getOne(wrapper);
     }
 
-    public void modifyName(Long uid, String name) {
+    public void modifyName(Long uid, ModifyNameReq req) {
         User update = new User();
         update.setId(uid);
-        update.setName(name);
+        update.setName(req.getName());
+		update.setResume(req.getResume());
         updateById(update);
     }
 
@@ -68,7 +70,7 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 	/**
 	 * @param memberUidList 在线或离线的群成员id
 	 */
-    public CursorPageBaseResp<User> getCursorPage(List<Long> memberUidList, CursorPageBaseReq request) {
+    public CursorPageBaseResp<User> getCursorPage(Set<Long> memberUidList, CursorPageBaseReq request) {
 		if(memberUidList == null || memberUidList.size() == 0){
 			return new CursorPageBaseResp<>();
 		}

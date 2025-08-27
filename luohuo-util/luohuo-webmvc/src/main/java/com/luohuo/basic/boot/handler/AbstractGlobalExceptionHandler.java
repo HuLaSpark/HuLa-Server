@@ -103,18 +103,11 @@ public abstract class AbstractGlobalExceptionHandler {
         return R.result(code, null, message).setPath(getPath());
     }
 
-	@ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(ArgumentException.class)
-    public R<?> bizException(ArgumentException ex) {
-        log.warn("ArgumentException:", ex);
-        return R.result(ex.getCode(), null, ResponseEnum.INTERNAL_SERVER_ERROR.getMsg()).setPath(getPath());
-    }
-
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public R<?> forbiddenException(ForbiddenException ex) {
         log.warn("BizException:", ex);
-        return R.result(ex.getCode(), null, ResponseEnum.INTERNAL_SERVER_ERROR.getMsg()).setPath(getPath());
+        return R.result(ex.getCode(), null, ex.getMessage()).setPath(getPath());
     }
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -123,6 +116,13 @@ public abstract class AbstractGlobalExceptionHandler {
         log.warn("BizException:", ex);
         return R.result(ex.getCode(), null, ex.getMessage()).setPath(getPath());
     }
+
+	@ExceptionHandler(ArgumentException.class)
+	@ResponseStatus(HttpStatus.OK)
+	public R<?> unauthorizedException(ArgumentException ex) {
+		log.warn("ArgumentException:", ex);
+		return R.result(ex.getCode(), null, ex.getMessage()).setPath(getPath());
+	}
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseStatus(HttpStatus.OK)
@@ -175,6 +175,13 @@ public abstract class AbstractGlobalExceptionHandler {
         return R.result(ResponseEnum.ILLEGAL_ARGUMENT_EX.getCode(), null, ResponseEnum.ILLEGAL_ARGUMENT_EX.getMsg()).setPath(getPath());
     }
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(HttpStatus.OK)
+	public R<?> illegalArgumentException(IllegalArgumentException ex) {
+		log.warn("IllegalArgumentException:", ex);
+		return R.result(ResponseEnum.ILLEGAL_ARGUMENT_EX.getCode(), null, ResponseEnum.ILLEGAL_ARGUMENT_EX.getMsg()).setPath(getPath());
+	}
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
 	@ResponseStatus(HttpStatus.OK)
     public R<?> missingServletRequestParameterException(MissingServletRequestParameterException ex) {
@@ -187,13 +194,6 @@ public abstract class AbstractGlobalExceptionHandler {
     public R<?> nullPointerException(NullPointerException ex) {
         log.warn("NullPointerException:", ex);
         return R.result(ResponseEnum.NULL_POINT_EX.getCode(), null, ResponseEnum.NULL_POINT_EX.getMsg()).setPath(getPath());
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-	@ResponseStatus(HttpStatus.OK)
-    public R<?> illegalArgumentException(IllegalArgumentException ex) {
-        log.warn("IllegalArgumentException:", ex);
-        return R.result(ResponseEnum.ILLEGAL_ARGUMENT_EX.getCode(), null, ResponseEnum.ILLEGAL_ARGUMENT_EX.getMsg()).setPath(getPath());
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)

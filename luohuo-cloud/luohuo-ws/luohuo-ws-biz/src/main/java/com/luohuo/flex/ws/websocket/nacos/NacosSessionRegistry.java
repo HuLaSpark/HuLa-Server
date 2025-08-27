@@ -5,6 +5,7 @@ import com.alibaba.cloud.nacos.NacosServiceManager;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import com.luohuo.flex.ws.websocket.SessionManager;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -115,13 +116,13 @@ public class NacosSessionRegistry {
 	 */
 	public void addUserRoute(Long uid, String clientId) {
 		// 1. 设备指纹→节点映射
-		String deviceRouteKey = "luohuo:router:user-device-nodes:" + uid + ":" + clientId;
-		stringRedisTemplate.opsForSet().add(deviceRouteKey, nodeId);
+		String globalKey = "luohuo:router:device-node-mapping";
+		String deviceField = uid + ":" + clientId;
+		stringRedisTemplate.opsForHash().put(globalKey, deviceField, nodeId);
 
 		// 2. 节点→设备指纹映射
 		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
-		String userDeviceValue = uid + ":" + clientId;
-		stringRedisTemplate.opsForSet().add(nodeDevicesKey, userDeviceValue);
+		stringRedisTemplate.opsForSet().add(nodeDevicesKey, deviceField);
 
 		// 3. 更新节点元数据
 		Map<String, String> metadata = nodeInstance.getMetadata();
@@ -135,14 +136,15 @@ public class NacosSessionRegistry {
 	 * @param uid 用户id
 	 */
 	public void removeDeviceRoute(Long uid, String clientId) {
+		String globalKey = "luohuo:router:device-node-mapping";
+		String deviceField = uid + ":" + clientId;
+
 		// 清理设备→节点映射
-		String deviceKey = "luohuo:router:user-device-nodes:" + uid + ":" + clientId;
-		stringRedisTemplate.opsForSet().remove(deviceKey, nodeId);
+		stringRedisTemplate.opsForHash().delete(globalKey, deviceField);
 
 		// 清理节点→设备映射
-		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
-		String userDeviceValue = uid + ":" + clientId;
-		stringRedisTemplate.opsForSet().remove(nodeDevicesKey, userDeviceValue);
+		String nodeKey = "luohuo:router:node-devices:" + nodeId;
+		stringRedisTemplate.opsForSet().remove(nodeKey, deviceField);
 	}
 
 	/**
@@ -151,24 +153,17 @@ public class NacosSessionRegistry {
 	public void cleanupNodeRoutes() {
 		// 1. 清理节点→设备映射
 		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
-		Set<String> userDevices = stringRedisTemplate.opsForSet().members(nodeDevicesKey);
+		Set<String> deviceFields = stringRedisTemplate.opsForSet().members(nodeDevicesKey);
 
-		if (userDevices != null) {
-			// 2. 遍历所有设备路由并删除
-			userDevices.forEach(device -> {
-				String[] parts = device.split(":");
-				if (parts.length == 2) {
-					Long uid = Long.parseLong(parts[0]);
-					String clientId = parts[1];
-					String deviceRouteKey = "luohuo:router:user-device-nodes:" + uid + ":" + clientId;
-					stringRedisTemplate.opsForSet().remove(deviceRouteKey, nodeId);
-				}
-			});
+		if (!CollectionUtils.isEmpty(deviceFields)) {
+			// 批量删除全局Hash中的映射
+			String globalKey = "luohuo:router:device-node-mapping";
+			stringRedisTemplate.opsForHash().delete(globalKey, deviceFields.toArray());
+
+			// 清理节点本地映射
+			stringRedisTemplate.delete(nodeDevicesKey);
 		}
-
-		// 3. 删除节点自身的映射键
-		stringRedisTemplate.delete(nodeDevicesKey);
-		log.info("节点路由清理完成: nodeId={}, 清理设备数={}", nodeId, userDevices != null ? userDevices.size() : 0);
+		log.info("节点路由清理完成: nodeId={}, 清理设备数={}", nodeId, deviceFields != null ? deviceFields.size() : 0);
 	}
 
 	public void deregisterNode() {

@@ -93,16 +93,7 @@ public class PushService {
 	 * 直接发送， 单个用户直接推送
 	 */
 	public void sendPushMsg(WsBaseResp<?> msg, Long uid, Long cuid) {
-		// 1. 查询用户路由信息（节点 → 设备集合）
-		Map<String, Map<String, Long>> nodeDevices  = routerService.findNodeDeviceUser(Arrays.asList(uid));
-
-		// 2. 按节点批量推送设备
-		nodeDevices.forEach((node, devices) ->
-				CompletableFuture.runAsync(
-						() -> mqProducer.sendMsg(MqConstant.PUSH_TOPIC + node, new NodePushDTO(msg, devices, cuid)),
-						getExecutorForNode(node)
-				)
-		);
+		sendPushMsg(msg, Arrays.asList(uid), cuid);
 	}
 
 	/**

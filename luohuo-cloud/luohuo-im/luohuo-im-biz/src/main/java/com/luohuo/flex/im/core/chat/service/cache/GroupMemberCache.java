@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.core.chat.service.cache;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
 import com.luohuo.flex.im.core.chat.dao.RoomGroupDao;
@@ -10,6 +11,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,7 +33,7 @@ public class GroupMemberCache {
 	 * @param roomId
 	 * @return
 	 */
-    @Cacheable(cacheNames = "luohuo:member", key = "'all:'+#roomId")
+    @Cacheable(cacheNames = "luohuo:member:all", key = "#roomId")
     public List<Long> getMemberUidList(Long roomId) {
         RoomGroup roomGroup = roomGroupDao.getByRoomId(roomId);
         if (Objects.isNull(roomGroup)) {
@@ -45,7 +47,7 @@ public class GroupMemberCache {
 	 * @param roomId
 	 * @return
 	 */
-	@Cacheable(cacheNames = "luohuo:member", key = "'except:'+#roomId")
+	@Cacheable(cacheNames = "luohuo:member:except", key = "#roomId")
 	public List<Long> getMemberExceptUidList(Long roomId) {
 		RoomGroup roomGroup = roomGroupDao.getByRoomId(roomId);
 		if (Objects.isNull(roomGroup)) {
@@ -56,22 +58,17 @@ public class GroupMemberCache {
 
 	/**
 	 * 获取指定成员在群中的详细信息
-	 * @param roomId 聊天室ID
+	 * @param roomId 房间id
 	 * @param memberUid 成员用户ID
 	 * @return 成员详细信息
 	 */
 	@Cacheable(cacheNames = "luohuo:member:info", key = "#roomId + ':' + #memberUid")
 	public GroupMember getMemberDetail(Long roomId, Long memberUid) {
-		return groupMemberDao.getBaseMapper().selectOne(new QueryWrapper<GroupMember>()
-				.eq("group_id", roomId)
-				.eq("uid", memberUid)
-				.last("LIMIT 1")
-		);
+		return groupMemberDao.getMember(roomId, memberUid);
 	}
 
 	@CacheEvict(cacheNames = "luohuo:member:info", key = "#roomId + ':' + #memberUid")
 	public void evictMemberDetail(Long roomId, Long memberUid) {
-		// 清理单个成员缓存
 	}
 
 	@CacheEvict(cacheNames = "luohuo:member:info", allEntries = true)
@@ -89,14 +86,12 @@ public class GroupMemberCache {
 	}
 
 
-	@CacheEvict(cacheNames = "luohuo:member", key = "'except:'+#roomId")
-	public List<Long> evictExceptMemberList(Long roomId) {
-		return null;
+	@CacheEvict(cacheNames = "luohuo:member:except", key = "#roomId")
+	public void evictExceptMemberList(Long roomId) {
 	}
 
-	@CacheEvict(cacheNames = "luohuo:member", key = "'all:'+#roomId")
-	public List<Long> evictMemberList(Long roomId) {
-		return null;
+	@CacheEvict(cacheNames = "luohuo:member:all", key = "#roomId")
+	public void evictMemberList(Long roomId) {
 	}
 
 	/**
@@ -105,8 +100,11 @@ public class GroupMemberCache {
 	 * @return
 	 */
 	public List<Long> getJoinedRoomIds(Long uid) {
-		List<Long> groupIds = groupMemberDao.getBaseMapper().selectList(new QueryWrapper<GroupMember>().eq("uid", uid)).stream().map(GroupMember::getGroupId).collect(Collectors.toList());
+		List<Long> groupIds = groupMemberDao.getBaseMapper().selectList(new QueryWrapper<GroupMember>().eq("uid", uid).eq("de_friend", 0)).stream().map(GroupMember::getGroupId).collect(Collectors.toList());
 
-		return roomGroupDao.getRoomIdByGroupId(groupIds);
+		if(CollUtil.isNotEmpty(groupIds)){
+			return roomGroupDao.getRoomIdByGroupId(groupIds);
+		}
+		return new ArrayList<>();
 	}
 }

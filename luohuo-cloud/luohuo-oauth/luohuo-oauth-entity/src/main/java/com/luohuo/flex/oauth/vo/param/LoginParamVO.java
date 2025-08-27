@@ -43,6 +43,9 @@ public class LoginParamVO {
     @Schema(description = "手机号")
     private String mobile;
 
+	@Schema(description = "客户端指纹信息")
+	private String clientId = "";
+
 	/**
 	 * @see com.luohuo.flex.oauth.emuns.LoginEnum
 	 */

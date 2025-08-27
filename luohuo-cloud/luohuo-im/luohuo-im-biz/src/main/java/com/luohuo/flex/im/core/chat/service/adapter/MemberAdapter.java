@@ -2,6 +2,7 @@ package com.luohuo.flex.im.core.chat.service.adapter;
 
 import com.luohuo.flex.im.domain.entity.IpDetail;
 import com.luohuo.flex.im.domain.entity.IpInfo;
+import com.luohuo.flex.model.entity.ws.ChatMember;
 import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -20,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.luohuo.flex.model.entity.ws.WSMemberChange.CHANGE_TYPE_ADD;
-import static com.luohuo.flex.model.entity.ws.WSMemberChange.CHANGE_TYPE_REMOVE;
 
 
 /**
@@ -36,10 +37,10 @@ public class MemberAdapter {
 	/**
 	 * 将User对象转换为ChatMemberResp对象，并注入实时在线状态
 	 * @param list 用户列表
-	 * @param onlineStatusMap 实时在线状态映射表 (uid -> 是否在线)
+	 * @param onlineUids 用户在线状态表
 	 * @return 转换后的群成员响应对象列表
 	 */
-    public static List<ChatMemberResp> buildMember(List<User> list, Map<Long, Boolean> onlineStatusMap) {
+    public static List<ChatMemberResp> buildMember(List<User> list, Set<Long> onlineUids) {
 		return list.stream().map(user -> {
 			ChatMemberResp resp = new ChatMemberResp();
 			resp.setUid(String.valueOf(user.getId()));
@@ -48,7 +49,7 @@ public class MemberAdapter {
 			resp.setAccount(user.getAccount());
 			resp.setLocPlace(Optional.ofNullable(user.getIpInfo()).map(IpInfo::getUpdateIpDetail).map(IpDetail::getCity).orElse(null));
 			resp.setUserStateId(user.getUserStateId());
-			Boolean isOnline = onlineStatusMap.get(user.getId());
+			Boolean isOnline = onlineUids.contains(user.getId());
 			resp.setActiveStatus(isOnline? ChatActiveStatusEnum.ONLINE.getStatus(): ChatActiveStatusEnum.OFFLINE.getStatus());
 			// 最后活跃时间（离线用户显示）
 			if (!isOnline && user.getLastOptTime() != null) {
@@ -87,38 +88,45 @@ public class MemberAdapter {
 	 * @param map 用户的基础信息
 	 * @return
 	 */
-    public static WsBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, List<Long> onlineUids, Map<Long, User> map) {
-        WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.NEW_FRIEND_SESSION.getType());
-        WSMemberChange wsMemberChange = new WSMemberChange();
+	public static WsBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, List<Long> onlineUids, List<ChatMember> memberResps, Map<Long, User> map) {
+		WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.memberChange.getType());
+		WSMemberChange wsMemberChange = new WSMemberChange();
 
-		List<WSMemberChange.UserState> states = map.values().stream().map(user -> {
-			WSMemberChange.UserState userState = new WSMemberChange.UserState();
-			userState.setActiveStatus(onlineUids.contains(user.getId()) ? ChatActiveStatusEnum.ONLINE.getStatus() : ChatActiveStatusEnum.OFFLINE.getStatus());
-			userState.setLastOptTime(user.getLastOptTime());
-			userState.setUid(user.getId());
-			return userState;
-		}).collect(Collectors.toList());
+		memberResps.forEach(item -> {
+			Long uid = Long.parseLong(item.getUid());
+			User user = map.get(uid);
+
+			if (user != null) {
+				item.setActiveStatus(onlineUids.contains(user.getId()) ? ChatActiveStatusEnum.ONLINE.getStatus() : ChatActiveStatusEnum.OFFLINE.getStatus());
+				item.setLastOptTime(user.getLastOptTime());
+				item.setName(user.getName());
+				item.setAvatar(user.getAvatar());
+				item.setAccount(user.getAccount());
+				item.setUserStateId(user.getUserStateId()+"");
+			}
+		});
+
 		wsMemberChange.setChangeType(CHANGE_TYPE_ADD);
-		wsMemberChange.setUserList(states);
-        wsMemberChange.setRoomId(roomId);
-        wsBaseResp.setData(wsMemberChange);
-        return wsBaseResp;
-    }
+		wsMemberChange.setUserList(memberResps);
+		wsMemberChange.setRoomId(roomId+"");
+		wsBaseResp.setData(wsMemberChange);
+		return wsBaseResp;
+	}
 
-    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, List<Long> uidList) {
+    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, List<Long> uidList, Integer type) {
         WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
-        wsBaseResp.setType(WSRespTypeEnum.NEW_FRIEND_SESSION.getType());
+        wsBaseResp.setType(WSRespTypeEnum.memberChange.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
 
-		List<WSMemberChange.UserState> states = uidList.stream().map(uid -> {
-			WSMemberChange.UserState userState = new WSMemberChange.UserState();
-			userState.setUid(uid);
-			return userState;
+		List<ChatMember> states = uidList.stream().map(uid -> {
+			ChatMember chatMember = new ChatMember();
+			chatMember.setUid(uid+"");
+			return chatMember;
 		}).collect(Collectors.toList());
 		wsMemberChange.setUserList(states);
-        wsMemberChange.setRoomId(roomId);
-        wsMemberChange.setChangeType(CHANGE_TYPE_REMOVE);
+        wsMemberChange.setRoomId(roomId+"");
+        wsMemberChange.setChangeType(type);
         wsBaseResp.setData(wsMemberChange);
         return wsBaseResp;
     }

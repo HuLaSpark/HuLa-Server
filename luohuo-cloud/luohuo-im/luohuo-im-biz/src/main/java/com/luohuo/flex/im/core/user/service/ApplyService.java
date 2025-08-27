@@ -3,13 +3,12 @@ package com.luohuo.flex.im.core.user.service;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
-import com.luohuo.flex.im.domain.vo.req.friend.FriendApproveReq;
 import com.luohuo.flex.im.domain.vo.request.RoomApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.ApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.GroupApplyHandleReq;
 import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendApplyResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendUnreadResp;
+import com.luohuo.flex.model.entity.ws.WSFriendApply;
 import jakarta.validation.Valid;
 
 /**
@@ -28,7 +27,7 @@ public interface ApplyService {
      * @param request 请求
      * @param uid     uid
      */
-	UserApply apply(Long uid, FriendApplyReq request);
+	UserApply handlerApply(Long uid, FriendApplyReq request);
 
 	/**
 	 * 申请加群
@@ -49,7 +48,7 @@ public interface ApplyService {
 	 * @param uid     uid
 	 * @param request 请求
 	 */
-	void acceptInvite(Long uid, @Valid ApplyReq request);
+	void handlerApply(Long uid, @Valid ApplyReq request);
 
     /**
      * 分页查询好友申请
@@ -62,25 +61,9 @@ public interface ApplyService {
     /**
      * 申请未读数
      *
-     * @return {@link FriendUnreadResp}
+     * @return {@link WSFriendApply}
      */
-    FriendUnreadResp unread(Long uid);
-
-    /**
-     * 拒绝
-     *
-     * @param uid     uid
-     * @param request 请求
-     */
-    void reject(Long uid, FriendApproveReq request);
-
-    /**
-     * 忽略申请
-     *
-     * @param uid     uid
-     * @param request 请求
-     */
-    void ignore(Long uid, FriendApproveReq request);
+	WSFriendApply unread(Long uid);
 
     /**
      * 删除申请
@@ -88,5 +71,5 @@ public interface ApplyService {
      * @param uid     uid
      * @param request 请求
      */
-    void deleteApprove(Long uid, FriendApproveReq request);
+    void deleteApprove(Long uid, ApplyReq request);
 }

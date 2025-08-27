@@ -14,11 +14,9 @@ import com.luohuo.basic.context.ContextConstants;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.utils.StrPool;
 import com.luohuo.flex.common.properties.IgnoreProperties;
-import com.luohuo.flex.common.utils.Base64Util;
 
 import static com.luohuo.basic.context.ContextConstants.APPLICATION_ID_HEADER;
 import static com.luohuo.basic.context.ContextConstants.APPLICATION_ID_KEY;
-import static com.luohuo.basic.context.ContextConstants.CLIENT_KEY;
 
 /**
  * 用户信息解析器 一定要在AuthenticationFilter之前执行
@@ -45,10 +43,7 @@ public class TokenContextFilter implements AsyncHandlerInterceptor {
         String traceId = IdUtil.fastSimpleUUID();
         MDC.put(ContextConstants.TRACE_ID_HEADER, traceId);
         try {
-            // 1,解码 Authorization
-            parseClient(request);
-
-            // 2, 获取 应用id
+            // 1, 获取 应用id
             parseApplication(request);
 
 
@@ -60,15 +55,6 @@ public class TokenContextFilter implements AsyncHandlerInterceptor {
         return true;
     }
 
-
-    private void parseClient(HttpServletRequest request) {
-        String base64Authorization = getHeader(CLIENT_KEY, request);
-        if (StrUtil.isNotEmpty(base64Authorization)) {
-            String[] client = Base64Util.getClient(base64Authorization);
-            ContextUtil.setClientId(client[0]);
-        }
-    }
-
     private void parseApplication(HttpServletRequest request) {
         String applicationIdStr = getHeader(APPLICATION_ID_KEY, request);
         if (StrUtil.isNotEmpty(applicationIdStr)) {
@@ -76,7 +62,6 @@ public class TokenContextFilter implements AsyncHandlerInterceptor {
             MDC.put(APPLICATION_ID_HEADER, applicationIdStr);
         }
     }
-
 
     private String getHeader(String name, HttpServletRequest request) {
         String value = request.getHeader(name);

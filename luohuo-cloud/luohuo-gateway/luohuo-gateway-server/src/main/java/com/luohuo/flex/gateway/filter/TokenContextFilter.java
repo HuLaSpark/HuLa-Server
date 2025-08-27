@@ -31,7 +31,6 @@ import com.luohuo.basic.exception.BizException;
 import com.luohuo.basic.exception.UnauthorizedException;
 import com.luohuo.basic.utils.StrPool;
 import com.luohuo.flex.common.properties.IgnoreProperties;
-import com.luohuo.flex.common.utils.Base64Util;
 
 import static com.luohuo.basic.context.ContextConstants.*;
 
@@ -100,17 +99,13 @@ public class TokenContextFilter implements WebFilter, Ordered {
         ContextUtil.setGrayVersion(getHeader(ContextConstants.GRAY_VERSION, request));
 
         try {
-            // 2,解码 Authorization
-            parseClient(request, mutate);
-
-            // 3, 获取 应用id
+            // 1 获取 应用信息
             parseApplication(request, mutate);
 
             Mono<Void> token = parseToken(exchange, chain, mutate);
             if (token != null) {
                 return token;
             }
-
         } catch (UnauthorizedException e) {
             return errorResponse(response, e.getMessage(), e.getCode());
         } catch (BizException e) {
@@ -168,15 +163,6 @@ public class TokenContextFilter implements WebFilter, Ordered {
         }
 
         return null;
-    }
-
-    private void parseClient(ServerHttpRequest request, ServerHttpRequest.Builder mutate) {
-        String base64Authorization = getHeader(CLIENT_KEY, request);
-        if (StrUtil.isNotEmpty(base64Authorization)) {
-            String[] client = Base64Util.getClient(base64Authorization);
-            ContextUtil.setClientId(client[0]);
-            addHeader(mutate, CLIENT_ID_HEADER, ContextUtil.getClientId());
-        }
     }
 
     private void parseApplication(ServerHttpRequest request, ServerHttpRequest.Builder mutate) {

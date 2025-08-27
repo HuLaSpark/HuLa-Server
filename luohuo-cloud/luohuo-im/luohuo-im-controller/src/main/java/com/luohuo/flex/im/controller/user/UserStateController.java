@@ -6,11 +6,7 @@ import com.luohuo.flex.im.domain.entity.UserState;
 import com.luohuo.flex.im.core.user.service.UserStateService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,9 +20,9 @@ public class UserStateController {
 	@Resource
 	private UserStateService userStateService;
 
-	@PostMapping("changeState/{id}")
+	@PostMapping("changeState")
 	@Operation(summary = "用户状态改变")
-	public R<Boolean> changeState(@PathVariable("id") Long id){
+	public R<Boolean> changeState(@RequestParam("id") Long id){
 		return R.success(userStateService.changeState(ContextUtil.getUid(), id));
 	}
 

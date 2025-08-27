@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ChatMemberResp implements Serializable {
 
+	@Schema(description = "群成员表id")
 	private Long id;
 
     @Schema(description = "uid")

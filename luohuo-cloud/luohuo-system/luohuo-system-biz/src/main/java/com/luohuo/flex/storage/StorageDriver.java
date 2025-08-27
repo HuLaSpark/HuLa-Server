@@ -1,10 +1,10 @@
-package com.luohuo.flex.oauth.service.storage;
+package com.luohuo.flex.storage;
 
 import com.alibaba.fastjson.JSONObject;
+import com.luohuo.flex.storage.engine.QiNiuStorage;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import com.luohuo.flex.oauth.service.storage.engine.QiNiuStorage;
 import com.luohuo.flex.service.SysConfigService;
 
 import java.util.HashMap;
@@ -28,12 +28,12 @@ public class StorageDriver {
 
 	@PostConstruct
 	public void init() {
-//		this.engine = sysConfigService.get("storageDefault");
-//		config.put("storagePrefix", sysConfigService.get("qnStorageName"));
-//		config.put("qnUploadUrl", sysConfigService.get("qnUploadUrl"));
-//		config.put("qnAccessKey", sysConfigService.get("qnAccessKey"));
-//		config.put("qnSecretKey", sysConfigService.get("qnSecretKey"));
-//		config.put("qnStorageName", sysConfigService.get("qnStorageName"));
+		this.engine = sysConfigService.get("storageDefault");
+		config.put("storagePrefix", sysConfigService.get("qnStorageName"));
+		config.put("qnUploadUrl", sysConfigService.get("qnUploadUrl"));
+		config.put("qnAccessKey", sysConfigService.get("qnAccessKey"));
+		config.put("qnSecretKey", sysConfigService.get("qnSecretKey"));
+		config.put("qnStorageName", sysConfigService.get("qnStorageName"));
 	}
 
 	public Map<String, String> getConfig() {

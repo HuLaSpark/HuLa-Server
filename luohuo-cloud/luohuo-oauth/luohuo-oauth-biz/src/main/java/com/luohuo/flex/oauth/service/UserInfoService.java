@@ -53,4 +53,10 @@ public interface UserInfoService {
      * @return
      */
     String registerByEmail(SysUser sysUser, RegisterByEmailVO register);
+
+	/**
+	 * 校验邮箱是否存在
+	 * @param email 	邮箱信息
+	 */
+	Boolean checkEmail(String email);
 }

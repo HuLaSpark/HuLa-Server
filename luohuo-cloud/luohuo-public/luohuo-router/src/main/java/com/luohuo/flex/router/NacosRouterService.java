@@ -6,12 +6,10 @@ import com.alibaba.cloud.nacos.NacosServiceManager;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.google.common.collect.Lists;
 import com.luohuo.basic.exception.BizException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -41,27 +39,43 @@ public class NacosRouterService {
 
 	// 查询用户设备
 	public Set<String> getUserDevices(Long uid) {
-		String key = "luohuo:router:user-devices:" + uid;
-		return stringRedisTemplate.opsForSet().members(key);
+		String globalKey = "luohuo:router:device-node-mapping";
+		// 扫描全局Hash中属于该用户的设备字段 (uid:*)
+		ScanOptions options = ScanOptions.scanOptions().match(uid + ":*").count(100).build();
+
+		Set<String> deviceFields = new HashSet<>();
+		try (Cursor<Map.Entry<Object, Object>> cursor =
+					 stringRedisTemplate.opsForHash().scan(globalKey, options)) {
+			while (cursor.hasNext()) {
+				Map.Entry<Object, Object> entry = cursor.next();
+				deviceFields.add((String) entry.getKey());
+			}
+		}
+
+		// 提取设备ID
+		return deviceFields.stream().map(field -> field.split(":")[1]).collect(Collectors.toSet());
 	}
 
 	/**
 	 * 返回用户设备所在节点
 	 * @param uid 用户id
 	 * @param clientId 用户指纹
-	 * @return
+	 * @return 节点ID，如果找不到或节点不活跃则返回null
 	 */
 	public String getDeviceNode(Long uid, String clientId) {
-		String key = "luohuo:router:user-device-nodes:" + uid + ":" + clientId;
-		Set<String> nodes = stringRedisTemplate.opsForSet().members(key);
-		if (nodes == null) return null;
+		// 1. 直接从全局Hash中获取设备对应的节点
+		String globalKey = "luohuo:router:device-node-mapping";
+		String deviceField = uid + ":" + clientId;
+		String nodeId = (String) stringRedisTemplate.opsForHash().get(globalKey, deviceField);
 
-		// 过滤活跃节点
+		// 2. 如果节点不存在，直接返回null
+		if (nodeId == null) {
+			return null;
+		}
+
+		// 3. 检查节点是否活跃
 		Set<String> activeNodes = getAllActiveNodes();
-		return nodes.stream()
-				.filter(activeNodes::contains)
-				.findFirst()
-				.orElse(null);
+		return activeNodes.contains(nodeId) ? nodeId : null;
 	}
 
 	/**
@@ -78,66 +92,23 @@ public class NacosRouterService {
 				));
 	}
 
+	/**
+	 * 移除用户设备路由信息
+	 * @param uid 用户ID
+	 * @param clientId 设备指纹
+	 * @param nodeId 节点ID
+	 */
 	public void removeDeviceRoute(Long uid, String clientId, String nodeId) {
-		// 1. 删除设备级路由键
-		String deviceRouteKey = "luohuo:router:user-device-nodes:" + uid + ":" + clientId;
-		stringRedisTemplate.opsForSet().remove(deviceRouteKey, nodeId);
+		// 1. 从全局Hash中删除设备-节点映射
+		String globalKey = "luohuo:router:device-node-mapping";
+		String deviceField = uid + ":" + clientId;
+		stringRedisTemplate.opsForHash().delete(globalKey, deviceField);
 
-		// 2. 更新节点设备映射
-		String nodeKey = "luohuo:router:node-devices:" + nodeId;
-		String userDeviceValue = uid + ":" + clientId;
-		stringRedisTemplate.opsForSet().remove(nodeKey, userDeviceValue);
-	}
+		// 2. 从节点设备集合中删除设备标识
+		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
+		stringRedisTemplate.opsForSet().remove(nodeDevicesKey, deviceField);
 
-	/**
-	 * 提取用户的指纹
-	 * @return
-	 */
-	private String extractClientId(String deviceKey, Long uid) {
-		String prefix = "luohuo:router:user-device-nodes:" + uid + ":";
-		return deviceKey.substring(prefix.length());
-	}
-
-	/**
-	 * 管道的方式计算用户与节点的关系
-	 * @param deviceKeys 用户所有的指纹信息
-	 */
-	private Map<String, Set<String>> batchGetNodes(Set<String> deviceKeys) {
-		List<Object> results = stringRedisTemplate.executePipelined((RedisCallback<?>) connection -> {
-			deviceKeys.forEach(key -> connection.sMembers(key.getBytes()));
-			return null;
-		});
-
-		Map<String, Set<String>> nodeMap = new HashMap<>();
-		Iterator<String> keyIter = deviceKeys.iterator();
-		for (Object res : results) {
-			if (res instanceof Set<?> rawSet) {
-				Set<String> nodes = rawSet.stream()
-						.map(Object::toString)
-						.collect(Collectors.toSet());
-				nodeMap.put(keyIter.next(), nodes);
-			}
-		}
-		return nodeMap;
-	}
-
-	/**
-	 * 计算用户所有的指纹信息
-	 * @param uid
-	 * @return
-	 */
-	private Set<String> scanDeviceKeys(Long uid) {
-		Set<String> deviceKeys = new HashSet<>();
-		String pattern = "luohuo:router:user-device-nodes:" + uid + ":*";
-		try (Cursor<String> cursor = stringRedisTemplate.scan(ScanOptions.scanOptions()
-				.match(pattern).count(1000).build())) {
-			while (cursor.hasNext()) {
-				deviceKeys.add(cursor.next());
-			}
-		} catch (Exception e) {
-			log.error("扫描设备键失败: uid={}", uid, e);
-		}
-		return deviceKeys;
+		log.debug("移除设备路由: uid={}, clientId={}, nodeId={}", uid, clientId, nodeId);
 	}
 
 	/**
@@ -145,45 +116,45 @@ public class NacosRouterService {
 	 * @param uids 用户id
 	 */
 	public Map<String, Map<String, Long>> findNodeDeviceUser(List<Long> uids) {
-		Map<Long, Map<String, Set<String>>> userNodes = findUserNodes(uids);
-
-		// 2. 构建三级映射: 节点 → 设备指纹 → 用户ID
-		Map<String, Map<String, Long>> nodeDeviceUser = new ConcurrentHashMap<>();
-
-		userNodes.forEach((uid, deviceMap) ->
-				deviceMap.forEach((clientId, nodes) ->
-						nodes.forEach(node ->
-								nodeDeviceUser.computeIfAbsent(node, k -> new ConcurrentHashMap<>())
-										.put(clientId, uid)
-						)
-				)
-		);
-		return nodeDeviceUser;
-	}
-	/**
-	 * 批量查询用户所在ws服务节点
-	 * @param uids
-	 * @return
-	 */
-	public Map<Long, Map<String, Set<String>>> findUserNodes(List<Long> uids) {
+		// 0. 前置校验
 		if (CollUtil.isEmpty(uids)) return Collections.emptyMap();
 
-		Map<Long, Map<String, Set<String>>> resultMap = new HashMap<>();
-		int batchSize = 5000;
-		Lists.partition(uids, batchSize).forEach(batch -> batch.forEach(uid -> {
-			// 1. SCAN 安全查询设备Key
-			Set<String> deviceKeys = scanDeviceKeys(uid);
-			if (CollUtil.isEmpty(deviceKeys)) return;
+		// 1. 提取目标UID集合
+		Set<Long> targetUids = new HashSet<>(uids);
 
-			// 2. Pipeline 批量获取节点
-			Map<String, Set<String>> deviceNodeMap = batchGetNodes(deviceKeys);
+		// 2. 获取全局设备-节点映射（改用HSCAN分批加载）
+		String globalKey = "luohuo:router:device-node-mapping";
+		Map<String, Map<String, Long>> result = new ConcurrentHashMap<>();
 
-			// 3. 按设备聚合结果
-			Map<String, Set<String>> clientNodeMap = new HashMap<>();
-			deviceKeys.forEach(key -> clientNodeMap.put(extractClientId(key, uid), deviceNodeMap.get(key)));
-			resultMap.put(uid, clientNodeMap);
-		}));
-		return resultMap;
+		// 3. 过滤活跃节点
+		Set<String> activeNodes = getAllActiveNodes();
+
+		// 5. 使用HSCAN游标分批遍历
+		ScanOptions options = ScanOptions.scanOptions().count(500).build();
+		try (Cursor<Map.Entry<Object, Object>> cursor = stringRedisTemplate.opsForHash().scan(globalKey, options)) {
+			while (cursor.hasNext()) {
+				Map.Entry<Object, Object> entry = cursor.next();
+
+				// 5.1 直接使用字符串类型
+				String field = (String) entry.getKey();
+				String nodeId = (String) entry.getValue();
+				if (!activeNodes.contains(nodeId)) continue;
+
+				// 5.2 按uid过滤目标用户
+				String[] parts = field.split(":");
+				if (parts.length != 2) continue;
+
+				Long uid = Long.parseLong(parts[0]);
+				String clientId = parts[1];
+
+				// 5.3 判断是否是推送数据
+				if (!targetUids.contains(uid)) continue;
+
+				// 5.5 构建映射：节点 → 设备 → UID
+				result.computeIfAbsent(nodeId, k -> new ConcurrentHashMap<>()).put(clientId, uid);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -191,7 +162,7 @@ public class NacosRouterService {
 	 */
 	public Set<String> getAllActiveNodes() {
 		try {
-			List<Instance> instances = namingService.getAllInstances("ws-cluster");
+			List<Instance> instances = namingService.getAllInstances("ws-cluster", "WS_GROUP");
 			return instances.stream()
 					.filter(Instance::isHealthy)
 					.map(instance -> instance.getMetadata().get("nodeId"))
@@ -204,7 +175,7 @@ public class NacosRouterService {
     // 获取节点详情
     public Instance getNodeDetail(String nodeId) {
 		try {
-			return namingService.getAllInstances("ws-cluster").stream()
+			return namingService.getAllInstances("ws-cluster", "WS_GROUP").stream()
 				.filter(i -> nodeId.equals(i.getMetadata().get("nodeId")))
 				.findFirst()
 				.orElse(null);

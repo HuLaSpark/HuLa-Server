@@ -8,6 +8,7 @@ luohuo:
     username: ${NACOS_USERNAME:@nacos.username@}
     password: ${NACOS_PASSWORD:@nacos.password@}
     web-port: ${NACOS_WEB_PORT:@nacos.web-port@}
+    local-ip: ${NACOS_LOCAL_IP:@nacos.local-ip@}
   seata:
     ip: ${SEATA_IP:@seata.ip@}
     port: ${SEATA_PORT:@seata.port@}
@@ -53,6 +54,7 @@ spring:
         password: ${luohuo.nacos.password}
         server-addr: ${luohuo.nacos.ip}:${luohuo.nacos.port}
         namespace: ${luohuo.nacos.namespace}
+        ip: ${luohuo.nacos.local-ip}
         metadata: # 元数据，用于权限服务实时获取各个服务的所有接口
           management.context-path: ${server.servlet.context-path:}${spring.mvc.servlet.path:}${management.endpoints.web.base-path:}
           gray_version: qianqian

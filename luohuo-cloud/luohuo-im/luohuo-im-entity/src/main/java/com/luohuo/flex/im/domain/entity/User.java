@@ -71,6 +71,12 @@ public class User extends Entity<Long> {
 	private String openId;
 
 	/**
+	 * 个人简介
+	 */
+	@TableField("resume")
+	private String resume;
+
+	/**
 	 * @see UserState
 	 */
 	@Schema(description = "用户状态id")
@@ -120,12 +126,6 @@ public class User extends Entity<Long> {
 	 */
 	@TableField(value = "ip_info", typeHandler = JacksonTypeHandler.class)
 	private IpInfo ipInfo;
-
-	/**
-	 * 密码
-	 */
-	@TableField("password")
-	private String password;
 
 	public void refreshIp(String ip) {
 		if (ipInfo == null) {

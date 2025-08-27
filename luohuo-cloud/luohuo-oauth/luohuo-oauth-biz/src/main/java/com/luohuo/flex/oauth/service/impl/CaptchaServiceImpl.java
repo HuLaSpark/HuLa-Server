@@ -1,6 +1,5 @@
 package com.luohuo.flex.oauth.service.impl;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -33,7 +32,6 @@ import com.luohuo.flex.oauth.properties.CaptchaProperties;
 import com.luohuo.flex.oauth.service.CaptchaService;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import static com.luohuo.basic.exception.code.ResponseEnum.CAPTCHA_ERROR;
@@ -140,7 +138,11 @@ public class CaptchaServiceImpl implements CaptchaService {
             ArgumentAssert.isFalse(flag, "该邮箱已经被他人使用");
         }
 
-        String code = RandomUtil.randomString(6);
+//		CacheKey imgKey = CaptchaCacheKeyBuilder.build(bindEmailReq.getClientId(), CaptchaTokenGranter.GRANT_TYPE);
+//		CacheResult<String> result = cacheOps.get(imgKey);
+//		ArgumentAssert.isFalse(!bindEmailReq.getCode().equals(result.getValue()), "图片验证码错误");
+
+		String code = RandomUtil.randomNumbers(6);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(bindEmailReq.getEmail(), bindEmailReq.getTemplateCode());
         cacheOps.set(cacheKey, code);
 

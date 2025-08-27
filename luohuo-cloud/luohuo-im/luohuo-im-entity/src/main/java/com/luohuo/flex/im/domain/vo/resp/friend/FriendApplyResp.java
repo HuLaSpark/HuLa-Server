@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.domain.vo.resp.friend;
 
+import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,11 @@ public class FriendApplyResp {
     @Schema(description ="申请信息")
     private String msg;
 
-    @Schema(description ="申请状态 1待审批 2同意")
+	/**
+	 * 申请状态
+	 * @see ApplyStatusEnum
+	 */
+    @Schema(description ="申请状态")
     private Integer status;
 
 	@Schema(description ="申请时间")

@@ -8,10 +8,14 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.luohuo.flex.im.core.chat.service.cache.RoomGroupCache;
 import com.luohuo.flex.im.domain.entity.GroupMember;
+import com.luohuo.flex.im.domain.entity.RoomGroup;
 import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
 import com.luohuo.flex.im.core.chat.mapper.GroupMemberMapper;
 import com.luohuo.flex.im.core.chat.service.cache.GroupMemberCache;
+import com.luohuo.flex.model.entity.ws.ChatMember;
+import com.luohuo.flex.model.entity.ws.ChatMemberResp;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.luohuo.flex.im.domain.enums.GroupRoleEnum.ROLE_LIST;
@@ -38,6 +41,8 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
     @Resource
     @Lazy
     private GroupMemberCache groupMemberCache;
+	@Resource
+	private RoomGroupCache roomGroupCache;
 
 	/**
 	 * 查询群成员
@@ -97,27 +102,29 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 
 	/**
 	 * 查询人员在群里的角色
-	 * @param groupId
-	 * @param uid
+	 * @param roomId 房间id
+	 * @param uid 用户id
 	 * @return
 	 */
-    public GroupMember getMember(Long groupId, Long uid) {
-        return lambdaQuery()
-                .eq(GroupMember::getGroupId, groupId)
+    public GroupMember getMember(Long roomId, Long uid) {
+		RoomGroup roomGroup = roomGroupCache.getByRoomId(roomId);
+		return lambdaQuery()
+                .eq(GroupMember::getGroupId, roomGroup.getId())
                 .eq(GroupMember::getUid, uid)
                 .one();
     }
 
-	/**
-	 * 用户群组关系构建器
-	 * TODO 加上缓存，事件驱动用户加群、退群都需要清空
-	 * @param uid
-	 * @return
-	 */
-	public Set<Long> getSelfAllGroup(Long uid) {
-		return lambdaQuery().eq(GroupMember::getUid, uid).list().stream().map(GroupMember::getGroupId).collect(Collectors.toSet());
+	public GroupMember getMemberByGroupId(Long groupId, Long uid) {
+		return lambdaQuery()
+				.eq(GroupMember::getGroupId, groupId)
+				.eq(GroupMember::getUid, uid)
+				.one();
 	}
 
+	/**
+	 * 查询自己创建的群聊数量
+	 * @param uid 当前用户
+	 */
     public List<GroupMember> getSelfGroup(Long uid) {
         return lambdaQuery()
                 .eq(GroupMember::getUid, uid)
@@ -230,18 +237,22 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 
 	/**
 	 * 将群员设置为屏蔽该群
-	 * @param roomId
-	 * @param uid
+	 * @param roomId 房间id
+	 * @param uid 屏蔽的人
 	 */
 	public void setMemberDeFriend(Long roomId, Long uid, Boolean deFriend) {
 		GroupMember member = getMember(roomId, uid);
 		member.setDeFriend(deFriend);
 		updateById(member);
-		groupMemberCache.evictMemberUidList(roomId);
+		groupMemberCache.evictExceptMemberList(roomId);
+		groupMemberCache.evictMemberDetail(roomId, uid);
 	}
 
-	public List<GroupMember> getMemberListByGroupId(Long groupId) {
-		return list(new LambdaQueryWrapper<GroupMember>()
-				.eq(GroupMember::getGroupId, groupId));
+	public List<ChatMemberResp> getMemberListByGroupId(Long groupId) {
+		return baseMapper.getMemberListByGroupId(groupId);
+	}
+
+	public List<ChatMember> getMemberListByUid(List<Long> memberList) {
+		return baseMapper.getMemberListByUid(memberList);
 	}
 }

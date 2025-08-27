@@ -41,6 +41,13 @@ public class UserController {
     @Resource
     private RoleService roleService;
 
+	@GetMapping("/checkEmail")
+	@Operation(summary ="绑定邮箱")
+	@TenantIgnore
+	public R<Boolean> checkEmail(@RequestParam("email") String email) {
+		return R.success(userService.checkEmail(email));
+	}
+
 	@GetMapping("/getById/{id}")
 	@Operation(summary ="用户详情 [仅远程接口调用]")
 	public R<UserInfoResp> getById(@PathVariable("id") Long id) {
@@ -93,8 +100,8 @@ public class UserController {
 
     @PutMapping("/name")
     @Operation(summary ="修改用户名")
-    public R<Void> modifyName(@Valid @RequestBody ModifyNameReq req) {
-        userService.modifyName(ContextUtil.getUid(), req);
+    public R<Void> modifyInfo(@Valid @RequestBody ModifyNameReq req) {
+        userService.modifyInfo(ContextUtil.getUid(), req);
         return R.success();
     }
 

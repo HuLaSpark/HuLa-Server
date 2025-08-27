@@ -8,11 +8,6 @@ package com.luohuo.basic.context;
  */
 public final class ContextConstants {
     /**
-     * luohuo_defaults库
-     */
-    public static final Long DEF_TENANT_ID = 0L;
-    public static final String DEF_TENANT_ID_STR = "0";
-    /**
      * 内置租户
      */
     public static final String BUILT_IN_TENANT_ID_STR = "1";
@@ -27,7 +22,7 @@ public final class ContextConstants {
     /**
      * 请求头中携带的 客户端信息 key
      */
-    public static final String CLIENT_KEY = "Authorization";
+    public static final String AUTHORIZATION_KEY = "Authorization";
     /**
      * JWT中封装的 用户id
      */
@@ -99,9 +94,9 @@ public final class ContextConstants {
      */
     public static final String TOKEN_HEADER = TOKEN_KEY;
     /**
-     * 请求头和线程变量中的 客户端id
+     * 请求头和线程变量中的 客户端指纹信息
      */
-    public static final String CLIENT_ID_HEADER = "ClientId";
+    public static final String CLIENT_HEADER = "client_header";
     /**
      * 是否boot项目
      */

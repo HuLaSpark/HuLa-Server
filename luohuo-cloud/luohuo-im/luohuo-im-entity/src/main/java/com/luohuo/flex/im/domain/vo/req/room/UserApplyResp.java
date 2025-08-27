@@ -1,5 +1,7 @@
 package com.luohuo.flex.im.domain.vo.req.room;
 
+import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +16,10 @@ import java.time.LocalDateTime;
 public class UserApplyResp implements Serializable {
 	@Schema(description ="申请人uid")
     private Long uid;
-	@Schema(description ="申请类型 1加好友 2申请进群")
+	/**
+	 * @see RoomTypeEnum
+	 */
+	@Schema(description ="申请类型 1 群 2加好友")
 	private Integer type;
 	@Schema(description ="type = 2 才需要房间id")
 	private Long roomId;
@@ -22,10 +27,15 @@ public class UserApplyResp implements Serializable {
 	private Long targetId;
 	@Schema(description ="申请消息")
     private String msg;
-	@Schema(description ="申请状态 1待审批 2同意 3拒绝")
+	/**
+	 * @see ApplyStatusEnum
+	 */
+	@Schema(description ="申请状态")
 	private Integer status;
 	@Schema(description ="阅读状态 1未读 2已读")
 	private Integer readStatus;
+	@Schema(description ="主动申请加群 true 是主动申请进群")
+	private Boolean applyFor;
 	@Schema(description ="申请时间")
     private LocalDateTime createTime;
 }

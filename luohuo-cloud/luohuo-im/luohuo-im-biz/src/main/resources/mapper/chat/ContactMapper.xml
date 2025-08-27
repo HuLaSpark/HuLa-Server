@@ -3,14 +3,14 @@
 <mapper namespace="com.luohuo.flex.im.core.chat.mapper.ContactMapper">
 
     <insert id="refreshOrCreateActiveTime">
-        insert into im_contact(`room_id`,`uid`,`last_msg_id`,`active_time`)
-        values
+        INSERT INTO im_contact (room_id, uid, last_msg_id, active_time, is_del) VALUES
         <foreach collection="memberUidList" item="uid" separator=",">
-            (#{roomId},#{uid},#{msgId},#{activeTime})
+            (#{roomId},#{uid},#{msgId},#{activeTime},0)
         </foreach>
-        on DUPLICATE KEY UPDATE
-        `hide`=0,
-        `last_msg_id`=VALUES(last_msg_id),
-        `active_time`=VALUES(active_time)
+        ON DUPLICATE KEY UPDATE
+        is_del = 0,
+        hide = 0,
+        last_msg_id = VALUES(last_msg_id),
+        active_time = VALUES(active_time);
     </insert>
 </mapper>

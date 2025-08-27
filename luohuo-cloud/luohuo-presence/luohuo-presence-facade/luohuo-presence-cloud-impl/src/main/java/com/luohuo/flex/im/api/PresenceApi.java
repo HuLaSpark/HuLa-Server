@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 用户
@@ -21,6 +22,14 @@ import java.util.Map;
  */
 @FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:luohuo-presence-server}", fallback = PresenceApiFallback.class)
 public interface PresenceApi {
+	/**
+	 * 查询用户的在线id集合
+	 *
+	 * @return 用户id
+	 */
+	@PostMapping("/online/user/online-users-list")
+	R<Set<Long>> getOnlineUsersList(@RequestBody List<Long> uids);
+
 	/**
 	 * 查询用户的在线状态
 	 *

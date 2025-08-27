@@ -27,14 +27,15 @@ import java.util.Map;
 public class FeignAddHeaderRequestInterceptor implements RequestInterceptor {
     public static final List<String> HEADER_NAME_LIST = Arrays.asList(
             ContextConstants.APPLICATION_ID_KEY, ContextConstants.TOKEN_KEY,
-            ContextConstants.CLIENT_KEY,
+            ContextConstants.AUTHORIZATION_KEY,
             ContextConstants.JWT_KEY_USER_ID,
 			ContextConstants.JWT_KEY_SYSTEM_TYPE,
 			ContextConstants.JWT_KEY_DEVICE,
 			ContextConstants.HEADER_TENANT_ID,
 			ContextConstants.HEADER_VISIT_TENANT_ID,
-            ContextConstants.JWT_KEY_U_ID, ContextConstants.JWT_KEY_UUID,
-            ContextConstants.PATH_HEADER, ContextConstants.CLIENT_ID_HEADER,
+            ContextConstants.JWT_KEY_U_ID,
+			ContextConstants.JWT_KEY_UUID,
+            ContextConstants.PATH_HEADER,
             ContextConstants.CURRENT_COMPANY_ID_HEADER,
             ContextConstants.CURRENT_TOP_COMPANY_ID_HEADER,
             ContextConstants.CURRENT_DEPT_ID_HEADER,

@@ -22,25 +22,25 @@ public class Base64Util {
      * authorization: base64(clientId:clientSec)
      * 解析请求头中存储的 client 信息
      * <p>
-     * Basic clientId:clientSec -截取-> clientId:clientSec后调用 extractClient 解码
+     * Basic clientId:clientSec -截取-> clientId:clientSec后调用 extractAuthorization 解码
      *
      * @param basicHeader Basic clientId:clientSec
      * @return clientId:clientSec
      */
-    public static String[] getClient(String basicHeader) {
+    public static String[] getAuthorization(String basicHeader) {
         if (StrUtil.isEmpty(basicHeader)) {
             throw BizException.wrap("客户端参数尚未传递");
         }
 
-        return extractClient(basicHeader);
+        return extractAuthorization(basicHeader);
     }
 
     /**
-     * 解析请求头中存储的 client 信息
+     * 解析请求头中存储的 authorization 信息
      * clientId:clientSec 解码
      */
-    public static String[] extractClient(String client) {
-        String token = base64Decoder(client);
+    public static String[] extractAuthorization(String authorization) {
+        String token = base64Decoder(authorization);
         int index = token.indexOf(StrPool.COLON);
         if (index == -1) {
             throw BizException.wrap(JWT_BASIC_INVALID);
