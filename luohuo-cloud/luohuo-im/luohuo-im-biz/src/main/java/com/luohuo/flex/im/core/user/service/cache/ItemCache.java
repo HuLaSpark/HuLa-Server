@@ -25,7 +25,7 @@ public class ItemCache {
         return itemConfigDao.getByType(type);
     }
 
-    @Cacheable(cacheNames = "luohuo:item", key = "'item:'+#itemId")
+    @Cacheable(cacheNames = "luohuo:item", key = "'item:'+#itemId", unless = "#result == null")
     public ItemConfig getById(Long itemId) {
         return itemConfigDao.getById(itemId);
     }

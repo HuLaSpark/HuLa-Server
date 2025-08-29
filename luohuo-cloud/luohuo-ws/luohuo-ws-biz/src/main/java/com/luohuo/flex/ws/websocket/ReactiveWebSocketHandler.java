@@ -30,6 +30,11 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
 	@Override
 	public Mono<Void> handle(WebSocketSession session) {
+		// 0. 检查服务状态
+		if (!sessionManager.isAcceptingNewConnections()) {
+			return session.close(CloseStatus.SERVICE_RESTARTED);
+		}
+
 		// 1. 处理消息用户id、指纹信息
 		String clientId = extractClientId(session);
 		Long uid = ReactiveContextUtil.getUid();

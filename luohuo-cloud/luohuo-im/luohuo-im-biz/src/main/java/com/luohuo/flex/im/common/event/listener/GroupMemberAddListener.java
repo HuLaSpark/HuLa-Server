@@ -72,7 +72,8 @@ public class GroupMemberAddListener {
 		pushService.sendPushMsg(MemberAdapter.buildMemberAddWS(roomId, onlineUids, memberResps, map), memberUidList, event.getUid());
 
         // 移除缓存
-        groupMemberCache.evictMemberUidList(roomId);
+		groupMemberCache.evictMemberList(roomId);
+		groupMemberCache.evictExceptMemberList(roomId);
     }
 
 }

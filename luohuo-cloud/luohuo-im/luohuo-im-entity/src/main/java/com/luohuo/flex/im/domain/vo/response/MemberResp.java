@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberResp {
+	@Schema(description ="群聊id")
+	private Long groupId;
     @Schema(description ="房间id")
     private Long roomId;
     @Schema(description ="群名称")
@@ -24,8 +26,6 @@ public class MemberResp {
     private Long onlineNum;
     @Schema(description ="成员角色 1群主 2管理员 3普通成员 4踢出群聊")
     private Integer roleId;
-	@Schema(description = "群号")
-	private String accountCode;
 	@Schema(description = "群号")
 	private String account;
 	@Schema(description = "群成员数")

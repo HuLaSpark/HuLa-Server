@@ -95,7 +95,7 @@ public abstract class BaseRedis {
     }
 
     protected void setExpire(CacheKey key) {
-        if (key != null && key.getExpire() != null) {
+        if (key != null && key.getExpire() != null && key.getExpire().getSeconds() > 0) {
             redisTemplate.expire(key.getKey(), key.getExpire());
         }
     }

@@ -3,10 +3,11 @@ package com.luohuo.flex.ws.websocket.nacos.listener;
 import com.luohuo.basic.mq.redis.core.pubsub.AbstractRedisChannelMessageListener;
 import com.luohuo.flex.model.entity.WsBaseResp;
 import com.luohuo.flex.router.NacosRouterService;
+import com.luohuo.flex.router.RouterCacheKeyBuilder;
 import com.luohuo.flex.ws.websocket.SessionManager;
 import com.luohuo.flex.ws.websocket.entity.NodeDownMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,12 +24,12 @@ public class NodeDownMessageListener extends AbstractRedisChannelMessageListener
 
 	private final SessionManager sessionManager;
 	private final NacosRouterService routerService;
-	private final StringRedisTemplate stringRedisTemplate;
+	RedisTemplate<String, Object> redisTemplate;
 
-	public NodeDownMessageListener(SessionManager sessionManager, NacosRouterService routerService, StringRedisTemplate stringRedisTemplate) {
+	public NodeDownMessageListener(SessionManager sessionManager, NacosRouterService routerService, RedisTemplate<String, Object> redisTemplate) {
 		this.sessionManager = sessionManager;
 		this.routerService = routerService;
-		this.stringRedisTemplate = stringRedisTemplate;
+		this.redisTemplate = redisTemplate;
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class NodeDownMessageListener extends AbstractRedisChannelMessageListener
 			// 1. 获取受影响用户
 			Map<Long, List<String>> deviceMap = routerService.getDevicesByNode(downNodeId);
 
-			deviceMap.forEach((uid, clientIds) -> {
+			deviceMap.forEach((uid, clientIds) ->
 				clientIds.forEach(clientId -> {
 					sessionManager.syncOnline(uid, clientId, false); // 标记设备下线
 					// 1. 按设备通知重连
@@ -50,11 +51,10 @@ public class NodeDownMessageListener extends AbstractRedisChannelMessageListener
 
 					// 2. 清理路由
 					routerService.removeDeviceRoute(uid, clientId, downNodeId);
-				});
-			});
+				})
+			);
 
-			String nodeKey = "luohuo:router:node-devices:" + downNodeId;
-			stringRedisTemplate.delete(nodeKey);
+			redisTemplate.delete(RouterCacheKeyBuilder.buildNodeDevices(downNodeId).getKey());
 		} catch (Exception e) {
 			log.error("处理节点下线失败", e);
 		}

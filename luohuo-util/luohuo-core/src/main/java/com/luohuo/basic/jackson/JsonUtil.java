@@ -49,14 +49,6 @@ public final class JsonUtil {
         return StrPool.EMPTY;
     }
 
-    public static byte[] toJsonAsBytes(Object object) {
-        try {
-            return getInstance().writeValueAsBytes(object);
-        } catch (JsonProcessingException e) {
-            throw new BizException(ResponseEnum.JSON_PARSE_ERROR.getCode(), e);
-        }
-    }
-
     public static <T> T parse(String content, Class<T> valueType) {
         if (StrUtil.isEmpty(content)) {
             return null;
@@ -92,18 +84,26 @@ public final class JsonUtil {
 		return getInstance().convertValue(in, typeReference);
     }
 
-    public static <T> List<T> parseArray(String content, Class<T> valueTypeRef) {
-        if (StrUtil.isEmpty(content)) {
-            return Collections.emptyList();
-        }
-		if (!StrUtil.startWith(content, StrPool.LEFT_SQ_BRACKET)) {
-			content = StrPool.LEFT_SQ_BRACKET + content + StrPool.RIGHT_SQ_BRACKET;
+	/**
+	 * 这个方法解析纯json字符串的
+	 * @param content json字符串
+	 * @param valueTypeRef 对应的类型
+	 */
+	public static <T> List<T> parseArray(String content, Class<T> valueTypeRef) {
+		if (StrUtil.isEmpty(content)) {
+			return Collections.emptyList();
 		}
-		List<Map<String, Object>> list = getInstance().convertValue(content, new TypeReference<>() {
-		});
-
-		return list.stream().map((map) -> toPojo(map, valueTypeRef)).toList();
-    }
+		try {
+			if (!StrUtil.startWith(content, StrPool.LEFT_SQ_BRACKET)) {
+				content = StrPool.LEFT_SQ_BRACKET + content + StrPool.RIGHT_SQ_BRACKET;
+			}
+			List<Map<String, Object>> list = getInstance().readValue(content, new TypeReference<>() {});
+			return list.stream().map((map) -> toPojo(map, valueTypeRef)).toList();
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+		}
+		return Collections.emptyList();
+	}
 
     public static Map<String, Object> toMap(String content) {
 		return getInstance().convertValue(content, Map.class);

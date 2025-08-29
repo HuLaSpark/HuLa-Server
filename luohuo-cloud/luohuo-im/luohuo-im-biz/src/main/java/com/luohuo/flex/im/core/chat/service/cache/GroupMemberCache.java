@@ -62,7 +62,7 @@ public class GroupMemberCache {
 	 * @param memberUid 成员用户ID
 	 * @return 成员详细信息
 	 */
-	@Cacheable(cacheNames = "luohuo:member:info", key = "#roomId + ':' + #memberUid")
+	@Cacheable(cacheNames = "luohuo:member:info", key = "#roomId + ':' + #memberUid", unless = "#result == null")
 	public GroupMember getMemberDetail(Long roomId, Long memberUid) {
 		return groupMemberDao.getMember(roomId, memberUid);
 	}
@@ -75,16 +75,6 @@ public class GroupMemberCache {
 	public void evictAllMemberDetails() {
 		// 清理所有成员详情缓存（慎用）
 	}
-
-	/**
-	 * 这里的操作要双清
-	 * @param roomId
-	 */
-	public void evictMemberUidList(Long roomId) {
-		evictMemberList(roomId);
-		evictExceptMemberList(roomId);
-	}
-
 
 	@CacheEvict(cacheNames = "luohuo:member:except", key = "#roomId")
 	public void evictExceptMemberList(Long roomId) {

@@ -7,8 +7,8 @@ import com.luohuo.flex.im.domain.entity.Room;
 import com.luohuo.flex.im.domain.entity.RoomFriend;
 import com.luohuo.flex.im.domain.entity.RoomGroup;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
-import com.luohuo.flex.im.domain.vo.res.GroupListVO;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
+import com.luohuo.flex.im.domain.vo.response.MemberResp;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public interface RoomService {
 	 * 群聊列表
 	 * @param uid 登录用户id
 	 */
-    void groupList(Long uid, IPage<GroupListVO> page);
+	List<MemberResp> groupList(Long uid);
 
     /**
      * 校验当前用户是否在群里

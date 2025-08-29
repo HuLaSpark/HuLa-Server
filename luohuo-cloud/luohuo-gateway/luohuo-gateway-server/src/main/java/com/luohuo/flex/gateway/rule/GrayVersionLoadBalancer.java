@@ -25,7 +25,6 @@ import java.util.Map;
 public class GrayVersionLoadBalancer implements GrayscaleLoadBalancer {
     private DiscoveryClient discoveryClient;
 
-
     /**
      * 根据serviceId 筛选可用服务
      *

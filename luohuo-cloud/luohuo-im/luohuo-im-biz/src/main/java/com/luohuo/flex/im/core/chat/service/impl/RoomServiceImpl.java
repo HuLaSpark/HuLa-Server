@@ -11,7 +11,6 @@ import com.luohuo.flex.im.core.chat.dao.AnnouncementsReadRecordDao;
 import com.luohuo.flex.im.domain.entity.Announcements;
 import com.luohuo.flex.im.domain.entity.AnnouncementsReadRecord;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
-import com.luohuo.flex.im.domain.vo.res.GroupListVO;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
 import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
 import com.luohuo.flex.im.core.chat.dao.RoomDao;
@@ -27,6 +26,7 @@ import com.luohuo.flex.im.core.chat.service.RoomService;
 import com.luohuo.flex.im.core.chat.service.adapter.ChatAdapter;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.core.user.service.cache.UserInfoCache;
+import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -83,10 +83,9 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-	@Transactional(rollbackFor = Exception.class)
     public RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq) {
         List<GroupMember> selfGroup = groupMemberDao.getSelfGroup(uid);
-        AssertUtil.isTrue(selfGroup.size() < 5, "每个人只能创建五个群");
+        AssertUtil.isTrue(selfGroup.size() < 20, "每个人只能创建20个群");
         User user = userInfoCache.get(uid);
         Room room = createRoom(RoomTypeEnum.GROUP);
         // 插入群
@@ -104,8 +103,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void groupList(Long uid, IPage<GroupListVO> page) {
-        roomDao.groupList(uid, page);
+    public List<MemberResp> groupList(Long uid) {
+		return roomDao.groupList(uid);
     }
 
     @Override

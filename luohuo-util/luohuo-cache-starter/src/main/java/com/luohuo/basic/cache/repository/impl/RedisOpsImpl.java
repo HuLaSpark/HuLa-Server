@@ -253,7 +253,7 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
     @Override
     public Long sAdd(@NonNull CacheKey key, Object value) {
         Long result = redisOps.sAdd(key, value);
-        if (key.getExpire() != null) {
+        if (key.getExpire() != null && key.getExpire().getSeconds() > 0) {
             redisOps.expire(key.getKey(), key.getExpire());
         }
         return result;

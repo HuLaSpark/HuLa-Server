@@ -61,6 +61,8 @@ public class SessionManager {
 
 	// 线程池实例数组（按节点分片）
 	private ThreadPoolExecutor[] sessionExecutors;
+	// 服务状态 -> 默认可用
+	private final AtomicBoolean acceptingNewConnections = new AtomicBoolean(true);
 
 	// Session -> clientId, 通过用户会话反向查找用户设备指纹
 	public final ConcurrentHashMap<String, String> SESSION_CLIENT_MAP = new ConcurrentHashMap<>();
@@ -68,6 +70,15 @@ public class SessionManager {
 	public final ConcurrentHashMap<String, Long> SESSION_USER_MAP = new ConcurrentHashMap<>();
 	// uid → (clientId → 会话集合) 管理的是单个用户在此服务上所有ws链接，CopyOnWriteArrayList 频繁写入性能较差 所以用Set
 	private final ConcurrentHashMap<Long, Map<String, Set<WebSocketSession>>> USER_DEVICE_SESSION_MAP = new ConcurrentHashMap<>();
+
+	public void setAcceptingNewConnections(boolean accepting) {
+		acceptingNewConnections.set(accepting);
+		log.info("新连接接入状态: {}", accepting);
+	}
+
+	public boolean isAcceptingNewConnections() {
+		return acceptingNewConnections.get();
+	}
 
 	/**
 	 * 获取会话数量，[同一个设备可能有多个会话]
@@ -356,6 +367,8 @@ public class SessionManager {
 	 * 清空所有会话
 	 */
 	public void clean() {
+		// 1. 标记服务不可用状态
+		setAcceptingNewConnections(false);
 		// 1. 收集所有设备信息
 		Map<Long, Set<String>> offlineDevices = new HashMap<>();
 		USER_DEVICE_SESSION_MAP.forEach((uid, deviceMap) -> offlineDevices.put(uid, new HashSet<>(deviceMap.keySet())));

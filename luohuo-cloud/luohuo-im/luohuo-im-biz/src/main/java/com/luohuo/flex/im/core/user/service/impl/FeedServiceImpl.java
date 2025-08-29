@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.luohuo.basic.cache.redis2.CacheResult;
 import com.luohuo.basic.cache.repository.CachePlusOps;
+import com.luohuo.basic.exception.BizException;
 import com.luohuo.basic.model.cache.CacheHashKey;
 import com.luohuo.flex.common.cache.common.FeedMediaRelCacheKeyBuilder;
 import com.luohuo.flex.im.common.constant.RedisKey;
@@ -118,7 +119,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @param uid 操作人
 	 * @param feed 朋友圈
 	 */
-	private void saveFeed(FeedParam param, Long uid, Feed feed) {
+	public void saveFeed(FeedParam param, Long uid, Feed feed) {
 		List<Long> pushList = new ArrayList<>();
 		List<FeedTarget> feedTargets = new ArrayList<>();
 		List<FeedMedia> mediaList = new ArrayList<>();
@@ -304,11 +305,11 @@ public class FeedServiceImpl implements FeedService {
 	public Boolean editFeed(Long uid, FeedParam param){
 		Feed feed = feedDao.getById(param.getId());
 		if(ObjectUtil.isNull(feed)){
-			throw new RuntimeException("请选择一条朋友圈!");
+			throw new BizException("请选择一条朋友圈!");
 		}
 
 		if(!feed.getUid().equals(uid)){
-			throw new RuntimeException("只能编辑自己的朋友圈!");
+			throw new BizException("只能编辑自己的朋友圈!");
 		}
 
 		// 1. 更新朋友圈基础信息

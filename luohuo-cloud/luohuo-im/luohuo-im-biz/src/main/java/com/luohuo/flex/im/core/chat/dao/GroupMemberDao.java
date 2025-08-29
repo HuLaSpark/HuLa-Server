@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.luohuo.flex.im.domain.enums.GroupRoleEnum.ROLE_LIST;
@@ -254,5 +255,11 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
 
 	public List<ChatMember> getMemberListByUid(List<Long> memberList) {
 		return baseMapper.getMemberListByUid(memberList);
+	}
+
+	public List<GroupMember> getGroupMemberByGroupIdListAndUid(Long uid, Set<Long> groupIdList) {
+		QueryWrapper<GroupMember> wrapper = new QueryWrapper<>();
+		wrapper.in("group_id", groupIdList).eq("uid", uid);
+		return baseMapper.selectList(wrapper);
 	}
 }

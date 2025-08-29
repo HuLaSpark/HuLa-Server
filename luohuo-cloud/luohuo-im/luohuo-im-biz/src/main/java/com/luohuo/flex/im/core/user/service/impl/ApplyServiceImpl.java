@@ -183,8 +183,8 @@ public class ApplyServiceImpl implements ApplyService {
 				if(invite.getType().equals(RoomTypeEnum.FRIEND.getType())){
 					AssertUtil.equal(invite.getStatus(), AGREE.getCode(), "已同意好友申请");
 					// 同意申请
-					AtomicReference<Long> atomicRoomId = null;
-					AtomicReference<Boolean> atomicIsFromTempSession = null;
+					AtomicReference<Long> atomicRoomId = new AtomicReference(0L);
+					AtomicReference<Boolean> atomicIsFromTempSession = new AtomicReference(false);
 					transactionTemplate.execute(e -> {
 						userApplyDao.agree(request.getApplyId());
 						UserFriend userFriend = userFriendDao.getByFriend(uid, invite.getUid());

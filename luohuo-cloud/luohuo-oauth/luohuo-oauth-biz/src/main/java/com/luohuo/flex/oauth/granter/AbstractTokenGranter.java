@@ -387,7 +387,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
         tokenSession.setLoginId(userInfo.getId());
 		tokenSession.set(JWT_KEY_SYSTEM_TYPE, userInfo.getSystemType());
 		tokenSession.set(JWT_KEY_DEVICE, deviceType);
-		tokenSession.set(CLIENT_HEADER, clientId);
+		tokenSession.set(CLIENT_ID, clientId);
         if (org.getCurrentTopCompanyId() != null) {
             tokenSession.set(JWT_KEY_TOP_COMPANY_ID, org.getCurrentTopCompanyId());
         } else {
@@ -473,7 +473,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 		if (CollUtil.isNotEmpty(sameDeviceTokens)) {
 			for (String token : sameDeviceTokens) {
 				try {
-					String clientId = StpUtil.getTokenSessionByToken(token).getString(CLIENT_HEADER);
+					String clientId = StpUtil.getTokenSessionByToken(token).getString(CLIENT_ID);
 					StpUtil.kickout(token);
 					log.info("已踢出会话: token={}", token);
 

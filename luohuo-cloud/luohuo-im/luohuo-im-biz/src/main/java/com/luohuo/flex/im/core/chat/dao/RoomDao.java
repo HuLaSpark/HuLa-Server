@@ -1,11 +1,10 @@
 package com.luohuo.flex.im.core.chat.dao;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.luohuo.flex.im.domain.entity.Room;
 import com.luohuo.flex.im.core.chat.mapper.RoomMapper;
-import com.luohuo.flex.im.domain.vo.res.GroupListVO;
+import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ public class RoomDao extends ServiceImpl<RoomMapper, Room> implements IService<R
                 .update();
     }
 
-    public List<GroupListVO> groupList(Long uid, IPage<GroupListVO> page) {
-        return baseMapper.groupList(uid,page).getRecords();
+    public List<MemberResp> groupList(Long uid) {
+       	return baseMapper.groupList(uid);
     }
 }

@@ -6,6 +6,10 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
+import com.luohuo.basic.cache.repository.CachePlusOps;
+import com.luohuo.basic.model.cache.CacheHashKey;
+import com.luohuo.basic.model.cache.CacheKey;
+import com.luohuo.flex.router.RouterCacheKeyBuilder;
 import com.luohuo.flex.ws.websocket.SessionManager;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -13,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -44,7 +48,10 @@ public class NacosSessionRegistry {
 	@Resource
 	private SessionManager sessionManager;
 
-	private StringRedisTemplate stringRedisTemplate;
+	@Resource
+	private CachePlusOps cachePlusOps;
+
+	RedisTemplate<String, Object> redisTemplate;
 
     // 节点唯一标识
     private String nodeId;
@@ -54,9 +61,9 @@ public class NacosSessionRegistry {
 	private int nodePort;
 
 	@Autowired
-	public NacosSessionRegistry(NacosServiceManager nacosServiceManager, StringRedisTemplate stringRedisTemplate,
+	public NacosSessionRegistry(NacosServiceManager nacosServiceManager, RedisTemplate<String, Object> redisTemplate,
 			@Value("${luohuo.node-id}") String nodeId, @Value("${server.port}") int nodePort, NacosDiscoveryProperties discoveryProperties) {
-		this.stringRedisTemplate = stringRedisTemplate;
+		this.redisTemplate = redisTemplate;
 		this.nodeId = nodeId;
 		this.nodePort = nodePort;
 
@@ -115,14 +122,13 @@ public class NacosSessionRegistry {
 	 * @param uid 用户id
 	 */
 	public void addUserRoute(Long uid, String clientId) {
-		// 1. 设备指纹→节点映射
-		String globalKey = "luohuo:router:device-node-mapping";
 		String deviceField = uid + ":" + clientId;
-		stringRedisTemplate.opsForHash().put(globalKey, deviceField, nodeId);
+
+		// 1. 设备指纹→节点映射
+		cachePlusOps.hSet(RouterCacheKeyBuilder.buildDeviceNodeMap(deviceField), nodeId);
 
 		// 2. 节点→设备指纹映射
-		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
-		stringRedisTemplate.opsForSet().add(nodeDevicesKey, deviceField);
+		cachePlusOps.sAdd(RouterCacheKeyBuilder.buildNodeDevices(nodeId), deviceField);
 
 		// 3. 更新节点元数据
 		Map<String, String> metadata = nodeInstance.getMetadata();
@@ -136,15 +142,15 @@ public class NacosSessionRegistry {
 	 * @param uid 用户id
 	 */
 	public void removeDeviceRoute(Long uid, String clientId) {
-		String globalKey = "luohuo:router:device-node-mapping";
 		String deviceField = uid + ":" + clientId;
 
 		// 清理设备→节点映射
-		stringRedisTemplate.opsForHash().delete(globalKey, deviceField);
+		CacheHashKey deviceNodeMap = RouterCacheKeyBuilder.buildDeviceNodeMap(deviceField);
+		cachePlusOps.hDel(deviceNodeMap);
 
 		// 清理节点→设备映射
-		String nodeKey = "luohuo:router:node-devices:" + nodeId;
-		stringRedisTemplate.opsForSet().remove(nodeKey, deviceField);
+		CacheKey nodeDevices = RouterCacheKeyBuilder.buildNodeDevices(nodeId);
+		cachePlusOps.sRem(nodeDevices, deviceField);
 	}
 
 	/**
@@ -152,16 +158,16 @@ public class NacosSessionRegistry {
 	 */
 	public void cleanupNodeRoutes() {
 		// 1. 清理节点→设备映射
-		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
-		Set<String> deviceFields = stringRedisTemplate.opsForSet().members(nodeDevicesKey);
+		CacheKey cacheKey = RouterCacheKeyBuilder.buildNodeDevices(nodeId);
+		Set<Object> deviceFields = redisTemplate.opsForSet().members(cacheKey.getKey());
 
 		if (!CollectionUtils.isEmpty(deviceFields)) {
 			// 批量删除全局Hash中的映射
-			String globalKey = "luohuo:router:device-node-mapping";
-			stringRedisTemplate.opsForHash().delete(globalKey, deviceFields.toArray());
+			CacheHashKey deviceNodeMap = RouterCacheKeyBuilder.buildDeviceNodeMap("");
+			redisTemplate.opsForHash().delete(deviceNodeMap.getKey(), deviceFields.toArray());
 
 			// 清理节点本地映射
-			stringRedisTemplate.delete(nodeDevicesKey);
+			redisTemplate.delete(cacheKey.getKey());
 		}
 		log.info("节点路由清理完成: nodeId={}, 清理设备数={}", nodeId, deviceFields != null ? deviceFields.size() : 0);
 	}

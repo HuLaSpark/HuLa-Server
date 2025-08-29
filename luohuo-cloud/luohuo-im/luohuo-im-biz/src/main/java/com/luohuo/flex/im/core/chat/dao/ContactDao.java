@@ -161,7 +161,8 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
 	 * @return
 	 */
 	public List<Contact> getAllContactsByUid(Long uid) {
-		return cachePlusOps.hGet(UserContactCacheKeyBuilder.build(uid), x -> lambdaQuery().eq(Contact::getUid, uid).list(), true).getValue();
+//		return cachePlusOps.hGet(UserContactCacheKeyBuilder.build(uid), x -> lambdaQuery().eq(Contact::getUid, uid).list(), true).getValue();
+		return lambdaQuery().eq(Contact::getUid, uid).list();
 	}
 
 }

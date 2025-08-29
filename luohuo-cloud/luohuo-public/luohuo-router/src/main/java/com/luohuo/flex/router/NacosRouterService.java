@@ -7,11 +7,13 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.luohuo.basic.exception.BizException;
+import com.luohuo.basic.model.cache.CacheHashKey;
+import com.luohuo.basic.model.cache.CacheKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -25,27 +27,27 @@ import java.util.stream.Collectors;
 @Component
 public class NacosRouterService {
 	private final NamingService namingService;
-	private final StringRedisTemplate stringRedisTemplate;
+	RedisTemplate<String, Object> redisTemplate;
 
 	@Autowired
 	public NacosRouterService(
 			NacosServiceManager nacosServiceManager,
 			NacosDiscoveryProperties discoveryProperties,
-			StringRedisTemplate stringRedisTemplate
+			RedisTemplate<String, Object> redisTemplate
 	) {
 		this.namingService = nacosServiceManager.getNamingService(discoveryProperties.getNacosProperties());
-		this.stringRedisTemplate = stringRedisTemplate;
+		this.redisTemplate = redisTemplate;
 	}
 
 	// 查询用户设备
 	public Set<String> getUserDevices(Long uid) {
-		String globalKey = "luohuo:router:device-node-mapping";
+		CacheHashKey deviceNodeMap = RouterCacheKeyBuilder.buildDeviceNodeMap(uid + ":*");
 		// 扫描全局Hash中属于该用户的设备字段 (uid:*)
 		ScanOptions options = ScanOptions.scanOptions().match(uid + ":*").count(100).build();
 
 		Set<String> deviceFields = new HashSet<>();
 		try (Cursor<Map.Entry<Object, Object>> cursor =
-					 stringRedisTemplate.opsForHash().scan(globalKey, options)) {
+					 redisTemplate.opsForHash().scan(deviceNodeMap.getKey(), options)) {
 			while (cursor.hasNext()) {
 				Map.Entry<Object, Object> entry = cursor.next();
 				deviceFields.add((String) entry.getKey());
@@ -64,9 +66,9 @@ public class NacosRouterService {
 	 */
 	public String getDeviceNode(Long uid, String clientId) {
 		// 1. 直接从全局Hash中获取设备对应的节点
-		String globalKey = "luohuo:router:device-node-mapping";
 		String deviceField = uid + ":" + clientId;
-		String nodeId = (String) stringRedisTemplate.opsForHash().get(globalKey, deviceField);
+		CacheHashKey deviceNodeMap = RouterCacheKeyBuilder.buildDeviceNodeMap(deviceField);
+		String nodeId = (String) redisTemplate.opsForHash().get(deviceNodeMap.getKey(), deviceField);
 
 		// 2. 如果节点不存在，直接返回null
 		if (nodeId == null) {
@@ -83,9 +85,9 @@ public class NacosRouterService {
 	 * @param nodeId 节点值
 	 */
 	public Map<Long, List<String>> getDevicesByNode(String nodeId) {
-		String key = "luohuo:router:node-devices:" + nodeId;
-		return stringRedisTemplate.opsForSet().members(key).stream()
-				.map(entry -> entry.split(":"))
+		CacheKey cacheKey = RouterCacheKeyBuilder.buildNodeDevices(nodeId);
+		return redisTemplate.opsForSet().members(cacheKey.getKey()).stream()
+				.map(entry -> entry.toString().split(":"))
 				.collect(Collectors.groupingBy(
 						parts -> Long.parseLong(parts[0]),
 						Collectors.mapping(parts -> parts[1], Collectors.toList())
@@ -100,13 +102,13 @@ public class NacosRouterService {
 	 */
 	public void removeDeviceRoute(Long uid, String clientId, String nodeId) {
 		// 1. 从全局Hash中删除设备-节点映射
-		String globalKey = "luohuo:router:device-node-mapping";
 		String deviceField = uid + ":" + clientId;
-		stringRedisTemplate.opsForHash().delete(globalKey, deviceField);
+		CacheHashKey deviceNodeMap = RouterCacheKeyBuilder.buildDeviceNodeMap(deviceField);
+		redisTemplate.opsForHash().delete(deviceNodeMap.getKey(), deviceField);
 
 		// 2. 从节点设备集合中删除设备标识
-		String nodeDevicesKey = "luohuo:router:node-devices:" + nodeId;
-		stringRedisTemplate.opsForSet().remove(nodeDevicesKey, deviceField);
+		CacheKey cacheKey = RouterCacheKeyBuilder.buildNodeDevices(nodeId);
+		redisTemplate.opsForSet().remove(cacheKey.getKey(), deviceField);
 
 		log.debug("移除设备路由: uid={}, clientId={}, nodeId={}", uid, clientId, nodeId);
 	}
@@ -123,7 +125,7 @@ public class NacosRouterService {
 		Set<Long> targetUids = new HashSet<>(uids);
 
 		// 2. 获取全局设备-节点映射（改用HSCAN分批加载）
-		String globalKey = "luohuo:router:device-node-mapping";
+		CacheHashKey deviceNodeMap = RouterCacheKeyBuilder.buildDeviceNodeMap("");
 		Map<String, Map<String, Long>> result = new ConcurrentHashMap<>();
 
 		// 3. 过滤活跃节点
@@ -131,7 +133,7 @@ public class NacosRouterService {
 
 		// 5. 使用HSCAN游标分批遍历
 		ScanOptions options = ScanOptions.scanOptions().count(500).build();
-		try (Cursor<Map.Entry<Object, Object>> cursor = stringRedisTemplate.opsForHash().scan(globalKey, options)) {
+		try (Cursor<Map.Entry<Object, Object>> cursor = redisTemplate.opsForHash().scan(deviceNodeMap.getKey(), options)) {
 			while (cursor.hasNext()) {
 				Map.Entry<Object, Object> entry = cursor.next();
 

@@ -96,7 +96,7 @@ public final class ContextConstants {
     /**
      * 请求头和线程变量中的 客户端指纹信息
      */
-    public static final String CLIENT_HEADER = "client_header";
+    public static final String CLIENT_ID = "clientId";
     /**
      * 是否boot项目
      */

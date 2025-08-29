@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luohuo.flex.im.domain.vo.req.IdReqVO;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
-import com.luohuo.flex.im.domain.vo.res.GroupListVO;
 import com.luohuo.flex.im.domain.vo.res.IdRespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -67,10 +66,9 @@ public class RoomController {
 
 	@Operation(summary = "群聊列表")
     @GetMapping("/group/list")
-    public R<IPage<GroupListVO>> groupList(@RequestParam("current") Long current, @RequestParam("size") Long size){
+    public R<List<MemberResp>> groupList(){
         Long uid = ContextUtil.getUid();
-        IPage<GroupListVO>  page = new Page<>(current,size);
-        return R.success(roomService.groupList(uid,page));
+        return R.success(roomService.groupList(uid));
     }
 
     @GetMapping("/group/member/page")

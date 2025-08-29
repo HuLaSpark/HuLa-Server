@@ -6,7 +6,6 @@ import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
-import com.luohuo.flex.im.domain.vo.res.GroupListVO;
 import jakarta.validation.Valid;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
@@ -74,10 +73,9 @@ public interface RoomAppService {
 
     ChatRoomResp getContactDetailByFriend(Long uid, @Valid ContactFriendReq req);
 
-    IPage<GroupListVO> groupList(Long uid,  IPage<GroupListVO>  page);
+	List<MemberResp> groupList(Long uid);
 
 	void asyncOnline(List<Long> uidList, Long roomId, boolean online);
-
 
 	/**
 	 * 申请加群列表

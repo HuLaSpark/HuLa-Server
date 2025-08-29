@@ -44,6 +44,7 @@ public class LoginParamVO {
     private String mobile;
 
 	@Schema(description = "客户端指纹信息")
+	@NotNull(message = "设备指纹信息异常")
 	private String clientId = "";
 
 	/**
