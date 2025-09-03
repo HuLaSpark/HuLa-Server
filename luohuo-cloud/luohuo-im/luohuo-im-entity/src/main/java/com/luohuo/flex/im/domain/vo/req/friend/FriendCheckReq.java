@@ -7,8 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
-
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -20,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendCheckReq extends BaseEntity {
+public class FriendCheckReq implements Serializable {
 
     @NotEmpty
     @Size(max = 50)

@@ -404,6 +404,11 @@ public class ChatServiceImpl implements ChatService {
         return messageDao.listByIds(msgIds);
     }
 
+	@Override
+	public void createContact(Long uid, Long roomId) {
+		contactService.createContact(uid, roomId);
+	}
+
 	private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");

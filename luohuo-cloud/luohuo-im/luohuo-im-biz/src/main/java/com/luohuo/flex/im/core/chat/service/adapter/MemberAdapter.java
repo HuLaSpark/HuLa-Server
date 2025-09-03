@@ -88,7 +88,7 @@ public class MemberAdapter {
 	 * @param map 用户的基础信息
 	 * @return
 	 */
-	public static WsBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, List<Long> onlineUids, List<ChatMember> memberResps, Map<Long, User> map) {
+	public static WsBaseResp<WSMemberChange> buildMemberAddWS(Long roomId, Integer totalNum, List<Long> onlineUids, List<ChatMember> memberResps, Map<Long, User> map) {
 		WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.memberChange.getType());
 		WSMemberChange wsMemberChange = new WSMemberChange();
@@ -107,14 +107,16 @@ public class MemberAdapter {
 			}
 		});
 
+		wsMemberChange.setTotalNum(totalNum);
 		wsMemberChange.setChangeType(CHANGE_TYPE_ADD);
 		wsMemberChange.setUserList(memberResps);
+		wsMemberChange.setOnlineNum(memberResps.size());
 		wsMemberChange.setRoomId(roomId+"");
 		wsBaseResp.setData(wsMemberChange);
 		return wsBaseResp;
 	}
 
-    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, List<Long> uidList, Integer type) {
+    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, Integer totalNun, List<Long> uidList, Integer type) {
         WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.memberChange.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
@@ -125,6 +127,7 @@ public class MemberAdapter {
 			return chatMember;
 		}).collect(Collectors.toList());
 		wsMemberChange.setUserList(states);
+		wsMemberChange.setTotalNum(totalNun);
         wsMemberChange.setRoomId(roomId+"");
         wsMemberChange.setChangeType(type);
         wsBaseResp.setData(wsMemberChange);

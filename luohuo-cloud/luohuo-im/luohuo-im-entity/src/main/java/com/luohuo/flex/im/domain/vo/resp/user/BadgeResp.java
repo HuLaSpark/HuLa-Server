@@ -1,8 +1,9 @@
 package com.luohuo.flex.im.domain.vo.resp.user;
 
-import com.luohuo.basic.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.io.Serializable;
 
 
 /**
@@ -11,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description ="徽章信息")
-public class BadgeResp extends BaseEntity {
+public class BadgeResp implements Serializable {
 
     @Schema(description ="徽章id")
     private Long id;

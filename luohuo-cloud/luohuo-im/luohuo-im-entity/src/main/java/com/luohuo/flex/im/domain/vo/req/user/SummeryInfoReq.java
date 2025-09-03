@@ -1,13 +1,13 @@
 package com.luohuo.flex.im.domain.vo.req.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.luohuo.basic.base.entity.BaseEntity;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SummeryInfoReq extends BaseEntity {
+public class SummeryInfoReq implements Serializable {
 	@Schema(description = "用户信息入参")
     @Size(max = 50, message = "一次最多查询50个用户数据")
     private List<infoReq> reqList;

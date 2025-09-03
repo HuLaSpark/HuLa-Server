@@ -3,9 +3,8 @@ package com.luohuo.flex.model.entity.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
-
 import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * 将扫码登录返回信息推送给所有横向扩展的服务
@@ -14,7 +13,7 @@ import java.io.Serial;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginMessageDTO extends BaseEntity {
+public class LoginMessageDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

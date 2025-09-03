@@ -11,6 +11,8 @@ import com.luohuo.basic.utils.TreeUtil;
 public interface DefValConstants {
     /** 内置的租户 */
     Long DEF_TENANT_ID = 1L;
+	/** 机器人id */
+	Long DEF_BOT_ID = 1L;
 	/** 内置的房间id */
 	Long DEF_ROOM_ID = 1L;
 	/** 内置的群组id */

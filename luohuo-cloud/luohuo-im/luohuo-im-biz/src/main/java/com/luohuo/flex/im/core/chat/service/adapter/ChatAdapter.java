@@ -1,8 +1,6 @@
 package com.luohuo.flex.im.core.chat.service.adapter;
 
-
 import cn.hutool.core.util.StrUtil;
-import com.luohuo.flex.im.domain.entity.Contact;
 import com.luohuo.flex.im.domain.entity.Room;
 import com.luohuo.flex.im.domain.entity.RoomFriend;
 import com.luohuo.flex.im.domain.entity.RoomGroup;
@@ -34,6 +32,7 @@ public class ChatAdapter {
         Room room = new Room();
         room.setType(typeEnum.getType());
         room.setHotFlag(HotFlagEnum.NOT.getType());
+		room.setCreateBy(1L);
         return room;
     }
 
@@ -46,14 +45,8 @@ public class ChatAdapter {
         roomFriend.setRoomKey(generateRoomKey(uidList));
 		roomFriend.setDeFriend1(false);
 		roomFriend.setDeFriend2(false);
+		roomFriend.setCreateBy(1L);
         return roomFriend;
-    }
-
-    public static Contact buildContact(Long uid, Long roomId) {
-        Contact contact = new Contact();
-        contact.setRoomId(roomId);
-        contact.setUid(uid);
-        return contact;
     }
 
     public static Set<Long> getFriendUidSet(Collection<RoomFriend> values, Long uid) {

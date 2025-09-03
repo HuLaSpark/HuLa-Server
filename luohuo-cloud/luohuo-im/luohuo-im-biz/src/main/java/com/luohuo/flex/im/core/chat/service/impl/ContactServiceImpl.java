@@ -5,15 +5,11 @@ import org.springframework.stereotype.Service;
 import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.im.core.chat.dao.ContactDao;
 import com.luohuo.flex.im.domain.dto.MsgReadInfoDTO;
-import com.luohuo.flex.im.domain.entity.Contact;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.core.chat.service.ContactService;
-import com.luohuo.flex.im.core.chat.service.adapter.ChatAdapter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,15 +21,8 @@ public class ContactServiceImpl implements ContactService {
     private ContactDao contactDao;
 
     @Override
-    public Contact createContact(Long uid, Long roomId) {
-        Contact contact = contactDao.get(uid, roomId);
-        if (Objects.isNull(contact)) {
-            contact = ChatAdapter.buildContact(uid, roomId);
-			contact.setCreateBy(uid);
-			contact.setCreateTime(LocalDateTime.now());
-            contactDao.save(contact);
-        }
-        return contact;
+    public void createContact(Long uid, Long roomId) {
+		contactDao.refreshOrCreate(roomId, uid);
     }
 
     @Override

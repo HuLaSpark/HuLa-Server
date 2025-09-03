@@ -94,10 +94,10 @@ public class RoomAdapter {
 	/**
 	 * 群聊被群主解散
 	 */
-	public static WsBaseResp<String> buildGroupDissolution(String name) {
+	public static WsBaseResp<String> buildGroupDissolution(Long roomId) {
 		WsBaseResp<String> WsBaseResp = new WsBaseResp<>();
 		WsBaseResp.setType(WSRespTypeEnum.ROOM_DISSOLUTION.getType());
-		WsBaseResp.setData(StrUtil.format("{}已解散", name));
+		WsBaseResp.setData(roomId+"");
 		return WsBaseResp;
 	}
 }

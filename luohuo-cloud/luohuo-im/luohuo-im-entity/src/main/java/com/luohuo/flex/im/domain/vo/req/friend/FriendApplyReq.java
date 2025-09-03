@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
+import java.io.Serializable;
 
 
 /**
@@ -18,7 +18,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendApplyReq extends BaseEntity {
+public class FriendApplyReq implements Serializable {
 
     @NotBlank
     @Schema(description ="申请信息")

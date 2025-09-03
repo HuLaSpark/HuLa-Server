@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
-import com.luohuo.flex.im.core.chat.cache.UserContactCacheKeyBuilder;
-import jakarta.annotation.Resource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
@@ -33,9 +30,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
-
-	@Resource
-	private CachePlusOps cachePlusOps;
 
     public Contact get(Long uid, Long roomId) {
         return lambdaQuery()
@@ -93,14 +87,6 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
         return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(Contact::getUid, uid).eq(Contact::getHide, false), Contact::getActiveTime);
     }
 
-    public List<Contact> getByRoomIds(List<Long> roomIds, Long uid) {
-        return lambdaQuery()
-                .in(Contact::getRoomId, roomIds)
-				.eq(Contact::getHide, false)
-                .eq(Contact::getUid, uid)
-                .list();
-    }
-
     /**
      * 更新所有人的会话时间，没有就直接插入
      */
@@ -109,6 +95,10 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
     public void refreshOrCreateActiveTime(Long roomId, List<Long> memberUidList, Long msgId, LocalDateTime activeTime) {
         baseMapper.refreshOrCreateActiveTime(roomId, memberUidList, msgId, activeTime);
     }
+
+	public void refreshOrCreate(Long roomId, Long uid) {
+		baseMapper.refreshOrCreate(roomId, uid);
+	}
 
 	public HashMap<String, Contact> getContactMapByUid(Long uid) {
 		// 1. 查出用户要展示的会话列表

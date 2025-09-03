@@ -1,11 +1,12 @@
 package com.luohuo.flex.im.domain.vo.resp.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.luohuo.basic.base.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * 表情包反参
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEmojiResp extends BaseEntity {
+public class UserEmojiResp implements Serializable {
 	@Schema(description = "id")
     private Long id;
 

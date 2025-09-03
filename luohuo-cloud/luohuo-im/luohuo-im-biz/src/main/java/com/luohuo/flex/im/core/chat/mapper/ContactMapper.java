@@ -20,4 +20,5 @@ public interface ContactMapper extends BaseMapper<Contact> {
 
     void refreshOrCreateActiveTime(@Param("roomId") Long roomId, @Param("memberUidList") List<Long> memberUidList, @Param("msgId") Long msgId, @Param("activeTime") LocalDateTime activeTime);
 
+	void refreshOrCreate(@Param("roomId") Long roomId, @Param("uid") Long uid);
 }

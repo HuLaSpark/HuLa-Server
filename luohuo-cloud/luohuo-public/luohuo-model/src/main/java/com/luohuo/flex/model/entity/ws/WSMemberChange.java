@@ -26,4 +26,8 @@ public class WSMemberChange implements Serializable {
 	private Integer changeType;
     @Schema(description ="变动uid集合")
     private List<ChatMember> userList;
+	@Schema(description ="群内总人数")
+	private Integer totalNum;
+	@Schema(description ="在线总人数")
+	private Integer onlineNum;
 }

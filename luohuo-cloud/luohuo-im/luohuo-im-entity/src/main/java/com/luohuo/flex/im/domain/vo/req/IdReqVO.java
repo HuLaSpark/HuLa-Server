@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotNull;
-import com.luohuo.basic.base.entity.BaseEntity;
+import java.io.Serializable;
 
 /**
  * @author nyh
@@ -14,7 +14,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class IdReqVO  extends BaseEntity {
+public class IdReqVO implements Serializable {
 	@Schema(description = "id")
     @NotNull
     private long id;

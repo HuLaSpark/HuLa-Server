@@ -1,16 +1,16 @@
 package com.luohuo.flex.im.domain.vo.resp.user;
 
-import com.luohuo.basic.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * @author nyh
  */
 @Data
-public class UserInfoResp extends BaseEntity {
+public class UserInfoResp implements Serializable {
 
     @Schema(description = "用户id")
     private Long uid;

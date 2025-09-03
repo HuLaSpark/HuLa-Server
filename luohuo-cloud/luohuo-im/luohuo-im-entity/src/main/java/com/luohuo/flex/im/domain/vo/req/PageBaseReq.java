@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
-import com.luohuo.basic.base.entity.BaseEntity;
+import java.io.Serializable;
 
 
 /**
@@ -14,7 +14,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
  */
 @Data
 @Schema(description = "基础翻页请求")
-public class PageBaseReq  extends BaseEntity {
+public class PageBaseReq implements Serializable {
 
     @Schema(description = "页面大小")
     @Min(0)

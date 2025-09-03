@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
 
+import java.io.Serializable;
 
 /**
  * 上传url请求入参
@@ -18,7 +18,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadUrlReq extends BaseEntity {
+public class UploadUrlReq implements Serializable {
 	@Schema(description = "文件名（带后缀）")
     @NotBlank
     private String fileName;

@@ -18,9 +18,6 @@ services:
   mysql:
     container_name: mysql
     restart: always
-    build:
-      context: .
-      dockerfile: ./mysql/Dockerfile
     image: mysql:8.0.30
     env_file:
       - ./env/mysql.env

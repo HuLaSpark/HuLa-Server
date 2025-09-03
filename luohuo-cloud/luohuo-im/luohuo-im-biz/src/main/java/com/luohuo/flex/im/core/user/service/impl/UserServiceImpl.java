@@ -12,6 +12,7 @@ import com.luohuo.flex.common.constant.DefValConstants;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.common.event.UserRegisterEvent;
 import com.luohuo.flex.im.core.chat.service.ContactService;
+import com.luohuo.flex.im.core.chat.service.RoomAppService;
 import com.luohuo.flex.im.core.chat.service.RoomService;
 import com.luohuo.flex.im.core.user.service.cache.DefUserCache;
 import lombok.AllArgsConstructor;
@@ -72,6 +73,7 @@ public class UserServiceImpl implements UserService {
 	public static final LocalDateTime MAX_DATE = LocalDateTime.of(2099, 12, 31, 00, 00, 00);
     private final ContactService contactService;
     private final RoomService roomService;
+	private final RoomAppService roomAppService;
     private UserCache userCache;
 	private DefUserCache defUserCache;
     private UserBackpackDao userBackpackDao;
@@ -312,6 +314,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Boolean register(UserRegisterVo userRegisterVo) {
         // 1. 检查邮箱是否已被其他用户绑定
+		ContextUtil.setUid(DefValConstants.DEF_BOT_ID);
 		ContextUtil.setTenantId(userRegisterVo.getTenantId());
         if (userDao.existsByEmailAndIdNot(null, userRegisterVo.getEmail())) {
 			return false;
@@ -336,10 +339,8 @@ public class UserServiceImpl implements UserService {
         // 保存用户
 		newUser.setCreateBy(1L);
         userDao.save(newUser);
-        // 创建会话
-        contactService.createContact(newUser.getId(), DefValConstants.DEF_ROOM_ID);
-        // 创建群成员
-        roomService.createGroupMember(DefValConstants.DEF_GROUP_ID, newUser.getId());
+		// 加上系统机器人好友
+		roomAppService.createSystemFriend(DefValConstants.DEF_ROOM_ID, DefValConstants.DEF_GROUP_ID, newUser.getId());
 
 		// 注入群组信息
 		cachePlusOps.sAdd(PresenceCacheKeyBuilder.groupMembersKey(DefValConstants.DEF_ROOM_ID), newUser.getId());

@@ -316,7 +316,7 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
 
 	@Override
 	public Long inc(String k, Integer time, TimeUnit unit) {
-		return 0L;
+		return redisOps.inc(k, time, unit);
 	}
 
 	public static <T> List<T> toBeanOrNull(List<Object> list, Class<T> tClass) {

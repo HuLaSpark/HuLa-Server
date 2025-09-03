@@ -119,7 +119,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				if(!imUserApi.register(userRegisterVo).getData()){
 					throw new BizException("该邮箱已被其他账号绑定");
 				}
-				yield  defUser.getEmail();
+				yield defUser.getEmail();
 			}
 			case ACCOUNT -> {
 				// 2.1 注册后台管理员、RAM账号

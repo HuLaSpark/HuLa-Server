@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
+import java.io.Serializable;
 
 
 /**
@@ -17,7 +17,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendDeleteReq extends BaseEntity {
+public class FriendDeleteReq implements Serializable {
 
     @NotNull
     @Schema(description ="好友uid")

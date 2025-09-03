@@ -56,7 +56,6 @@ import com.luohuo.flex.model.redis.annotation.RedissonLock;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
@@ -233,10 +232,8 @@ public class ApplyServiceImpl implements ApplyService {
 					transactionTemplate.execute(e -> {
 						groupMemberDao.save(MemberAdapter.buildMemberAdd(roomGroup.getId(), invite.getTargetId()));
 
-						// 3.2 系统下发加群信息
-						if(room.isHotRoom()){
-							friendService.createSystemFriend(request.getApplyId());
-						}
+						// 创建进群后的会话
+						chatService.createContact(uid, roomGroup.getRoomId());
 
 						// 更新邀请状态
 						userApplyDao.updateById(invite);
@@ -248,11 +245,12 @@ public class ApplyServiceImpl implements ApplyService {
 					groupMemberCache.evictExceptMemberList(invite.getRoomId());
 					CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(invite.getTargetId());
 					CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
+					CacheKey onlineGroupMembersKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(room.getId());
 					cachePlusOps.sAdd(uKey, room.getId());
 					cachePlusOps.sAdd(gKey, invite.getTargetId());
 					roomAppService.asyncOnline(Arrays.asList(invite.getTargetId()), room.getId(), true);
 
-					SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Arrays.asList(invite.getTargetId()), invite.getUid()));
+					SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(invite.getTargetId()), invite.getUid()));
 				}
 			}
 			case 3 -> {
@@ -269,7 +267,6 @@ public class ApplyServiceImpl implements ApplyService {
 	 */
 	@Override
 	@RedissonLock(key = "#request.applyId")
-	@Transactional(rollbackFor = Exception.class)
 	public void handleApply(Long uid, GroupApplyHandleReq req) {
 		// 1. 校验申请记录
 		UserApply apply = userApplyDao.getById(req.getApplyId());
@@ -292,15 +289,13 @@ public class ApplyServiceImpl implements ApplyService {
 		transactionTemplate.execute(e -> {
 			userApplyDao.updateById(apply);
 
-			// 5. 同意则加群
-			if (req.getStatus().equals(2)) {
-				// 5.1 加入群聊
-				groupMemberDao.save(MemberAdapter.buildMemberAdd(group.getId(), apply.getTargetId()));
+			// 5.0 创建申请人与房间的会话
+			chatService.createContact(uid, apply.getRoomId());
 
-				// 5.2 处理热点群机器人好友
-				if (room.isHotRoom()) {
-					friendService.createSystemFriend(apply.getUid());
-				}
+			// 5.1 同意则加群
+			if (req.getStatus().equals(2)) {
+				// 5.2 加入群聊
+				groupMemberDao.save(MemberAdapter.buildMemberAdd(group.getId(), apply.getTargetId()));
 			}
 			return true;
 		});
@@ -312,12 +307,13 @@ public class ApplyServiceImpl implements ApplyService {
 
 			CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(apply.getUid());
 			CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
+			CacheKey onlineGroupMembersKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(room.getId());
 			cachePlusOps.sAdd(uKey, room.getId());
 			cachePlusOps.sAdd(gKey, apply.getUid());
 			roomAppService.asyncOnline(Arrays.asList(apply.getUid()), room.getId(), true);
 
 			// 5.5 发布成员增加事件
-			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Collections.singletonList(apply.getUid()), apply.getUid()));
+			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Collections.singletonList(apply.getUid()), apply.getUid()));
 		}
 
 		// 6. 通知申请人 [这条消息需要覆盖前端]

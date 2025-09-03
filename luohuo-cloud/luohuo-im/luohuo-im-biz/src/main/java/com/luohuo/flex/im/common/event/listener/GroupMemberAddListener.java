@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.common.event.listener;
 
+import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.flex.im.api.PresenceApi;
 import com.luohuo.flex.im.common.event.GroupMemberAddEvent;
 import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
@@ -33,6 +34,7 @@ import static com.luohuo.flex.im.common.config.ThreadPoolConfig.LUOHUO_EXECUTOR;
 @AllArgsConstructor
 public class GroupMemberAddListener {
 
+	private CachePlusOps cachePlusOps;
     private ChatService chatService;
     private UserInfoCache userInfoCache;
 	private GroupMemberDao groupMemberDao;
@@ -69,7 +71,7 @@ public class GroupMemberAddListener {
 		Map<Long, User> map = userInfoCache.getBatch(event.getMemberList());
 
 		List<ChatMember> memberResps = groupMemberDao.getMemberListByUid(event.getMemberList());
-		pushService.sendPushMsg(MemberAdapter.buildMemberAddWS(roomId, onlineUids, memberResps, map), memberUidList, event.getUid());
+		pushService.sendPushMsg(MemberAdapter.buildMemberAddWS(roomId, event.getTotalNum(), onlineUids, memberResps, map), memberUidList, event.getUid());
 
         // 移除缓存
 		groupMemberCache.evictMemberList(roomId);

@@ -78,4 +78,11 @@ public interface ChatService {
     void msgRead(Long uid, ChatMessageMemberReq request);
 
 	List<Message> getMsgByIds(List<Long> messageIds);
+
+	/**
+	 * 创建用户与房间的会话
+	 * @param uid 需要创建会话的uid
+	 * @param roomId 创建的房间
+	 */
+	void createContact(Long uid, Long roomId);
 }

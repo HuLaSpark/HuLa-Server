@@ -3,7 +3,7 @@ package com.luohuo.flex.model.entity.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
+import java.io.Serializable;
 
 /**
  * 扫码成功对象，推送给用户的消息对象
@@ -12,7 +12,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScanSuccessMessageDTO  extends BaseEntity {
+public class ScanSuccessMessageDTO implements Serializable {
     /**
      * 推送的code
      */

@@ -9,7 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import com.luohuo.basic.base.entity.BaseEntity;
+
+import java.io.Serializable;
 
 
 /**
@@ -20,7 +21,7 @@ import com.luohuo.basic.base.entity.BaseEntity;
 @Schema(description = "游标翻页请求")
 @AllArgsConstructor
 @NoArgsConstructor
-public class CursorPageBaseReq  extends BaseEntity {
+public class CursorPageBaseReq implements Serializable {
 
     @Schema(description = "页面大小")
     @Min(0)

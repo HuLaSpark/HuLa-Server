@@ -18,7 +18,7 @@ public interface ContactService {
     /**
      * 创建会话
      */
-    Contact createContact(Long uid, Long roomId);
+    void createContact(Long uid, Long roomId);
 
     Integer getMsgReadCount(Message message);
 

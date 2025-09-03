@@ -1,12 +1,12 @@
 package com.luohuo.flex.im.domain.vo.resp.friend;
 
-import com.luohuo.basic.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendCheckResp extends BaseEntity {
+public class FriendCheckResp implements Serializable {
 
     @Schema(description ="校验结果")
     private List<FriendCheck> checkedList;

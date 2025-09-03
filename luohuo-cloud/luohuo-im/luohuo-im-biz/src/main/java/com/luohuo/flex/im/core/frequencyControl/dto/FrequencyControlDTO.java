@@ -1,8 +1,7 @@
 package com.luohuo.flex.im.core.frequencyControl.dto;
 
 import lombok.Data;
-import com.luohuo.basic.base.entity.BaseEntity;
-
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -10,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  * @author nyh
  */
 @Data
-public class FrequencyControlDTO extends BaseEntity {
+public class FrequencyControlDTO implements Serializable {
     /**
      * 代表频控的Key 如果target为Key的话 这里要传值用于构建redis的Key target为Ip或者UID的话会从上下文取值 Key字段无需传值
      */

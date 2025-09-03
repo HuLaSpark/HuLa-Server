@@ -6,10 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.luohuo.basic.base.entity.BaseEntity;
-
+import java.io.Serializable;
 import java.util.List;
-
 
 /**
  * 批量查询徽章详情
@@ -19,7 +17,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemInfoReq extends BaseEntity {
+public class ItemInfoReq implements Serializable {
 	@Schema(description = "徽章信息入参")
     @Size(max = 50)
     private List<infoReq> reqList;

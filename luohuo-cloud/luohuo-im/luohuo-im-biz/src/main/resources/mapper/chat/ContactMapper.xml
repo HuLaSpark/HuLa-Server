@@ -11,6 +11,11 @@
         is_del = 0,
         hide = 0,
         last_msg_id = VALUES(last_msg_id),
-        active_time = VALUES(active_time);
+        active_time = VALUES(active_time)
+    </insert>
+
+    <insert id="refreshOrCreate">
+        INSERT INTO im_contact (room_id, uid, is_del) VALUES (#{roomId},#{uid},0)
+        ON DUPLICATE KEY UPDATE is_del = 0, hide = 0
     </insert>
 </mapper>

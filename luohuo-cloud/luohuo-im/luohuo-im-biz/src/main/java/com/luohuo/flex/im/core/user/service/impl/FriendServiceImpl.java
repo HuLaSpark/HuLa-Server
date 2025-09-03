@@ -3,10 +3,12 @@ package com.luohuo.flex.im.core.user.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
+import com.luohuo.basic.cache.redis.BaseRedis;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.model.cache.CacheKey;
 import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
+import com.luohuo.flex.common.constant.DefValConstants;
 import com.luohuo.flex.im.api.PresenceApi;
 import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
@@ -44,7 +46,6 @@ import com.luohuo.flex.im.core.user.service.cache.UserCache;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -63,6 +64,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
     private ChatService chatService;
     private UserDao userDao;
 	private UserCache userCache;
+	private BaseRedis baseRedis;
 	private CachePlusOps cachePlusOps;
 	private PresenceApi presenceApi;
 
@@ -96,7 +98,8 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 	@PostConstruct
 	public void initUserCount() {
 		Long dbCount = userDao.count();
-		cachePlusOps.set(new CacheKey("luohuo:user:total_count"), dbCount);
+//		cachePlusOps.set(new CacheKey("luohuo:user:total_count"), dbCount);
+		baseRedis.set("luohuo:user:total_count", dbCount);
 	}
 
     /**
@@ -168,18 +171,17 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public void createSystemFriend(Long uid){
 		// 创建一个聊天房间
-		RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, 1L));
+		RoomFriend roomFriend = roomService.createFriendRoom(Arrays.asList(uid, DefValConstants.DEF_BOT_ID));
 		// 创建双方好友关系
-		createFriend(roomFriend.getRoomId(), uid, 1L);
+		createFriend(roomFriend.getRoomId(), uid, DefValConstants.DEF_BOT_ID);
 		// 发送一条同意消息。。我们已经是好友了，开始聊天吧
 		chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), true), uid);
 		// 系统账号在群内发送一条欢迎消息
 		User user = userCache.getUserInfo(uid);
 		Long total = cachePlusOps.inc("luohuo:user:total_count", 0, TimeUnit.DAYS); // 查询系统总注册人员
-		chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(1L, total, user.getName()), 1L);
+		chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(DefValConstants.DEF_ROOM_ID, total, user.getName()), DefValConstants.DEF_BOT_ID);
 	}
 
     /**
@@ -227,6 +229,10 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		userFriend2.setRoomId(roomId);
         userFriendDao.saveBatch(Lists.newArrayList(userFriend1, userFriend2));
 		updateFriendCache(uid, targetUid);
+
+		// 创建好友会话
+		chatService.createContact(uid, roomId);
+		chatService.createContact(targetUid, roomId);
     }
 
 	/**

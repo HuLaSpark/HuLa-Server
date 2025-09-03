@@ -12,6 +12,11 @@ public class Base62Encoder {
 	public static String createAccount(long id){
 		return "ID_" + encode(id, 19);
 	}
+
+	public static String createGroup(long id){
+		return "hula_" + encode(id, 19);
+	}
+
     /**
      * 将Long型ID编码为定长Base62字符串（可配置12-19位）
      */

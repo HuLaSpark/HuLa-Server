@@ -33,7 +33,6 @@ import com.luohuo.flex.im.domain.vo.response.ChatRoomResp;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import com.luohuo.flex.im.domain.vo.req.MergeMessageReq;
 import com.luohuo.flex.model.entity.ws.ChatMemberResp;
-
 import java.util.List;
 
 /**
@@ -184,4 +183,12 @@ public interface RoomAppService {
 	 * 移除管理员
 	 */
 	void revokeAdmin(Long uid, @Valid AdminRevokeReq request);
+
+	/**
+	 * 创建系统好友
+	 * @param defRoomId 房间id
+	 * @param defGroupId 群聊id
+	 * @param id 当前人员id
+	 */
+	void createSystemFriend(Long defRoomId, Long defGroupId,  Long id);
 }
