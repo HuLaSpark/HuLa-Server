@@ -10,10 +10,8 @@ import com.luohuo.flex.im.domain.vo.request.ChatMessagePageReq;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReadInfoReq;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReadReq;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
-import com.luohuo.flex.im.domain.vo.request.member.MemberReq;
 import com.luohuo.flex.im.domain.vo.response.ChatMessageReadResp;
 import com.luohuo.flex.model.entity.ws.ChatMessageResp;
-import com.luohuo.flex.model.entity.ws.ChatMemberResp;
 import jakarta.annotation.Nullable;
 
 import java.util.Collection;
@@ -50,15 +48,6 @@ public interface ChatService {
      * @param receiveUid 接受消息的uid，可null
      */
     ChatMessageResp getMsgResp(Long msgId, Long receiveUid);
-
-    /**
-     * 获取群成员列表
-     *
-     * @param memberUidList 成员id集和
-     * @param request 参数
-     * @return {@link CursorPageBaseResp }<{@link ChatMemberResp }>
-     */
-    CursorPageBaseResp<ChatMemberResp> getMemberPage(List<Long> memberUidList, MemberReq request);
 
     /**
      * 获取消息列表

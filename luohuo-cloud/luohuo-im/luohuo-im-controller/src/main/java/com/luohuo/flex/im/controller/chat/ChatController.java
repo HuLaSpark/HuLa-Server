@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.controller.chat;
 
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -29,7 +30,6 @@ import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.core.chat.service.ChatService;
 import com.luohuo.flex.im.core.frequencyControl.annotation.FrequencyControl;
 import com.luohuo.flex.im.domain.enums.BlackTypeEnum;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,10 +48,10 @@ public class ChatController {
     @Resource
     private ChatService chatService;
     @Resource
-    private UserCache userCache;
+    private UserSummaryCache userSummaryCache;
 
     private Set<String> getBlackUidSet() {
-        return userCache.getBlackMap().getOrDefault(BlackTypeEnum.UID.getType(), new HashSet<>());
+        return userSummaryCache.getBlackMap().getOrDefault(BlackTypeEnum.UID.getType(), new HashSet<>());
     }
 
     @GetMapping("/msg/page")

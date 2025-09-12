@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.luohuo.basic.base.entity.Entity;
 import com.luohuo.flex.im.enums.UserTypeEnum;
+import com.luohuo.flex.model.entity.base.IpInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -126,12 +127,4 @@ public class User extends Entity<Long> {
 	 */
 	@TableField(value = "ip_info", typeHandler = JacksonTypeHandler.class)
 	private IpInfo ipInfo;
-
-	public void refreshIp(String ip) {
-		if (ipInfo == null) {
-			ipInfo = new IpInfo();
-		}
-		ipInfo.refreshIp(ip);
-	}
-
 }

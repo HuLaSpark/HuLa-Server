@@ -1,6 +1,8 @@
 package com.luohuo.flex.im.core.chat.service.strategy.msg;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +16,6 @@ import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.core.chat.service.adapter.MessageAdapter;
 import com.luohuo.flex.im.core.chat.service.cache.MsgPlusCache;
-import com.luohuo.flex.im.domain.entity.User;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
-
 import java.lang.reflect.ParameterizedType;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,7 +29,7 @@ public abstract class AbstractMsgHandler<T> {
 	private MsgPlusCache msgPlusCache;
 
 	@Resource
-	private UserCache userCache;
+	private UserSummaryCache userSummaryCache;
 
     private Class<T> bodyClass;
 
@@ -89,11 +88,11 @@ public abstract class AbstractMsgHandler<T> {
 		if (reply.isPresent()) {
 			Message replyMessage = reply.get();
 			ReplyMsg replyMsgVO = new ReplyMsg();
-			replyMsgVO.setId(replyMessage.getId());
-			replyMsgVO.setUid(replyMessage.getFromUid());
+			replyMsgVO.setId(replyMessage.getId().toString());
+			replyMsgVO.setUid(replyMessage.getFromUid().toString());
 			replyMsgVO.setType(replyMessage.getType());
 			replyMsgVO.setBody(MsgHandlerFactory.getStrategyNoNull(replyMessage.getType()).showReplyMsg(replyMessage));
-			User replyUser = userCache.getUserInfo(replyMessage.getFromUid());
+			SummeryInfoDTO replyUser = userSummaryCache.get(replyMessage.getFromUid());
 			replyMsgVO.setUsername(replyUser.getName());
 			replyMsgVO.setCanCallback(YesOrNoEnum.toStatus(Objects.nonNull(msg.getGapCount()) && msg.getGapCount() <= MessageAdapter.CAN_CALLBACK_GAP_COUNT));
 			replyMsgVO.setGapCount(msg.getGapCount());

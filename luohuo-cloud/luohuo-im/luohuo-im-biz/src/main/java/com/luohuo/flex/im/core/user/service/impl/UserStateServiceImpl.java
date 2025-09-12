@@ -8,7 +8,6 @@ import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserStateVo;
 import com.luohuo.flex.im.core.user.service.UserService;
 import com.luohuo.flex.im.core.user.service.UserStateService;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ public class UserStateServiceImpl implements UserStateService {
 
     private UserStateDao userStateDao;
 	private UserSummaryCache userSummaryCache;
-	private UserCache userCache;
 	private UserService userService;
 	private PushService pushService;
 
@@ -48,11 +46,10 @@ public class UserStateServiceImpl implements UserStateService {
 
 		if (ObjectUtil.isNotNull(userState) && changeUserState){
 			// 1.清除缓存
-			userCache.userInfoChange(uid);
 			userSummaryCache.delete(uid);
 
 			// 2.推送数据
-			pushService.pushFriends(uid, WSRespTypeEnum.USER_STATE_CHANGE.getType(), new UserStateVo(uid, userState.getId()));
+			pushService.pushRoom(uid, WSRespTypeEnum.USER_STATE_CHANGE.getType(), new UserStateVo(uid, userState.getId()));
 			return true;
 		}else {
 			throw new RuntimeException("用户状态更新失败");

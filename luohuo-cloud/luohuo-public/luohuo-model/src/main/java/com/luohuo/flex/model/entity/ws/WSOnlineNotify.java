@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WSOnlineNotify {
 	@Schema(description = "新的上下线用户")
-    private Long uid;
+    private String uid;
 	@Schema(description = "指纹")
 	private String clientId;
 	@Schema(description = "当前房间的在线人数信息")
-	private Long roomId;
+	private String roomId;
 	@Schema(description = "最后一次上下线时间")
 	private Long lastOptTime;
 	@Schema(description = "在线人数")
@@ -30,7 +30,7 @@ public class WSOnlineNotify {
 	private Integer type;
 
 	public WSOnlineNotify(Long uid, String clientId, Long lastOptTime, Long onlineNum, Integer type) {
-		this.uid = uid;
+		this.uid = uid+"";
 		this.clientId = clientId;
 		this.lastOptTime = lastOptTime;
 		this.onlineNum = onlineNum;
@@ -38,8 +38,8 @@ public class WSOnlineNotify {
 	}
 
 	public WSOnlineNotify(Long roomId, Long uid, String clientId, Long lastOptTime, Long onlineNum, Integer type) {
-		this.roomId = roomId;
-		this.uid = uid;
+		this.roomId = roomId+"";
+		this.uid = uid+"";
 		this.clientId = clientId;
 		this.lastOptTime = lastOptTime;
 		this.onlineNum = onlineNum;

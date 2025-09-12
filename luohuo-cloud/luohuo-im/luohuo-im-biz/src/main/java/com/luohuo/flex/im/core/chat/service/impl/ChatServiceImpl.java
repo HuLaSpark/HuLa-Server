@@ -3,22 +3,16 @@ package com.luohuo.flex.im.core.chat.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.collect.Lists;
-import com.luohuo.basic.base.R;
 import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
-import com.luohuo.flex.im.api.PresenceApi;
 import com.luohuo.flex.im.core.chat.dao.*;
 import com.luohuo.flex.im.core.chat.service.cache.GroupMemberCache;
 import com.luohuo.flex.im.core.chat.service.cache.MsgCache;
 import com.luohuo.flex.im.core.user.dao.UserFriendDao;
 import com.luohuo.flex.im.domain.entity.*;
 import com.luohuo.flex.im.domain.enums.*;
-import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.luohuo.basic.exception.BizException;
 import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.model.redis.annotation.RedissonLock;
-import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.common.event.MessageSendEvent;
 import com.luohuo.flex.im.domain.dto.ChatMsgSendDto;
@@ -40,24 +33,18 @@ import com.luohuo.flex.im.domain.vo.request.ChatMessagePageReq;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReadInfoReq;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReadReq;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
-import com.luohuo.flex.im.domain.vo.request.member.MemberReq;
 import com.luohuo.flex.im.domain.vo.response.ChatMessageReadResp;
 import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.core.chat.service.ChatService;
 import com.luohuo.flex.im.core.chat.service.ContactService;
-import com.luohuo.flex.im.core.chat.service.adapter.MemberAdapter;
 import com.luohuo.flex.im.core.chat.service.adapter.MessageAdapter;
 import com.luohuo.flex.im.core.chat.service.adapter.RoomAdapter;
 import com.luohuo.flex.im.core.chat.service.cache.RoomCache;
-import com.luohuo.flex.im.core.chat.service.cache.RoomGroupCache;
-import com.luohuo.flex.im.core.chat.service.helper.ChatMemberHelper;
 import com.luohuo.flex.im.core.chat.service.strategy.mark.AbstractMsgMarkStrategy;
 import com.luohuo.flex.im.core.chat.service.strategy.mark.MsgMarkFactory;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.RecallMsgHandler;
-import com.luohuo.flex.im.core.user.dao.UserDao;
-import com.luohuo.flex.model.entity.ws.ChatMemberResp;
 import com.luohuo.flex.im.core.user.service.RoleService;
 
 import java.time.Duration;
@@ -77,7 +64,6 @@ public class ChatServiceImpl implements ChatService {
 	private final GroupMemberCache groupMemberCache;
 	private MsgCache msgCache;
     private MessageDao messageDao;
-    private UserDao userDao;
     private MessageMarkDao messageMarkDao;
     private RoomFriendDao roomFriendDao;
     private RoleService roleService;
@@ -86,8 +72,6 @@ public class ChatServiceImpl implements ChatService {
     private ContactDao contactDao;
     private RoomCache roomCache;
     private GroupMemberDao groupMemberDao;
-    private RoomGroupCache roomGroupCache;
-	private PresenceApi presenceApi;
 
     /**
      * 发送消息
@@ -188,63 +172,6 @@ public class ChatServiceImpl implements ChatService {
     public ChatMessageResp getMsgResp(Long msgId, Long receiveUid) {
         Message msg = messageDao.getById(msgId);
         return getMsgResp(msg, receiveUid);
-    }
-
-	private String generateCursor(ChatActiveStatusEnum type, String innerCursor) {
-		return type.name() + "_" + innerCursor;
-	}
-
-    @Override
-    public CursorPageBaseResp<ChatMemberResp> getMemberPage(List<Long> memberUidList, MemberReq request) {
-        Pair<ChatActiveStatusEnum, String> pair = ChatMemberHelper.getCursorPair(request.getCursor());
-        ChatActiveStatusEnum activeStatusEnum = pair.getKey();
-        String timeCursor = pair.getValue();
-
-		// 1. 批量获取所有成员在线状态、分离在线用户与离线用户
-		Set<Long> onlineUids = presenceApi.getOnlineUsersList(memberUidList).getData();
-		Set<Long> offlineUids = memberUidList.stream().filter(uid -> !onlineUids.contains(uid)).collect(Collectors.toSet());
-
-        // 3. 动态分页组装
-        List<ChatMemberResp> resultList = new ArrayList<>();
-        Boolean isLast = Boolean.FALSE;
-        if (activeStatusEnum == ChatActiveStatusEnum.ONLINE) {
-            // 在线列表
-            CursorPageBaseResp<User> onlinePage = userDao.getCursorPage(onlineUids, new CursorPageBaseReq(request.getPageSize(), timeCursor));
-            // 添加在线列表
-            resultList.addAll(MemberAdapter.buildMember(onlinePage.getList(), onlineUids));
-
-            if (onlinePage.getIsLast()) {
-                // 如果是最后一页,从离线列表再补点数据
-				CursorPageBaseResp<User> offlinePage = userDao.getCursorPage(offlineUids, new CursorPageBaseReq(request.getPageSize() - onlinePage.getList().size(), null));
-				resultList.addAll(MemberAdapter.buildMember(offlinePage.getList(), onlineUids));
-				timeCursor = generateCursor(ChatActiveStatusEnum.OFFLINE, offlinePage.getCursor());
-				isLast = offlinePage.getIsLast();
-            } else {
-				timeCursor = generateCursor(ChatActiveStatusEnum.ONLINE, onlinePage.getCursor());
-				isLast = false;
-			}
-        } else if (activeStatusEnum == ChatActiveStatusEnum.OFFLINE) {
-            // 离线列表
-            CursorPageBaseResp<User> cursorPage = userDao.getCursorPage(offlineUids, new CursorPageBaseReq(request.getPageSize(), timeCursor));
-            // 添加离线线列表
-            resultList.addAll(MemberAdapter.buildMember(cursorPage.getList(), onlineUids));
-            timeCursor = cursorPage.getCursor();
-            isLast = cursorPage.getIsLast();
-        }
-        // 获取群成员角色ID
-        List<Long> uidList = resultList.stream().map(item -> Long.parseLong(item.getUid())).collect(Collectors.toList());
-        RoomGroup roomGroup = roomGroupCache.getByRoomId(request.getRoomId());
-
-		// 更新角色和群信息
-        Map<String, Integer> uidMapRole = groupMemberDao.getMemberMapRole(roomGroup.getId(), uidList);
-        resultList.forEach(member -> {
-			member.setRoleId(uidMapRole.get(member.getUid()));
-			GroupMember groupMember = groupMemberCache.getMemberDetail(request.getRoomId(), Long.parseLong(member.getUid()));
-			member.setId(groupMember.getId());
-			member.setMyName(groupMember.getMyName());
-		});
-        // 组装结果
-        return new CursorPageBaseResp<>(ChatMemberHelper.generateCursor(activeStatusEnum, timeCursor), isLast, resultList, groupMemberDao.lambdaQuery().eq(GroupMember::getGroupId, roomGroup.getId()).count());
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.luohuo.flex.im.core.user.service.adapter;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import com.luohuo.flex.im.common.enums.YesOrNoEnum;
 import com.luohuo.flex.im.domain.entity.ItemConfig;
@@ -22,12 +23,6 @@ import java.util.stream.Collectors;
  */
 public class UserAdapter {
 
-    public static User buildUser(String openId) {
-        User user = new User();
-        user.setOpenId(openId);
-        return user;
-    }
-
     public static User buildAuthorizeUser(Long id, String account, WxOAuth2UserInfo userInfo) {
         User user = new User();
         user.setId(id);
@@ -43,10 +38,10 @@ public class UserAdapter {
         return user;
     }
 
-    public static UserInfoResp buildUserInfoResp(User userInfo, Integer countByValidItemId) {
+    public static UserInfoResp buildUserInfoResp(SummeryInfoDTO userInfo, Integer countByValidItemId) {
         UserInfoResp userInfoResp = new UserInfoResp();
         BeanUtil.copyProperties(userInfo, userInfoResp);
-        userInfoResp.setUid(userInfo.getId());
+        userInfoResp.setUid(userInfo.getUid());
         userInfoResp.setModifyNameChance(countByValidItemId);
         return userInfoResp;
     }

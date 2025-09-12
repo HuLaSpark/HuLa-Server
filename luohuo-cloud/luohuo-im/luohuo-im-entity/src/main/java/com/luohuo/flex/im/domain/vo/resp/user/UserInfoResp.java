@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author nyh
@@ -14,6 +15,12 @@ public class UserInfoResp implements Serializable {
 
     @Schema(description = "用户id")
     private Long uid;
+
+	@Schema(description = "佩戴的徽章id")
+	private Long wearingItemId;
+
+	@Schema(description = "用户拥有的徽章id列表")
+	private List<Long> itemIds;
 
     @Schema(description = "Hula号")
     private String account;
@@ -29,6 +36,9 @@ public class UserInfoResp implements Serializable {
 
     @Schema(description = "性别 1男 2女")
     private Integer sex;
+
+	@Schema(description = "个人简介")
+	private String resume;
 
     @Schema(description = "用户状态id")
     private Long userStateId;

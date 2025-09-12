@@ -8,9 +8,9 @@ import com.luohuo.flex.model.entity.base.IpInfo;
 public interface IpService {
     /**
      * 异步更新用户ip详情
-     *
-     * @param uid 用户id
+	 * @param uid Im用户id
+     * @param userId 系统用户id
 	 * @param ipInfo IP信息
      */
-    void refreshIpDetailAsync(Long uid, IpInfo ipInfo);
+    void refreshIpDetailAsync(Long uid, Long userId, IpInfo ipInfo);
 }

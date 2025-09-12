@@ -2,14 +2,13 @@ package com.luohuo.flex.im.core.user.service;
 
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.dto.ItemInfoDTO;
-import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.User;
+import com.luohuo.flex.model.entity.base.IpInfo;
 import com.luohuo.flex.model.vo.query.BindEmailReq;
 import com.luohuo.flex.im.domain.vo.req.user.BlackReq;
 import com.luohuo.flex.im.domain.vo.req.user.ItemInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyAvatarReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
-import com.luohuo.flex.im.domain.vo.req.user.SummeryInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.WearingBadgeReq;
 import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
@@ -24,6 +23,12 @@ import java.util.List;
  * @author nyh
  */
 public interface UserService {
+
+	/**
+	 * 刷新ip信息
+	 * @param uid 用户id
+	 */
+	Boolean refreshIpInfo(Long uid, IpInfo ipInfo);
 
 	/**
 	 * 校验邮箱是否存在
@@ -86,14 +91,6 @@ public interface UserService {
     void wearingBadge(Long uid, WearingBadgeReq req);
 
     void black(BlackReq req);
-
-    /**
-     * 获取用户汇总信息
-     *
-     * @param req
-     * @return
-     */
-    List<SummeryInfoDTO> getSummeryUserInfo(SummeryInfoReq req);
 
     List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
 

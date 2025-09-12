@@ -2,6 +2,7 @@ package com.luohuo.flex.im.controller.user;
 
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
+import com.luohuo.flex.model.entity.base.RefreshIpInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -11,14 +12,12 @@ import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.im.domain.dto.ItemInfoDTO;
-import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
 import com.luohuo.flex.model.vo.query.BindEmailReq;
 import com.luohuo.flex.im.domain.vo.req.user.BlackReq;
 import com.luohuo.flex.im.domain.vo.req.user.ItemInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyAvatarReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
-import com.luohuo.flex.im.domain.vo.req.user.SummeryInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.WearingBadgeReq;
 import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
@@ -40,6 +39,12 @@ public class UserController {
     private UserService userService;
     @Resource
     private RoleService roleService;
+
+	@PostMapping("refreshIpInfo")
+	@Operation(summary ="刷新IP信息、物理地址")
+	public R<Boolean> refreshIpInfo(@RequestBody RefreshIpInfo refreshIpInfo) {
+		return R.success(userService.refreshIpInfo(refreshIpInfo.getUid(), refreshIpInfo.getIpInfo()));
+	}
 
 	@GetMapping("/checkEmail")
 	@Operation(summary ="绑定邮箱")
@@ -74,6 +79,7 @@ public class UserController {
 
     @PostMapping("/avatar")
     @Operation(summary ="修改头像")
+	@Deprecated
 //	@FrequencyControl(target = FrequencyControl.Target.UID, time = 30, unit = TimeUnit.DAYS)
     public R<Void> modifyAvatar(@Valid @RequestBody ModifyAvatarReq req) {
         userService.modifyAvatar(ContextUtil.getUid(), req);
@@ -86,20 +92,14 @@ public class UserController {
 		return R.success(userService.bindEmail(ContextUtil.getUid(), req));
 	}
 
-    @PostMapping("/summary/userInfo/batch")
-    @Operation(summary ="用户聚合信息-返回的代表需要刷新的")
-    public R<List<SummeryInfoDTO>> getSummeryUserInfo(@Valid @RequestBody SummeryInfoReq req) {
-        return R.success(userService.getSummeryUserInfo(req));
-    }
-
     @PostMapping("/badges/batch")
     @Operation(summary ="徽章聚合信息-返回的代表需要刷新的")
     public R<List<ItemInfoDTO>> getItemInfo(@Valid @RequestBody ItemInfoReq req) {
         return R.success(userService.getItemInfo(req));
     }
 
-    @PutMapping("/name")
-    @Operation(summary ="修改用户名")
+    @PutMapping("/info")
+    @Operation(summary ="修改用户信息")
     public R<Void> modifyInfo(@Valid @RequestBody ModifyNameReq req) {
         userService.modifyInfo(ContextUtil.getUid(), req);
         return R.success();

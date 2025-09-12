@@ -22,12 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.luohuo.flex.im.domain.enums.GroupRoleEnum.ROLE_LIST;
-
 
 /**
  * <p>
@@ -65,23 +61,6 @@ public class GroupMemberDao extends ServiceImpl<GroupMemberMapper, GroupMember> 
                 .eq(GroupMember::getGroupId, groupId)
                 .in(GroupMember::getUid, uidList)
                 .list();
-    }
-
-    /**
-     * 批量获取成员群角色
-     *
-     * @param groupId 群ID
-     * @param uidList 用户列表
-     * @return 成员群角色列表
-     */
-    public Map<String, Integer> getMemberMapRole(Long groupId, List<Long> uidList) {
-        List<GroupMember> list = lambdaQuery()
-                .eq(GroupMember::getGroupId, groupId)
-                .in(GroupMember::getUid, uidList)
-                .in(GroupMember::getRoleId, ROLE_LIST)
-                .select(GroupMember::getUid, GroupMember::getRoleId)
-                .list();
-        return list.stream().collect(Collectors.toMap(member -> String.valueOf(member.getUid()), GroupMember::getRoleId));
     }
 
 	/**

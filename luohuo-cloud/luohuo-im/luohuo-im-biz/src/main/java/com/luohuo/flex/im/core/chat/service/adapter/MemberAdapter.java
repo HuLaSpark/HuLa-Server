@@ -1,7 +1,5 @@
 package com.luohuo.flex.im.core.chat.service.adapter;
 
-import com.luohuo.flex.im.domain.entity.IpDetail;
-import com.luohuo.flex.im.domain.entity.IpInfo;
 import com.luohuo.flex.model.entity.ws.ChatMember;
 import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +11,12 @@ import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
-import com.luohuo.flex.model.entity.ws.ChatMemberResp;
 import com.luohuo.flex.model.entity.ws.WSFeedMemberResp;
 import com.luohuo.flex.model.entity.ws.WSMemberChange;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.luohuo.flex.model.entity.ws.WSMemberChange.CHANGE_TYPE_ADD;
@@ -33,31 +28,6 @@ import static com.luohuo.flex.model.entity.ws.WSMemberChange.CHANGE_TYPE_ADD;
 @Component
 @Slf4j
 public class MemberAdapter {
-
-	/**
-	 * 将User对象转换为ChatMemberResp对象，并注入实时在线状态
-	 * @param list 用户列表
-	 * @param onlineUids 用户在线状态表
-	 * @return 转换后的群成员响应对象列表
-	 */
-    public static List<ChatMemberResp> buildMember(List<User> list, Set<Long> onlineUids) {
-		return list.stream().map(user -> {
-			ChatMemberResp resp = new ChatMemberResp();
-			resp.setUid(String.valueOf(user.getId()));
-			resp.setName(user.getName());
-			resp.setAvatar(user.getAvatar());
-			resp.setAccount(user.getAccount());
-			resp.setLocPlace(Optional.ofNullable(user.getIpInfo()).map(IpInfo::getUpdateIpDetail).map(IpDetail::getCity).orElse(null));
-			resp.setUserStateId(user.getUserStateId());
-			Boolean isOnline = onlineUids.contains(user.getId());
-			resp.setActiveStatus(isOnline? ChatActiveStatusEnum.ONLINE.getStatus(): ChatActiveStatusEnum.OFFLINE.getStatus());
-			// 最后活跃时间（离线用户显示）
-			if (!isOnline && user.getLastOptTime() != null) {
-				resp.setLastOptTime(user.getLastOptTime());
-			}
-			return resp;
-		}).collect(Collectors.toList());
-    }
 
     public static List<ChatMemberListResp> buildMemberList(List<User> memberList) {
         return memberList.stream()

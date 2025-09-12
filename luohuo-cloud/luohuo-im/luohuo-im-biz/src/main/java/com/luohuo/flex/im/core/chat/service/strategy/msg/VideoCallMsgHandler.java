@@ -2,9 +2,8 @@ package com.luohuo.flex.im.core.chat.service.strategy.msg;
 
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.entity.Message;
-import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.entity.msg.VideoCallMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
@@ -22,7 +21,7 @@ import java.util.Optional;
 public class VideoCallMsgHandler extends AbstractMsgHandler<VideoCallMsgDTO> {
 
 	@Resource
-	private UserCache userCache;
+	private UserSummaryCache userSummaryCache;
 
 	@Override
 	MessageTypeEnum getMsgTypeEnum() {
@@ -47,8 +46,7 @@ public class VideoCallMsgHandler extends AbstractMsgHandler<VideoCallMsgDTO> {
 
 		// ===== 群聊场景 =====
 		if (Boolean.TRUE.equals(dto.getIsGroup())) {
-			User user = userCache.getUserInfo(msg.getFromUid());
-			return dto.getBegin() ? user.getName() + "发起了视频通话" : "视频通话已结束";
+			return dto.getBegin() ? userSummaryCache.get(msg.getFromUid()).getName() + "发起了视频通话" : "视频通话已结束";
 		}
 
 		// ===== 私聊场景 =====

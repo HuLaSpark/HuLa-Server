@@ -71,12 +71,6 @@ public class RoomController {
         return R.success(roomService.groupList(uid));
     }
 
-    @GetMapping("/group/member/page")
-    @Operation(summary ="群成员列表")
-    public R<CursorPageBaseResp<ChatMemberResp>> getMemberPage(@Valid MemberReq request) {
-        return R.success(roomService.getMemberPage(request));
-    }
-
 	@GetMapping("/group/listMember")
 	@Operation(summary ="群成员列表")
 	public R<List<ChatMemberResp>> listMember(@Valid MemberReq request) {

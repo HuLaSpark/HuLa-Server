@@ -40,7 +40,7 @@ public class UserOnlineListener {
 		defUserService.updateById(defUser);
 
         // 更新用户ip详情
-        ipService.refreshIpDetailAsync(userId, ipInfo);
+        ipService.refreshIpDetailAsync(event.getUid(), userId, ipInfo);
     }
 
 }

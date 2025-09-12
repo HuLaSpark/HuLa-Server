@@ -257,7 +257,7 @@ public class SessionManager {
 			if (noOtherDevices) {
 				cachePlusOps.zAdd(onlineUsersKey, uid, millis);
 				updateGroupPresence(roomIds, uid, true);
-				pushDeviceStatusChange(roomIds, uid, clientId, true, onlineUsersKey);
+				pushDeviceStatusChange(roomIds, uid, clientId, WSRespTypeEnum.ONLINE.getType(), onlineUsersKey);
 			}
 		} else {
 			// 4. 下线逻辑
@@ -267,7 +267,7 @@ public class SessionManager {
 			if (noOtherDevices) {
 				cachePlusOps.zRemove(onlineUsersKey, uid);
 				updateGroupPresence(roomIds, uid, false);
-				pushDeviceStatusChange(roomIds, uid, clientId, false, onlineUsersKey);
+				pushDeviceStatusChange(roomIds, uid, clientId, WSRespTypeEnum.OFFLINE.getType(), onlineUsersKey);
 			}
 		}
 	}
@@ -276,12 +276,10 @@ public class SessionManager {
 	 * 通知所有与自己有关的所有人
 	 * @param uid 登录用户
 	 * @param clientId 登录设备
-	 * @param online 登录状态
+	 * @param type 登录状态
 	 * @param onlineKey 全局在线用户的key
 	 */
-	private void pushDeviceStatusChange(List<Long> roomIds, Long uid, String clientId, boolean online, String onlineKey) {
-		String type = online ? WSRespTypeEnum.ONLINE.getType() : WSRespTypeEnum.OFFLINE.getType();
-
+	private void pushDeviceStatusChange(List<Long> roomIds, Long uid, String clientId, String type, String onlineKey) {
 		// 1. 获取反向好友列表（需要知道该用户在线状态的uid） [推送数据各个不一致]
 		CacheKey reverseFriendsKey = FriendCacheKeyBuilder.reverseFriendsKey(uid);
 		Set<Long> friends = cachePlusOps.sMembers(reverseFriendsKey).stream().map(obj -> Long.parseLong(obj.toString())).collect(Collectors.toSet());

@@ -1,12 +1,11 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ConcurrentHashSet;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.model.cache.CacheKey;
 import com.luohuo.basic.service.MQProducer;
-import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.common.constant.MqConstant;
 import com.luohuo.flex.model.entity.dto.NodePushDTO;
@@ -141,30 +140,6 @@ public class PushService {
 	}
 
 	/**
-	 * 将消息推送给好友
-	 * @param uid 推送给这个uid相关的所有人员
-	 * @param type 前端监听的类型
-	 * @param data 推送的数据
-	 */
-	public void pushFriends(Long uid, String type, Object data) {
-		// 1. 获取反向好友关系
-		CacheKey reverseKey = FriendCacheKeyBuilder.reverseFriendsKey(uid);
-		Set<Long> reverseFriends = cachePlusOps.sMembers(reverseKey).parallelStream()
-				.map(obj -> Long.parseLong(obj.toString()))
-				.collect(Collectors.toSet());
-
-		// 2. 创建通用响应对象
-		WsBaseResp commonResp = new WsBaseResp();
-		commonResp.setType(type);
-		commonResp.setData(data);
-
-		// 3. 推送给反向好友
-		if (CollUtil.isNotEmpty(reverseFriends)) {
-			sendPushMsg(commonResp, new ArrayList<>(reverseFriends), uid);
-		}
-	}
-
-	/**
 	 * 将消息推送给跟我相关的所有房间
 	 * @param uid 推送给这个uid相关的所有人员
 	 * @param type 前端监听的类型
@@ -173,32 +148,40 @@ public class PushService {
 	public void pushRoom(Long uid, String type, Object data) {
 		// 1. 获取用户所在群聊ID列表
 		CacheKey ugKey = PresenceCacheKeyBuilder.userGroupsKey(uid);
-		Set<Long> roomIds = cachePlusOps.sMembers(ugKey).parallelStream()
-				.map(obj -> Long.parseLong(obj.toString()))
-				.collect(Collectors.toSet());
+		Set<Long> roomIds = cachePlusOps.sMembers(ugKey).parallelStream().map(obj -> Long.parseLong(obj.toString())).collect(Collectors.toSet());
+
+		if (roomIds.isEmpty()) {
+			return;
+		}
 
 		// 2. 创建通用响应对象
 		WsBaseResp commonResp = new WsBaseResp();
 		commonResp.setType(type);
 		commonResp.setData(data);
 
-		// 3. 获取群聊在线成员
-		List<CacheKey> groupKeys = roomIds.stream().map(PresenceCacheKeyBuilder::onlineGroupMembersKey).collect(Collectors.toList());
+		// 3. 获取所有群聊的在线成员并去重
+		Set<Long> allMemberIds = new ConcurrentHashSet<>();
 
-		// 5. 并行处理群聊推送
-		int pageSize = 200;
-		groupKeys.parallelStream().forEach(groupKey -> {
-			// 5.1 检查群是否在线
+		// 并行处理每个群聊的在线成员
+		roomIds.parallelStream().forEach(roomId -> {
+			CacheKey groupKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(roomId);
+			// 检查群是否在线
 			if (cachePlusOps.sCard(groupKey) < 1L) return;
 
-			// 5.2 分批获取群成员
-			List<Long> memberIdList = cachePlusOps.sMembers(groupKey).stream()
+			// 获取群成员并添加到总集合中
+			cachePlusOps.sMembers(groupKey).stream()
 					.map(obj -> Long.parseLong(obj.toString()))
-					.collect(Collectors.toList());
-
-			// 5.3 分批推送
-			Lists.partition(memberIdList, pageSize).forEach(batch -> sendPushMsg(commonResp, batch, uid));
+					.forEach(allMemberIds::add);
 		});
+
+		// 4. 移除自己，避免给自己发送消息
+//		allMemberIds.remove(uid);
+
+		// 5. 分批推送
+		int pageSize = 200;
+		List<Long> memberIdList = new ArrayList<>(allMemberIds);
+
+		Lists.partition(memberIdList, pageSize).forEach(batch -> sendPushMsg(commonResp, batch, uid));
 	}
 
 }

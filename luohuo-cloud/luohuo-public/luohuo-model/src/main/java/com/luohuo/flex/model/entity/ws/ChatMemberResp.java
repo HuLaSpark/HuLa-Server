@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 成员列表的成员信息
@@ -53,4 +54,16 @@ public class ChatMemberResp implements Serializable {
 	@Schema(description = "用户状态id")
 	private Long userStateId;
 
+	@Schema(description = "用户拥有的徽章id列表")
+	private List<Long> itemIds;
+
+	@Schema(description = "佩戴的徽章id")
+	private Long wearingItemId;
+
+	/**
+	 * 用户类型 UserTypeEnum
+	 * 参见 {@link com.luohuo.flex.im.enums.UserTypeEnum}
+	 */
+	@Schema(description = "用户类型")
+	private Integer userType;
 }

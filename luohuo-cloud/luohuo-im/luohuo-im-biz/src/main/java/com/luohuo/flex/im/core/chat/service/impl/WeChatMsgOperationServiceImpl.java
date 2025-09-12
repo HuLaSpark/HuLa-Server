@@ -7,8 +7,8 @@ import com.luohuo.flex.im.core.frequencyControl.FrequencyControlException;
 import com.luohuo.flex.im.core.frequencyControl.constant.FrequencyControlConstant;
 import com.luohuo.flex.im.core.frequencyControl.dto.FrequencyControlDTO;
 import com.luohuo.flex.im.core.frequencyControl.util.FrequencyControlUtil;
-import com.luohuo.flex.im.domain.entity.User;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -40,18 +40,16 @@ public class WeChatMsgOperationServiceImpl implements WeChatMsgOperationService 
 
     private final String WE_CHAT_MSG_COLOR = "#A349A4";
 
-    @Resource
-    private UserCache userCache;
+	@Resource
+	private UserSummaryCache userSummaryCache;
 
     @Resource
 	private WxMpService wxMpService;
 
     @Override
     public void publishChatMsgToWeChatUser(long senderUid, List<Long> receiverUidList, String msg) {
-        User sender = userCache.getUserInfo(senderUid);
-        Set uidSet = new HashSet();
-        uidSet.addAll(receiverUidList);
-        Map<Long, User> userMap = userCache.getUserInfoBatch(uidSet);
+		SummeryInfoDTO sender = userSummaryCache.get(senderUid);
+        Map<Long, SummeryInfoDTO> userMap = userSummaryCache.getBatch(receiverUidList);
         userMap.values().forEach(user -> {
             if (Objects.nonNull(user.getOpenId())) {
                 executor.execute(() -> {
@@ -81,7 +79,7 @@ public class WeChatMsgOperationServiceImpl implements WeChatMsgOperationService 
     /*
      * 构造微信模板消息
      */
-    private WxMpTemplateMessage getAtMsgTemplate(User sender, String openId, String msg) {
+    private WxMpTemplateMessage getAtMsgTemplate(SummeryInfoDTO sender, String openId, String msg) {
         return WxMpTemplateMessage.builder()
                 .toUser(openId)
                 .templateId(atMsgPublishTemplateId)
@@ -92,7 +90,7 @@ public class WeChatMsgOperationServiceImpl implements WeChatMsgOperationService 
     /*
      * 构造微信消息模板的数据
      */
-    private List<WxMpTemplateData> generateAtMsgData(User sender, String msg) {
+    private List<WxMpTemplateData> generateAtMsgData(SummeryInfoDTO sender, String msg) {
         List dataList = new ArrayList<WxMpTemplateData>();
 //        todo: 没有消息模板，暂不实现
         dataList.add(new WxMpTemplateData("name", sender.getName(), WE_CHAT_MSG_COLOR));

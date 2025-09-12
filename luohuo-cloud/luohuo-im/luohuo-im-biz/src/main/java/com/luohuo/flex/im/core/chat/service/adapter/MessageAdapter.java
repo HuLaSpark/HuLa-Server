@@ -150,7 +150,6 @@ public class MessageAdapter {
 		return chatMessageReq;
 	}
 
-
 	public static ChatMessageReq buildAgreeMsg4Group(Long roomId, Long count, String userName) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);

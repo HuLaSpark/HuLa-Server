@@ -14,9 +14,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ReplyMsg implements Serializable {
 	@Schema(description = "消息id")
-	private Long id;
+	private String id;
 	@Schema(description = "用户uid")
-	private Long uid;
+	private String uid;
 	@Schema(description = "用户名称")
 	private String username;
 	@Schema(description = "消息类型 1正常文本 2.撤回消息")

@@ -9,10 +9,12 @@ import com.luohuo.basic.utils.JsonUtils;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.base.entity.tenant.DefUser;
 import com.luohuo.flex.base.service.tenant.DefUserService;
+import com.luohuo.flex.im.api.ImUserApi;
 import com.luohuo.flex.model.entity.base.IpDetail;
 import com.luohuo.flex.model.entity.base.IpInfo;
+import com.luohuo.flex.model.entity.base.RefreshIpInfo;
 import com.luohuo.flex.oauth.service.IpService;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Service;
@@ -31,18 +33,18 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class IpServiceImpl implements IpService, DisposableBean {
     private static final ExecutorService EXECUTOR = new ThreadPoolExecutor(1, 1,
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>(500),
             new NamedThreadFactory("refresh-ipDetail",false));
 
-    @Resource
-    private DefUserService defUserService;
-
+	private final ImUserApi userApi;
+    private final DefUserService defUserService;
 
     @Override
-    public void refreshIpDetailAsync(Long uid, IpInfo ipInfo) {
+    public void refreshIpDetailAsync(Long uid, Long userId, IpInfo ipInfo) {
         EXECUTOR.execute(() -> {
             if (Objects.isNull(ipInfo)) {
                 return;
@@ -55,11 +57,13 @@ public class IpServiceImpl implements IpService, DisposableBean {
             if (Objects.nonNull(ipDetail)) {
                 ipInfo.refreshIpDetail(ipDetail);
 				DefUser update = new DefUser();
-                update.setId(uid);
+                update.setId(userId);
                 update.setIpInfo(ipInfo);
                 defUserService.updateById(update);
+
+				userApi.refreshIpInfo(new RefreshIpInfo(uid, ipInfo));
             } else {
-                log.error("get ip detail fail ip:{},uid:{}", ip, uid);
+                log.error("get ip detail fail ip:{},userId:{}", ip, userId);
             }
         });
     }

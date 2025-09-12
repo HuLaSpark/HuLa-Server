@@ -134,22 +134,12 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 	}
 
 	/**
-	 * 当uid的朋友改变后需要调用此方法
-	 * @param uid
-	 * @return
-	 */
-	@CacheEvict(cacheNames = "user", key = "'findGroup'+#uid")
-	public List<Long> evictGroup(Long uid) {
-		return null;
-	}
-
-	/**
 	 * 根据房间号+自己的id 定位好友关系
 	 * @param roomId
 	 * @param uid
 	 * @return
 	 */
-	@Cacheable(cacheNames = "userFriend", key = "'room:'+#roomId+':uid:'+#uid", unless = "#result == null")
+	@Cacheable(cacheNames = "luohuo:userFriend", key = "'room:'+#roomId+':uid:'+#uid", unless = "#result == null")
 	public UserFriend getByRoomId(Long roomId, Long uid) {
 		return lambdaQuery()
 				.eq(UserFriend::getRoomId, roomId)
@@ -162,7 +152,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 	 * @param roomId 房间ID
 	 * @param uid 用户ID
 	 */
-	@CacheEvict(cacheNames = "userFriend", key = "'room:'+#roomId+':uid:'+#uid")
+	@CacheEvict(cacheNames = "luohuo:userFriend", key = "'room:'+#roomId+':uid:'+#uid")
 	public void evictFriendCache(Long roomId, Long uid) {
 	}
 

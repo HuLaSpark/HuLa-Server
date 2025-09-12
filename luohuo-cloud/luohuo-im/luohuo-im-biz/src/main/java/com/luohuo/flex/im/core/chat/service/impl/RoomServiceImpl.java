@@ -25,7 +25,7 @@ import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.core.chat.service.RoomService;
 import com.luohuo.flex.im.core.chat.service.adapter.ChatAdapter;
 import com.luohuo.flex.im.domain.entity.User;
-import com.luohuo.flex.im.core.user.service.cache.UserInfoCache;
+import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -46,7 +46,7 @@ public class RoomServiceImpl implements RoomService {
     private GroupMemberDao groupMemberDao;
 	private AnnouncementsDao announcementsDao;
 	private AnnouncementsReadRecordDao announcementsReadRecordDao;
-    private UserInfoCache userInfoCache;
+    private UserCache userCache;
     private RoomGroupDao roomGroupDao;
 
     @Override
@@ -86,7 +86,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomGroup createGroupRoom(Long uid, GroupAddReq groupAddReq) {
         List<GroupMember> selfGroup = groupMemberDao.getSelfGroup(uid);
         AssertUtil.isTrue(selfGroup.size() < 20, "每个人只能创建20个群");
-        User user = userInfoCache.get(uid);
+        User user = userCache.get(uid);
         Room room = createRoom(RoomTypeEnum.GROUP);
         // 插入群
         RoomGroup roomGroup = ChatAdapter.buildGroupRoom(user, room.getId(), groupAddReq.getGroupName());
@@ -137,7 +137,7 @@ public class RoomServiceImpl implements RoomService {
 	public AnnouncementsResp getAnnouncement(Long id) {
 		AnnouncementsResp resp = new AnnouncementsResp();
 		BeanUtils.copyProperties(announcementsDao.getById(id), resp);
-		User user = userInfoCache.get(resp.getUid());
+		User user = userCache.get(resp.getUid());
 		resp.setUName(user.getName());
 		return resp;
 	}

@@ -1,11 +1,10 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
 import com.luohuo.flex.im.core.user.service.RoleService;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
-
 import java.util.Set;
 
 /**
@@ -15,11 +14,11 @@ import java.util.Set;
 public class RoleServiceImpl implements RoleService {
 
     @Resource
-    private UserCache userCache;
+    private UserSummaryCache userSummaryCache;
 
     @Override
     public boolean hasRole(Long uid, RoleTypeEnum roleTypeEnum) {
-        Set<Long> roleSet = userCache.getRoleSet(uid);
+        Set<Long> roleSet = userSummaryCache.getRoleSet(uid);
         return isAdmin(roleSet) || roleSet.contains(roleTypeEnum.getId());
     }
 

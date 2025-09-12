@@ -44,10 +44,12 @@ public interface RoomAppService {
 	 * @return
 	 */
 	Boolean createContact(Long uid, @Valid ContactAddReq request);
+
     /**
      * 获取会话列表--支持未登录态
      */
     CursorPageBaseResp<ChatRoomResp> getContactPage(CursorPageBaseReq request, Long uid);
+
 	/**
 	 * 获取用户所有会话列表
 	 */
@@ -58,22 +60,41 @@ public interface RoomAppService {
      */
     MemberResp getGroupDetail(Long uid, long roomId);
 
-    CursorPageBaseResp<ChatMemberResp> getMemberPage(MemberReq request);
-
+	/**
+	 * 获取群成员
+	 */
     List<ChatMemberListResp> getMemberList(ChatMessageMemberReq request);
 
+	/**
+	 * 移出群聊
+	 */
     void delMember(Long uid, MemberDelReq request);
 
+	/**
+	 * 邀请好友进群
+	 */
     void addMember(Long uid, MemberAddReq request);
 
+	/**
+	 * 创建群聊
+	 */
     Long addGroup(Long uid, GroupAddReq request);
 
+	/**
+	 * 获取单个会话
+	 */
     ChatRoomResp getContactDetail(Long uid, Long roomId);
 
     ChatRoomResp getContactDetailByFriend(Long uid, @Valid ContactFriendReq req);
 
+	/**
+	 * 获取群聊列表
+	 */
 	List<MemberResp> groupList(Long uid);
 
+	/**
+	 * 同步在线状态
+	 */
 	void asyncOnline(List<Long> uidList, Long roomId, boolean online);
 
 	/**

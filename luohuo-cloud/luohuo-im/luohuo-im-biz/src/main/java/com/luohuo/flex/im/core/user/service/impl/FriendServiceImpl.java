@@ -10,6 +10,8 @@ import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.common.constant.DefValConstants;
 import com.luohuo.flex.im.api.PresenceApi;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import jakarta.annotation.PostConstruct;
@@ -42,7 +44,6 @@ import com.luohuo.flex.im.domain.vo.resp.friend.FriendCheckResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendResp;
 import com.luohuo.flex.im.core.user.service.FriendService;
 import com.luohuo.flex.im.core.user.service.adapter.FriendAdapter;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +64,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
     private RoomService roomService;
     private ChatService chatService;
     private UserDao userDao;
-	private UserCache userCache;
+	private UserSummaryCache userSummaryCache;
 	private BaseRedis baseRedis;
 	private CachePlusOps cachePlusOps;
 	private PresenceApi presenceApi;
@@ -151,7 +152,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 
 	@Override
 	public List<ChatMemberListResp> searchFriend(FriendReq friendReq) {
-		return userCache.getFriend(friendReq.getKey());
+		return userSummaryCache.getFriend(friendReq.getKey());
 	}
 
 	/**
@@ -179,7 +180,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		// 发送一条同意消息。。我们已经是好友了，开始聊天吧
 		chatService.sendMsg(MessageAdapter.buildAgreeMsg(roomFriend.getRoomId(), true), uid);
 		// 系统账号在群内发送一条欢迎消息
-		User user = userCache.getUserInfo(uid);
+		SummeryInfoDTO user = userSummaryCache.get(uid);
 		Long total = cachePlusOps.inc("luohuo:user:total_count", 0, TimeUnit.DAYS); // 查询系统总注册人员
 		chatService.sendMsg(MessageAdapter.buildAgreeMsg4Group(DefValConstants.DEF_ROOM_ID, total, user.getName()), DefValConstants.DEF_BOT_ID);
 	}

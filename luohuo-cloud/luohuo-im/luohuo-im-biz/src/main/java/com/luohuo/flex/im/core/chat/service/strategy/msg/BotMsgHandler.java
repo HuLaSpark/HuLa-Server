@@ -6,7 +6,7 @@ import com.luohuo.flex.im.common.utils.discover.PrioritizedUrlDiscover;
 import com.luohuo.flex.im.common.utils.sensitiveword.SensitiveWordBs;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.core.user.service.RoleService;
-import com.luohuo.flex.im.core.user.service.cache.UserInfoCache;
+import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.domain.UrlInfo;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.User;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class BotMsgHandler extends AbstractMsgHandler<TextMsgReq> {
 
     private MessageDao messageDao;
-    private UserInfoCache userInfoCache;
+    private UserCache userCache;
     private RoleService roleService;
     private SensitiveWordBs sensitiveWordBs;
 
@@ -55,7 +55,7 @@ public class BotMsgHandler extends AbstractMsgHandler<TextMsgReq> {
         if (CollectionUtil.isNotEmpty(body.getAtUidList())) {
             //前端传入的@用户列表可能会重复，需要去重
             List<Long> atUidList = body.getAtUidList().stream().distinct().collect(Collectors.toList());
-            Map<Long, User> batch = userInfoCache.getBatch(atUidList);
+            Map<Long, User> batch = userCache.getBatch(atUidList);
             //如果@用户不存在，userInfoCache 返回的map中依然存在该key，但是value为null，需要过滤掉再校验
             long batchCount = batch.values().stream().filter(Objects::nonNull).count();
             AssertUtil.equal((long)atUidList.size(), batchCount, "@用户不存在");

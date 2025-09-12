@@ -11,10 +11,10 @@ import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.common.constant.DefValConstants;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.common.event.UserRegisterEvent;
-import com.luohuo.flex.im.core.chat.service.ContactService;
 import com.luohuo.flex.im.core.chat.service.RoomAppService;
-import com.luohuo.flex.im.core.chat.service.RoomService;
 import com.luohuo.flex.im.core.user.service.cache.DefUserCache;
+import com.luohuo.flex.im.core.user.service.cache.UserCache;
+import com.luohuo.flex.model.entity.base.IpInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,21 +44,17 @@ import com.luohuo.flex.im.domain.vo.req.user.BlackReq;
 import com.luohuo.flex.im.domain.vo.req.user.ItemInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyAvatarReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
-import com.luohuo.flex.im.domain.vo.req.user.SummeryInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.WearingBadgeReq;
 import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
 import com.luohuo.flex.im.core.user.service.UserService;
 import com.luohuo.flex.im.core.user.service.adapter.UserAdapter;
 import com.luohuo.flex.im.core.user.service.cache.ItemCache;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -71,19 +67,30 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
 	public static final LocalDateTime MAX_DATE = LocalDateTime.of(2099, 12, 31, 00, 00, 00);
-    private final ContactService contactService;
-    private final RoomService roomService;
 	private final RoomAppService roomAppService;
-    private UserCache userCache;
-	private DefUserCache defUserCache;
-    private UserBackpackDao userBackpackDao;
-    private UserDao userDao;
-    private ItemConfigDao itemConfigDao;
-    private ItemCache itemCache;
-    private BlackDao blackDao;
+	private final DefUserCache defUserCache;
+    private final UserBackpackDao userBackpackDao;
+    private final UserDao userDao;
+    private final ItemConfigDao itemConfigDao;
+    private final ItemCache itemCache;
+    private final BlackDao blackDao;
 	private final CachePlusOps cachePlusOps;
-    private UserSummaryCache userSummaryCache;
-    private SensitiveWordBs sensitiveWordBs;
+	private final UserCache userCache;
+    private final UserSummaryCache userSummaryCache;
+    private final SensitiveWordBs sensitiveWordBs;
+
+	@Override
+	public Boolean refreshIpInfo(Long uid, IpInfo ipInfo) {
+		User user = new User();
+		user.setId(uid);
+		user.setIpInfo(ipInfo);
+		boolean updated = userDao.updateById(user);
+
+		// 清空缓存
+		userCache.delete(uid);
+		userSummaryCache.delete(uid);
+		return updated;
+	}
 
 	@Override
 	public Boolean checkEmail(String email) {
@@ -108,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoResp getUserInfo(Long uid) {
-        User userInfo = userCache.getUserInfo(uid);
+		SummeryInfoDTO userInfo = userSummaryCache.get(uid);
         Integer countByValidItemId = userBackpackDao.getCountByValidItemId(uid, ItemEnum.MODIFY_NAME_CARD.getId());
         return UserAdapter.buildUserInfoResp(userInfo, countByValidItemId);
     }
@@ -119,23 +126,27 @@ public class UserServiceImpl implements UserService {
         // 判断名字是不是重复
         String newName = req.getName();
         AssertUtil.isFalse(sensitiveWordBs.hasSensitiveWord(newName), "名字中包含敏感词，请重新输入"); // 判断名字中有没有敏感词
-        // 名称可以重复
-//        User oldUser = userDao.getByName(newName);
-//        AssertUtil.isEmpty(oldUser, "名字已经被抢占了，请换一个哦~~");
-        // 判断改名卡够不够
-        UserBackpack firstValidItem = userBackpackDao.getFirstValidItem(uid, ItemEnum.MODIFY_NAME_CARD.getId());
-        AssertUtil.isNotEmpty(firstValidItem, "改名次数不够了，等后续活动送改名卡哦");
-        // 使用改名卡
-        boolean useSuccess = userBackpackDao.invalidItem(firstValidItem.getId());
-        // 用乐观锁，就不用分布式锁了
-        if (useSuccess) {
-            // 改名
-            userDao.modifyName(uid, req);
-            // 删除缓存
-			userSummaryCache.delete(uid);
-            userCache.userInfoChange(uid);
-			userCache.evictFriend(userCache.getUserInfo(uid).getAccount());
-        }
+
+		User user = userDao.getById(uid);
+		AssertUtil.isTrue(req.getAvatar().equals(user.getAvatar()) ||
+						(user.getAvatarUpdateTime() != null && user.getAvatarUpdateTime().plusDays(30).isBefore(LocalDateTime.now())),
+				"30天内只能修改一次头像");
+		// 更新
+		User update = new User();
+		update.setId(uid);
+		update.setSex(req.getSex());
+		update.setName(req.getName());
+		update.setResume(req.getResume());
+
+		if(StrUtil.isNotEmpty(req.getAvatar()) && !req.getAvatar().equals(user.getAvatar())){
+			update.setAvatar(req.getAvatar());
+			update.setAvatarUpdateTime(LocalDateTime.now());
+		}
+
+		userDao.updateById(update);
+		// 删除缓存
+		userSummaryCache.delete(uid);
+		userSummaryCache.evictFriend(userSummaryCache.get(uid).getAccount());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -154,9 +165,8 @@ public class UserServiceImpl implements UserService {
 		updateUser.setId(user.getId());
 		userDao.updateById(updateUser);
         // 删除缓存
-        userCache.userInfoChange(uid);
 		userSummaryCache.delete(uid);
-		userCache.evictFriend(user.getAccount());
+		userSummaryCache.evictFriend(user.getAccount());
     }
 
     @Override
@@ -180,8 +190,6 @@ public class UserServiceImpl implements UserService {
         AssertUtil.equal(itemConfig.getType(), ItemTypeEnum.BADGE.getType(), "该徽章不可佩戴");
         // 佩戴徽章
         userDao.wearingBadge(uid, req.getBadgeId());
-        // 删除用户缓存
-        userCache.userInfoChange(uid);
 		userSummaryCache.delete(uid);
     }
 
@@ -201,19 +209,6 @@ public class UserServiceImpl implements UserService {
         blackIp(byId.getIpInfo().getCreateIp());
         blackIp(byId.getIpInfo().getUpdateIp());
         SpringUtils.publishEvent(new UserBlackEvent(this, byId));
-    }
-
-    @Override
-    public List<SummeryInfoDTO> getSummeryUserInfo(SummeryInfoReq req) {
-        //需要前端同步的uid
-        List<Long> uidList = getNeedSyncUidList(req.getReqList());
-        //加载用户信息
-        Map<Long, SummeryInfoDTO> batch = userSummaryCache.getBatch(uidList);
-        return req.getReqList()
-                .stream()
-                .map(a -> batch.containsKey(a.getUid()) ? batch.get(a.getUid()) : SummeryInfoDTO.skip(a.getUid()))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -261,29 +256,17 @@ public class UserServiceImpl implements UserService {
 		}
 
 		// 3. 修改邮箱
-		User userInfo = userCache.getUserInfo(uid);
-		userInfo.setEmail(req.getEmail());
-		boolean save = userDao.save(userInfo);
+		SummeryInfoDTO userInfo = userSummaryCache.get(uid);
+		User user = new User();
+		user.setId(userInfo.getUid());
+		user.setEmail(req.getEmail());
+		boolean save = userDao.updateById(user);
 		if(save){
 			cachePlusOps.hDel("emailCode", req.getUuid());
-			userCache.userInfoChange(uid);
 			userSummaryCache.delete(uid);
 		}
 		return save;
 	}
-
-	private List<Long> getNeedSyncUidList(List<SummeryInfoReq.infoReq> reqList) {
-        List<Long> needSyncUidList = new ArrayList<>();
-        List<Long> userModifyTime = userCache.getUserModifyTime(reqList.stream().map(SummeryInfoReq.infoReq::getUid).collect(Collectors.toList()));
-        for (int i = 0; i < reqList.size(); i++) {
-            SummeryInfoReq.infoReq infoReq = reqList.get(i);
-            Long modifyTime = userModifyTime.get(i);
-            if (Objects.isNull(infoReq.getLastModifyTime()) || (Objects.nonNull(modifyTime) && modifyTime > infoReq.getLastModifyTime())) {
-                needSyncUidList.add(infoReq.getUid());
-            }
-        }
-        return needSyncUidList;
-    }
 
     public void blackIp(String ip) {
         if (StrUtil.isBlank(ip)) {

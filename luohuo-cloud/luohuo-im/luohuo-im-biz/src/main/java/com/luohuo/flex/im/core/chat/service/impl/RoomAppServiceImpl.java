@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.luohuo.basic.cache.repository.CachePlusOps;
@@ -14,12 +13,15 @@ import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.im.api.PresenceApi;
+import com.luohuo.flex.im.common.event.GroupInviteMemberEvent;
 import com.luohuo.flex.im.core.chat.dao.RoomFriendDao;
 import com.luohuo.flex.im.core.chat.dao.RoomGroupDao;
 import com.luohuo.flex.im.core.user.dao.UserApplyDao;
 import com.luohuo.flex.im.core.user.dao.UserBackpackDao;
 import com.luohuo.flex.im.core.user.dao.UserFriendDao;
 import com.luohuo.flex.im.core.user.dao.UserPrivacyDao;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.*;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
@@ -35,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -102,7 +103,6 @@ import com.luohuo.flex.im.core.user.service.FriendService;
 import com.luohuo.flex.im.core.user.service.RoleService;
 import com.luohuo.flex.im.core.user.service.adapter.WsAdapter;
 import com.luohuo.flex.im.core.user.service.cache.UserCache;
-import com.luohuo.flex.im.core.user.service.cache.UserInfoCache;
 import com.luohuo.flex.im.core.user.service.impl.PushService;
 
 import java.time.LocalDateTime;
@@ -111,7 +111,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.luohuo.flex.im.common.config.ThreadPoolConfig.LUOHUO_EXECUTOR;
 import static com.luohuo.flex.im.core.chat.constant.GroupConst.MAX_MANAGE_COUNT;
 import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.UNREAD;
 
@@ -131,10 +130,10 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	private RoomGroupCache roomGroupCache;
 	private RoomFriendCache roomFriendCache;
 	private CachePlusOps cachePlusOps;
-	private UserInfoCache userInfoCache;
+	private UserCache userCache;
 	private MessageDao messageDao;
 	private HotRoomCache hotRoomCache;
-	private UserCache userCache;
+	private UserSummaryCache userSummaryCache;
 	private RoomAnnouncementsCache roomAnnouncementsCache;
 	private GroupMemberDao groupMemberDao;
 	private UserDao userDao;
@@ -371,6 +370,10 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		roomService.createGroupMember(groupId, uid);
 		// 创建系统消息
 		friendService.createSystemFriend(uid);
+		// 发送进群事件
+		CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(roomId);
+		CacheKey onlineGroupMembersKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(roomId);
+		SpringUtils.publishEvent(new GroupMemberAddEvent(this, roomId, Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(uid), uid));
 	}
 
 	/**
@@ -673,7 +676,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 			RoomFriend roomFriend = roomFriendCache.get(request.getRoomId());
 			roomService.updateState(uid.equals(roomFriend.getUid1()), roomFriend.getUid1(), roomFriend.getUid2(), request.getState());
 
-			name = userCache.getUserInfo(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1()).getName();
+			name = userSummaryCache.get(roomFriend.getUid1().equals(uid) ? roomFriend.getUid2() : roomFriend.getUid1()).getName();
 		}
 
 		// 3. 通知所有设备我已经屏蔽这个房间
@@ -703,7 +706,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 2. 当是转发单条消息的时候
 		List<Message> messagess = chatService.getMsgByIds(req.getMessageIds());
-		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getFromRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userInfoCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
+		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getFromRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
 
 		// 3. 发布合并消息
 		Long msgId = chatService.sendMsg(MessageAdapter.buildMergeMsg(req.getRoomId(), msgs), uid);
@@ -742,21 +745,6 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	}
 
 	@Override
-	public CursorPageBaseResp<ChatMemberResp> getMemberPage(MemberReq request) {
-		Room room = roomCache.get(request.getRoomId());
-		AssertUtil.isNotEmpty(room, "房间号有误");
-		List<Long> memberUidList;
-		if (isHotGroup(room)) {
-			// 全员群展示所有用户
-			memberUidList = null;
-		} else {// 只展示房间内的群成员
-			RoomGroup roomGroup = roomGroupCache.get(request.getRoomId());
-			memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
-		}
-		return chatService.getMemberPage(memberUidList, request);
-	}
-
-	@Override
 	public List<ChatMemberResp> listMember(MemberReq request) {
 		// 1. 基础校验
 		Room room = roomCache.get(request.getRoomId());
@@ -769,8 +757,8 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		List<ChatMemberResp> chatMemberResps = groupMemberDao.getMemberListByGroupId(roomGroupCache.get(request.getRoomId()).getId());
 
 		// 3. 批量获取用户信息
-		Set<Long> uids = chatMemberResps.stream().map(ChatMemberResp::getUid).map(Long::parseLong).collect(Collectors.toSet());
-		Map<Long, User> userInfoBatch = userCache.getUserInfoBatch(uids);
+		List<Long> uids = chatMemberResps.stream().map(ChatMemberResp::getUid).map(Long::parseLong).collect(Collectors.toList());
+		Map<Long, SummeryInfoDTO> batch = userSummaryCache.getBatch(uids);
 
 		// 5. 批量获取在线状态
 		Set<Long> onlineList = presenceApi.getOnlineUsersList(new ArrayList<>(uids)).getData();
@@ -778,15 +766,19 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		// 6. 填充用户信息和在线状态
 		chatMemberResps.forEach(item -> {
 			Long uid = Long.parseLong(item.getUid());
-			User user = userInfoBatch.get(uid);
+			SummeryInfoDTO user = batch.get(uid);
 
 			if (user != null) {
 				item.setActiveStatus(onlineList.contains(uid) ? ChatActiveStatusEnum.ONLINE.getStatus() : ChatActiveStatusEnum.OFFLINE.getStatus());
 				item.setLastOptTime(user.getLastOptTime());
 				item.setName(user.getName());
 				item.setAvatar(user.getAvatar());
+				item.setLocPlace(user.getLocPlace());
 				item.setAccount(user.getAccount());
 				item.setUserStateId(user.getUserStateId());
+				item.setItemIds(user.getItemIds());
+				item.setUserType(user.getUserType());
+				item.setWearingItemId(user.getWearingItemId());
 			}
 		});
 
@@ -817,7 +809,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		} else {
 			RoomGroup roomGroup = roomGroupCache.get(room.getId());
 			List<Long> memberUidList = groupMemberDao.getMemberUidList(roomGroup.getId(), null);
-			Map<Long, User> batch = userInfoCache.getBatch(memberUidList);
+			Map<Long, User> batch = userCache.getBatch(memberUidList);
 			return MemberAdapter.buildMemberList(batch);
 		}
 	}
@@ -908,14 +900,14 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 2. 创建邀请记录
 		transactionTemplate.execute(e -> {
-			List<UserApply> invites = validUids.stream().map(inviteeUid -> new UserApply(uid, RoomTypeEnum.GROUP.getType(), roomGroup.getRoomId(), inviteeUid, StrUtil.format("{}邀请你加入{}", userCache.getUserInfo(uid).getName(), roomGroup.getName()), ApplyStatusEnum.WAIT_APPROVAL.getCode(), UNREAD.getCode(), 0, false)).collect(Collectors.toList());
+			List<UserApply> invites = validUids.stream().map(inviteeUid -> new UserApply(uid, RoomTypeEnum.GROUP.getType(), roomGroup.getRoomId(), inviteeUid, StrUtil.format("{}邀请你加入{}", userSummaryCache.get(uid).getName(), roomGroup.getName()), ApplyStatusEnum.WAIT_APPROVAL.getCode(), UNREAD.getCode(), 0, false)).collect(Collectors.toList());
 			userApplyDao.saveBatch(invites);
 			return true;
 		});
 
 		// 3. 通知被邀请的人进群
 		validUids.forEach(inviteId -> {
-			User user = userCache.getUserInfo(inviteId);
+			SummeryInfoDTO user = userSummaryCache.get(inviteId);
 			if(ObjectUtil.isNotNull(user)){
 				pushService.sendPushMsg(MessageAdapter.buildInviteeUserAddGroupMessage(userApplyDao.getUnReadCount(inviteId, inviteId)), inviteId, uid);
 			}
@@ -1014,7 +1006,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	@Override
 	@RedissonLock(prefixKey = "addGroup:", key = "#uid")
 	public Long addGroup(Long uid, GroupAddReq request) {
-		Map<Long, User> userMap = userCache.getUserInfoBatch(request.getUidList().stream().collect(Collectors.toSet()));
+		Map<Long, SummeryInfoDTO> userMap = userSummaryCache.getBatch(request.getUidList());
 		AssertUtil.isTrue(userMap.size() > 1,"群聊人数应大于2人");
 
 		List<Long> uidList = new ArrayList<>(userMap.keySet());
@@ -1044,6 +1036,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 				cachePlusOps.sAdd(PresenceCacheKeyBuilder.userGroupsKey(id), roomIdAtomic.get());
 			});
 			asyncOnline(uidList, roomIdAtomic.get(), true);
+			SpringUtils.publishEvent(new GroupInviteMemberEvent(this, roomIdAtomic.get(), request.getUidList(), uid));
 			SpringUtils.publishEvent(new GroupMemberAddEvent(this, roomIdAtomic.get(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), request.getUidList(), uid));
 		}
 		return roomIdAtomic.get();
@@ -1092,7 +1085,6 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		List<Long> msgIds = roomBaseInfoMap.values().stream().map(RoomBaseInfo::getLastMsgId).collect(Collectors.toList());
 		List<Message> messages = CollectionUtil.isEmpty(msgIds) ? new ArrayList<>() : messageDao.listByIds(msgIds);
 		Map<Long, Message> msgMap = messages.stream().collect(Collectors.toMap(Message::getId, Function.identity()));
-//		Map<Long, User> lastMsgUidMap = userInfoCache.getBatch(messages.stream().map(Message::getFromUid).collect(Collectors.toList()));
 		// 消息未读数
 		Map<Long, Integer> unReadCountMap = getUnReadCountMap(contactMap.values());
 
@@ -1174,7 +1166,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		}
 		Map<Long, RoomFriend> roomFriendMap = roomFriendCache.getBatch(roomIds);
 		Set<Long> friendUidSet = ChatAdapter.getFriendUidSet(roomFriendMap.values(), uid);
-		Map<Long, User> userBatch = userInfoCache.getBatch(new ArrayList<>(friendUidSet));
+		Map<Long, User> userBatch = userCache.getBatch(new ArrayList<>(friendUidSet));
 		return roomFriendMap.values()
 				.stream()
 				.collect(Collectors.toMap(RoomFriend::getRoomId, roomFriend -> {

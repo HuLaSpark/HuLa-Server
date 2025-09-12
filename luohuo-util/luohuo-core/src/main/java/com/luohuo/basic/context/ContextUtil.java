@@ -165,10 +165,10 @@ public final class ContextUtil {
 	/**
 	 * 设置子系统id
 	 *
-	 * @param employeeId 员工id
+	 * @param uid 员工id
 	 */
-	public static void setUid(Object employeeId) {
-		set(ContextConstants.U_ID_HEADER, employeeId);
+	public static void setUid(Object uid) {
+		set(ContextConstants.U_ID_HEADER, uid);
 	}
 
 	/**

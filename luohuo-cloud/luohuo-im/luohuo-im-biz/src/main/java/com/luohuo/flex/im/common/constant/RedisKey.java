@@ -57,39 +57,9 @@ public class RedisKey {
 	public static final String ROOM_FRIEND_FORMAT = "room_friend:id_%d";
 
 	/**
-	 * 群成员信息
-	 */
-	public static final String GROUP_MEMBER_INFO_FORMAT = "group_member_info:groupId_%d";
-
-	/**
 	 * 群公告
 	 */
 	public static final String GROUP_ANNOUNCEMENTS_FORMAT = "groupInfo:announcements_%d";
-
-	/**
-	 * 用户token存放 格式：终端:uid
-	 */
-	public static final String USER_TOKEN_UID_FORMAT = "userToken:%s:uid_%d";
-
-    /**
-     * 用户token存放 格式：终端:uid:uuid
-     */
-    public static final String USER_TOKEN_FORMAT = "userToken:%s:uid_%d:%s";
-
-	/**
-	 * 用户refreshToken存放
-	 */
-	public static final String USER_REFRESH_TOKEN_UID_FORMAT = "userRefreshToken:%s:uid_%d";
-
-	/**
-	 * 用户refreshToken存放
-	 */
-	public static final String USER_REFRESH_TOKEN_FORMAT = "userRefreshToken:%s:uid_%d:%s";
-
-    /**
-     * 用户的信息更新时间
-     */
-    public static final String USER_MODIFY_FORMAT = "userModify:uid_%d";
 
     /**
      * 用户的信息汇总

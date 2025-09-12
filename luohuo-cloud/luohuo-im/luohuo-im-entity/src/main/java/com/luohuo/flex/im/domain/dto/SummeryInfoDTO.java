@@ -1,14 +1,14 @@
 package com.luohuo.flex.im.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import java.time.LocalDateTime;
 import java.util.List;
-
 
 /**
  * 修改用户名
@@ -29,20 +29,32 @@ public class SummeryInfoDTO {
     private Boolean needRefresh = Boolean.TRUE;
     @Schema(description = "用户昵称")
     private String name;
+	@Schema(description = "性别")
+	private Integer sex;
 	@Schema(description = "Hula号")
 	private String account;
     @Schema(description = "用户头像")
     private String avatar;
     @Schema(description = "归属地")
     private String locPlace;
+	@JsonIgnore
+	@Schema(description = "微信openId")
+	private String openId;
+	@JsonIgnore
+	@Schema(description = "邮箱")
+	private String email;
+	@Schema(description = "个人简介")
+	private String resume;
 	@Schema(description = "用户状态")
 	private Long userStateId;
     @Schema(description = "佩戴的徽章id")
     private Long wearingItemId;
 	@Schema(description = "用户类型")
 	private Integer userType;
+	@Schema(description = "最后一次上下线时间")
+	private LocalDateTime lastOptTime;
 
-    public static SummeryInfoDTO skip(Long uid) {
+	public static SummeryInfoDTO skip(Long uid) {
         SummeryInfoDTO dto = new SummeryInfoDTO();
         dto.setUid(uid);
         dto.setNeedRefresh(Boolean.FALSE);

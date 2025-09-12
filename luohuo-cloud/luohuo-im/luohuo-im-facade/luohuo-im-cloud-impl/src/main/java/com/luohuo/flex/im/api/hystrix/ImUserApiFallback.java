@@ -3,6 +3,7 @@ package com.luohuo.flex.im.api.hystrix;
 import com.luohuo.basic.exception.BizException;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
+import com.luohuo.flex.model.entity.base.RefreshIpInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import com.luohuo.basic.base.R;
@@ -38,4 +39,9 @@ public class ImUserApiFallback implements ImUserApi {
     public R<Boolean> register(UserRegisterVo userRegisterVo) {
         throw BizException.wrap("注册失败");
     }
+
+	@Override
+	public R<Boolean> refreshIpInfo(RefreshIpInfo refreshIpInfo) {
+		return R.success(true);
+	}
 }

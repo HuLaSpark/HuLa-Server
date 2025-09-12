@@ -5,7 +5,7 @@ import cn.hutool.http.ContentType;
 import cn.hutool.json.JSONUtil;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.enums.BlackTypeEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,11 +26,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BlackInterceptor implements HandlerInterceptor {
 
-    private final UserCache userCache;
+    private final UserSummaryCache userSummaryCache;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Map<Integer, Set<String>> blackMap = userCache.getBlackMap();
+        Map<Integer, Set<String>> blackMap = userSummaryCache.getBlackMap();
 		Long uid = ContextUtil.getUid();
 		if (isBlackList(uid, blackMap.get(BlackTypeEnum.UID.getType()))) {
 			response.setStatus(HttpStatus.OK.value());

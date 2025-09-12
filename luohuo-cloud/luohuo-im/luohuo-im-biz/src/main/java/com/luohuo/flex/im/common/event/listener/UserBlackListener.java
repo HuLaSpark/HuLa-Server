@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.common.event.listener;
 
 import com.luohuo.basic.context.ContextUtil;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -11,7 +12,6 @@ import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
 import com.luohuo.flex.model.entity.ws.WSBlack;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.core.user.service.impl.PushService;
 
 import static com.luohuo.flex.im.common.config.ThreadPoolConfig.LUOHUO_EXECUTOR;
@@ -27,13 +27,13 @@ import static com.luohuo.flex.im.common.config.ThreadPoolConfig.LUOHUO_EXECUTOR;
 public class UserBlackListener {
 
     private final MessageDao messageDao;
-    private final UserCache userCache;
+    private final UserSummaryCache userSummaryCache;
     private final PushService pushService;
 
     @Async(LUOHUO_EXECUTOR)
     @EventListener(classes = UserBlackEvent.class)
     public void refreshRedis(UserBlackEvent event) {
-        userCache.evictBlackMap();
+		userSummaryCache.evictBlackMap();
     }
 
     @Async(LUOHUO_EXECUTOR)

@@ -11,6 +11,7 @@ import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
+import com.luohuo.flex.im.common.event.GroupInviteMemberEvent;
 import com.luohuo.flex.im.common.event.GroupMemberAddEvent;
 import com.luohuo.flex.im.common.event.UserApplyEvent;
 import com.luohuo.flex.im.common.event.UserApprovalEvent;
@@ -30,13 +31,13 @@ import com.luohuo.flex.im.core.user.service.ApplyService;
 import com.luohuo.flex.im.core.user.service.FriendService;
 import com.luohuo.flex.im.core.user.service.adapter.FriendAdapter;
 import com.luohuo.flex.im.core.user.service.adapter.WsAdapter;
-import com.luohuo.flex.im.core.user.service.cache.UserCache;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.RequestApprovalDto;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.GroupMember;
 import com.luohuo.flex.im.domain.entity.Room;
 import com.luohuo.flex.im.domain.entity.RoomFriend;
 import com.luohuo.flex.im.domain.entity.RoomGroup;
-import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.entity.UserFriend;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
@@ -84,7 +85,7 @@ public class ApplyServiceImpl implements ApplyService {
     private ChatService chatService;
 	private RoomCache roomCache;
 	private PushService pushService;
-	private UserCache userCache;
+	private UserSummaryCache userSummaryCache;
 	private GroupMemberCache groupMemberCache;
 	private RoomGroupCache roomGroupCache;
 	private GroupMemberDao groupMemberDao;
@@ -145,7 +146,7 @@ public class ApplyServiceImpl implements ApplyService {
 
 		// 获取到这个群的管理员的人的信息
 		List<Long> groupAdminIds = roomService.getGroupUsers(roomGroup.getId(), true);
-		User userInfo = userCache.getUserInfo(uid);
+		SummeryInfoDTO userInfo = userSummaryCache.get(uid);
 		String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
 
 		for (Long groupAdminId : groupAdminIds) {
@@ -226,7 +227,7 @@ public class ApplyServiceImpl implements ApplyService {
 					Room room = roomCache.get(invite.getRoomId());
 					GroupMember member = groupMemberDao.getMemberByGroupId(roomGroup.getId(), uid);
 					if(ObjectUtil.isNotNull(member)){
-						throw new BizException(StrUtil.format("{}已经在{}里", userCache.getUserInfo(invite.getTargetId()).getName(), roomGroup.getName()));
+						throw new BizException(StrUtil.format("{}已经在{}里", userSummaryCache.get(invite.getTargetId()).getName(), roomGroup.getName()));
 					}
 
 					transactionTemplate.execute(e -> {
@@ -250,6 +251,7 @@ public class ApplyServiceImpl implements ApplyService {
 					cachePlusOps.sAdd(gKey, invite.getTargetId());
 					roomAppService.asyncOnline(Arrays.asList(invite.getTargetId()), room.getId(), true);
 
+					SpringUtils.publishEvent(new GroupInviteMemberEvent(this, room.getId(), Arrays.asList(invite.getTargetId()), invite.getUid()));
 					SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(invite.getTargetId()), invite.getUid()));
 				}
 			}
@@ -313,6 +315,7 @@ public class ApplyServiceImpl implements ApplyService {
 			roomAppService.asyncOnline(Arrays.asList(apply.getUid()), room.getId(), true);
 
 			// 5.5 发布成员增加事件
+			SpringUtils.publishEvent(new GroupInviteMemberEvent(this, room.getId(), Arrays.asList(apply.getUid()), apply.getUid()));
 			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Collections.singletonList(apply.getUid()), apply.getUid()));
 		}
 

@@ -4,6 +4,8 @@ import com.luohuo.basic.base.R;
 import com.luohuo.flex.im.api.hystrix.ImUserApiFallback;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
+import com.luohuo.flex.model.entity.base.IpInfo;
+import com.luohuo.flex.model.entity.base.RefreshIpInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -47,4 +49,11 @@ public interface ImUserApi {
 	 */
     @PostMapping("/user/register")
     R<Boolean> register(@Valid @RequestBody UserRegisterVo userRegisterVo);
+
+	/**
+	 * 刷新IP信息、物理地址
+	 * @param refreshIpInfo ip信息
+	 */
+	@PostMapping("/user/refreshIpInfo")
+	R<Boolean> refreshIpInfo(@RequestBody RefreshIpInfo refreshIpInfo);
 }
