@@ -28,7 +28,6 @@ import com.luohuo.flex.im.domain.vo.request.room.ReadAnnouncementsParam;
 import com.luohuo.flex.im.domain.vo.request.room.RoomGroupReq;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
 import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
-import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.domain.vo.response.ChatRoomResp;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import com.luohuo.flex.im.domain.vo.req.MergeMessageReq;
@@ -182,7 +181,7 @@ public interface RoomAppService {
 	 * 合并消息
 	 * @return
 	 */
-	ChatMessageResp mergeMessage(Long uid, MergeMessageReq req);
+	void mergeMessage(Long uid, MergeMessageReq req);
 
 	/**
 	 * 查询全部群成员
@@ -193,7 +192,7 @@ public interface RoomAppService {
 	/**
 	 * 解散群聊
 	 */
-	void exitGroup(Long uid, @Valid MemberExitReq request);
+	void exitGroup(Boolean isGroup, Long uid, @Valid MemberExitReq request);
 
 	/**
 	 * 添加管理员

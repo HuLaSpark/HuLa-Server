@@ -86,7 +86,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
     public static IpDetail getIpDetailOrNull(String ip) {
         String body = HttpUtil.get("https://ip.taobao.com/outGetIpInfo?ip=" + ip + "&accessKey=alibaba-inc");
         try {
-            R<IpDetail> result = JsonUtils.toObj(body, new TypeReference<>() {});
+            R<IpDetail> result = JsonUtils.toObj(body.replace("XX", "").replace("xx", ""), new TypeReference<>() {});
             return result.getData();
         } catch (Exception ignored) {
         }
@@ -100,7 +100,7 @@ public class IpServiceImpl implements IpService, DisposableBean {
         for (int i = 0; i < 100; i++) {
             int finalI = i;
             EXECUTOR.execute(() -> {
-                IpDetail ipDetail = tryGetIpDetailOrNullTreeTimes("113.90.36.126");
+                IpDetail ipDetail = tryGetIpDetailOrNullTreeTimes("127.0.0.1");
                 if (Objects.nonNull(ipDetail)) {
 					LocalDateTime date = LocalDateTime.now();
                     System.out.println(String.format("第%d次成功,目前耗时：%dms", finalI, (TimeUtils.getTime(date) - TimeUtils.getTime(begin))));

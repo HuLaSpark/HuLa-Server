@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
 import com.luohuo.basic.utils.SpringUtils;
+import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 import com.luohuo.flex.model.redis.annotation.RedissonLock;
 import com.luohuo.flex.im.common.enums.IdempotentEnum;
 import com.luohuo.flex.im.common.enums.YesOrNoEnum;
@@ -10,7 +11,6 @@ import com.luohuo.flex.im.domain.entity.ItemConfig;
 import com.luohuo.flex.im.domain.entity.UserBackpack;
 import com.luohuo.flex.im.domain.enums.ItemTypeEnum;
 import com.luohuo.flex.im.core.user.service.UserBackpackService;
-import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class UserBackpackServiceImpl implements UserBackpackService {
             return;
         }
         // 业务检查
-        ItemConfig itemConfig = itemCache.getById(itemId);
+        ItemConfig itemConfig = itemCache.get(itemId);
         if (ItemTypeEnum.BADGE.getType().equals(itemConfig.getType())) {
             // 徽章类型做唯一性检查
             Integer countByValidItemId = userBackpackDao.getCountByValidItemId(uid, itemId);

@@ -2,6 +2,7 @@ package com.luohuo.flex.im.core.user.service;
 
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.dto.ItemInfoDTO;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.model.entity.base.IpInfo;
 import com.luohuo.flex.model.vo.query.BindEmailReq;
@@ -58,6 +59,14 @@ public interface UserService {
      *
      */
     UserInfoResp getUserInfo(Long uid);
+
+	/**
+	 * 查询用户列表
+	 *
+	 * @param uidList
+	 *
+	 */
+	List<SummeryInfoDTO> getUserInfo(List<Long> uidList);
 
     /**
      * 修改用户名

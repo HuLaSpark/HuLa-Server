@@ -1,15 +1,9 @@
 package com.luohuo.flex.im.core.chat.service;
 
+import com.luohuo.flex.im.domain.vo.request.*;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.domain.dto.MsgReadInfoDTO;
 import com.luohuo.flex.im.domain.entity.Message;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageBaseReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageMarkReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageMemberReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessagePageReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReadInfoReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReadReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.domain.vo.response.ChatMessageReadResp;
 import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import jakarta.annotation.Nullable;
@@ -31,7 +25,7 @@ public interface ChatService {
 	/**
 	 * 获取所有消息
 	 */
-	List<ChatMessageResp> getMsgList(Long lastOptTime, Long receiveUid);
+	List<ChatMessageResp> getMsgList(MsgReq msgReq, Long receiveUid);
 
     /**
      * 根据消息获取消息前端展示的物料

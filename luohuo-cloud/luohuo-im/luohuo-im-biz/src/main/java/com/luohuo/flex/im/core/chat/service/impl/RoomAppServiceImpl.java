@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.luohuo.basic.cache.repository.CachePlusOps;
@@ -13,21 +14,24 @@ import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.im.api.PresenceApi;
-import com.luohuo.flex.im.common.event.GroupInviteMemberEvent;
 import com.luohuo.flex.im.core.chat.dao.RoomFriendDao;
 import com.luohuo.flex.im.core.chat.dao.RoomGroupDao;
+import com.luohuo.flex.im.core.user.dao.NoticeDao;
 import com.luohuo.flex.im.core.user.dao.UserApplyDao;
 import com.luohuo.flex.im.core.user.dao.UserBackpackDao;
 import com.luohuo.flex.im.core.user.dao.UserFriendDao;
 import com.luohuo.flex.im.core.user.dao.UserPrivacyDao;
+import com.luohuo.flex.im.core.user.service.NoticeService;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.*;
-import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.*;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
+import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
+import com.luohuo.flex.im.domain.entity.msg.TextMsgReq;
 import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
 import jakarta.validation.Valid;
@@ -52,11 +56,6 @@ import com.luohuo.flex.im.core.chat.dao.ContactDao;
 import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.domain.dto.RoomBaseInfo;
-import com.luohuo.flex.im.domain.entity.msg.MergeMsg;
-import com.luohuo.flex.im.domain.enums.GroupRoleAPPEnum;
-import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
-import com.luohuo.flex.im.domain.enums.HotFlagEnum;
-import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageMemberReq;
 import com.luohuo.flex.im.domain.vo.request.ContactFriendReq;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
@@ -74,7 +73,6 @@ import com.luohuo.flex.im.domain.vo.request.room.ReadAnnouncementsParam;
 import com.luohuo.flex.im.domain.vo.request.room.RoomGroupReq;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
 import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
-import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.domain.vo.response.ChatRoomResp;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import com.luohuo.flex.im.domain.vo.response.ReadAnnouncementsResp;
@@ -94,7 +92,6 @@ import com.luohuo.flex.im.core.chat.service.cache.RoomGroupCache;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.luohuo.flex.im.core.user.dao.UserDao;
-import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
 import com.luohuo.flex.im.domain.vo.req.MergeMessageReq;
 import com.luohuo.flex.model.entity.ws.ChatMemberResp;
@@ -122,6 +119,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	private final UserBackpackDao userBackpackDao;
 	private final RoomGroupDao roomGroupDao;
 	private final RoomFriendDao roomFriendDao;
+	private final NoticeDao noticeDao;
 	private final UserApplyDao userApplyDao;
 	private ContactDao contactDao;
 	private RoomCache roomCache;
@@ -140,6 +138,8 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	private ChatService chatService;
 	private RoleService roleService;
 	private RoomService roomService;
+	private UidGenerator uidGenerator;
+	private NoticeService noticeService;
 	private GroupMemberCache groupMemberCache;
 	private PushService pushService;
 	private FriendService friendService;
@@ -170,7 +170,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		// 分页加载所有群
 		roomGroupDao.list().parallelStream().map(RoomGroup::getRoomId).forEach(this::warmUpGroupMemberCache);
 		List<Long> roomFriendList = roomFriendDao.list().parallelStream().map(RoomFriend::getRoomId).toList();
-		if(CollUtil.isNotEmpty(roomFriendList)) {
+		if (CollUtil.isNotEmpty(roomFriendList)) {
 			friendService.warmUpRoomMemberCache(roomFriendList);
 		}
 		// 分页加载所有用户有多少个群的缓存
@@ -225,11 +225,12 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 2. 最后组装会话信息（名称，头像，未读数等）
 		List<ChatRoomResp> result = buildContactResp(contactHashMap, uid, page.getList());
-		return CursorPageBaseResp.init(page, result,0L);
+		return CursorPageBaseResp.init(page, result, 0L);
 	}
 
 	/**
 	 * 返回当前登录用户的全部会话
+	 *
 	 * @param uid
 	 * @return
 	 */
@@ -329,6 +330,22 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 5. 增加管理员
 		groupMemberDao.addAdmin(roomGroup.getId(), request.getUidList());
+
+		// 每个被邀请的人都要收到邀请进群的消息
+		setAdminNotice(NoticeTypeEnum.GROUP_SET_ADMIN, uid, request.getUidList(), manageUidList, roomGroup.getName());
+	}
+
+	private void setAdminNotice(NoticeTypeEnum noticeTypeEnum, Long uid, List<Long> uidList, List<Long> manageUidList, String content) {
+		long uuid = uidGenerator.getUid();
+		uidList.stream().filter(id -> !manageUidList.contains(id)).forEach(id -> noticeService.createNotice(
+				RoomTypeEnum.GROUP,
+				noticeTypeEnum,
+				uid,
+				id,
+				uuid,
+				id,
+				content
+		));
 	}
 
 	/**
@@ -355,12 +372,13 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 4. 撤销管理员
 		groupMemberDao.revokeAdmin(roomGroup.getId(), request.getUidList());
+		setAdminNotice(NoticeTypeEnum.GROUP_RECALL_ADMIN, uid, request.getUidList(), new ArrayList<>(), roomGroup.getName());
 	}
 
 	/**
-	 * @param roomId 房间id
+	 * @param roomId  房间id
 	 * @param groupId 群聊id
-	 * @param uid 当前人员id
+	 * @param uid     当前人员id
 	 */
 	@Override
 	public void createSystemFriend(Long roomId, Long groupId, Long uid) {
@@ -378,6 +396,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	/**
 	 * 分页查询加群申请记录
+	 *
 	 * @param uid 登录用户id
 	 * @param req 分页请求
 	 */
@@ -408,14 +427,15 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	/**
 	 * 处理用户在线状态
+	 *
 	 * @param uidList 需要处理的用户
-	 * @param roomId 在某个房间处理
+	 * @param roomId  在某个房间处理
 	 * @return
 	 */
 //	@Async(LUOHUO_EXECUTOR)
 	public void asyncOnline(List<Long> uidList, Long roomId, boolean online) {
 		Set<Long> onlineList = presenceApi.getOnlineUsersList(uidList).getData();
-		if(CollUtil.isEmpty(onlineList)){
+		if (CollUtil.isEmpty(onlineList)) {
 			return;
 		}
 
@@ -423,7 +443,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		for (Long uid : onlineList) {
 			CacheKey ougKey = PresenceCacheKeyBuilder.onlineUserGroupsKey(uid);
 
-			if(online) {
+			if (online) {
 				// 处理在线的状态
 				cachePlusOps.sAdd(ogmKey, uid);
 				cachePlusOps.sAdd(ougKey, roomId);
@@ -437,16 +457,17 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	/**
 	 * 校验用户在群里的权限
+	 *
 	 * @param uid
 	 * @return
 	 */
 	public GroupMember verifyGroupPermissions(Long uid, RoomGroup roomGroup) {
-		if(ObjectUtil.isNull(roomGroup)){
+		if (ObjectUtil.isNull(roomGroup)) {
 			throw new RuntimeException("群聊不存在!");
 		}
 
 		GroupMember groupMember = groupMemberDao.getMemberByGroupId(roomGroup.getId(), uid);
-		if(ObjectUtil.isNull(groupMember)){
+		if (ObjectUtil.isNull(groupMember)) {
 			throw new RuntimeException(StrUtil.format("您不是{}的群成员!", roomGroup.getName()));
 		}
 		return groupMember;
@@ -454,6 +475,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	/**
 	 * 群主，管理员才可以修改
+	 *
 	 * @param uid
 	 * @param request
 	 * @return
@@ -464,7 +486,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		RoomGroup roomGroup = roomGroupCache.get(request.getId());
 		GroupMember groupMember = verifyGroupPermissions(uid, roomGroup);
 
-		if(GroupRoleEnum.MEMBER.getType().equals(groupMember.getRoleId())) {
+		if (GroupRoleEnum.MEMBER.getType().equals(groupMember.getRoleId())) {
 			return false;
 		}
 
@@ -474,7 +496,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		Boolean success = roomService.updateRoomInfo(roomGroup);
 
 		// 3.通知群里所有人群信息修改了
-		if(success){
+		if (success) {
 			roomGroupCache.delete(roomGroup.getId());
 			roomGroupCache.evictGroup(roomGroup.getAccount());
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
@@ -490,7 +512,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		GroupMember member = verifyGroupPermissions(uid, roomGroup);
 
 		// 2.修改我的信息
-		boolean equals = member.getMyName().equals(StrUtil.isEmpty(request.getMyName())? "": request.getMyName());
+		boolean equals = member.getMyName().equals(StrUtil.isEmpty(request.getMyName()) ? "" : request.getMyName());
 		boolean success = groupMemberDao.update(null, Wrappers.<GroupMember>lambdaUpdate()
 				.set(GroupMember::getRemark, request.getRemark())
 				.set(GroupMember::getMyName, request.getMyName())
@@ -499,7 +521,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		groupMemberCache.evictMemberDetail(roomGroup.getRoomId(), uid);
 
 		// 3.通知群里所有人我的信息改变了
-		if(!equals && success){
+		if (!equals && success) {
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 			pushService.sendPushMsg(RoomAdapter.buildMyRoomGroupChangeWS(roomGroup.getRoomId(), uid, request.getMyName()), memberUidList, uid);
 		}
@@ -510,7 +532,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	public Boolean setTop(Long uid, ContactTopReq request) {
 		// 1.判断会话我有没有
 		Contact contact = contactDao.get(uid, request.getRoomId());
-		if(ObjectUtil.isNull(contact)){
+		if (ObjectUtil.isNull(contact)) {
 			return false;
 		}
 
@@ -524,7 +546,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	public Boolean pushAnnouncement(Long uid, AnnouncementsParam param) {
 		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
 		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
-		if(CollUtil.isNotEmpty(uids)){
+		if (CollUtil.isNotEmpty(uids)) {
 			LocalDateTime now = LocalDateTime.now();
 			Announcements announcements = new Announcements();
 			announcements.setContent(param.getContent());
@@ -547,7 +569,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 			});
 			// 批量添加未读消息
 			Boolean saved = roomService.saveBatchAnnouncementsRecord(announcementsReadRecordList);
-			if(saved){
+			if (saved) {
 				// 发送公告消息、推送群成员公告内容
 				chatService.sendMsg(MessageAdapter.buildAnnouncementsMsg(param.getRoomId(), announcements), uid);
 			}
@@ -560,9 +582,9 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	public Boolean announcementEdit(Long uid, AnnouncementsParam param) {
 		RoomGroup roomGroup = roomGroupCache.get(param.getRoomId());
 		List<Long> uids = roomService.getGroupUsers(roomGroup.getId(), false);
-		if(CollUtil.isNotEmpty(uids)){
+		if (CollUtil.isNotEmpty(uids)) {
 			AnnouncementsResp announcement = roomService.getAnnouncement(param.getId());
-			if(ObjectUtil.isNull(announcement)){
+			if (ObjectUtil.isNull(announcement)) {
 				return false;
 			}
 			Announcements announcements = new Announcements();
@@ -572,7 +594,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 			announcements.setTop(param.getTop());
 			announcements.setUpdateTime(TimeUtils.now());
 			Boolean edit = roomService.updateAnnouncement(announcements);
-			if(edit){
+			if (edit) {
 				chatService.sendMsg(MessageAdapter.buildAnnouncementsMsg(param.getRoomId(), announcements), uid);
 			}
 			return edit;
@@ -590,7 +612,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		// 1.更新已读状态
 		Boolean success = roomService.readAnnouncement(uid, param.getAnnouncementId());
 
-		if(success){
+		if (success) {
 			// 2.刷新最新的已读数量，通知所有人有人对 announcementId 已读了
 			roomAnnouncementsCache.add(param.getAnnouncementId(), uid);
 
@@ -610,7 +632,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 3.查询公告已读数量
 		Long count = roomAnnouncementsCache.get(param.getAnnouncementId());
-		if(count < 1){
+		if (count < 1) {
 			count = roomService.getAnnouncementReadCount(param.getAnnouncementId());
 			roomAnnouncementsCache.load(Arrays.asList(param.getAnnouncementId()));
 		}
@@ -630,7 +652,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		long count = userBackpackDao.countByUidAndItemId(uid, "HuLa项目贡献者专属徽章");
 
-		if(count == 0 && GroupRoleEnum.MEMBER.getType().equals(groupMember.getRoleId())) {
+		if (count == 0 && GroupRoleEnum.MEMBER.getType().equals(groupMember.getRoleId())) {
 			return false;
 		}
 
@@ -646,7 +668,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	public Boolean setNotification(Long uid, ContactNotificationReq request) {
 		// 1. 判断会话我有没有
 		Contact contact = contactDao.get(uid, request.getRoomId());
-		if(ObjectUtil.isNull(contact)){
+		if (ObjectUtil.isNull(contact)) {
 			return false;
 		}
 
@@ -654,20 +676,20 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		contact.setMuteNotification(request.getType());
 
 		// 3.通知所有设备我已经开启/关闭这个房间的免打扰
-		pushService.sendPushMsg(WsAdapter.buildContactNotification(request) , uid, uid);
+		pushService.sendPushMsg(WsAdapter.buildContactNotification(request), uid, uid);
 		return contactDao.updateById(contact);
 	}
 
 	@Override
 	public Boolean setShield(Long uid, ContactShieldReq request) {
 		Contact contact = contactDao.get(uid, request.getRoomId());
-		if(ObjectUtil.isNull(contact)){
+		if (ObjectUtil.isNull(contact)) {
 			return false;
 		}
 
 		String name;
 		Room room = roomCache.get(request.getRoomId());
-		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+		if (room.getType().equals(RoomTypeEnum.GROUP.getType())) {
 			// 1. 把群成员的信息设置为禁止
 			name = roomGroupCache.get(request.getRoomId()).getName();
 			groupMemberDao.setMemberDeFriend(request.getRoomId(), uid, request.getState());
@@ -687,30 +709,70 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	}
 
 	@Override
-	public ChatMessageResp mergeMessage(Long uid, MergeMessageReq req) {
+	public void mergeMessage(Long uid, MergeMessageReq req) {
 		// 1. 校验人员是否在群里、或者有没有对方的好友
 		Room room = roomCache.get(req.getFromRoomId());
-		if(ObjectUtil.isNull(room)){
+		if (ObjectUtil.isNull(room)) {
 			throw new BizException("房间不存在");
 		}
 
-		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+		if (room.getType().equals(RoomTypeEnum.GROUP.getType())) {
 			RoomGroup sourceRoomGroup = roomGroupCache.get(req.getFromRoomId());
 			verifyGroupPermissions(uid, sourceRoomGroup);
 		} else {
 			RoomFriend roomFriend = roomFriendCache.get(req.getFromRoomId());
-			if(ObjectUtil.isNull(roomFriend) || !roomFriend.getUid1().equals(uid) && !roomFriend.getUid1().equals(uid)) {
+			if (ObjectUtil.isNull(roomFriend) || !roomFriend.getUid1().equals(uid) && !roomFriend.getUid1().equals(uid)) {
 				throw new BizException("你们不是好友关系");
 			}
 		}
 
 		// 2. 当是转发单条消息的时候
 		List<Message> messagess = chatService.getMsgByIds(req.getMessageIds());
-		List<MergeMsg> msgs = messagess.stream().filter(message -> message.getRoomId().equals(req.getFromRoomId())).map(message -> new MergeMsg(message.getContent(), message.getCreateTime(), userCache.get(message.getFromUid()).getName())).collect(Collectors.toUnmodifiableList());
 
 		// 3. 发布合并消息
-		Long msgId = chatService.sendMsg(MessageAdapter.buildMergeMsg(req.getRoomId(), msgs), uid);
-		return chatService.getMsgResp(msgId, uid);
+		for (Long roomId : req.getRoomIds()) {
+			if (req.getType().equals(MergeTypeEnum.SINGLE.getType())) {
+				messagess.forEach(message -> {
+					ChatMessageReq messageReq = new ChatMessageReq();
+					messageReq.setMsgType(message.getType());
+					messageReq.setRoomId(roomId);
+					// 扩展消息需要另外解析
+					messageReq.setBody(analyze(message));
+					messageReq.setSkip(true);
+					chatService.sendMsg(messageReq, uid);
+				});
+			} else {
+				chatService.sendMsg(MessageAdapter.buildMergeMsg(roomId, messagess), uid);
+			}
+		}
+	}
+
+	/**
+	 * 解析转发的消息
+	 *
+	 * @param message 数据库里面的消息实体
+	 */
+	private Object analyze(Message message) {
+		return switch (MessageTypeEnum.of(message.getType())) {
+			case TEXT -> {
+				TextMsgReq textMsgReq = new TextMsgReq();
+				textMsgReq.setContent(message.getContent());
+				textMsgReq.setReplyMsgId(message.getReplyMsgId());
+				textMsgReq.setAtUidList(message.getExtra().getAtUidList());
+				yield textMsgReq;
+			}
+			case RECALL -> message.getExtra().getRecall();
+			case IMG -> message.getExtra().getImgMsgDTO();
+			case FILE -> message.getExtra().getFileMsg();
+			case SOUND -> message.getExtra().getSoundMsgDTO();
+			case VIDEO -> message.getExtra().getVideoMsgDTO();
+			case EMOJI -> message.getExtra().getEmojisMsgDTO();
+			case BOT, SYSTEM -> null;
+			case MERGE -> message.getExtra().getMergeMsgDTO();
+			case NOTICE -> message.getExtra().getNoticeMsgDTO();
+			case VIDEO_CALL -> message.getExtra().getVideoCallMsgDTO();
+			case AUDIO_CALL -> message.getExtra().getAudioCallMsgDTO();
+		};
 	}
 
 	@Override
@@ -784,18 +846,6 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 		// 7. 群主、管理员永远在前面
 		return chatMemberResps;
-//		return chatMemberResps.stream()
-//				.sorted((m1, m2) -> {
-//					// 群主 > 管理员> 普通成员
-//					int roleCompare = Integer.compare(m1.getRoleId(), m2.getRoleId());
-//
-//					// 如果是相同角色
-//					if (roleCompare == 0) {
-//						return Integer.compare(m1.getActiveStatus(), m2.getActiveStatus());
-//					}
-//					// 不同角色：管理组始终排在普通组前面
-//					return roleCompare;
-//				}).collect(Collectors.toList());
 	}
 
 	@Override
@@ -827,11 +877,11 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		// 如果房间人员小于3人 那么直接解散群聊
 		CacheKey membersKey = PresenceCacheKeyBuilder.groupMembersKey(request.getRoomId());
 		Long memberNum = cachePlusOps.sCard(membersKey);
-		if(memberNum <= 3 && self.getRoleId().equals(GroupRoleEnum.LEADER.getType())) {
+		if (memberNum <= 3) {
 			MemberExitReq exitReq = new MemberExitReq();
 			exitReq.setRoomId(request.getRoomId());
 			exitReq.setAccount(roomGroup.getAccount());
-			exitGroup(uid, exitReq);
+			exitGroup(true, uid, exitReq);
 			return;
 		}
 
@@ -850,12 +900,12 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		AssertUtil.isNotEmpty(member, "用户已经移除");
 
 		// 发送移除事件告知群成员
-		if(transactionTemplate.execute(e -> {
+		if (transactionTemplate.execute(e -> {
 			groupMemberDao.removeById(member.getId());
 			// 1.5 移除会话
 			contactDao.removeByRoomId(room.getId(), Collections.singletonList(request.getUid()));
 			return true;
-		})){
+		})) {
 			// 移除群聊缓存
 			CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(request.getUid());
 			cachePlusOps.sRem(membersKey, request.getUid());
@@ -864,14 +914,38 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 			// 推送状态到前端
 			List<Long> memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
-			if(!memberUidList.contains(request.getUid())){
+			if (!memberUidList.contains(request.getUid())) {
 				memberUidList.add(request.getUid());
 			}
-			WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), (int) (memberNum - 1), Arrays.asList(member.getUid()), WSMemberChange.CHANGE_TYPE_REMOVE);
+			WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), (int) (memberNum - 1), Math.toIntExact(cachePlusOps.sCard(PresenceCacheKeyBuilder.onlineGroupMembersKey(room.getId()))), Arrays.asList(member.getUid()), WSMemberChange.CHANGE_TYPE_REMOVE);
 			pushService.sendPushMsg(ws, memberUidList, uid);
 			groupMemberCache.evictMemberList(room.getId());
 			groupMemberCache.evictExceptMemberList(room.getId());
 			groupMemberCache.evictMemberDetail(room.getId(), removedUid);
+
+			long uuid = uidGenerator.getUid();
+			// 保存被删除人的通知
+			noticeService.createNotice(
+					RoomTypeEnum.GROUP,
+					NoticeTypeEnum.GROUP_MEMBER_DELETE,
+					uid,
+					removedUid,
+					uuid,
+					removedUid,
+					roomGroup.getName()
+			);
+
+			// 获取所有管理员
+			List<Long> managerIds = groupMemberDao.getGroupUsers(roomGroup.getId(), true);
+			managerIds.forEach(managerId -> noticeService.createNotice(
+					RoomTypeEnum.GROUP,
+					NoticeTypeEnum.GROUP_MEMBER_DELETE,
+					uid,
+					managerId,
+					uuid,
+					removedUid,
+					roomGroup.getName()
+			));
 		}
 	}
 
@@ -899,18 +973,38 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		}
 
 		// 2. 创建邀请记录
-		transactionTemplate.execute(e -> {
-			List<UserApply> invites = validUids.stream().map(inviteeUid -> new UserApply(uid, RoomTypeEnum.GROUP.getType(), roomGroup.getRoomId(), inviteeUid, StrUtil.format("{}邀请你加入{}", userSummaryCache.get(uid).getName(), roomGroup.getName()), ApplyStatusEnum.WAIT_APPROVAL.getCode(), UNREAD.getCode(), 0, false)).collect(Collectors.toList());
-			userApplyDao.saveBatch(invites);
-			return true;
-		});
+		List<UserApply> invites = validUids.stream().map(inviteeUid -> new UserApply(uid, RoomTypeEnum.GROUP.getType(), roomGroup.getRoomId(), inviteeUid, StrUtil.format("{}邀请你加入{}", userSummaryCache.get(uid).getName(), roomGroup.getName()), ApplyStatusEnum.WAIT_APPROVAL.getCode(), UNREAD.getCode(), 0, false)).collect(Collectors.toList());
+		transactionTemplate.execute(e -> userApplyDao.saveBatch(invites));
 
-		// 3. 通知被邀请的人进群
-		validUids.forEach(inviteId -> {
-			SummeryInfoDTO user = userSummaryCache.get(inviteId);
-			if(ObjectUtil.isNotNull(user)){
-				pushService.sendPushMsg(MessageAdapter.buildInviteeUserAddGroupMessage(userApplyDao.getUnReadCount(inviteId, inviteId)), inviteId, uid);
+		// 3. 通知被邀请的人进群, 通知时绑定通知id
+		List<Long> managerIds = groupMemberDao.getGroupUsers(roomGroup.getId(), true);
+		invites.forEach(invite -> {
+			SummeryInfoDTO user = userSummaryCache.get(invite.getTargetId());
+			if (ObjectUtil.isNotNull(user)) {
+				pushService.sendPushMsg(MessageAdapter.buildInviteeUserAddGroupMessage(noticeDao.getUnReadCount(invite.getTargetId(), invite.getTargetId())), invite.getTargetId(), uid);
 			}
+
+			// 每个被邀请的人都要收到邀请进群的消息
+			noticeService.createNotice(
+					RoomTypeEnum.GROUP,
+					NoticeTypeEnum.GROUP_INVITE_ME,
+					uid,
+					invite.getTargetId(),
+					invite.getId(),
+					invite.getTargetId(),
+					roomGroup.getName()
+			);
+
+			// 每个管理员都要收到邀请进群的消息
+			managerIds.forEach(managerId -> noticeService.createNotice(
+					RoomTypeEnum.GROUP,
+					NoticeTypeEnum.GROUP_INVITE,
+					uid,
+					managerId,
+					invite.getId(),
+					invite.getTargetId(),
+					roomGroup.getName()
+			));
 		});
 	}
 
@@ -922,7 +1016,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	 */
 	@Override
 	@RedissonLock(prefixKey = "exitGroup:", key = "#request.roomId")
-	public void exitGroup(Long uid, MemberExitReq request) {
+	public void exitGroup(Boolean isGroup, Long uid, MemberExitReq request) {
 		Long roomId = request.getRoomId();
 		// 1. 判断群聊是否存在
 		RoomGroup roomGroup = roomGroupCache.getByRoomId(roomId);
@@ -944,14 +1038,20 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		} else {
 			memberUidList = groupMemberCache.getMemberExceptUidList(roomGroup.getRoomId());
 		}
+		CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
+		if (isGroup || isLord) {
+			User user = userCache.get(uid);
+			ChatMessageReq messageReq = new ChatMessageReq();
+			messageReq.setBody(StrUtil.format("{}解散了群聊", user.getName()));
+			messageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
+			chatService.sendMsg(messageReq, uid);
 
-		if (isLord) {
 			// 4.1 删除房间和群并清除缓存
 			transactionTemplate.execute(e -> {
 				boolean isDelRoom = roomService.removeById(roomId);
 				roomGroupCache.removeById(roomGroup.getId());
 				roomGroupCache.evictGroup(roomGroup.getAccount());
-				if(StrUtil.isNotEmpty(request.getAccount())){
+				if (StrUtil.isNotEmpty(request.getAccount())) {
 					roomGroupCache.evictGroup(request.getAccount());
 				}
 				AssertUtil.isTrue(isDelRoom, ResponseEnum.SYSTEM_BUSY.getMsg());
@@ -972,12 +1072,20 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 			groupMemberCache.evictAllMemberDetails();
 			// 新版解散群聊
 			CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(uid);
-			CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
 			cachePlusOps.del(uKey, gKey);
 			asyncOnline(memberUidList, room.getId(), false);
-			pushService.sendPushMsg(RoomAdapter.buildGroupDissolution(roomGroup.getRoomId()), memberUidList, uid);
+//			pushService.sendPushMsg(RoomAdapter.buildGroupDissolution(roomGroup.getRoomId()), memberUidList, uid);
 		} else {
-			if(transactionTemplate.execute(e -> {
+			// 如果房间人员小于3人 那么直接解散群聊
+			if (cachePlusOps.sCard(gKey) <= 3) {
+				MemberExitReq exitReq = new MemberExitReq();
+				exitReq.setRoomId(request.getRoomId());
+				exitReq.setAccount(roomGroup.getAccount());
+				exitGroup(true, uid, exitReq);
+				return;
+			}
+
+			if (transactionTemplate.execute(e -> {
 				// 4.6 删除会话
 				Boolean isDelContact = contactDao.removeByRoomId(roomId, Collections.singletonList(uid));
 				AssertUtil.isTrue(isDelContact, "会话移除异常");
@@ -985,16 +1093,16 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 				Boolean isDelGroupMember = groupMemberDao.removeByGroupId(roomGroup.getId(), Collections.singletonList(uid));
 				AssertUtil.isTrue(isDelGroupMember, "群成员移除失败");
 				return true;
-			})){
+			})) {
 				// 新版退出群聊
 				CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(uid);
-				CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
+
 				cachePlusOps.sRem(gKey, uid);
 				cachePlusOps.sRem(uKey, room.getId());
 				asyncOnline(Arrays.asList(uid), room.getId(), false);
 
 				// 4.8 发送移除事件告知群成员
-				WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Arrays.asList(uid), WSMemberChange.CHANGE_TYPE_QUIT);
+				WsBaseResp<WSMemberChange> ws = MemberAdapter.buildMemberRemoveWS(roomGroup.getRoomId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(PresenceCacheKeyBuilder.onlineGroupMembersKey(room.getId()))), Arrays.asList(uid), WSMemberChange.CHANGE_TYPE_QUIT);
 				pushService.sendPushMsg(ws, memberUidList, uid);
 				groupMemberCache.evictMemberList(room.getId());
 				groupMemberCache.evictExceptMemberList(room.getId());
@@ -1007,20 +1115,20 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	@RedissonLock(prefixKey = "addGroup:", key = "#uid")
 	public Long addGroup(Long uid, GroupAddReq request) {
 		Map<Long, SummeryInfoDTO> userMap = userSummaryCache.getBatch(request.getUidList());
-		AssertUtil.isTrue(userMap.size() > 1,"群聊人数应大于2人");
+		AssertUtil.isTrue(userMap.size() > 1, "群聊人数应大于2人");
 
 		List<Long> uidList = new ArrayList<>(userMap.keySet());
 		AtomicReference<Long> roomIdAtomic = new AtomicReference(0L);
 
 		// 创建群组数据并推送数据到前端
-		if(transactionTemplate.execute(e -> {
+		if (transactionTemplate.execute(e -> {
 			RoomGroup roomGroup = roomService.createGroupRoom(uid, request);
 			// 批量保存群成员
 			List<GroupMember> groupMembers = RoomAdapter.buildGroupMemberBatch(uidList, roomGroup.getId());
 			groupMemberDao.saveBatch(groupMembers);
 			roomIdAtomic.set(roomGroup.getRoomId());
 			return true;
-		})){
+		})) {
 			// 发送邀请加群消息 ==> 触发每个人的会话
 			roomGroupCache.evictAllCaches();
 			// 处理新房间里面所有在线人员
@@ -1036,7 +1144,6 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 				cachePlusOps.sAdd(PresenceCacheKeyBuilder.userGroupsKey(id), roomIdAtomic.get());
 			});
 			asyncOnline(uidList, roomIdAtomic.get(), true);
-			SpringUtils.publishEvent(new GroupInviteMemberEvent(this, roomIdAtomic.get(), request.getUidList(), uid));
 			SpringUtils.publishEvent(new GroupMemberAddEvent(this, roomIdAtomic.get(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), request.getUidList(), uid));
 		}
 		return roomIdAtomic.get();
@@ -1073,8 +1180,8 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	/**
 	 * @param contactMap 会话映射
-	 * @param uid 当前登录的用户
-	 * @param roomIds 所有会话对应的房间
+	 * @param uid        当前登录的用户
+	 * @param roomIds    所有会话对应的房间
 	 * @return
 	 */
 	@NotNull
@@ -1093,7 +1200,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					Long roomId = room.getRoomId();
 					RoomBaseInfo roomBaseInfo = roomBaseInfoMap.get(roomId);
 					Contact contact = contactMap.get(StrUtil.format("{}_{}", uid, roomId));
-					if(ObjectUtil.isNotNull(contact)){
+					if (ObjectUtil.isNotNull(contact)) {
 						resp.setHide(contact.getHide());
 						resp.setShield(contact.getShield());
 						resp.setMuteNotification(contact.getMuteNotification());
@@ -1117,7 +1224,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					resp.setRemark(roomBaseInfo.getRemark());
 					resp.setMyName(roomBaseInfo.getMyName());
 					Message message = msgMap.get(room.getLastMsgId());
-					if(resp.getShield()){
+					if (resp.getShield()) {
 						resp.setText("您已屏蔽该会话");
 					} else {
 						if (Objects.nonNull(message)) {
@@ -1128,7 +1235,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 								GroupMember messageUser = groupMemberCache.getMemberDetail(roomId, message.getFromUid());
 								if (ObjectUtil.isNotNull(messageUser)) {
 									// 当自己查看时，且最后一条消息是自己发送的，那么显示群备注
-									if (uid.equals(message.getFromUid()) && StrUtil.isNotEmpty(messageUser.getRemark())){
+									if (uid.equals(message.getFromUid()) && StrUtil.isNotEmpty(messageUser.getRemark())) {
 										resp.setRemark(messageUser.getRemark());
 									}
 								}
@@ -1156,6 +1263,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	/**
 	 * 返回房间id与好友的映射
+	 *
 	 * @param roomIds
 	 * @param uid
 	 * @return
@@ -1204,7 +1312,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					roomBaseInfo.setRemark(member.getRemark());
 					roomBaseInfo.setName(roomGroup.getName());
 					roomBaseInfo.setRoleId(member.getRoleId());
-				}else {
+				} else {
 					roomBaseInfo.setName("会话异常");
 					roomBaseInfo.setMyName("会话异常");
 					roomBaseInfo.setRemark("会话异常");

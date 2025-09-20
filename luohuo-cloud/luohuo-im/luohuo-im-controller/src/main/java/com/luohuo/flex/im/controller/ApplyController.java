@@ -4,21 +4,16 @@ import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.im.core.user.service.ApplyService;
 import com.luohuo.flex.im.domain.entity.UserApply;
-import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
 import com.luohuo.flex.im.domain.vo.request.RoomApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.ApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.GroupApplyHandleReq;
-import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendApplyResp;
-import com.luohuo.flex.model.entity.ws.WSFriendApply;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,24 +31,10 @@ public class ApplyController {
     @Resource
     private ApplyService applyService;
 
-	@GetMapping("/page")
-	@Operation(summary = "申请列表 [好友、群聊]")
-	public R<PageBaseResp<FriendApplyResp>> page(@Valid PageBaseReq request) {
-		Long uid = ContextUtil.getUid();
-		return R.success(applyService.pageApplyFriend(uid, request));
-	}
-
     @PostMapping("/apply")
     @Operation(summary = "好友申请")
     public R<UserApply> apply(@Valid @RequestBody FriendApplyReq request) {
         return R.success(applyService.handlerApply(ContextUtil.getUid(), request));
-    }
-
-    @GetMapping("/unread")
-    @Operation(summary = "申请未读数")
-    public R<WSFriendApply> unread() {
-        Long uid = ContextUtil.getUid();
-        return R.success(applyService.unread(uid));
     }
 
 	@Operation(summary ="审批别人邀请的进群、好友申请")

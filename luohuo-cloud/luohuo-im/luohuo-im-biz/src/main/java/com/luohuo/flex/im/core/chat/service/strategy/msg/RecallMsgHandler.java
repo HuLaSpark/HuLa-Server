@@ -2,6 +2,7 @@ package com.luohuo.flex.im.core.chat.service.strategy.msg;
 
 import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
+import com.luohuo.flex.im.core.chat.service.cache.MsgCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,6 @@ import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.entity.msg.MsgRecall;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
-import com.luohuo.flex.im.core.chat.service.cache.MsgCache;
 
 import java.time.LocalDateTime;
 import java.util.List;

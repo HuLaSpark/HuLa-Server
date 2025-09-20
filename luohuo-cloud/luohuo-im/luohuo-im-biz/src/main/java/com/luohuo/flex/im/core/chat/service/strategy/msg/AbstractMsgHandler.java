@@ -15,7 +15,7 @@ import com.luohuo.flex.im.domain.enums.MessageStatusEnum;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.core.chat.service.adapter.MessageAdapter;
-import com.luohuo.flex.im.core.chat.service.cache.MsgPlusCache;
+import com.luohuo.flex.im.core.chat.service.cache.MsgCache;
 import java.lang.reflect.ParameterizedType;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public abstract class AbstractMsgHandler<T> {
     private MessageDao messageDao;
 
 	@Resource
-	private MsgPlusCache msgPlusCache;
+	private MsgCache msgCache;
 
 	@Resource
 	private UserSummaryCache userSummaryCache;
@@ -82,7 +82,7 @@ public abstract class AbstractMsgHandler<T> {
 	 */
 	public ReplyMsg replyMsg(Message msg){
 		Optional<Message> reply = Optional.ofNullable(msg.getReplyMsgId())
-				.map(msgPlusCache::get)
+				.map(msgCache::get)
 				.filter(a -> Objects.equals(a.getStatus(), MessageStatusEnum.NORMAL.getStatus()));
 		// TODO 这里的缓存不会立即删除，导致撤回消息后回复的信息还有 (nyh -> 2024-07-14 03:46:34)
 		if (reply.isPresent()) {

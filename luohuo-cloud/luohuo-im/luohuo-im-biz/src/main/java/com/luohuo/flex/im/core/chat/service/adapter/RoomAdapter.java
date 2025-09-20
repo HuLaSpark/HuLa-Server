@@ -61,12 +61,12 @@ public class RoomAdapter {
 	 * 创建群的消息
 	 * @return
 	 */
-    public static ChatMessageReq buildGroupAddMessage(Long roomId, User inviter, Map<Long, User> member) {
+    public static ChatMessageReq buildGroupAddMessage(Boolean applyFor, Long roomId, User inviter, Map<Long, User> member) {
         ChatMessageReq chatMessageReq = new ChatMessageReq();
         chatMessageReq.setRoomId(roomId);
         chatMessageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
-        String body = String.format("%s邀请%s加入群聊", inviter.getName(),
-                member.values().stream().map(User::getName).collect(Collectors.joining("、")));
+        String body = applyFor? String.format("%s申请加入群聊", inviter.getName()):
+				String.format("%s邀请%s加入群聊", inviter.getName(), member.values().stream().map(User::getName).collect(Collectors.joining("、")));
         chatMessageReq.setBody(body);
         return chatMessageReq;
     }

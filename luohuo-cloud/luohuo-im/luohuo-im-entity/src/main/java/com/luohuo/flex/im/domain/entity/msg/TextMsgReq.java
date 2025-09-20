@@ -1,4 +1,4 @@
-package com.luohuo.flex.im.domain.vo.request.msg;
+package com.luohuo.flex.im.domain.entity.msg;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -21,7 +21,7 @@ import java.util.List;
 public class TextMsgReq {
 
     @NotBlank(message = "内容不能为空")
-    @Size(max = 1024, message = "消息内容过长，服务器扛不住啊，兄dei")
+    @Size(max = 1024, message = "消息内容过长")
     @Schema(description ="消息内容")
     private String content;
 

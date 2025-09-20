@@ -34,20 +34,6 @@ public class FriendAdapter {
         return userApplyNew;
     }
 
-    public static List<FriendApplyResp> buildFriendApplyList(List<UserApply> records) {
-        return records.stream().map(userApply -> {
-            FriendApplyResp friendApplyResp = new FriendApplyResp();
-            friendApplyResp.setUid(userApply.getUid());
-			friendApplyResp.setTargetId(userApply.getTargetId());
-            friendApplyResp.setType(userApply.getType());
-            friendApplyResp.setApplyId(userApply.getId());
-            friendApplyResp.setMsg(userApply.getMsg());
-            friendApplyResp.setStatus(userApply.getStatus());
-			friendApplyResp.setCreateTime(userApply.getCreateTime());
-            return friendApplyResp;
-        }).collect(Collectors.toList());
-    }
-
 	/**
 	 * @param friendPage 好友列表
 	 * @param onlineList 在线用户id

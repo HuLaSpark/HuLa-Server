@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -13,6 +14,7 @@ import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.common.event.UserRegisterEvent;
 import com.luohuo.flex.im.core.chat.service.RoomAppService;
 import com.luohuo.flex.im.core.user.service.cache.DefUserCache;
+import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.model.entity.base.IpInfo;
 import lombok.AllArgsConstructor;
@@ -49,11 +51,11 @@ import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
 import com.luohuo.flex.im.core.user.service.UserService;
 import com.luohuo.flex.im.core.user.service.adapter.UserAdapter;
-import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -119,6 +121,11 @@ public class UserServiceImpl implements UserService {
         Integer countByValidItemId = userBackpackDao.getCountByValidItemId(uid, ItemEnum.MODIFY_NAME_CARD.getId());
         return UserAdapter.buildUserInfoResp(userInfo, countByValidItemId);
     }
+
+	@Override
+	public List<SummeryInfoDTO> getUserInfo(List<Long> uidList) {
+		return new ArrayList<>(userSummaryCache.getBatch(uidList).values());
+	}
 
     @Override
     @Transactional
@@ -213,8 +220,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<ItemInfoDTO> getItemInfo(ItemInfoReq req) {//简单做，更新时间可判断被修改
+		if(CollUtil.isEmpty(req.getReqList())){
+			List<ItemConfig> allItems = itemCache.getAllItems();
+
+			return allItems.stream().map(itemConfig -> {
+				ItemInfoDTO dto = new ItemInfoDTO();
+				dto.setItemId(itemConfig.getId());
+				dto.setImg(itemConfig.getImg());
+				dto.setDescribe(itemConfig.getDescribe());
+				return dto;
+			}).collect(Collectors.toList());
+		}
+
         return req.getReqList().stream().map(a -> {
-            ItemConfig itemConfig = itemCache.getById(a.getItemId());
+            ItemConfig itemConfig = itemCache.get(a.getItemId());
             if (Objects.nonNull(a.getLastModifyTime()) && a.getLastModifyTime() >= TimeUtils.getTime(itemConfig.getUpdateTime())) {
                 return ItemInfoDTO.skip(a.getItemId());
             }

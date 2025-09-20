@@ -31,7 +31,6 @@ import com.luohuo.flex.im.domain.vo.request.room.AnnouncementsParam;
 import com.luohuo.flex.im.domain.vo.request.room.ReadAnnouncementsParam;
 import com.luohuo.flex.im.domain.vo.request.room.RoomGroupReq;
 import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
-import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import com.luohuo.flex.im.core.chat.service.RoomAppService;
 import com.luohuo.flex.im.domain.vo.req.MergeMessageReq;
@@ -95,7 +94,7 @@ public class RoomController {
     @DeleteMapping("/group/member/exit")
     @Operation(summary ="退出群聊 | 解散群聊")
     public R<Boolean> exitGroup(@Valid @RequestBody MemberExitReq request) {
-		roomService.exitGroup(ContextUtil.getUid(), request);
+		roomService.exitGroup(false, ContextUtil.getUid(), request);
         return R.success();
     }
 
@@ -190,7 +189,8 @@ public class RoomController {
 
 	@Operation(summary = "合并消息")
 	@PostMapping("mergeMessage")
-	public R<ChatMessageResp> mergeMessage(@Validated @RequestBody MergeMessageReq req){
-		return R.success(roomService.mergeMessage(ContextUtil.getUid(), req));
+	public R<Void> mergeMessage(@Validated @RequestBody MergeMessageReq req){
+		roomService.mergeMessage(ContextUtil.getUid(), req);
+		return R.success();
 	}
 }

@@ -27,6 +27,11 @@ public class RedisKey {
 	public static final String FEED_MEDIA = BASE_KEY + "feedMedia";
 
 	/**
+	 * 用户徽章
+	 */
+	public static final String USER_ITEM = BASE_KEY + "userItem";
+
+	/**
 	 * 朋友圈权限
 	 */
 	public static final String FEED_TARGET = BASE_KEY + "feedTarget";
@@ -40,6 +45,11 @@ public class RedisKey {
 	 * 用户信息
 	 */
 	public static final String USER_INFO_FORMAT = "userInfo:uid_%d";
+
+	/**
+	 * 消息缓存
+	 */
+	public static final String ROOM_MSG_FORMAT = "msg:%d";
 
     /**
      * 房间详情

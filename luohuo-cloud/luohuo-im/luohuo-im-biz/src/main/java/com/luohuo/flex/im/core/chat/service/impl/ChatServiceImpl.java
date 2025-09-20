@@ -13,6 +13,7 @@ import com.luohuo.flex.im.core.chat.service.cache.MsgCache;
 import com.luohuo.flex.im.core.user.dao.UserFriendDao;
 import com.luohuo.flex.im.domain.entity.*;
 import com.luohuo.flex.im.domain.enums.*;
+import com.luohuo.flex.im.domain.vo.request.*;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +27,6 @@ import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.common.event.MessageSendEvent;
 import com.luohuo.flex.im.domain.dto.ChatMsgSendDto;
 import com.luohuo.flex.im.domain.dto.MsgReadInfoDTO;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageBaseReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageMarkReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageMemberReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessagePageReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReadInfoReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReadReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.domain.vo.response.ChatMessageReadResp;
 import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.core.chat.service.ChatService;
@@ -48,7 +42,6 @@ import com.luohuo.flex.im.core.chat.service.strategy.msg.RecallMsgHandler;
 import com.luohuo.flex.im.core.user.service.RoleService;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -198,30 +191,45 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public List<ChatMessageResp> getMsgList(Long lastOptTime, Long receiveUid) {
-		// 1. 获取用户所有未屏蔽的聊天室ID列表
-		List<Long> roomIds = getAccessibleRoomIds(receiveUid);
-		if (CollectionUtil.isEmpty(roomIds)) {
-			return Collections.emptyList();
+	public List<ChatMessageResp> getMsgList(MsgReq msgReq, Long receiveUid) {
+		List<Message> messages;
+		if(CollUtil.isEmpty(msgReq.getMsgIds())){
+			// 1. 获取用户所有未屏蔽的聊天室ID列表
+			List<Long> roomIds = getAccessibleRoomIds(receiveUid);
+			if (CollectionUtil.isEmpty(roomIds)) {
+				return Collections.emptyList();
+			}
+
+			// 2. 计算查询的时间范围（最多15天）
+			LocalDateTime effectiveStartTime = calculateStartTime(msgReq.getLastOptTime());
+			messages = messageDao.list(new LambdaQueryWrapper<Message>().in(Message::getRoomId, roomIds)
+					.between(Message::getCreateTime, effectiveStartTime, LocalDateTime.now()));
+		} else {
+			messages = getMsgByIds(msgReq.getMsgIds());
 		}
 
-		// 2. 批量查询所有房间的最后一条消息ID（用于权限过滤）
-		LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<Message>().in(Message::getRoomId, roomIds);
-		if(ObjectUtil.isNotNull(lastOptTime) && lastOptTime > 0) {
-			wrapper.ge(Message::getCreateTime, TimeUtils.getDateTimeOfTimestamp(lastOptTime)).le(Message::getCreateTime, LocalDateTime.now());
-		}else {
-			wrapper.ge(Message::getCreateTime, LocalDate.now().minusDays(15));
-		}
-
-		List<Message> messages = messageDao.list(wrapper);
 		Map<Long, List<Message>> groupedMessages = messages.stream().collect(Collectors.groupingBy(Message::getRoomId));
 
-		// 4. 转换为响应对象并返回
+		// 3. 转换为响应对象并返回
 		List<ChatMessageResp> baseMessages = new ArrayList<>();
 		for (Long roomId : groupedMessages.keySet()) {
 			baseMessages.addAll(getMsgRespBatch(groupedMessages.get(roomId), receiveUid));
 		}
 		return baseMessages;
+	}
+
+	/**
+	 * 计算查询的起始时间, 默认最近15天的消息内容
+	 */
+	private LocalDateTime calculateStartTime(Long lastOptTime) {
+		LocalDateTime defaultStartTime = LocalDateTime.now().minusDays(15);
+
+		if (ObjectUtil.isNotNull(lastOptTime) && lastOptTime > 0) {
+			LocalDateTime proposedTime = TimeUtils.getDateTimeOfTimestamp(lastOptTime);
+			return proposedTime.isAfter(defaultStartTime) ? proposedTime : defaultStartTime;
+		}
+
+		return defaultStartTime;
 	}
 
 	private Long getLastMsgId(Long roomId, Long receiveUid) {
@@ -241,7 +249,7 @@ public class ChatServiceImpl implements ChatService {
         AbstractMsgMarkStrategy strategy = MsgMarkFactory.getStrategyNoNull(request.getMarkType());
 
 		// 校验消息
-		Message message = msgCache.getMsg(request.getMsgId());
+		Message message = msgCache.get(request.getMsgId());
 		if (Objects.isNull(message)) {
 			return;
 		}
@@ -328,7 +336,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<Message> getMsgByIds(List<Long> msgIds) {
-        return messageDao.listByIds(msgIds);
+        return msgCache.getBatch(msgIds).values().stream().collect(Collectors.toList());
     }
 
 	@Override

@@ -2,7 +2,7 @@ package com.luohuo.flex.im.common.event.listener;
 
 import com.luohuo.flex.im.common.event.MessageRecallEvent;
 import com.luohuo.flex.model.entity.dto.ChatMsgRecallDTO;
-import com.luohuo.flex.im.core.chat.service.cache.MsgPlusCache;
+import com.luohuo.flex.im.core.chat.service.cache.MsgCache;
 import com.luohuo.flex.im.core.user.service.adapter.WsAdapter;
 import com.luohuo.flex.im.core.user.service.impl.PushService;
 import jakarta.annotation.Resource;
@@ -22,7 +22,7 @@ import static com.luohuo.flex.im.common.config.ThreadPoolConfig.LUOHUO_EXECUTOR;
 @Component
 public class MessageRecallListener {
     @Resource
-    private MsgPlusCache msgPlusCache;
+    private MsgCache msgCache;
     @Resource
     private PushService pushService;
 
@@ -31,7 +31,7 @@ public class MessageRecallListener {
     public void evictMsg(MessageRecallEvent event) {
         ChatMsgRecallDTO recallDTO = event.getRecallDTO();
 //        msgCache.evictMsg(recallDTO.getMsgId());
-        msgPlusCache.delete(recallDTO.getMsgId());
+        msgCache.delete(recallDTO.getMsgId());
     }
 
     @Async(LUOHUO_EXECUTOR)

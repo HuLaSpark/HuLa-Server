@@ -86,7 +86,7 @@ public class MemberAdapter {
 		return wsBaseResp;
 	}
 
-    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, Integer totalNun, List<Long> uidList, Integer type) {
+    public static WsBaseResp<WSMemberChange> buildMemberRemoveWS(Long roomId, Integer totalNun, Integer onlineNum, List<Long> uidList, Integer type) {
         WsBaseResp<WSMemberChange> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.memberChange.getType());
         WSMemberChange wsMemberChange = new WSMemberChange();
@@ -98,6 +98,7 @@ public class MemberAdapter {
 		}).collect(Collectors.toList());
 		wsMemberChange.setUserList(states);
 		wsMemberChange.setTotalNum(totalNun);
+		wsMemberChange.setOnlineNum(onlineNum);
         wsMemberChange.setRoomId(roomId+"");
         wsMemberChange.setChangeType(type);
         wsBaseResp.setData(wsMemberChange);

@@ -2,6 +2,7 @@ package com.luohuo.flex.im.controller.chat;
 
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
+import com.luohuo.flex.im.domain.vo.request.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -12,19 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.domain.dto.MsgReadInfoDTO;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageBaseReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageMarkReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageMemberReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessagePageReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReadInfoReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReadReq;
-import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.domain.vo.response.ChatMessageReadResp;
 import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.core.chat.service.ChatService;
@@ -63,11 +56,11 @@ public class ChatController {
         return R.success(msgPage);
     }
 
-	@GetMapping("/msg/list")
+	@PostMapping("/msg/list")
 	@Operation(summary ="消息列表")
 //    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
-	public R<List<ChatMessageResp>> getMsgPage(@RequestParam(value = "lastOptTime", required = false) Long lastOptTime) {
-		List<ChatMessageResp> msgPage = chatService.getMsgList(lastOptTime, ContextUtil.getUid());
+	public R<List<ChatMessageResp>> getMsgPage(@RequestBody MsgReq msgReq) {
+		List<ChatMessageResp> msgPage = chatService.getMsgList(msgReq, ContextUtil.getUid());
 //		Set<String> blackMembers = getBlackUidSet();
 //		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
 		return R.success(msgPage);

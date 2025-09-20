@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WSFriendApply implements Serializable {
+public class WSNotice implements Serializable {
     @Schema(description ="申请人、被邀请人")
     private Long uid;
 	@Schema(description ="好友申请列表的未读数")

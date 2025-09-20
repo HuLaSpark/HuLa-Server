@@ -13,7 +13,7 @@ import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
-import com.luohuo.flex.im.domain.vo.request.msg.TextMsgReq;
+import com.luohuo.flex.im.domain.entity.msg.TextMsgReq;
 import com.luohuo.flex.im.domain.vo.response.msg.TextMsgResp;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

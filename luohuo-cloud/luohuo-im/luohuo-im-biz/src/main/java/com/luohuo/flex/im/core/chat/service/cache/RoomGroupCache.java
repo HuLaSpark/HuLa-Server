@@ -51,7 +51,7 @@ public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroup> {
 	/**
 	 * 根据群号查询群信息
 	 */
-	@Cacheable(cacheNames = "room", key = "'findGroup'+#account")
+	@Cacheable(cacheNames = "luohuo:room:findGroup", key = "#account")
 	public List<RoomGroup> searchGroup(String account) {
 		return roomGroupDao.searchGroup(account);
 	}
@@ -61,7 +61,7 @@ public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroup> {
 	 * @param account
 	 * @return
 	 */
-	@CacheEvict(cacheNames = "room", key = "'findGroup'+#account")
+	@CacheEvict(cacheNames = "luohuo:room:findGroup", key = "#account")
 	public List<Long> evictGroup(String account) {
 		return null;
 	}
@@ -69,7 +69,7 @@ public class RoomGroupCache extends AbstractRedisStringCache<Long, RoomGroup> {
 	/**
 	 * 清除所有群组相关缓存
 	 */
-	@CacheEvict(cacheNames = "room", allEntries = true)
+	@CacheEvict(cacheNames = "luohuo:room:findGroup", allEntries = true)
 	public void evictAllCaches() {
 	}
 }

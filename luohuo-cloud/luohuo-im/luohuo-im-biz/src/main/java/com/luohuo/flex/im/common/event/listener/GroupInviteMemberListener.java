@@ -40,7 +40,7 @@ public class GroupInviteMemberListener {
 		List<Long> uidList = event.getMemberList();
 		Long roomId = event.getRoomId();
 		User user = userCache.get(event.getUid());
-		ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(roomId, user, userCache.getBatch(uidList));
+		ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(event.getApplyFor(), roomId, user, userCache.getBatch(uidList));
 		chatService.sendMsg(chatMessageReq, user.getId());
     }
 

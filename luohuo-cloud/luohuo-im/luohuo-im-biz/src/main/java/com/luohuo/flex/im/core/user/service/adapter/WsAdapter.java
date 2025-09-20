@@ -5,7 +5,6 @@ import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
 import com.luohuo.flex.model.entity.ws.*;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import com.luohuo.flex.im.domain.dto.ChatMessageMarkDTO;
 import com.luohuo.flex.model.entity.dto.ChatMsgRecallDTO;
@@ -85,8 +84,8 @@ public class WsAdapter {
         return wsBaseResp;
     }
 
-    public static WsBaseResp<WSFriendApply> buildApplySend(WSFriendApply resp) {
-        WsBaseResp<WSFriendApply> wsBaseResp = new WsBaseResp<>();
+    public static WsBaseResp<WSNotice> buildApplySend(WSNotice resp) {
+        WsBaseResp<WSNotice> wsBaseResp = new WsBaseResp<>();
         wsBaseResp.setType(WSRespTypeEnum.NEW_APPLY.getType());
         wsBaseResp.setData(resp);
         return wsBaseResp;

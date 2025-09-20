@@ -11,7 +11,7 @@ import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
-import com.luohuo.flex.im.domain.vo.request.msg.TextMsgReq;
+import com.luohuo.flex.im.domain.entity.msg.TextMsgReq;
 import com.luohuo.flex.im.domain.vo.response.msg.TextMsgResp;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
@@ -64,6 +64,10 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
             }
         }
     }
+
+	private Object reverseFromBean(Objects t) {
+		return t;
+	}
 
     @Override
     public void saveMsg(Message msg, TextMsgReq body) {//插入文本内容

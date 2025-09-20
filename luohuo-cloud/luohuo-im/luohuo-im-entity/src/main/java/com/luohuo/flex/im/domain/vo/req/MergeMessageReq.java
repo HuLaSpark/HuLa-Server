@@ -3,6 +3,7 @@ package com.luohuo.flex.im.domain.vo.req;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,9 +20,14 @@ public class MergeMessageReq implements Serializable {
 	@NotNull(message = "请选择消息来源房间")
 	private Long fromRoomId;
 
+	@Schema(description = "转发类型")
+	@NotNull(message = "转发类型不能为空")
+	private Integer type;
+
 	@Schema(description = "接收的房间ID")
-	@NotNull(message = "房间不能为空")
-	private Long roomId;
+	@Size(max = 100, message = "最多只能转发100条消息")
+	@NotEmpty(message = "请选择接收消息的房间")
+	private List<Long> roomIds;
 
 	@Schema(description = "合并消息的子消息列表")
 	@NotEmpty(message = "请选择要转发的消息")

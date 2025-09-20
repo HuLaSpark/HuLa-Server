@@ -16,12 +16,15 @@ public class GroupInviteMemberEvent extends ApplicationEvent {
     private final Long roomId;
 	// 消息接收人
 	private final Long uid;
+	// 是否是申请进群
+	private final Boolean applyFor;
 
-    public GroupInviteMemberEvent(Object source, Long roomId, List<Long> memberList, Long uid) {
+    public GroupInviteMemberEvent(Object source, Long roomId, List<Long> memberList, Long uid, Boolean applyFor) {
         super(source);
         this.memberList = memberList;
 		this.roomId = roomId;
 		this.uid = uid;
+		this.applyFor = applyFor;
     }
 
 }

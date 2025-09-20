@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.common.event.listener;
 
+import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import com.luohuo.flex.im.domain.entity.ItemConfig;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.entity.UserBackpack;
 import com.luohuo.flex.im.domain.enums.ItemTypeEnum;
-import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 
 import java.util.Objects;
 
@@ -42,7 +42,7 @@ public class ItemReceiveListener {
     @EventListener(classes = ItemReceiveEvent.class)
     public void wear(ItemReceiveEvent event) {
         UserBackpack userBackpack = event.getUserBackpack();
-        ItemConfig itemConfig = itemCache.getById(userBackpack.getItemId());
+        ItemConfig itemConfig = itemCache.get(userBackpack.getItemId());
         if (ItemTypeEnum.BADGE.getType().equals(itemConfig.getType())) {
             User user = userDao.getById(userBackpack.getUid());
             if (Objects.isNull(user.getItemId())) {

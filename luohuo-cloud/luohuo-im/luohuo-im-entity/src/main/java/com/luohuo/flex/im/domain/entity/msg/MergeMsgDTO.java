@@ -22,12 +22,19 @@ public class MergeMsgDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-	@Schema(description ="合并的内容")
-    private List<MergeMsg> messages;
+	@Schema(description ="消息id")
+    private List<BodyDTO> body;
 
 	@Schema(description ="回复的消息id")
 	private Long replyMsgId;
 
+	@Schema(description ="预览的消息内容")
+	private List<String> content;
+
 	@Schema(description ="父消息，如果没有父消息，返回的是null")
 	private ReplyMsg reply;
+
+	public MergeMsgDTO(List<BodyDTO> body) {
+		this.body = body;
+	}
 }

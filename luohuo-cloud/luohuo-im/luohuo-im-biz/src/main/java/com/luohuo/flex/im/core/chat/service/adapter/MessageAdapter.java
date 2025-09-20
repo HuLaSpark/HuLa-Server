@@ -7,20 +7,20 @@ import com.luohuo.flex.im.domain.entity.Announcements;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.MessageMark;
 import com.luohuo.flex.im.domain.entity.msg.AudioCallMsgDTO;
+import com.luohuo.flex.im.domain.entity.msg.BodyDTO;
 import com.luohuo.flex.im.domain.entity.msg.VideoCallMsgDTO;
-import com.luohuo.flex.im.domain.entity.msg.MergeMsg;
 import com.luohuo.flex.im.domain.entity.msg.MergeMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.NoticeMsgDTO;
 import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
-import com.luohuo.flex.model.entity.ws.WSFriendApply;
+import com.luohuo.flex.model.entity.ws.WSNotice;
 import com.luohuo.flex.model.enums.MessageMarkTypeEnum;
 import com.luohuo.flex.im.domain.enums.MessageStatusEnum;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
-import com.luohuo.flex.im.domain.vo.request.msg.TextMsgReq;
+import com.luohuo.flex.im.domain.entity.msg.TextMsgReq;
 import com.luohuo.flex.model.entity.ws.ChatMessageResp;
 import com.luohuo.flex.im.domain.vo.response.ReadAnnouncementsResp;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.AbstractMsgHandler;
@@ -164,13 +164,12 @@ public class MessageAdapter {
 	/**
 	 * 合并消息
 	 */
-	public static ChatMessageReq buildMergeMsg(Long roomId, List<MergeMsg> messages) {
+	public static ChatMessageReq buildMergeMsg(Long roomId, List<Message> messages) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
+		chatMessageReq.setSkip(true);
 		chatMessageReq.setMsgType(MessageTypeEnum.MERGE.getType());
-		MergeMsgDTO mergeMsgDTO = new MergeMsgDTO();
-		mergeMsgDTO.setMessages(messages);
-		chatMessageReq.setBody(mergeMsgDTO);
+		chatMessageReq.setBody(new MergeMsgDTO(messages.stream().map(msg -> new BodyDTO(msg.getFromUid().toString(), msg.getId().toString())).toList()));
 		return chatMessageReq;
 	}
 
@@ -206,8 +205,8 @@ public class MessageAdapter {
 	 * 邀请用户进群通知
 	 * @param resp 通知数据
 	 */
-	public static WsBaseResp<WSFriendApply> buildInviteeUserAddGroupMessage(WSFriendApply resp) {
-		WsBaseResp<WSFriendApply> wsBaseResp = new WsBaseResp<>();
+	public static WsBaseResp<WSNotice> buildInviteeUserAddGroupMessage(WSNotice resp) {
+		WsBaseResp<WSNotice> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.NEW_APPLY.getType());
 		wsBaseResp.setData(resp);
 		return wsBaseResp;

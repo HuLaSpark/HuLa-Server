@@ -731,6 +731,30 @@ CREATE TABLE `im_role`  (
 INSERT INTO `im_role` VALUES (1, '超级管理员', '2024-07-10 11:17:15.089', '2024-07-10 11:17:15.089', 1, 1, NULL, 0);
 INSERT INTO `im_role` VALUES (2, 'HuLa群聊管理员', '2024-07-10 11:17:15.091', '2024-11-26 12:00:22.452', 1, 1, NULL, 0);
 
+DROP TABLE IF EXISTS `im_notice`;
+CREATE TABLE `im_notice`  (
+                              `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+                              `event_type` tinyint NOT NULL COMMENT '通知类型:1-好友申请;2-群申请;3-群邀请;5-移除群成员;6-好友被申请;7-被邀请进群',
+                              `type` tinyint NOT NULL DEFAULT 1 COMMENT '通知类型 1群聊 2加好友',
+                              `sender_id` bigint NOT NULL COMMENT '发起人UID',
+                              `receiver_id` bigint NOT NULL COMMENT '接收人UID',
+                              `apply_id` bigint NULL DEFAULT NULL COMMENT '申请ID',
+                              `operate_id` bigint NOT NULL COMMENT '房间ID',
+                              `content` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '0' COMMENT '通知消息 [申请时填写]',
+                              `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '处理状态:0-未处理;1-已同意;2-已拒绝',
+                              `is_read` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已读',
+                              `tenant_id` bigint NOT NULL COMMENT '租户id',
+                              `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                              `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                              `create_by` bigint NOT NULL COMMENT '创建人',
+                              `update_by` bigint NOT NULL COMMENT '创建人',
+                              `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+                              PRIMARY KEY (`id`) USING BTREE,
+                              INDEX `idx_receiver_type`(`receiver_id` ASC, `event_type` ASC) USING BTREE,
+                              INDEX `idx_sender`(`sender_id` ASC) USING BTREE,
+                              INDEX `idx_related`(`apply_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 75169527849987 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '统一通知表' ROW_FORMAT = Dynamic;
+
 -- ----------------------------
 -- Table structure for im_room
 -- ----------------------------

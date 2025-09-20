@@ -2,7 +2,9 @@ package com.luohuo.flex.im.controller.user;
 
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.model.entity.base.RefreshIpInfo;
+import com.luohuo.flex.model.entity.base.UserReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -44,6 +46,12 @@ public class UserController {
 	@Operation(summary ="刷新IP信息、物理地址")
 	public R<Boolean> refreshIpInfo(@RequestBody RefreshIpInfo refreshIpInfo) {
 		return R.success(userService.refreshIpInfo(refreshIpInfo.getUid(), refreshIpInfo.getIpInfo()));
+	}
+
+	@PostMapping("getUserByIds")
+	@Operation(summary ="查询用户id")
+	public R<List<SummeryInfoDTO>> getUserByIds(@RequestBody UserReq userReq) {
+		return R.success(userService.getUserInfo(userReq.getUidList()));
 	}
 
 	@GetMapping("/checkEmail")

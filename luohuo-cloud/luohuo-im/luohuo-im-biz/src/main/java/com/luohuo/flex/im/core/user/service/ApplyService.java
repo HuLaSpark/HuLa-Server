@@ -1,14 +1,10 @@
 package com.luohuo.flex.im.core.user.service;
 
 import com.luohuo.flex.im.domain.entity.UserApply;
-import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
 import com.luohuo.flex.im.domain.vo.request.RoomApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.ApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.GroupApplyHandleReq;
-import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendApplyResp;
-import com.luohuo.flex.model.entity.ws.WSFriendApply;
 import jakarta.validation.Valid;
 
 /**
@@ -49,21 +45,6 @@ public interface ApplyService {
 	 * @param request 请求
 	 */
 	void handlerApply(Long uid, @Valid ApplyReq request);
-
-    /**
-     * 分页查询好友申请
-     *
-     * @param request 请求
-     * @return {@link PageBaseResp}<{@link FriendApplyResp}>
-     */
-    PageBaseResp<FriendApplyResp> pageApplyFriend(Long uid, PageBaseReq request);
-
-    /**
-     * 申请未读数
-     *
-     * @return {@link WSFriendApply}
-     */
-	WSFriendApply unread(Long uid);
 
     /**
      * 删除申请
