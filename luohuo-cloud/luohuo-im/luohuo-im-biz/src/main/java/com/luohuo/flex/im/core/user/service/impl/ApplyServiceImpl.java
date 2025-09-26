@@ -1,9 +1,7 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.exception.BizException;
 import com.luohuo.basic.model.cache.CacheKey;
@@ -31,7 +29,6 @@ import com.luohuo.flex.im.core.user.service.ApplyService;
 import com.luohuo.flex.im.core.user.service.FriendService;
 import com.luohuo.flex.im.core.user.service.NoticeService;
 import com.luohuo.flex.im.core.user.service.adapter.FriendAdapter;
-import com.luohuo.flex.im.core.user.service.adapter.WsAdapter;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.RequestApprovalDto;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
@@ -43,19 +40,14 @@ import com.luohuo.flex.im.domain.entity.RoomGroup;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.entity.UserFriend;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
-import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
 import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
 import com.luohuo.flex.im.domain.enums.NoticeTypeEnum;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
-import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
 import com.luohuo.flex.im.domain.vo.request.RoomApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.ApplyReq;
-import com.luohuo.flex.im.domain.vo.request.member.GroupApplyHandleReq;
-import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendApplyResp;
 import com.luohuo.flex.model.redis.annotation.RedissonLock;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,11 +55,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.AGREE;
 import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.WAIT_APPROVAL;
@@ -87,7 +77,6 @@ public class ApplyServiceImpl implements ApplyService {
     private RoomService roomService;
     private ChatService chatService;
 	private RoomCache roomCache;
-	private PushService pushService;
 	private UserSummaryCache userSummaryCache;
 	private GroupMemberCache groupMemberCache;
 	private RoomGroupCache roomGroupCache;
@@ -126,23 +115,23 @@ public class ApplyServiceImpl implements ApplyService {
         userApplyDao.save(newApply);
 
 		noticeService.createNotice(
-				RoomTypeEnum.FRIEND,
-				NoticeTypeEnum.ADD_ME,
-				uid,
-				request.getTargetUid(),
-				newApply.getId(),
-				request.getTargetUid(),
-				request.getMsg()
+			RoomTypeEnum.FRIEND,
+			NoticeTypeEnum.ADD_ME,
+			uid,
+			request.getTargetUid(),
+			newApply.getId(),
+			request.getTargetUid(),
+			request.getMsg()
 		);
 
 		noticeService.createNotice(
-				RoomTypeEnum.FRIEND,
-				NoticeTypeEnum.FRIEND_APPLY,
-				uid,
-				uid,
-				newApply.getId(),
-				request.getTargetUid(),
-				request.getMsg()
+			RoomTypeEnum.FRIEND,
+			NoticeTypeEnum.FRIEND_APPLY,
+			uid,
+			uid,
+			newApply.getId(),
+			request.getTargetUid(),
+			request.getMsg()
 		);
 
         // 申请事件
@@ -164,6 +153,10 @@ public class ApplyServiceImpl implements ApplyService {
 			return false;
 		}
 
+		if(req.getType().equals(2) && !roomGroup.getAllowScanEnter()){
+			return false;
+		}
+
 		List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
 		if(memberUidList.contains(uid)){
 			throw new BizException("你已经加入群聊");
@@ -174,11 +167,30 @@ public class ApplyServiceImpl implements ApplyService {
 		SummeryInfoDTO userInfo = userSummaryCache.get(uid);
 		String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
 
-		for (Long groupAdminId : groupAdminIds) {
-			friendService.createUserApply(uid, roomGroup.getRoomId(), groupAdminId, msg, RoomTypeEnum.GROUP.getType());
+		// 申请进入群聊
+		Long applyId = friendService.createUserApply(uid, roomGroup.getRoomId(), uid, msg, RoomTypeEnum.GROUP.getType());
+		noticeService.createNotice(
+				RoomTypeEnum.GROUP,
+				NoticeTypeEnum.GROUP_APPLY,
+				uid,
+				uid,
+				applyId,
+				uid,
+				roomGroup.getName(),
+				req.getMsg()
+		);
 
-			// 给群里的管理员发送申请
-			pushService.sendPushMsg(MessageAdapter.buildRoomGroupMessage(uid, roomGroup.getRoomId(), groupAdminId, msg), groupAdminId, uid);
+		for (Long groupAdminId : groupAdminIds) {
+			noticeService.createNotice(
+				RoomTypeEnum.GROUP,
+				NoticeTypeEnum.GROUP_APPLY,
+				uid,
+				groupAdminId,
+				applyId,
+				uid,
+				roomGroup.getName(),
+				req.getMsg()
+			);
 		}
 		return true;
 	}
@@ -188,7 +200,7 @@ public class ApplyServiceImpl implements ApplyService {
 	public void handlerApply(Long uid, ApplyReq request) {
 		// 1. 校验邀请记录
 		UserApply invite = userApplyDao.getById(request.getApplyId());
-		if (invite == null || !invite.getTargetId().equals(uid)) {
+		if (invite == null) {
 			throw new BizException("无效的邀请");
 		}
 
@@ -264,6 +276,15 @@ public class ApplyServiceImpl implements ApplyService {
 					// 处理加群, 如果是申请进群，那么用uid、否则是拉进群
 					Long infoUid = invite.getApplyFor() ? invite.getUid() : invite.getTargetId();
 					RoomGroup roomGroup = roomGroupCache.getByRoomId(invite.getRoomId());
+
+					// 如果是申请进群，那么判断当前人员是否具备权限
+					if(invite.getApplyFor()){
+						GroupMember thisMember = groupMemberDao.getMemberByGroupId(roomGroup.getId(), uid);
+						if (thisMember == null || !(thisMember.getRoleId().equals(GroupRoleEnum.LEADER.getType()) && !thisMember.getRoleId().equals(GroupRoleEnum.MANAGER.getType()))) {
+							throw new BizException("无审批权限");
+						}
+					}
+
 					Room room = roomCache.get(invite.getRoomId());
 					GroupMember member = groupMemberDao.getMemberByGroupId(roomGroup.getId(), infoUid);
 					if(ObjectUtil.isNotNull(member)){
@@ -306,67 +327,6 @@ public class ApplyServiceImpl implements ApplyService {
 				noticeService.updateNotice(notice);
 			}
 		}
-	}
-
-	/**
-	 * 处理加群申请
-	 * @param uid 当前登录人id
-	 * @param req 审批请求
-	 */
-	@Override
-	@RedissonLock(key = "#request.applyId")
-	public void handleApply(Long uid, GroupApplyHandleReq req) {
-		// 1. 校验申请记录
-		UserApply apply = userApplyDao.getById(req.getApplyId());
-		if (apply == null || !apply.getType().equals(RoomTypeEnum.GROUP.getType())) {
-			throw new BizException("无效的申请记录");
-		}
-
-		// 2. 校验管理员权限
-		RoomGroup group = roomGroupCache.get(apply.getRoomId());
-		GroupMember member = groupMemberDao.getMemberByGroupId(group.getId(), uid);
-		if (member == null || (member.getRoleId().equals(GroupRoleEnum.LEADER.getType()) && !member.getRoleId().equals(GroupRoleEnum.MANAGER.getType()))) {
-			throw new BizException("无审批权限");
-		}
-
-		Room room = roomCache.get(group.getRoomId());
-		apply.setStatus(req.getStatus());
-		apply.setReadStatus(ApplyReadStatusEnum.READ.getCode());
-
-		// 3. 更新申请状态
-		transactionTemplate.execute(e -> {
-			userApplyDao.updateById(apply);
-
-			// 5.0 创建申请人与房间的会话
-			chatService.createContact(uid, apply.getRoomId());
-
-			// 5.1 同意则加群
-			if (req.getStatus().equals(2)) {
-				// 5.2 加入群聊
-				groupMemberDao.save(MemberAdapter.buildMemberAdd(group.getId(), apply.getTargetId()));
-			}
-			return true;
-		});
-
-		// 5.3 写入缓存
-		if (req.getStatus().equals(2)) {
-			groupMemberCache.evictMemberList(group.getRoomId());
-			groupMemberCache.evictExceptMemberList(group.getRoomId());
-
-			CacheKey uKey = PresenceCacheKeyBuilder.userGroupsKey(apply.getUid());
-			CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(room.getId());
-			CacheKey onlineGroupMembersKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(room.getId());
-			cachePlusOps.sAdd(uKey, room.getId());
-			cachePlusOps.sAdd(gKey, apply.getUid());
-			roomAppService.asyncOnline(Arrays.asList(apply.getUid()), room.getId(), true);
-
-			// 5.5 发布成员增加事件
-			SpringUtils.publishEvent(new GroupInviteMemberEvent(this, room.getId(), Arrays.asList(apply.getUid()), apply.getUid(), false));
-			SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Collections.singletonList(apply.getUid()), apply.getUid()));
-		}
-
-		// 6. 通知申请人 [这条消息需要覆盖前端]
-		pushService.sendPushMsg(WsAdapter.buildApplyResultWS(apply.getUid(), group.getRoomId(), uid, apply.getMsg(), apply.getStatus(), apply.getReadStatus()), apply.getUid(), uid);
 	}
 
     @Override

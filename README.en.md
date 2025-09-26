@@ -125,18 +125,71 @@ If you find HuLa helpful, welcome to sponsor HuLa. Your support is our motivatio
 ## Sponsor List
 Thanks to the following sponsors for their support!
 
-| Date | Sponsor | Amount | Platform |
-|------|---------|---------|----------|
-| 2025-04-25 | 上官俊斌 | ￥200 | 微信赞赏码 |
-| 2025-04-20 | 姜兴(Simon) | ￥188 | 微信赞赏码 |
-| 2025-02-17 | 禾硕 | ￥168 | 支付宝赞赏 |
-| 2025-02-8 | Boom.... | ￥100 | 微信赞赏码 |
-| 2025-05-09 | 犹豫，就会败北。| ￥88.00 | 微信红包 |
-| 2025-04-01 | 墨       | ￥88.88 | 微信转账 |
-| 2025-02-8 | 邓伟 | ￥88 | 微信赞赏码 |
-| 2025-02-7 | dennis | ￥80 | gitee码云赞赏 |
-| 2025-05-15 | 孤鸿影 | ￥56 | 微信红包 |
-| 2025-02-6 | 小二 | ￥62 | 微信转账 |
+### 🔐 User Authentication System
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 🔑 | Username/Password Login | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📱 | QR Code Scan Login | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 💻 | Multi-device Login Management | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+
+### 💬 Message Communication
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 👤 | One-on-one Private Chat | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 👥 | Group Chat | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| ↩️ | Message Recall | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📢 | @Mention & Reply Features | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 👁️ | Message Read Status | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 😊 | Emoji Features | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🖱️ | Message Right-click Menu | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🔗 | Link Preview Cards | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 👍 | Message Like Interaction | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📔 | Chat History Management | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+
+### 🤝 Social Management
+| Feature | Description | Status |
+|---------|-------------|--------|
+| ➕ | Add & Remove Friends | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🔍 | Friend Search | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🏢 | Group Creation & Management | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🟢 | Friend Online Status | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🎖️ | Friend Badge System | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🚫 | Block & Do Not Disturb | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📤 | Message Forwarding | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📋 | Group Announcements | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🏷️ | Nickname & Remark Management | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📍 | Get and Send Location | ![In Progress](https://img.shields.io/badge/🐣-进行中-ee9f20?style=flat&labelColor=fef7e6&color=ee9f20) |
+
+### 🎨 User Experience
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 🖼️ | Modern UI Design | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🌙 | Dark & Light Theme | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🎭 | Skin Theme Switching | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+
+### 🛠️ System Features
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 🪟 | Multi-window Management | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🔔 | System Tray Notifications | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📷 | Image Viewer | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| ✂️ | Screenshot Feature | ![In Progress](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📁 | File Upload (Qiniu Cloud) | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 🔄 | Auto-update System | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+
+### 🌐 Cross-platform Support
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 💻 | Windows/macOS/Linux | ![Completed](https://img.shields.io/badge/✅-Completed-008080?style=flat&labelColor=e6f7f7&color=008080) |
+| 📱 | iOS/Android Adaptation | ![In Progress](https://img.shields.io/badge/🐣-In_Progress-ee9f20?style=flat&labelColor=fef7e6&color=ee9f20) |
+
+### 🤖 AI Integration
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 🧠 | AI Chat Assistant | ![In Progress](https://img.shields.io/badge/🐣-In_Progress-ee9f20?style=flat&labelColor=fef7e6&color=ee9f20) |
+| 🔌 | Multi-platform AI Support | ![In Progress](https://img.shields.io/badge/🐣-In_Progress-ee9f20?style=flat&labelColor=fef7e6&color=ee9f20) |
+
+## 👏 Thanks to all Contributors!
 
 > Note: This list is manually updated. If you have sponsored but are not shown in the list, please contact us through:
  1. Submit an Issue on GitHub

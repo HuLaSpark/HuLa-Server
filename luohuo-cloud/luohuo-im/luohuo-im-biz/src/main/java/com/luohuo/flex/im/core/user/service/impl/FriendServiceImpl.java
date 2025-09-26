@@ -14,6 +14,8 @@ import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.model.entity.WSRespTypeEnum;
+import com.luohuo.flex.model.entity.WsBaseResp;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,7 @@ import com.luohuo.flex.im.core.user.service.FriendService;
 import com.luohuo.flex.im.core.user.service.adapter.FriendAdapter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +69,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
     private UserDao userDao;
 	private UserSummaryCache userSummaryCache;
 	private BaseRedis baseRedis;
+	private final PushService pushService;
 	private CachePlusOps cachePlusOps;
 	private PresenceApi presenceApi;
 
@@ -126,7 +130,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
     }
 
 	@Override
-	public void createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type) {
+	public Long createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type) {
 		UserApply userApply = new UserApply();
 		userApply.setMsg(msg);
 		userApply.setUid(uid);
@@ -137,6 +141,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		userApply.setReadStatus(ApplyReadStatusEnum.UNREAD.getCode());
 		userApply.setApplyFor(true);
 		userApplyDao.save(userApply);
+		return userApply.getId();
 	}
 
 	@Override
@@ -203,8 +208,14 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
         List<Long> friendRecordIds = userFriends.stream().map(UserFriend::getId).collect(Collectors.toList());
         userFriendDao.removeByIds(friendRecordIds);
         // 禁用房间
-        roomService.disableFriendRoom(Arrays.asList(uid, friendUid));
+        roomService.disableFriendRoom(userFriends.get(0).getRoomId(), uid, friendUid);
 		removeFriendCache(uid, friendUid);
+
+		// 删除好友的事件
+		WsBaseResp<String> wsMsg = new WsBaseResp<>();
+		wsMsg.setData(uid.toString());
+		wsMsg.setType(WSRespTypeEnum.DELETE_FRIEND.getType());
+		pushService.sendPushMsg(wsMsg, Collections.singletonList(friendUid), uid);
     }
 
     @Override

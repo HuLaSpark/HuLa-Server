@@ -12,7 +12,7 @@ import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.model.entity.dto.ChatMsgRecallDTO;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
-import com.luohuo.flex.im.domain.entity.msg.MsgRecall;
+import com.luohuo.flex.im.domain.vo.response.msg.MsgRecallDTO;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 
 import java.time.LocalDateTime;
@@ -43,7 +43,7 @@ public class RecallMsgHandler extends AbstractMsgHandler<Object> {
 
     @Override
     public Object showMsg(Message msg) {
-        MsgRecall recall = msg.getExtra().getRecall();
+        MsgRecallDTO recall = msg.getExtra().getRecall();
 		SummeryInfoDTO userInfo = userSummaryCache.get(recall.getRecallUid());
         if (!Objects.equals(recall.getRecallUid(), msg.getFromUid())) {
             return "管理员\"" + userInfo.getName() + "\"撤回了一条成员消息";
@@ -58,7 +58,7 @@ public class RecallMsgHandler extends AbstractMsgHandler<Object> {
 
     public void recall(Long recallUid, List<Long> uidList, Message message) {//todo 消息覆盖问题用版本号解决
         MessageExtra extra = message.getExtra();
-        extra.setRecall(new MsgRecall(recallUid, TimeUtils.getTime(LocalDateTime.now())));
+        extra.setRecall(new MsgRecallDTO(recallUid, TimeUtils.getTime(LocalDateTime.now())));
         Message update = new Message();
         update.setId(message.getId());
         update.setType(MessageTypeEnum.RECALL.getType());

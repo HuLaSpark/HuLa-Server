@@ -2,6 +2,7 @@ package com.luohuo.flex.im.domain.entity.msg;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.luohuo.flex.im.domain.UrlInfo;
+import com.luohuo.flex.im.domain.vo.response.msg.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,7 @@ public class MessageExtra implements Serializable {
     //url跳转链接
     private Map<String, UrlInfo> urlContentMap;
     //消息撤回详情
-    private MsgRecall recall;
+    private MsgRecallDTO recall;
     //艾特的uid
     private List<Long> atUidList;
     //文件消息
@@ -47,6 +48,8 @@ public class MessageExtra implements Serializable {
 	private VideoCallMsgDTO videoCallMsgDTO;
 	//音频扩展消息
 	private AudioCallMsgDTO audioCallMsgDTO;
+	//地图扩展消息
+	private MapMsgDTO mapMsgDTO;
 
 	/**
      * 表情图片信息

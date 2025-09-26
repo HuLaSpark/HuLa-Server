@@ -24,6 +24,8 @@ public interface NoticeService {
 	 */
 	void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, String content);
 
+	void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, String name, String content);
+
 	/**
 	 * 更新通知状态
 	 * @param notice

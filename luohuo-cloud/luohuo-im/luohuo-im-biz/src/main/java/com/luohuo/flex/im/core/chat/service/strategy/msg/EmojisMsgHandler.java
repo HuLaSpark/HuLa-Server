@@ -4,7 +4,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.domain.entity.Message;
-import com.luohuo.flex.im.domain.entity.msg.EmojisMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.EmojisMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 

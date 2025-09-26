@@ -48,7 +48,7 @@ public class FriendController {
 		return R.success(friendService.searchFriend(friendReq));
 	}
 
-	@DeleteMapping()
+	@DeleteMapping
     @Operation(summary = "删除好友")
     public R<Boolean> delete(@Valid @RequestBody FriendDeleteReq request) {
         Long uid = ContextUtil.getUid();

@@ -1,38 +1,32 @@
-package com.luohuo.flex.im.domain.entity.msg;
+package com.luohuo.flex.im.domain.vo.response.msg;
 
+import com.luohuo.flex.im.domain.entity.msg.ReplyMsg;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-
-import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 图片消息入参
+ * 表情图片消息入参
  * @author nyh
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-@SuperBuilder
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImgMsgDTO extends BaseFileDTO implements Serializable {
+public class EmojisMsgDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description ="宽度（像素）")
-    @NotNull
-    private Integer width;
-
-    @Schema(description ="高度（像素）")
-    @NotNull
-    private Integer height;
+    @Schema(description ="下载地址")
+    @NotBlank
+    private String url;
 
 	@Schema(description ="回复的消息id")
 	private Long replyMsgId;
@@ -43,5 +37,3 @@ public class ImgMsgDTO extends BaseFileDTO implements Serializable {
 	@Schema(description ="父消息，如果没有父消息，返回的是null")
 	private ReplyMsg reply;
 }
-
-

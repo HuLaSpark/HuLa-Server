@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.im.core.chat.dao.AnnouncementsDao;
 import com.luohuo.flex.im.core.chat.dao.AnnouncementsReadRecordDao;
+import com.luohuo.flex.im.core.chat.dao.ContactDao;
 import com.luohuo.flex.im.domain.entity.Announcements;
 import com.luohuo.flex.im.domain.entity.AnnouncementsReadRecord;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
@@ -41,6 +42,7 @@ import java.util.Objects;
 public class RoomServiceImpl implements RoomService {
 
     private RoomFriendDao roomFriendDao;
+	private ContactDao contactDao;
     private RoomDao roomDao;
 	private UidGenerator uidGenerator;
     private GroupMemberDao groupMemberDao;
@@ -75,10 +77,9 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void disableFriendRoom(List<Long> uidList) {
-        AssertUtil.isNotEmpty(uidList, "房间创建失败，好友数量不对");
-        AssertUtil.equal(uidList.size(), 2, "房间创建失败，好友数量不对");
-        String key = ChatAdapter.generateRoomKey(uidList);
+    public void disableFriendRoom(Long roomId, Long uid, Long friendUid) {
+		contactDao.removeByRoomId(roomId, Arrays.asList(uid));
+        String key = ChatAdapter.generateRoomKey(Arrays.asList(uid, friendUid));
         roomFriendDao.disableRoom(key);
     }
 

@@ -8,6 +8,7 @@
                g.avatar as avatar,
                g.id     as groupId,
                g.account,
+               g.allow_scan_enter,
                r.update_time
         from im_room_group g
                  inner join im_room r on g.room_id = r.id

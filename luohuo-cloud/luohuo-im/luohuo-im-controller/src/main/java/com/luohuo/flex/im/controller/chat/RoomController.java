@@ -3,7 +3,6 @@ package com.luohuo.flex.im.controller.chat;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luohuo.flex.im.domain.vo.req.IdReqVO;
-import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
 import com.luohuo.flex.im.domain.vo.res.IdRespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
-import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.domain.entity.Announcements;
 import com.luohuo.flex.im.domain.entity.RoomGroup;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageMemberReq;
@@ -118,12 +116,6 @@ public class RoomController {
 	public R<Boolean> updateMyRoomInfo(@Valid @RequestBody RoomMyInfoReq request) {
 		Long uid = ContextUtil.getUid();
 		return R.success(roomService.updateMyRoomInfo(uid, request));
-	}
-
-	@GetMapping("/apply/group/list")
-	@Operation(summary = "申请加群列表 [仅仅管理员、群主可见]")
-	public R<CursorPageBaseResp<UserApplyResp>> applyGroup(@Valid MemberReq request){
-		return R.success(roomService.queryApplyPage(ContextUtil.getUid(), request));
 	}
 
     @PostMapping("/group/member")

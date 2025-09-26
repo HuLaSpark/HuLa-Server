@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
-import com.luohuo.flex.im.domain.entity.msg.SoundMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.SoundMsgDTO;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 
 import java.util.Optional;

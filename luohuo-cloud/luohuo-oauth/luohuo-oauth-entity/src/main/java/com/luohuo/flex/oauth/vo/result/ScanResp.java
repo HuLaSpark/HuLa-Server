@@ -14,8 +14,15 @@ public class ScanResp implements Serializable {
 	@Schema(description = "登录端ip")
 	private String ip;
 
-    public ScanResp(String ip, Long expireTime) {
+	@Schema(description = "登录设备")
+	private String deviceType;
+
+	@Schema(description = "登录地址")
+	private String locPlace;
+
+	public ScanResp(String ip, Long expireTime, String deviceType) {
 		this.ip = ip;
-        this.expireTime = expireTime;
-    }
+		this.expireTime = expireTime;
+		this.deviceType = deviceType;
+	}
 }

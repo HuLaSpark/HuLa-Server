@@ -29,13 +29,12 @@ public enum WSRespTypeEnum {
     INVALID_USER("invalidUser", "拉黑用户", WSBlack.class),
     MSG_MARK_ITEM("msgMarkItem", "消息标记", WSMsgMark.class),
     MSG_RECALL("msgRecall", "消息撤回", WSMsgRecall.class),
+	DELETE_FRIEND("deleteFriend", "删除好友", null),
 
 	NOTICE("notice", "通知总线", null),
 	REQUEST_APPROVAL_FRIEND("requestApprovalFriend", "同意好友请求", WSFriendApproval.class),
 	NEW_APPLY("newApply", "好友申请、群聊邀请", WSNotice.class),
 	ROOM_DISSOLUTION("roomDissolution", "群解散", null),
-	ROOM_GROUP_MSG("roomGroupMsg", "用户申请加群通知消息", null),
-	GROUP_APPLY_NOTICE("GroupApplyNotice", "管理员用户申请加群通知消息", null),
 
 	ROOM_GROUP_NOTICE_READ_MSG("roomGroupNoticeReadMsg", "群公告已读", null),
 	FEED_SEND_MSG("feedSendMsg", "朋友圈发布", null),

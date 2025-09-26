@@ -1,4 +1,4 @@
-package com.luohuo.flex.im.domain.entity.msg;
+package com.luohuo.flex.im.domain.vo.response.msg;
 
 import com.luohuo.flex.model.enums.CallStatusEnum;
 import lombok.AllArgsConstructor;

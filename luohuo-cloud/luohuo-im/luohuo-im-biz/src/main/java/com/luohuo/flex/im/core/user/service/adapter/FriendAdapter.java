@@ -5,7 +5,6 @@ import com.luohuo.flex.im.domain.entity.UserFriend;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
-import com.luohuo.flex.im.domain.vo.resp.friend.FriendApplyResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendResp;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,7 @@ public class FriendAdapter {
         return friendPage.stream().map(userFriend -> {
             FriendResp resp = new FriendResp();
             resp.setUid(userFriend.getFriendUid());
+			resp.setRemark(userFriend.getRemark());
 			UserFriend friend = friendHashMap.get(userFriend.getFriendUid());
 			resp.setHideMyPosts(friend.getHideMyPosts());
 			resp.setHideTheirPosts(friend.getHideTheirPosts());

@@ -1,4 +1,4 @@
-package com.luohuo.flex.im.domain.entity.msg;
+package com.luohuo.flex.im.domain.vo.response.msg;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

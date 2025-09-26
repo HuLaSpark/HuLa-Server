@@ -24,4 +24,7 @@ public class RoomInfoReq {
 	@NotEmpty(message = "群头像不能为空")
 	@Schema(description ="群头像")
 	private String avatar;
+
+	@Schema(description ="是否允许扫码直接进群")
+	private Boolean allowScanEnter;
 }

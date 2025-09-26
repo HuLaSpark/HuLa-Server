@@ -48,4 +48,11 @@ public class RoomGroup extends Entity<Long> {
      */
     @TableField("ext_json")
     private String extJson;
+
+	/**
+	 * 允许扫码直接进群
+	 */
+	@TableField("allow_scan_enter")
+	private Boolean allowScanEnter;
+
 }

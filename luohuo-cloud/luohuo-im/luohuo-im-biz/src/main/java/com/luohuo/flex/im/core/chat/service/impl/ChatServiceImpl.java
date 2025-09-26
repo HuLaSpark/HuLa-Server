@@ -336,7 +336,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<Message> getMsgByIds(List<Long> msgIds) {
-        return msgCache.getBatch(msgIds).values().stream().collect(Collectors.toList());
+        return msgCache.getBatch(msgIds).values().stream().sorted(Comparator.comparingLong(Message::getId)).collect(Collectors.toList());
     }
 
 	@Override

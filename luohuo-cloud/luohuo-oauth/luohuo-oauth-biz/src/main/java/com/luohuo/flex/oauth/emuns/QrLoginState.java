@@ -7,6 +7,13 @@ public enum QrLoginState {
      * - 描述：二维码生成后等待用户扫描
      */
     PENDING("待扫描", "PENDING", 30_000),
+
+	/**
+	 * 已过期
+	 * - 有效期：30秒
+	 * - 描述：超时未扫描
+	 */
+	EXPIRED("已过期", "EXPIRED", 30_000),
     
     /**
      * 已扫描待确认

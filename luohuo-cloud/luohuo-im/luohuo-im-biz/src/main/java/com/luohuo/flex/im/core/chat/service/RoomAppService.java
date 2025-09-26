@@ -1,7 +1,6 @@
 package com.luohuo.flex.im.core.chat.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
@@ -95,13 +94,6 @@ public interface RoomAppService {
 	 * 同步在线状态
 	 */
 	void asyncOnline(List<Long> uidList, Long roomId, boolean online);
-
-	/**
-	 * 申请加群列表
-	 * @param uid 登录用户id
-	 * @param req 请求
-	 */
-	CursorPageBaseResp<UserApplyResp> queryApplyPage(Long uid, MemberReq req);
 
 	/**
 	 * 管理员修改群信息

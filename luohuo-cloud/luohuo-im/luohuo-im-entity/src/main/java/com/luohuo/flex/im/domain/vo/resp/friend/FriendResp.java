@@ -21,6 +21,9 @@ public class FriendResp implements Serializable {
     @Schema(description ="好友uid")
     private Long uid;
 
+	@Schema(description ="好友备注")
+	private String remark;
+
     @Schema(description ="在线状态 1在线 2离线")
     private Integer activeStatus;
 

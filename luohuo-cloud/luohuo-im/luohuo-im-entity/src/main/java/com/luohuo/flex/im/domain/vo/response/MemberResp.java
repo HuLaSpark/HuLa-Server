@@ -34,4 +34,6 @@ public class MemberResp {
 	private String remark;
 	@Schema(description = "在这个群的昵称")
 	private String myName;
+	@Schema(description = "是否允许扫码直接进群")
+	private Boolean allowScanEnter;
 }

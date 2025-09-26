@@ -38,7 +38,7 @@ public interface RoomService {
     /**
      * 禁用一个单聊房间
      */
-    void disableFriendRoom(List<Long> uidList);
+    void disableFriendRoom(Long roomId, Long uid, Long friendUid);
 
     /**
      * 创建一个群聊房间

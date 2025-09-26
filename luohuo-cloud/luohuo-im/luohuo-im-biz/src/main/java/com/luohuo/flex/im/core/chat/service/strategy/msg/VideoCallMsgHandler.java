@@ -4,7 +4,7 @@ import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.entity.Message;
-import com.luohuo.flex.im.domain.entity.msg.VideoCallMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.VideoCallMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.model.enums.CallStatusEnum;

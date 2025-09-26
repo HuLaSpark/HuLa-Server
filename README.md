@@ -144,13 +144,21 @@ HuLa-Server 是一款基于 SpringCloud、SpringBoot3、Netty、MyBatis-Plus 和
 ## 🙏 感谢赞助者
 
 <div align="center">
-  <h3>💎 贡献者荣誉榜</h3>
+  <h3>贡献者荣誉榜</h3>
   <p><em>感谢以下朋友对 HuLa 项目的慷慨支持！</em></p>
 </div>
+
+### 💎 钻石赞助者 (￥1000+)
+| 💝 日期 | 👤 赞助者 | 💰 金额 | 🏷️ 平台 |
+|---------|----------|--------|---------|
+| 2025-09-12 | **翟可** | `¥1688` | ![微信转账](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
 
 ### 🏆 金牌赞助者 (￥100+)
 | 💝 日期 | 👤 赞助者 | 💰 金额 | 🏷️ 平台 |
 |---------|----------|--------|---------|
+| 2025-09-03 | **烛火** | `¥500` | ![微信转账](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-09-05 | **Orion** | `¥200` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
+| 2025-08-26 | **唐勇** | `¥200` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
 | 2025-04-25 | **上官俊斌** | `¥200` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
 | 2025-05-27 | **临安居士** | `¥188` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
 | 2025-04-20 | **姜兴(Simon)** | `¥188` | ![微信赞赏](https://img.shields.io/badge/微信赞赏-07C160?style=flat&logo=wechat&logoColor=white) |
