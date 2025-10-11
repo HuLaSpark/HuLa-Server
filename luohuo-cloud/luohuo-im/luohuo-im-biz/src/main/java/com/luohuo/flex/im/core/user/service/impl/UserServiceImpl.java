@@ -54,7 +54,6 @@ import com.luohuo.flex.im.core.user.service.adapter.UserAdapter;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -135,9 +134,9 @@ public class UserServiceImpl implements UserService {
         AssertUtil.isFalse(sensitiveWordBs.hasSensitiveWord(newName), "名字中包含敏感词，请重新输入"); // 判断名字中有没有敏感词
 
 		User user = userDao.getById(uid);
-		AssertUtil.isTrue(req.getAvatar().equals(user.getAvatar()) ||
-						(user.getAvatarUpdateTime() != null && user.getAvatarUpdateTime().plusDays(30).isBefore(LocalDateTime.now())),
-				"30天内只能修改一次头像");
+//		AssertUtil.isTrue(req.getAvatar().equals(user.getAvatar()) ||
+//						(user.getAvatarUpdateTime() != null && user.getAvatarUpdateTime().plusDays(30).isBefore(LocalDateTime.now())),
+//				"30天内只能修改一次头像");
 		// 更新
 		User update = new User();
 		update.setId(uid);
@@ -152,6 +151,7 @@ public class UserServiceImpl implements UserService {
 
 		userDao.updateById(update);
 		// 删除缓存
+		userCache.delete(uid);
 		userSummaryCache.delete(uid);
 		userSummaryCache.evictFriend(userSummaryCache.get(uid).getAccount());
     }
@@ -161,10 +161,10 @@ public class UserServiceImpl implements UserService {
     public void modifyAvatar(Long uid, ModifyAvatarReq req) {
         // 判断30天内是否改过头像
         User user = userDao.getById(uid);
-        AssertUtil.isTrue(Objects.isNull(user.getAvatarUpdateTime()) ||
-						user.getAvatarUpdateTime().plusDays(30).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() <=
-								LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-				"30天内只能修改一次头像");
+//        AssertUtil.isTrue(Objects.isNull(user.getAvatarUpdateTime()) ||
+//						user.getAvatarUpdateTime().plusDays(30).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() <=
+//								LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+//				"30天内只能修改一次头像");
 
 
         // 更新
@@ -172,6 +172,7 @@ public class UserServiceImpl implements UserService {
 		updateUser.setId(user.getId());
 		userDao.updateById(updateUser);
         // 删除缓存
+		userCache.delete(uid);
 		userSummaryCache.delete(uid);
 		userSummaryCache.evictFriend(user.getAccount());
     }

@@ -12,7 +12,7 @@ import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.im.domain.entity.msg.TextMsgReq;
-import com.luohuo.flex.im.domain.vo.response.msg.TextMsgResp;
+import com.luohuo.flex.im.domain.vo.response.msg.TextMsgDTO;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
 import com.luohuo.flex.im.core.user.service.RoleService;
@@ -95,7 +95,7 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
 
     @Override
     public Object showMsg(Message msg) {
-        TextMsgResp resp = new TextMsgResp();
+        TextMsgDTO resp = new TextMsgDTO();
         resp.setContent(msg.getContent());
         resp.setUrlContentMap(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getUrlContentMap).orElse(null));
         resp.setAtUidList(Optional.ofNullable(msg.getExtra()).map(MessageExtra::getAtUidList).orElse(null));

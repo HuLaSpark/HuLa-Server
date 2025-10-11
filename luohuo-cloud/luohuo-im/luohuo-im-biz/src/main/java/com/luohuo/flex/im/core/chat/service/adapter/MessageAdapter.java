@@ -6,15 +6,11 @@ import com.luohuo.flex.im.common.enums.YesOrNoEnum;
 import com.luohuo.flex.im.domain.entity.Announcements;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.MessageMark;
-import com.luohuo.flex.im.domain.entity.msg.AudioCallMsgDTO;
-import com.luohuo.flex.im.domain.entity.msg.BodyDTO;
-import com.luohuo.flex.im.domain.entity.msg.VideoCallMsgDTO;
-import com.luohuo.flex.im.domain.entity.msg.MergeMsgDTO;
-import com.luohuo.flex.im.domain.entity.msg.NoticeMsgDTO;
-import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
-import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
-import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
-import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
+import com.luohuo.flex.im.domain.vo.response.msg.AudioCallMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.BodyDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.VideoCallMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.MergeMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.NoticeMsgDTO;
 import com.luohuo.flex.model.entity.ws.WSNotice;
 import com.luohuo.flex.model.enums.MessageMarkTypeEnum;
 import com.luohuo.flex.im.domain.enums.MessageStatusEnum;
@@ -29,7 +25,6 @@ import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
 import com.luohuo.flex.model.ws.CallEndReq;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -189,16 +184,6 @@ public class MessageAdapter {
 		noticeMsgDTO.setCreateTime(TimeUtils.getTime(announcements.getUpdateTime()));
 		chatMessageReq.setBody(noticeMsgDTO);
 		return chatMessageReq;
-	}
-
-	/**
-	 * 申请加群通知
-	 */
-	public static WsBaseResp<UserApplyResp> buildRoomGroupMessage(Long uid, Long roomId, Long groupAdminId, String msg) {
-		WsBaseResp<UserApplyResp> wsBaseResp = new WsBaseResp<>();
-		wsBaseResp.setType(WSRespTypeEnum.ROOM_GROUP_MSG.getType());
-		wsBaseResp.setData(new UserApplyResp(uid, RoomTypeEnum.GROUP.getType(), roomId, groupAdminId, msg, ApplyStatusEnum.WAIT_APPROVAL.getCode(), ApplyReadStatusEnum.UNREAD.getCode(), false, LocalDateTime.now()));
-		return wsBaseResp;
 	}
 
 	/**

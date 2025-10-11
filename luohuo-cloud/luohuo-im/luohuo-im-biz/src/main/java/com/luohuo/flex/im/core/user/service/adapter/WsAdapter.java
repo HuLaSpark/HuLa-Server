@@ -1,8 +1,6 @@
 package com.luohuo.flex.im.core.user.service.adapter;
 
 import cn.hutool.core.util.StrUtil;
-import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
-import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
 import com.luohuo.flex.model.entity.ws.*;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.stereotype.Component;
@@ -14,7 +12,6 @@ import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 /**
@@ -112,13 +109,6 @@ public class WsAdapter {
 		WsBaseResp<String> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(state? WSRespTypeEnum.SHIELD.getType(): WSRespTypeEnum.UNBLOCK.getType());
 		wsBaseResp.setData(StrUtil.format("你已{}屏蔽来自{}的消息", state? "":"解除",name));
-		return wsBaseResp;
-	}
-
-	public static WsBaseResp<UserApplyResp> buildApplyResultWS(Long uid, Long roomId, Long targetId, String msg, Integer status, Integer readStatus) {
-		WsBaseResp<UserApplyResp> wsBaseResp = new WsBaseResp<>();
-		wsBaseResp.setType(WSRespTypeEnum.GROUP_APPLY_NOTICE.getType());
-		wsBaseResp.setData(new UserApplyResp(uid, RoomTypeEnum.GROUP.getType(), roomId, targetId, msg, status, readStatus, true, LocalDateTime.now()));
 		return wsBaseResp;
 	}
 }

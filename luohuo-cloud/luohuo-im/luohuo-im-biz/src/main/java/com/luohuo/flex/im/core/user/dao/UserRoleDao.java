@@ -5,7 +5,8 @@ import com.luohuo.flex.im.domain.entity.UserRole;
 import com.luohuo.flex.im.core.user.mapper.UserRoleMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -17,9 +18,8 @@ import java.util.List;
 @Service
 public class UserRoleDao extends ServiceImpl<UserRoleMapper, UserRole> {
 
-    public List<UserRole> listByUid(Long uid) {
+    public Set<Long> listByUid(Long uid) {
         return lambdaQuery()
-                .eq(UserRole::getUid, uid)
-                .list();
+                .eq(UserRole::getUid, uid).select(UserRole::getUid).list().stream().map(UserRole::getUid).collect(Collectors.toSet());
     }
 }

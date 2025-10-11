@@ -25,8 +25,8 @@ import com.luohuo.flex.oauth.vo.param.LoginParamVO;
 import com.luohuo.flex.oauth.vo.param.QueryStatusReq;
 import com.luohuo.flex.oauth.vo.param.ScanReq;
 import com.luohuo.flex.oauth.vo.result.LoginResultVO;
-import com.luohuo.flex.oauth.vo.result.LoginUserInfo;
 import com.luohuo.flex.oauth.vo.result.QrCodeResp;
+import com.luohuo.flex.oauth.vo.result.QrCodeResult;
 import com.luohuo.flex.oauth.vo.result.QrCodeStatus;
 import com.luohuo.flex.oauth.vo.result.ScanResp;
 import jakarta.annotation.Resource;
@@ -94,7 +94,11 @@ public class QrCodeGranter extends AbstractTokenGranter {
 
 		// 2. 更新为已扫描状态
 		String ip = ContextUtil.getIP();
-		if (!DeviceFingerprintValidator.validateDeviceFingerprint(makeRawDeviceHash(ip), qrCodeStatus.getDeviceHash())) {
+//		if (!DeviceFingerprintValidator.validateDeviceFingerprint(makeRawDeviceHash(ip), qrCodeStatus.getDeviceHash())) {
+//			throw new BizException("可疑设备");
+//		}
+
+		if (QrLoginState.SCANNED.getValue().equals(qrCodeStatus.getStatus())) {
 			throw new BizException("二维码已扫描");
 		}
 
@@ -103,7 +107,7 @@ public class QrCodeGranter extends AbstractTokenGranter {
 		cacheKey.setExpire(Duration.ofMillis(scanned.getMillis()));
 		qrCodeStatus.setStatus(scanned.getValue());
 		cachePlusOps.set(cacheKey, qrCodeStatus);
-		return new ScanResp(ip, scanned.getExpireTime());
+		return new ScanResp(ip, scanned.getExpireTime(), "PC");
 	}
 
 	/**
@@ -125,37 +129,37 @@ public class QrCodeGranter extends AbstractTokenGranter {
 		// 存储用户ID并更新状态
 		QrLoginState confirmed = QrLoginState.CONFIRMED;
 		statusKey.setExpire(Duration.ofMillis(confirmed.getMillis()));
-		cachePlusOps.set(statusKey, new LoginUserInfo(confirmed.getValue(), qrLoginState.getDeviceHash(), ContextUtil.getUserId(), ContextUtil.getUid()));
+		cachePlusOps.set(statusKey, new QrCodeStatus(confirmed.getValue(), qrLoginState.getDeviceHash(), ContextUtil.getUserId(), ContextUtil.getUid()));
 		return confirmed.getExpireTime();
 	}
 
 	@RedissonLock(prefixKey ="luohuo:checkStatus:", key = "#req.deviceHash")
 	public R checkStatus(QueryStatusReq req) {
 		CacheKey statusKey = QrCacheKeyBuilder.builder(req.getQrId());
-		CacheResult<LoginUserInfo> result = cachePlusOps.get(statusKey);
-		LoginUserInfo userInfo = result.getValue();
+		CacheResult<QrCodeStatus> result = cachePlusOps.get(statusKey);
+		QrCodeStatus qrCodeStatus = result.getValue();
 
 		// 1. 校验数据
-		if (userInfo == null) {
-			throw new BizException("二维码状态异常");
+		if (qrCodeStatus == null) {
+			return R.success(new QrCodeResult(QrLoginState.EXPIRED.getValue()));
 		}
-		if (!req.getDeviceHash().equals(userInfo.getDeviceHash())) {
+		if (!req.getDeviceHash().equals(qrCodeStatus.getDeviceHash())) {
 			throw new BizException("设备状态异常");
 		}
 
-		String status = userInfo.getStatus();
+		String status = qrCodeStatus.getStatus();
 		if (QrLoginState.CONFIRMED.getValue().equals(status)) {
 			// 2. 查询用户信息
-			Long userId = userInfo.getUserId();
-			Long uid = userInfo.getUid();
+			Long userId = qrCodeStatus.getUserId();
+			Long uid = qrCodeStatus.getUid();
 			DefUser defUser = defUserService.getByIdCache(userId);
 
 			// 3. 生成token
-			return R.success(buildResult(uid, defUser, findOrg(defUser), req.getDeviceType(), req.getClientId()));
+			return R.success(new QrCodeResult(QrLoginState.CONFIRMED.getValue(), buildResult(uid, defUser, findOrg(defUser), req.getDeviceType(), req.getClientId())));
 		} else if (QrLoginState.SCANNED.getValue().equals(status)) {
-			return R.fail().setData("请在手机上完成确认");
+			return R.success(new QrCodeResult(QrLoginState.SCANNED.getValue()));
 		} else {
-			return R.fail().setData("请扫描二维码");
+			return R.success(new QrCodeResult(QrLoginState.PENDING.getValue()));
 		}
 	}
 

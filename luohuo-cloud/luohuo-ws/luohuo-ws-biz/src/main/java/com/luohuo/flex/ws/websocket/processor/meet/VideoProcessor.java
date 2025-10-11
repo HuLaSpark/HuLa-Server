@@ -48,7 +48,7 @@ public class VideoProcessor implements MessageProcessor {
 		// 处理不同情况的会话消息
 		switch (WSReqTypeEnum.of(baseReq.getType())) {
 			// 信令在这里单独处理
-			case WEBRTC_SIGNAL  -> {
+			case WEBRTC_SIGNAL -> {
 				VideoSignalReq signalReq = JSONUtil.toBean(baseReq.getData(), VideoSignalReq.class);
 				videoService.forwardSignal(uid, signalReq.getRoomId(), signalReq.getSignal(), signalReq.getSignalType());
 			}
@@ -66,9 +66,4 @@ public class VideoProcessor implements MessageProcessor {
         private String signal; // WebRTC信令内容
 		private String signalType; // offer=发起通话 answer=接收通话 candidate=
     }
-
-	@Data
-	private static class LeaveRoomReq {
-		private Long roomId;
-	}
 }

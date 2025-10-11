@@ -4,7 +4,7 @@ import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.entity.Message;
-import com.luohuo.flex.im.domain.entity.msg.VideoCallMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.VideoCallMsgDTO;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import com.luohuo.flex.model.enums.CallStatusEnum;
@@ -54,14 +54,13 @@ public class VideoCallMsgHandler extends AbstractMsgHandler<VideoCallMsgDTO> {
 		// 结束消息状态处理
 		Long uid = ContextUtil.getUid();
 		boolean isSender = uid.equals(msg.getFromUid());
-		boolean isCreator = uid.equals(dto.getCreator());
 		CallStatusEnum status = CallStatusEnum.of(dto.getState());
 		if (status == null) return "通话状态未知";
 
 		// 双视角统一规则
 		return switch (status) {
 			case REJECTED ->
-					(isSender == isCreator) ? "已" + status.getDesc() : "对方已" + status.getDesc();
+					!isSender ? "已" + status.getDesc() : "对方已" + status.getDesc();
 			case TIMEOUT ->
 					isSender ? "对方未接听" : "未接听";
 			case CANCEL ->

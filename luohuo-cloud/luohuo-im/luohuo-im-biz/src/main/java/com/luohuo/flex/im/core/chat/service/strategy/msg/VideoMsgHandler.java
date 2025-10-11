@@ -3,7 +3,7 @@ package com.luohuo.flex.im.core.chat.service.strategy.msg;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
-import com.luohuo.flex.im.domain.entity.msg.VideoMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.VideoMsgDTO;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

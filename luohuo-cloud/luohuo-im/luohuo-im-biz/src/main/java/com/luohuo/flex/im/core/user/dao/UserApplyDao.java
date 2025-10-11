@@ -1,16 +1,11 @@
 package com.luohuo.flex.im.core.user.dao;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.luohuo.flex.im.common.utils.CursorUtils;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
 import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
 import com.luohuo.flex.im.core.user.mapper.UserApplyMapper;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
-import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
-import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,8 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.READ;
-import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.UNREAD;
 import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.AGREE;
 
 /**
@@ -31,13 +24,6 @@ import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.AGREE;
  */
 @Service
 public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
-
-	/**
-	 * 获取用户进群审批列表
-	 */
-	public CursorPageBaseResp<UserApply> getApplyPage(Long uid, Integer type, CursorPageBaseReq request) {
-		return CursorUtils.getCursorPageByMysql(this, request, wrapper -> wrapper.eq(UserApply::getTargetId, uid).eq(UserApply::getType, type).eq(UserApply::getApplyFor, true), UserApply::getCreateTime);
-	}
 
     /**
      *

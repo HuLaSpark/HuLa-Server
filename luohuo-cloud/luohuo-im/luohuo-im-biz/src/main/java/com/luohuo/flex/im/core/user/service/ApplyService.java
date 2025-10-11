@@ -32,13 +32,6 @@ public interface ApplyService {
 	Boolean applyGroup(Long uid, RoomApplyReq request);
 
 	/**
-	 * 处理加群申请
-	 * @param uid 当前登录人id
-	 * @param req 审批请求
-	 */
-	void handleApply(Long uid, GroupApplyHandleReq req);
-
-	/**
 	 * 审批申请
 	 *
 	 * @param uid     uid

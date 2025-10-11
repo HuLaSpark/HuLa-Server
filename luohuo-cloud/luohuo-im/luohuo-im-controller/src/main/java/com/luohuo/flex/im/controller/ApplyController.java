@@ -7,7 +7,6 @@ import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
 import com.luohuo.flex.im.domain.vo.request.RoomApplyReq;
 import com.luohuo.flex.im.domain.vo.request.member.ApplyReq;
-import com.luohuo.flex.im.domain.vo.request.member.GroupApplyHandleReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -48,13 +47,6 @@ public class ApplyController {
 	@Operation(summary = "申请加群")
 	public R<Boolean> applyGroup(@Valid @RequestBody RoomApplyReq request){
 		return R.success(applyService.applyGroup(ContextUtil.getUid(), request));
-	}
-
-	@PostMapping("/adminHandleApply")
-	@Operation(summary = "处理加群申请 [仅仅管理员、群主可调用]")
-	public R<Void> handleApply(@Valid @RequestBody GroupApplyHandleReq request) {
-		applyService.handleApply(ContextUtil.getUid(), request);
-		return R.success();
 	}
 
     @DeleteMapping("/delete")

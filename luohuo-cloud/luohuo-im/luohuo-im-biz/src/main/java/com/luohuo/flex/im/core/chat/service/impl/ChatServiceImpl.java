@@ -39,7 +39,6 @@ import com.luohuo.flex.im.core.chat.service.strategy.mark.MsgMarkFactory;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.AbstractMsgHandler;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.MsgHandlerFactory;
 import com.luohuo.flex.im.core.chat.service.strategy.msg.RecallMsgHandler;
-import com.luohuo.flex.im.core.user.service.RoleService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -59,7 +58,6 @@ public class ChatServiceImpl implements ChatService {
     private MessageDao messageDao;
     private MessageMarkDao messageMarkDao;
     private RoomFriendDao roomFriendDao;
-    private RoleService roleService;
     private RecallMsgHandler recallMsgHandler;
     private ContactService contactService;
     private ContactDao contactDao;
@@ -269,7 +267,7 @@ public class ChatServiceImpl implements ChatService {
     public void recallMsg(Long uid, ChatMessageBaseReq request) {
         Message message = messageDao.getById(request.getMsgId());
         //校验能不能执行撤回
-        checkRecall(uid, message);
+		Integer roleId = checkRecall(uid, message);
 		recallMsgHandler.recall(uid, getRoomHowPeople(uid, message.getRoomId()), message);
     }
 
@@ -336,7 +334,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<Message> getMsgByIds(List<Long> msgIds) {
-        return msgCache.getBatch(msgIds).values().stream().collect(Collectors.toList());
+        return msgCache.getBatch(msgIds).values().stream().sorted(Comparator.comparingLong(Message::getId)).collect(Collectors.toList());
     }
 
 	@Override
@@ -344,17 +342,22 @@ public class ChatServiceImpl implements ChatService {
 		contactService.createContact(uid, roomId);
 	}
 
-	private void checkRecall(Long uid, Message message) {
+	/**
+	 * @return 返回撤回人的权限
+	 */
+	private Integer checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
-        boolean isChatManager = roleService.hasRole(uid, RoleTypeEnum.CHAT_MANAGER);
-        if (isChatManager) {
-            return;
+
+		GroupMember member = groupMemberCache.getMemberDetail(message.getRoomId(), uid);
+        if (member.getRoleId().equals(GroupRoleEnum.LEADER.getType()) || member.getRoleId().equals(GroupRoleEnum.MANAGER.getType())) {
+            return member.getRoleId();
         }
         boolean self = Objects.equals(uid, message.getFromUid());
         AssertUtil.isTrue(self, "抱歉,您没有权限");
         long between = Duration.between(message.getCreateTime(), LocalDateTime.now()).toMinutes();
         AssertUtil.isTrue(between < 2, "超过2分钟的消息不能撤回");
+		return member.getRoleId();
     }
 
     public List<ChatMessageResp> getMsgRespBatch(List<Message> messages, Long receiveUid) {

@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 27/08/2025 19:29:52
+ Date: 11/10/2025 18:27:42
 */
 
 SET NAMES utf8mb4;
@@ -136,11 +136,12 @@ CREATE TABLE `ai_gpt_chat`  (
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169701 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '聊天摘要' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169702 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '聊天摘要' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_gpt_chat
 -- ----------------------------
+INSERT INTO `ai_gpt_chat` VALUES (6, '1920746450749358080', 0, 10937855681024, '你好', '', 10937855681024, '2025-05-13 10:47:15', NULL, NULL, 1);
 
 -- ----------------------------
 -- Table structure for ai_gpt_chat_message
@@ -168,7 +169,7 @@ CREATE TABLE `ai_gpt_chat_message`  (
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169734 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '对话消息' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 83706726461169735 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '对话消息' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_gpt_chat_message
@@ -300,7 +301,7 @@ CREATE TABLE `ai_gpt_order`  (
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '订单' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '订单' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_gpt_order
@@ -324,7 +325,7 @@ CREATE TABLE `ai_gpt_redemption`  (
   `updated_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '兑换码' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '兑换码' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_gpt_redemption
@@ -380,8 +381,8 @@ CREATE TABLE `base_config`  (
 INSERT INTO `base_config` VALUES (1, 'system', '{\"title\":\"系统名称\",\"componentType\":\"text\",\"value\":\"Hula-IM\",\"configKey\":\"systemName\",\"type\":\"system\"}', 'systemName', 'HuLa', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (2, 'system', '{\"title\":\"系统Logo\",\"componentType\":\"text\",\"value\":\"/static/img/Iogo.png\",\"configKey\":\"logo\",\"type\":\"system\"}', 'logo', '/static/img/Iogo.png', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (3, 'qiniu_up_config', '{\"title\":\"空间域名 Domain\",\"componentType\":\"text\",\"value\":\"https://upload-z2.qiniup.com\",\"configKey\":\"qnUploadUrl\",\"type\":\"qiniu_up_config\"}', 'qnUploadUrl', 'https://up-z2.qiniup.com', 0, '2025-06-26 07:42:06.404', '2025-08-18 04:29:56.616', 3, NULL, 0);
-INSERT INTO `base_config` VALUES (4, 'qiniu_up_config', '{\"title\":\"accessKey\",\"componentType\":\"text\",\"value\":\"8si6G12t2MG9IOdkNDYmL0vGAYFTW-rHl4LgA5_\",\"configKey\":\"qnAccessKey\",\"type\":\"qiniu_up_config\"}', 'qnAccessKey', 'LXrRo6YhTnU0-_AlX222279VS8uhy5yScLzQJAQaUGUJ', 0, '2025-06-26 07:42:06.404', '2025-08-27 11:14:13.672', 3, NULL, 0);
-INSERT INTO `base_config` VALUES (5, 'qiniu_up_config', '{\"title\":\"SecretKey\",\"componentType\":\"text\",\"value\":\"MLzT2U2daTXFDEG9PuAy4TnvfR1oXvK2Yipm_eS9\",\"configKey\":\"qnSecretKey\",\"type\":\"qiniu_up_config\"}', 'qnSecretKey', 'BYKKz6nIjHSJLarEQxLK222gX6C300BlVS-llemF2Hg', 0, '2025-06-26 07:42:06.404', '2025-08-27 11:14:11.819', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (4, 'qiniu_up_config', '{\"title\":\"accessKey\",\"componentType\":\"text\",\"value\":\"231YmL0vGAYFTW-rHl4LgA5_\",\"configKey\":\"qnAccessKey\",\"type\":\"qiniu_up_config\"}', 'qnAccessKey', 'LXrRo6YhT22hy5yScLzQJAQaUGUJ', 0, '2025-06-26 07:42:06.404', '2025-10-11 03:43:10.679', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (5, 'qiniu_up_config', '{\"title\":\"SecretKey\",\"componentType\":\"text\",\"value\":\"2daTXFDEG9PuAy4TnvfR1o2\",\"configKey\":\"qnSecretKey\",\"type\":\"qiniu_up_config\"}', 'qnSecretKey', 'BYKKz6n222111VS-llemF2Hg', 0, '2025-06-26 07:42:06.404', '2025-10-11 03:43:05.090', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (6, 'qiniu_up_config', '{\"title\":\"存储空间名称\",\"componentType\":\"text\",\"value\":\"hula\",\"configKey\":\"qnStorageName\",\"type\":\"qiniu_up_config\"}', 'qnStorageName', 'hula-spark', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (7, 'qiniu_up_config', '{\"title\":\"七牛云CDN（访问图片用的）\",\"componentType\":\"text\",\"value\":\"https://file.hula.com/\",\"configKey\":\"qnStorageCDN\",\"type\":\"qiniu_up_config\"}', 'qnStorageCDN', 'https://cdn.hulaspark.com', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (8, 'system', '{\"title\":\"大群ID\",\"componentType\":\"text\",\"value\":\"1\",\"configKey\":\"roomGroupId\",\"type\":\"system\"}', 'roomGroupId', '1', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
@@ -409,10 +410,9 @@ CREATE TABLE `im_announcements`  (
   `update_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
-  `publish_time` datetime NULL DEFAULT NULL COMMENT '发布时间',
   `tenant_id` bigint NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 66202684729345 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天公告表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82552736018433 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天公告表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_announcements
@@ -427,11 +427,10 @@ CREATE TABLE `im_announcements_read_records`  (
   `announcements_id` bigint NOT NULL COMMENT '公告id',
   `uid` bigint NOT NULL COMMENT '阅读人id',
   `is_check` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已读 0：未读 1：已读',
-  `created_by` bigint NOT NULL DEFAULT 0 COMMENT '创建者',
+  `create_by` bigint NOT NULL DEFAULT 0 COMMENT '创建者',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 1,
-  `create_by` bigint NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '公告是否已读表' ROW_FORMAT = Dynamic;
 
@@ -475,7 +474,7 @@ CREATE TABLE `im_contact`  (
   `shield` tinyint NOT NULL DEFAULT 0 COMMENT '屏蔽会话',
   `read_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '阅读到的时间',
   `top` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
-  `hide` tinyint NOT NULL DEFAULT 0 COMMENT '置顶消息',
+  `hide` tinyint NOT NULL DEFAULT 0 COMMENT '隐藏会话',
   `active_time` datetime(3) NULL DEFAULT NULL COMMENT '会话内消息最后更新的时间(只有普通会话需要维护，全员会话不需要维护)',
   `last_msg_id` bigint NULL DEFAULT NULL COMMENT '会话最新消息id',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -490,13 +489,14 @@ CREATE TABLE `im_contact`  (
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE,
   INDEX `idx_contact_room_uid_hide`(`room_id` ASC, `uid` ASC, `hide` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65033612208054 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '会话列表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 69082079229806 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '会话列表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_contact
 -- ----------------------------
-INSERT INTO `im_contact` VALUES (10937855681025, 10937855681024, 1, 0, 0, '2025-08-25 18:33:09.986', 1, 0, '2025-08-27 19:01:44.000', 66966694008337, '2025-03-27 04:23:08.420', '2025-08-27 11:02:31.422', 1, 0, 61847994706433, 0);
-INSERT INTO `im_contact` VALUES (10937855681525, 1, 1, 0, 0, '2025-07-07 14:49:04.239', 1, 0, '2025-08-27 19:01:44.000', 66966694008337, '2025-03-27 04:23:08.420', '2025-08-27 11:02:31.422', 1, 0, NULL, 0);
+INSERT INTO `im_contact` VALUES (10937855681025, 10937855681024, 1, 0, 0, '2025-10-11 18:27:03.193', 1, 0, '2025-10-10 18:46:37.156', 82907955820032, '2025-03-27 04:23:08.420', '2025-10-11 18:27:03.194', 1, 0, 61170828519937, 0);
+INSERT INTO `im_contact` VALUES (10937855681525, 1, 1, 0, 0, '2025-07-07 14:49:04.239', 1, 0, '2025-10-10 18:46:37.156', 82907955820032, '2025-03-27 04:23:08.420', '2025-10-10 10:46:38.197', 1, 0, NULL, 0);
+INSERT INTO `im_contact` VALUES (10937855681526, 10937855681024, 11229133317122, 0, 0, '2025-10-11 11:58:14.001', 1, 0, '2025-10-10 18:46:37.156', 82907955820032, '2025-03-27 04:23:08.420', '2025-10-11 11:58:14.001', 1, 0, 61170828519937, 0);
 
 -- ----------------------------
 -- Table structure for im_feed
@@ -579,7 +579,7 @@ CREATE TABLE `im_group_invite`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_invitee_state`(`invitee_uid` ASC, `state` ASC) USING BTREE,
   INDEX `idx_group`(`group_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62581624628737 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '群组邀请记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62581624628737 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '群组邀请记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of im_group_invite
@@ -597,7 +597,7 @@ CREATE TABLE `im_group_member`  (
   `role_id` int NOT NULL COMMENT '成员角色 1群主 2管理员 3普通成员',
   `remark` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '群备注',
   `de_friend` tinyint NOT NULL DEFAULT 0 COMMENT '屏蔽群 1 -> 屏蔽 0 -> 正常',
-  `my_name` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '我的群昵称',
+  `my_name` varchar(48) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '我的群昵称',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '修改时间',
   `tenant_id` bigint NOT NULL DEFAULT 1,
@@ -607,13 +607,14 @@ CREATE TABLE `im_group_member`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_group_id_role`(`group_id` ASC, `role_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
-  INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65161763333633 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群成员表' ROW_FORMAT = Dynamic;
+  INDEX `idx_update_time`(`update_time` ASC) USING BTREE,
+  INDEX `idx_group_member_uid_isdel_groupid`(`uid` ASC, `is_del` ASC, `group_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 82522826436610 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群成员表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_group_member
 -- ----------------------------
-INSERT INTO `im_group_member` VALUES (10937855681026, 1, 10937855681024, 3, '', 0, '', '2025-03-27 04:23:08.435', '2025-03-27 04:23:08.435', 1, 0, 61847994706433, 0);
+INSERT INTO `im_group_member` VALUES (10937855681026, 1, 10937855681024, 1, '', 0, 'Dawn', '2025-03-27 04:23:08.435', '2025-09-12 06:47:19.108', 1, 0, 61170828519937, 0);
 INSERT INTO `im_group_member` VALUES (10937855681626, 1, 1, 3, '', 0, '', '2025-03-27 04:23:08.435', '2025-03-27 04:23:08.435', 1, 0, NULL, 0);
 
 -- ----------------------------
@@ -643,7 +644,7 @@ INSERT INTO `im_item_config` VALUES (1, 1, NULL, '用户可以使用改名卡，
 INSERT INTO `im_item_config` VALUES (2, 2, 'https://cdn.hulaspark.com/badge/like.png', '爆赞徽章，单条消息被点赞超过10次，即可获得', '2023-05-07 17:50:31.090', '2025-03-26 17:47:00.273', 1, 1, NULL, 0);
 INSERT INTO `im_item_config` VALUES (3, 2, 'https://cdn.hulaspark.com/badge/top10.png ', 'HuLa前10名注册的用户才能获得的专属徽章', '2023-05-07 17:50:31.100', '2025-03-26 17:47:04.452', 1, 1, NULL, 0);
 INSERT INTO `im_item_config` VALUES (4, 2, 'https://cdn.hulaspark.com/badge/top100.png', 'HuLa前100名注册的用户才能获得的专属徽章', '2023-05-07 17:50:31.109', '2025-03-26 17:47:07.734', 1, 1, NULL, 0);
-INSERT INTO `im_item_config` VALUES (5, 2, 'https://cdn.hulaspark.com/badge/planet.png', 'HuLa知识星球成员的专属徽章', '2023-05-07 17:50:31.109', '2025-03-26 17:47:10.714', 1, 1, NULL, 0);
+INSERT INTO `im_item_config` VALUES (5, 2, 'https://cdn.hulaspark.com/badge/planet.png', 'HuLa团队核心成员专属徽章', '2023-05-07 17:50:31.109', '2025-09-19 10:41:01.216', 1, 1, NULL, 0);
 INSERT INTO `im_item_config` VALUES (6, 2, 'https://cdn.hulaspark.com/badge/active.png', 'HuLa项目贡献者专属徽章', '2023-05-07 17:50:31.109', '2025-03-26 17:47:13.855', 1, 1, NULL, 0);
 
 -- ----------------------------
@@ -670,8 +671,8 @@ CREATE TABLE `im_message`  (
   INDEX `idx_room_id`(`room_id` ASC) USING BTREE,
   INDEX `idx_from_uid`(`from_uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
-  INDEX `idx_room_create_time`(`room_id` ASC, `create_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 66966777894428 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息表' ROW_FORMAT = Dynamic;
+  INDEX `idx_update_time`(`update_time` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 82910984107521 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_message
@@ -701,10 +702,42 @@ CREATE TABLE `im_message_mark`  (
   INDEX `idx_uid`(`uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 60474725050369 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息标记表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82582746263553 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息标记表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_message_mark
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for im_notice
+-- ----------------------------
+DROP TABLE IF EXISTS `im_notice`;
+CREATE TABLE `im_notice`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `event_type` tinyint NOT NULL COMMENT '通知类型:1-好友申请;2-群申请;3-群邀请;5-移除群成员;6-好友被申请;7-被邀请进群',
+  `type` tinyint NOT NULL DEFAULT 1 COMMENT '通知类型 1群聊 2加好友',
+  `sender_id` bigint NOT NULL COMMENT '发起人UID',
+  `receiver_id` bigint NOT NULL COMMENT '接收人UID',
+  `apply_id` bigint NULL DEFAULT NULL COMMENT '申请ID',
+  `operate_id` bigint NOT NULL COMMENT '房间ID',
+  `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '0' COMMENT '群昵称',
+  `content` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '0' COMMENT '通知消息 [申请时填写]',
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '处理状态:0-未处理;1-已同意;2-已拒绝',
+  `is_read` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已读',
+  `tenant_id` bigint NOT NULL COMMENT '租户id',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_by` bigint NOT NULL COMMENT '创建人',
+  `update_by` bigint NOT NULL COMMENT '创建人',
+  `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_receiver_type`(`receiver_id` ASC, `event_type` ASC) USING BTREE,
+  INDEX `idx_sender`(`sender_id` ASC) USING BTREE,
+  INDEX `idx_related`(`apply_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 83150193654275 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '统一通知表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of im_notice
 -- ----------------------------
 
 -- ----------------------------
@@ -731,30 +764,6 @@ CREATE TABLE `im_role`  (
 INSERT INTO `im_role` VALUES (1, '超级管理员', '2024-07-10 11:17:15.089', '2024-07-10 11:17:15.089', 1, 1, NULL, 0);
 INSERT INTO `im_role` VALUES (2, 'HuLa群聊管理员', '2024-07-10 11:17:15.091', '2024-11-26 12:00:22.452', 1, 1, NULL, 0);
 
-DROP TABLE IF EXISTS `im_notice`;
-CREATE TABLE `im_notice`  (
-                              `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-                              `event_type` tinyint NOT NULL COMMENT '通知类型:1-好友申请;2-群申请;3-群邀请;5-移除群成员;6-好友被申请;7-被邀请进群',
-                              `type` tinyint NOT NULL DEFAULT 1 COMMENT '通知类型 1群聊 2加好友',
-                              `sender_id` bigint NOT NULL COMMENT '发起人UID',
-                              `receiver_id` bigint NOT NULL COMMENT '接收人UID',
-                              `apply_id` bigint NULL DEFAULT NULL COMMENT '申请ID',
-                              `operate_id` bigint NOT NULL COMMENT '房间ID',
-                              `content` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '0' COMMENT '通知消息 [申请时填写]',
-                              `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '处理状态:0-未处理;1-已同意;2-已拒绝',
-                              `is_read` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已读',
-                              `tenant_id` bigint NOT NULL COMMENT '租户id',
-                              `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                              `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                              `create_by` bigint NOT NULL COMMENT '创建人',
-                              `update_by` bigint NOT NULL COMMENT '创建人',
-                              `is_del` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
-                              PRIMARY KEY (`id`) USING BTREE,
-                              INDEX `idx_receiver_type`(`receiver_id` ASC, `event_type` ASC) USING BTREE,
-                              INDEX `idx_sender`(`sender_id` ASC) USING BTREE,
-                              INDEX `idx_related`(`apply_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 75169527849987 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '统一通知表' ROW_FORMAT = Dynamic;
-
 -- ----------------------------
 -- Table structure for im_room
 -- ----------------------------
@@ -775,12 +784,13 @@ CREATE TABLE `im_room`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65146059858433 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '房间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82522826436611 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '房间表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_room
 -- ----------------------------
-INSERT INTO `im_room` VALUES (1, 1, 1, '2025-08-27 19:02:04.507', 66966777894421, NULL, '2024-07-10 11:17:15.521', '2025-08-27 11:02:26.006', 1, 1, NULL, 0);
+INSERT INTO `im_room` VALUES (1, 1, 1, '2025-10-10 18:46:37.156', 82907955820032, NULL, '2024-07-10 11:17:15.521', '2025-10-10 10:46:37.155', 1, 1, NULL, 0);
+INSERT INTO `im_room` VALUES (11229133317122, 2, 0, '2025-10-10 18:46:37.156', 82907955820032, NULL, '2024-07-10 11:17:15.521', '2025-10-11 03:35:25.988', 1, 1, NULL, 0);
 
 -- ----------------------------
 -- Table structure for im_room_friend
@@ -805,13 +815,12 @@ CREATE TABLE `im_room_friend`  (
   INDEX `idx_room_id`(`room_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62581054203394 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '单聊房间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82522826436612 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '单聊房间表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_room_friend
 -- ----------------------------
-INSERT INTO `im_room_friend` VALUES (11229133317123, 11229133317122, 10937855681024, 1, '10937855681024,11225442329600', 0, 0, '2025-03-27 23:40:34.548', '2025-08-27 11:17:17.729', 1, 1, NULL, 0);
-INSERT INTO `im_room_friend` VALUES (11367692149763, 11367692149762, 1, 10937855681024, '11003672699392,11049889735168', 0, 0, '2025-03-28 08:51:09.406', '2025-08-27 11:17:40.365', 1, 1, NULL, 0);
+INSERT INTO `im_room_friend` VALUES (11229133317123, 11229133317122, 10937855681024, 1, '1,10937855681024', 0, 0, '2025-03-27 23:40:34.548', '2025-10-11 03:34:48.606', 1, 1, NULL, 0);
 
 -- ----------------------------
 -- Table structure for im_room_group
@@ -823,6 +832,7 @@ CREATE TABLE `im_room_group`  (
   `account` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '群号',
   `name` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '群名称',
   `avatar` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '群头像',
+  `allow_scan_enter` tinyint NOT NULL DEFAULT 1 COMMENT '允许扫码直接进群',
   `ext_json` json NULL COMMENT '额外信息（根据不同类型房间有不同存储的东西）',
   `is_del` int NOT NULL DEFAULT 0 COMMENT '逻辑删除(0-正常,1-删除)',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -834,12 +844,12 @@ CREATE TABLE `im_room_group`  (
   INDEX `idx_room_id`(`room_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65146059858435 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群聊房间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 74879168766467 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '群聊房间表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_room_group
 -- ----------------------------
-INSERT INTO `im_room_group` VALUES (1, 1, 'hula-ds240401', 'HuLa官方频道', 'https://cdn.hulaspark.com/avatar/hula.png', NULL, 0, '2024-07-10 11:17:15.523', '2025-03-31 20:59:45.523', 1, 1, NULL);
+INSERT INTO `im_room_group` VALUES (1, 1, 'hula-ds240401', 'HuLa官方频道', 'https://cdn.hulaspark.com/avatar/hula.png', 1, NULL, 0, '2024-07-10 11:17:15.523', '2025-10-06 03:57:29.384', 1, 1, 61170828519937);
 
 -- ----------------------------
 -- Table structure for im_sensitive_word
@@ -876,7 +886,7 @@ CREATE TABLE `im_target`  (
   `tenant_id` bigint NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `employee`(`u_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天的标签' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_as_ci COMMENT = '聊天的标签' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_target
@@ -917,13 +927,13 @@ CREATE TABLE `im_user`  (
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE,
   INDEX `idx_active_status_last_opt_time`(`last_opt_time` ASC) USING BTREE,
   INDEX `account_UNIQUE`(`account` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65033610564609 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82522826436609 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_user
 -- ----------------------------
-INSERT INTO `im_user` VALUES (1, 61847994706432, 2, 'HuLa小管家', '022', '', 'bot', NULL, '', 17, '2025-07-07 15:27:01.711', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": {\"ip\": \"206.237.119.215\", \"isp\": \"XX\", \"area\": \"\", \"city\": \"XX\", \"isp_id\": \"xx\", \"region\": \"XX\", \"city_id\": \"xx\", \"country\": \"美国\", \"region_id\": \"xx\", \"country_id\": \"US\"}, \"updateIpDetail\": {\"ip\": \"120.231.232.41\", \"isp\": \"移动\", \"area\": \"\", \"city\": \"XX\", \"isp_id\": \"100025\", \"region\": \"广东\", \"city_id\": \"xx\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', 6, 0, '', '2025-03-27 04:23:08.393', '2025-08-13 16:01:51.930', 'k.23772439646234', 0, NULL, 0, '2025-05-09 18:24:37.089', 99978, 0, 1);
-INSERT INTO `im_user` VALUES (10937855681024, 61847994706433, 3, 'Dawn', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', '2439646234@qq.com', '2439646234', NULL, '', 9, '2025-07-30 15:31:57.651', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.229.24.173\", \"createIpDetail\": {\"ip\": \"206.237.119.215\", \"isp\": \"XX\", \"area\": \"\", \"city\": \"XX\", \"isp_id\": \"xx\", \"region\": \"XX\", \"city_id\": \"xx\", \"country\": \"美国\", \"region_id\": \"xx\", \"country_id\": \"US\"}, \"updateIpDetail\": {\"ip\": \"120.229.24.173\", \"isp\": \"移动\", \"area\": \"\", \"city\": \"XX\", \"isp_id\": \"100025\", \"region\": \"广东\", \"city_id\": \"xx\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', 6, 0, '', '2025-03-27 04:23:08.393', '2025-08-21 10:55:17.103', 'k.2439646234', 0, NULL, 0, '2025-05-09 18:24:37.089', 99978, 0, 1);
+INSERT INTO `im_user` VALUES (1, 61170828519936, 2, 'HuLa小管家', '022', '', 'bot', NULL, '', 17, '2025-07-07 15:27:01.711', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": {\"ip\": \"206.237.119.215\", \"isp\": \"\", \"area\": \"\", \"city\": \"\", \"isp_id\": \"\", \"region\": \"\", \"city_id\": \"\", \"country\": \"美国\", \"region_id\": \"\", \"country_id\": \"US\"}, \"updateIpDetail\": {\"ip\": \"120.231.232.41\", \"isp\": \"移动\", \"area\": \"\", \"city\": \"\", \"isp_id\": \"100025\", \"region\": \"广东\", \"city_id\": \"\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', 6, 0, '', '2025-03-27 04:23:08.393', '2025-09-17 02:34:06.481', 'k.23772439646234', 0, NULL, 0, '2025-05-09 18:24:37.089', 99978, 0, 1);
+INSERT INTO `im_user` VALUES (10937855681024, 61170828519937, 3, 'Dawn', 'https://cdn.hulaspark.com/avatar/2439646234/97320189485dca88dcc7a70054445a56.webp', '2439646234@qq.com', '2439646234', NULL, '', 4, '2025-07-30 15:31:57.651', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"192.168.1.37\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"192.168.1.37\", \"isp\": \"内网IP\", \"area\": \"\", \"city\": \"内网IP\", \"isp_id\": \"local\", \"region\": \"\", \"city_id\": \"local\", \"country\": \"\", \"region_id\": \"\", \"country_id\": \"\"}}', 6, 0, '', '2025-03-27 04:23:08.393', '2025-10-11 10:27:11.457', 'k.2439646234', 0, NULL, 0, '2025-09-20 21:35:31.415', 99978, 0, 1);
 
 -- ----------------------------
 -- Table structure for im_user_apply
@@ -932,7 +942,7 @@ DROP TABLE IF EXISTS `im_user_apply`;
 CREATE TABLE `im_user_apply`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
   `uid` bigint NOT NULL COMMENT '申请人uid',
-  `type` int NOT NULL COMMENT '申请类型 1加好友 2 加群',
+  `type` int NOT NULL COMMENT '申请类型 1群聊 2加好友',
   `room_id` bigint NOT NULL COMMENT '房间id',
   `target_id` bigint NOT NULL COMMENT '接收对象 type: 1 -> uid; type: 2 -> roomGroupId',
   `msg` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '申请信息',
@@ -952,7 +962,7 @@ CREATE TABLE `im_user_apply`  (
   INDEX `idx_target_id`(`target_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65161746556417 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户申请表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82880386659841 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户申请表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_user_apply
@@ -965,7 +975,7 @@ DROP TABLE IF EXISTS `im_user_backpack`;
 CREATE TABLE `im_user_backpack`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
   `uid` bigint NOT NULL COMMENT 'uid',
-  `item_id` int NOT NULL COMMENT '物品id',
+  `item_id` bigint NOT NULL COMMENT '物品id',
   `status` int NOT NULL COMMENT '使用状态 0.待使用 1已使用',
   `idempotent` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '幂等号',
   `create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -979,11 +989,12 @@ CREATE TABLE `im_user_backpack`  (
   INDEX `idx_uid`(`uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65033614758913 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户背包表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82522826436619 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户背包表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_user_backpack
 -- ----------------------------
+INSERT INTO `im_user_backpack` VALUES (10937855681029, 10937855681024, 6, 0, '6_1_10937855681024', '2025-03-27 04:27:34.443', '2025-03-27 04:27:34.443', 1, 0, NULL, 0);
 
 -- ----------------------------
 -- Table structure for im_user_block
@@ -1021,53 +1032,12 @@ CREATE TABLE `im_user_emoji`  (
   `update_by` bigint NULL DEFAULT NULL COMMENT '更新者',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `IDX_USER_EMOJIS_UID`(`uid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 59075366823937 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表情包' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 80580641386497 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表情包' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_user_emoji
 -- ----------------------------
 INSERT INTO `im_user_emoji` VALUES (10951726244352, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/c64611c3bbbcd197552b7f84ac4b709b.jpg', 0, '2025-03-27 05:18:15.512', '2025-03-27 05:18:15.512', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (11099252499456, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/34c18e6c846bf18525a2eb180179ff5a.jpg', 0, '2025-03-27 15:04:28.904', '2025-03-27 15:04:28.904', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (11099458020352, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/bb124e9812456b4f6c9c2b3dcfeb859b.jpg', 0, '2025-03-27 15:05:17.671', '2025-03-27 15:05:17.671', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (12637274416128, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/710683d87faa15a807c58574a6ee8c81.png', 0, '2025-03-31 20:56:01.302', '2025-03-31 20:56:01.302', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (12637333136384, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/322eed8d06539028c2e9c27212ee232c.png', 0, '2025-03-31 20:56:15.350', '2025-03-31 20:56:15.350', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (12637379273728, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/6ac23bb3a9a384ada1e82f41d181e4bc.png', 0, '2025-03-31 20:56:26.793', '2025-03-31 20:56:26.793', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (12637450576896, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/ae4e6c0e10667c33f0066eaf7444c3a9.png', 1, '2025-03-31 20:56:43.103', '2025-07-01 19:55:38.895', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (13077135270912, 10937855681024, 'https://upload-bbs.miyoushe.com/upload/2023/01/18/838dba51bd47c248d1f02b2e24a28b18_6640243918864203211.png', 1, '2025-04-02 02:03:52.348', '2025-04-02 02:03:59.199', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (17994658920448, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/ae779d7e2427a7efc292f518143146b9.png', 1, '2025-04-15 15:44:21.396', '2025-04-15 16:07:02.008', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (18328189974528, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/89f9617af96bc484d1302aa9965d45d3.jpg', 0, '2025-04-16 13:49:41.795', '2025-04-16 13:49:41.795', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (18682617051648, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/1fefca23dfc273f4b778867122b053db.jpg', 0, '2025-04-17 13:18:03.703', '2025-04-17 13:18:03.703', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (18695812332032, 10937855681024, 'https://cdn.hulaspark.com/chat/67956761/0d7a38aff2095ffa86d4b6c650a05047.jpg', 0, '2025-04-17 14:10:29.694', '2025-04-17 14:10:29.694', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (18851517480448, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/414d8351a445105d5b5ec163f7d6c8d9.png', 0, '2025-04-18 00:29:12.454', '2025-04-18 00:29:12.454', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (18851584589312, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/b4d9d7ef33551c8440541e1f80f17eb1.png', 0, '2025-04-18 00:29:28.373', '2025-04-18 00:29:28.373', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (19064231607808, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/1d29c7156617203491e1180d8e3c0271.png', 0, '2025-04-18 14:34:27.304', '2025-04-18 14:34:27.304', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (19185258250240, 10937855681024, 'https://cdn.hulaspark.com/chat/hi/98037c2c93c8271ba30682ddad9179e1.jpg', 1, '2025-04-18 22:35:22.450', '2025-05-05 21:03:56.172', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (19193592332288, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/a89559bc2abf4495de12fbd8f7bc4c11.jpg', 0, '2025-04-18 23:08:29.383', '2025-04-18 23:08:29.383', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (19195794341888, 10937855681024, 'blob:http://127.0.0.1:6130/fe077b81-2630-4fea-be34-295ce093dd5b', 1, '2025-04-18 23:17:14.381', '2025-04-18 23:17:31.417', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (19195882422272, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/ed77cc7bbdf2bd358d81d8fd8e4b0370.jpg', 0, '2025-04-18 23:17:35.068', '2025-04-18 23:17:35.068', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (20621085953536, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/c5ef2eabb9845e67bb59d77df95587f0.jpg', 0, '2025-04-22 21:40:50.272', '2025-04-22 21:40:50.272', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (20868013018624, 10937855681024, 'https://cdn.hulaspark.com/chat/hi/d1ff8ff45782de5aba7ea26d11e5d293.jpg', 0, '2025-04-23 14:02:02.617', '2025-04-23 14:02:02.617', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (21586392438272, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/dc792e85912194f614ce958078bcf0cf.jpg', 1, '2025-04-25 13:36:37.950', '2025-07-01 19:56:25.768', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (21609389807104, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/6d335fa2e7eb4ac9efacfc24181934c4.jpg', 0, '2025-04-25 15:08:00.378', '2025-04-25 15:08:00.378', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (21646169658880, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/c6a4fb7fad369e6a9629c8d09a69c7a4.jpg', 0, '2025-04-25 17:34:09.792', '2025-04-25 17:34:09.792', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (22336166222336, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/7e800eb444941bf2fdd1fda1014489f7.jpg', 0, '2025-04-27 15:15:57.668', '2025-04-27 15:15:57.668', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (22338494061056, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/37e4cf6e2c3f9a4f10f1bff6985bcfac.jpg', 0, '2025-04-27 15:25:12.500', '2025-04-27 15:25:12.500', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (22338636667392, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/a115050f07e3fab6fb5fdc7cc64b12c7.jpg', 0, '2025-04-27 15:25:46.528', '2025-04-27 15:25:46.528', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (23117263070208, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/068e2fbf5f99f83070528226d350868b.jpg', 0, '2025-04-29 18:59:45.353', '2025-04-29 18:59:45.353', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (26629011205632, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/8b93b2ae198ef2ce94c3154a7254e393.jpg', 1, '2025-05-09 11:34:11.893', '2025-07-01 19:22:26.391', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (28509720343040, 10937855681024, 'blob:http://127.0.0.1:6130/8e9ec11a-7427-490d-ac5d-75d0e8607b3d', 1, '2025-05-14 16:07:27.880', '2025-05-14 16:08:29.807', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (28510160744960, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/a1c93b41ec729e3724f19cd04a614122.jpg', 0, '2025-05-14 16:09:12.778', '2025-05-14 16:09:12.778', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (29219396579840, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/4df3086ce47b86fd748171b86df2761a.jpg', 0, '2025-05-16 15:07:27.972', '2025-05-16 15:07:27.972', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (31465626728960, 10937855681024, 'https://cdn.hulaspark.com/chat/evangelionss/9d3c2e49c264128f6dee70e51c8e76f9.GIF', 1, '2025-05-22 19:53:10.919', '2025-07-01 19:32:15.319', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (32001298071040, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/2a27e4f29b6ab87bcbe4273d4880730d.png', 1, '2025-05-24 07:21:44.792', '2025-05-24 07:21:59.184', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (33239850880000, 10937855681024, 'https://cdn.hulaspark.com/chat/67956761/54492a8f8e93e349171b7d45ae23215a.jpeg', 0, '2025-05-27 17:23:18.592', '2025-05-27 17:23:18.592', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (36197065886720, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/0e84c8a1e75db04549a2ad2d8342c0d7.jpg', 0, '2025-06-04 21:14:13.194', '2025-06-04 21:14:13.194', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (42407429213184, 10937855681024, 'https://cdn.hulaspark.com/chat/2439646234/85b53f3ecd4d5566ca576ef81abc91a4.png', 0, '2025-06-22 00:31:59.855', '2025-06-22 00:31:59.855', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (45953419644416, 10937855681024, 'https://cdn.hulaspark.com/chat/1519147473/8b696cba58460ba3af91d89c92bda212.gif', 0, '2025-07-01 19:22:29.895', '2025-07-01 19:22:29.895', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (45955890089472, 10937855681024, 'https://cdn.hulaspark.com/chat/1519147473/90e337fe5426f83737deea46890367d3.jpg', 0, '2025-07-01 19:32:18.709', '2025-07-01 19:32:18.709', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (45961774697984, 10937855681024, 'https://cdn.hulaspark.com/chat/1519147473/ff7774c206f6739d70872dc7003b9aa3.png', 0, '2025-07-01 19:55:41.462', '2025-07-01 19:55:41.462', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (45961984413184, 10937855681024, 'https://cdn.hulaspark.com/chat/1519147473/ac4d39e9816ee8245d48e1d1beac8fd0.png', 0, '2025-07-01 19:56:31.466', '2025-07-01 19:56:31.466', 1, 0, NULL);
-INSERT INTO `im_user_emoji` VALUES (47432423510528, 10937855681024, 'https://cdn.hulaspark.com/chat/hi/98037c2c93c8271ba30682ddad9179e1.jpg', 0, '2025-07-05 21:19:31.513', '2025-07-05 21:19:31.513', 1, 0, NULL);
 
 -- ----------------------------
 -- Table structure for im_user_friend
@@ -1095,13 +1065,13 @@ CREATE TABLE `im_user_friend`  (
   INDEX `idx_uid_friend_uid`(`uid` ASC, `friend_uid` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62581054203396 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户联系人表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82881355544066 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户联系人表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_user_friend
 -- ----------------------------
-INSERT INTO `im_user_friend` VALUES (11367692149760, 1, 1, 10937855681024, 0, 0, 0, 0, 0, 0, 0, NULL, '2025-03-28 08:51:09.397', '2025-08-27 11:21:49.458', 1, 0, NULL);
-INSERT INTO `im_user_friend` VALUES (11515012883456, 1, 10937855681024, 1, 0, 0, 0, 0, 0, 0, 0, NULL, '2025-03-28 18:36:33.214', '2025-08-27 11:21:47.141', 1, 0, NULL);
+INSERT INTO `im_user_friend` VALUES (11367692149761, 11229133317122, 1, 10937855681024, 0, 0, 0, 0, 0, 0, 0, NULL, '2025-03-28 08:51:09.399', '2025-10-11 03:34:59.682', 1, 0, NULL);
+INSERT INTO `im_user_friend` VALUES (11515012883456, 11229133317122, 10937855681024, 1, 0, 0, 0, 0, 0, 0, 0, NULL, '2025-03-28 18:36:33.214', '2025-10-11 03:35:00.200', 1, 0, NULL);
 
 -- ----------------------------
 -- Table structure for im_user_privacy
@@ -1127,7 +1097,7 @@ CREATE TABLE `im_user_privacy`  (
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_uid`(`uid` ASC) USING BTREE COMMENT '用户ID唯一索引'
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户隐私设置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户隐私设置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_user_privacy
@@ -1178,39 +1148,37 @@ CREATE TABLE `im_user_state`  (
 -- ----------------------------
 -- Records of im_user_state
 -- ----------------------------
-INSERT INTO `im_user_state` VALUES (1, '在线', '/status/online.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (2, '离开', '/status/leave.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (3, '忙碌', '/status/busy.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (4, '请勿打扰', '/status/IonBan.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (5, '隐身', '/status/cloaking.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (6, '离线', '/status/offline.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (7, '今日天气', '/status/weather_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (8, '一言难尽', '/status/hardtosay@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (9, '我太难了', '/status/toohard@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (10, '难得糊涂', '/status/nandehutu.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (11, '元气满满', '/status/fullofyuanqi@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (12, '嗨到飞起', '/status/happytofly@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (13, '水逆退散', '/status/luck@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (14, '好运锦鲤', '/status/jinli@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (15, '恋爱中', '/status/relationship_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (16, '我crush了', '/status/crush.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (17, '被掏空', '/status/tkong.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (18, '听歌中', '/status/music@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (19, '我没事', '/status/imfine_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (20, '学习中', '/status/study_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (21, '睡觉中', '/status/sleeping_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (22, '搬砖中', '/status/banzhuan.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (23, '想静静', '/status/bequiet@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (24, '运动中', '/status/yundongzhong@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (25, '我想开了', '/status/woxiangkaile.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (26, '信号弱', '/status/signal_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (27, '追剧中', '/status/tv_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (28, '美滋滋', '/status/meizizi@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (29, '摸鱼中', '/status/fish@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (30, '无聊中', '/status/boring@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (31, '悠哉哉', '/status/youzaizai@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (32, '去旅行', '/status/gototravel.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
-INSERT INTO `im_user_state` VALUES (33, '游戏中', '/status/game_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (1, '离开', '/status/leave.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (2, '忙碌', '/status/busy.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (3, '请勿打扰', '/status/IonBan.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (4, '隐身', '/status/cloaking.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (5, '今日天气', '/status/weather_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (6, '一言难尽', '/status/hardtosay@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (7, '我太难了', '/status/toohard@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (8, '难得糊涂', '/status/nandehutu.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (9, '元气满满', '/status/fullofyuanqi@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (10, '嗨到飞起', '/status/happytofly@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (11, '水逆退散', '/status/luck@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (12, '好运锦鲤', '/status/jinli@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (13, '恋爱中', '/status/relationship_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (14, '我crush了', '/status/crush.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (15, '被掏空', '/status/tkong.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (16, '听歌中', '/status/music@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (17, '我没事', '/status/imfine_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (18, '学习中', '/status/study_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (19, '睡觉中', '/status/sleeping_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (20, '搬砖中', '/status/banzhuan.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (21, '想静静', '/status/bequiet@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (22, '运动中', '/status/yundongzhong@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (23, '我想开了', '/status/woxiangkaile.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (24, '信号弱', '/status/signal_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (25, '追剧中', '/status/tv_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (26, '美滋滋', '/status/meizizi@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (27, '摸鱼中', '/status/fish@2x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (28, '无聊中', '/status/boring@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (29, '悠哉哉', '/status/youzaizai@3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (30, '去旅行', '/status/gototravel.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
+INSERT INTO `im_user_state` VALUES (31, '游戏中', '/status/game_3x.png', 1, '2025-02-17 11:39:49', NULL, NULL, 0, 1);
 
 -- ----------------------------
 -- Table structure for im_user_target_rel
@@ -1250,7 +1218,7 @@ CREATE TABLE `im_wx_msg`  (
   INDEX `idx_open_id`(`open_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
   INDEX `idx_update_time`(`update_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '微信消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '微信消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of im_wx_msg
@@ -1275,7 +1243,7 @@ CREATE TABLE `secure_invoke_record`  (
   `is_del` tinyint NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_next_retry_time`(`next_retry_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 66602343194113 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '本地消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82910984107522 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '本地消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of secure_invoke_record
@@ -1294,10 +1262,12 @@ CREATE TABLE `worker_node`  (
   `modified` timestamp NULL DEFAULT NULL COMMENT '修改时间',
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 241 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 192 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of worker_node
 -- ----------------------------
+INSERT INTO `worker_node` VALUES (190, '240e:3b3:30b4:1f60:d382:ae04:eb18:d48', '1760153294125-92616', 2, '2025-10-11', '2025-10-11 11:28:14', '2025-10-11 11:28:14');
+INSERT INTO `worker_node` VALUES (191, '240e:3b3:30b4:1f60:d382:ae04:eb18:d48', '1760153797714-77047', 2, '2025-10-11', '2025-10-11 11:36:38', '2025-10-11 11:36:38');
 
 SET FOREIGN_KEY_CHECKS = 1;

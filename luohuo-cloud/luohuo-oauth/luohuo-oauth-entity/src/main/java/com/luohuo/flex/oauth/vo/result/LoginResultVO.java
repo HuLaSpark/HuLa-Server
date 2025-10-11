@@ -27,6 +27,9 @@ import java.time.LocalDateTime;
 @Schema(description = "登录结果")
 public class LoginResultVO {
 
+	@Schema(description = "用户id")
+	private Long uid;
+
     @Schema(description = "随机数")
     private String uuid;
 

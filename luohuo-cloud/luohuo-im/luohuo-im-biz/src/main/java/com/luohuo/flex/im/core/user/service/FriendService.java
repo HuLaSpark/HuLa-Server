@@ -44,7 +44,7 @@ public interface FriendService {
 	 * @param type 申请类型
 	 * @return
 	 */
-	void createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type);
+	Long createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type);
 
 	/**
 	 * 与系统用户创建好友关系
@@ -63,6 +63,10 @@ public interface FriendService {
      */
     void deleteFriend(Long uid, Long friendUid);
 
+	/**
+	 * 联系人列表
+	 * @param uid 当前登录人
+	 */
     CursorPageBaseResp<FriendResp> friendList(Long uid, CursorPageBaseReq request);
 
 	/**

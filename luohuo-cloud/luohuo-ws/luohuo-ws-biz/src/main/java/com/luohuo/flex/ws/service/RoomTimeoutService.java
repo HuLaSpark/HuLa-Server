@@ -134,7 +134,7 @@ public class RoomTimeoutService {
      * 清理房间资源
      * @param roomId 房间ID
      */
-	@RedissonLock(key = "#roomId")
+	@RedissonLock(prefixKey = "cleanRoom:", key = "#roomId")
     public void cleanRoom(Long roomId, Long uid, String reason) {
 		// 1. 检查房间是否已关闭
 		if (roomMetadataService.isRoomClosed(roomId)) return;

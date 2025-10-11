@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -24,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.UNREAD;
+
 @Service
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
@@ -46,6 +49,11 @@ public class NoticeServiceImpl implements NoticeService {
 
 	@Override
 	public void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, String content) {
+		createNotice(applyType, type, senderId, receiverId, applyId, operate, "", content);
+	}
+
+	@Override
+	public void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, String name, String content) {
 		Notice notice = new Notice();
 		notice.setType(applyType.getType());
 		notice.setEventType(type.getType());
@@ -53,7 +61,9 @@ public class NoticeServiceImpl implements NoticeService {
 		notice.setReceiverId(receiverId);
 		notice.setApplyId(applyId);
 		notice.setOperateId(operate);
+		notice.setName(name);
 		notice.setContent(content);
+		notice.setIsRead(UNREAD.getCode());
 		notice.setStatus(NoticeStatusEnum.UNTREATED.getStatus());
 		noticeDao.save(notice);
 
@@ -83,7 +93,9 @@ public class NoticeServiceImpl implements NoticeService {
 		List<Long> notices = noticeIPage.getRecords()
 				.stream().map(Notice::getId)
 				.collect(Collectors.toList());
-		noticeDao.readNotices(uid, notices);
+		if(CollUtil.isNotEmpty(notices)){
+			noticeDao.readNotices(uid, notices);
+		}
 	}
 
 	@Override
@@ -101,6 +113,7 @@ public class NoticeServiceImpl implements NoticeService {
 		vo.setSenderId(notice.getSenderId());
 		vo.setReceiverId(notice.getReceiverId());
 		vo.setOperateId(notice.getOperateId());
+		vo.setName(notice.getName());
 		vo.setContent(notice.getContent());
 		vo.setEventType(notice.getEventType());
 		vo.setType(notice.getType());

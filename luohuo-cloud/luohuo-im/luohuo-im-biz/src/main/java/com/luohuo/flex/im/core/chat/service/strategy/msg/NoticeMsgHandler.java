@@ -6,7 +6,7 @@ import com.luohuo.flex.im.common.utils.sensitiveword.SensitiveWordBs;
 import com.luohuo.flex.im.core.chat.dao.MessageDao;
 import com.luohuo.flex.im.domain.entity.Message;
 import com.luohuo.flex.im.domain.entity.msg.MessageExtra;
-import com.luohuo.flex.im.domain.entity.msg.NoticeMsgDTO;
+import com.luohuo.flex.im.domain.vo.response.msg.NoticeMsgDTO;
 import com.luohuo.flex.im.domain.enums.MessageTypeEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

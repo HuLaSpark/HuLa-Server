@@ -35,7 +35,7 @@ public class RoomMetadataService {
 
 	public Boolean isRoomClosed(Long roomId) {
 		CacheResult<Boolean> result = cachePlusOps.get(CloseRoomCacheKeyBuilder.builder(roomId));
-		return result.isNull()? true: result.getValue();
+		return result.isNull()? true: result.getRawValue();
 	}
 
 	/**

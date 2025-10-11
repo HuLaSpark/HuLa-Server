@@ -28,6 +28,11 @@ public enum MessageTypeEnum {
 	BOT(11, "机器人"),
 	VIDEO_CALL(12, "视频电话消息"),
 	AUDIO_CALL(13, "音频电话消息"),
+	MIXED(14, "混合消息"),
+	AIT(15, "艾特"),
+	REPLY(16, "回复"),
+	AI(17, "AI"),
+	LOCATION(18, "地图"),
     ;
 
     private final Integer type;

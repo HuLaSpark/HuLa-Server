@@ -36,9 +36,9 @@ public interface RoomService {
     RoomFriend getFriendRoom(Long uid1, Long uid2);
 
     /**
-     * 禁用一个单聊房间
+     * 禁用一个单聊房间 [目前是谁删除的，谁就没有会话]
      */
-    void disableFriendRoom(List<Long> uidList);
+    void disableFriendRoom(Long roomId, Long uid, Long friendUid);
 
     /**
      * 创建一个群聊房间

@@ -2,6 +2,7 @@ package com.luohuo.flex.ws.cache;
 
 import com.luohuo.basic.model.cache.CacheKey;
 import com.luohuo.basic.model.cache.CacheKeyBuilder;
+import com.luohuo.flex.common.cache.CacheKeyModular;
 
 import java.time.Duration;
 
@@ -15,6 +16,11 @@ import java.time.Duration;
 public class VideoRoomsCacheKeyBuilder implements CacheKeyBuilder {
 	public static CacheKey build(Long key) {
 		return new VideoRoomsCacheKeyBuilder().key(key);
+	}
+
+	@Override
+	public String getPrefix() {
+		return CacheKeyModular.PREFIX;
 	}
 
 	@Override

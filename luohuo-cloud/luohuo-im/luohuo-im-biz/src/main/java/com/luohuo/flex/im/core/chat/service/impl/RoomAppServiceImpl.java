@@ -26,7 +26,6 @@ import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.*;
 import com.luohuo.flex.im.domain.enums.*;
-import com.luohuo.flex.im.domain.vo.req.room.UserApplyResp;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
@@ -337,15 +336,29 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 	private void setAdminNotice(NoticeTypeEnum noticeTypeEnum, Long uid, List<Long> uidList, List<Long> manageUidList, String content) {
 		long uuid = uidGenerator.getUid();
-		uidList.stream().filter(id -> !manageUidList.contains(id)).forEach(id -> noticeService.createNotice(
-				RoomTypeEnum.GROUP,
-				noticeTypeEnum,
-				uid,
-				id,
-				uuid,
-				id,
-				content
-		));
+		uidList.stream().filter(id -> !manageUidList.contains(id)).forEach(id -> {
+			// 通知被操作的人
+			noticeService.createNotice(
+					RoomTypeEnum.GROUP,
+					noticeTypeEnum,
+					uid,
+					id,
+					uuid,
+					id,
+					content
+			);
+
+			// 通知群主
+//			noticeService.createNotice(
+//					RoomTypeEnum.GROUP,
+//					noticeTypeEnum,
+//					uid,
+//					uid,
+//					uuid,
+//					id,
+//					content
+//			);
+		});
 	}
 
 	/**
@@ -392,37 +405,6 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		CacheKey gKey = PresenceCacheKeyBuilder.groupMembersKey(roomId);
 		CacheKey onlineGroupMembersKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(roomId);
 		SpringUtils.publishEvent(new GroupMemberAddEvent(this, roomId, Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(uid), uid));
-	}
-
-	/**
-	 * 分页查询加群申请记录
-	 *
-	 * @param uid 登录用户id
-	 * @param req 分页请求
-	 */
-	@Override
-	public CursorPageBaseResp<UserApplyResp> queryApplyPage(Long uid, MemberReq req) {
-		// 1. 校验权限
-		GroupMember member = groupMemberDao.getMember(req.getRoomId(), uid);
-		if (member == null || member.getRoleId() == GroupRoleEnum.MEMBER.getType()) {
-			throw new BizException("无权限查看申请列表");
-		}
-
-		// 2. 游标查询申请进群记录
-		CursorPageBaseResp<UserApply> userApplyPage = userApplyDao.getApplyPage(uid, RoomTypeEnum.GROUP.getType(), req);
-
-		return CursorPageBaseResp.init(userApplyPage, userApplyPage.getList().stream().map(apply -> {
-			UserApplyResp applyResp = new UserApplyResp();
-			applyResp.setType(apply.getType());
-			applyResp.setUid(uid);
-			applyResp.setMsg(apply.getMsg());
-			applyResp.setRoomId(apply.getRoomId());
-			applyResp.setTargetId(apply.getTargetId());
-			applyResp.setStatus(apply.getStatus());
-			applyResp.setReadStatus(apply.getReadStatus());
-			applyResp.setCreateTime(apply.getCreateTime());
-			return applyResp;
-		}).collect(Collectors.toList()), userApplyPage.getTotal());
 	}
 
 	/**
@@ -493,6 +475,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		// 2.修改群信息
 		roomGroup.setAvatar(request.getAvatar());
 		roomGroup.setName(request.getName());
+		roomGroup.setAllowScanEnter(request.getAllowScanEnter());
 		Boolean success = roomService.updateRoomInfo(roomGroup);
 
 		// 3.通知群里所有人群信息修改了
@@ -767,11 +750,12 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 			case SOUND -> message.getExtra().getSoundMsgDTO();
 			case VIDEO -> message.getExtra().getVideoMsgDTO();
 			case EMOJI -> message.getExtra().getEmojisMsgDTO();
-			case BOT, SYSTEM -> null;
+			case AI, REPLY, AIT, MIXED, BOT, SYSTEM -> null;
 			case MERGE -> message.getExtra().getMergeMsgDTO();
 			case NOTICE -> message.getExtra().getNoticeMsgDTO();
 			case VIDEO_CALL -> message.getExtra().getVideoCallMsgDTO();
 			case AUDIO_CALL -> message.getExtra().getAudioCallMsgDTO();
+			case LOCATION -> message.getExtra().getMapMsgDTO();
 		};
 	}
 
@@ -800,8 +784,9 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 				.onlineNum(onlineNum)
 				.memberNum(memberNum)
 				.account(roomGroup.getAccount())
-				.remark(member.getRemark())
-				.myName(member.getMyName())
+				.remark(member == null? "": member.getRemark())
+				.myName(member == null? "": member.getMyName())
+				.allowScanEnter(roomGroup.getAllowScanEnter())
 				.roleId(getGroupRole(uid, roomGroup.getId()))
 				.build();
 	}
@@ -932,6 +917,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					removedUid,
 					uuid,
 					removedUid,
+					roomGroup.getName(),
 					roomGroup.getName()
 			);
 
@@ -944,6 +930,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					managerId,
 					uuid,
 					removedUid,
+					roomGroup.getName(),
 					roomGroup.getName()
 			));
 		}
@@ -992,6 +979,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					invite.getTargetId(),
 					invite.getId(),
 					invite.getTargetId(),
+					roomGroup.getName(),
 					roomGroup.getName()
 			);
 
@@ -1003,6 +991,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 					managerId,
 					invite.getId(),
 					invite.getTargetId(),
+					roomGroup.getName(),
 					roomGroup.getName()
 			));
 		});

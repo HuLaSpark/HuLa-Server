@@ -19,7 +19,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TextMsgResp {
+public class TextMsgDTO {
     @Schema(description ="消息内容")
     private String content;
     @Schema(description ="消息链接映射")
