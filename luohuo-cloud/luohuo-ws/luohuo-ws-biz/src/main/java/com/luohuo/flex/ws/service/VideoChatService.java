@@ -211,7 +211,7 @@ public class VideoChatService {
 	/**
 	 * 清理房间数据 [仅仅关闭房间时内部调用]
 	 */
-	@RedissonLock(key = "#roomId")
+	@RedissonLock(prefixKey = "cleanRoomData:", key = "#roomId")
 	public void cleanRoomData(Long roomId) {
 		// 1. 获取房间所有成员
 		List<Long> members = getRoomMembers(roomId);

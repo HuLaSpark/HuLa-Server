@@ -349,15 +349,15 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 			);
 
 			// 通知群主
-			noticeService.createNotice(
-					RoomTypeEnum.GROUP,
-					noticeTypeEnum,
-					uid,
-					uid,
-					uuid,
-					id,
-					content
-			);
+//			noticeService.createNotice(
+//					RoomTypeEnum.GROUP,
+//					noticeTypeEnum,
+//					uid,
+//					uid,
+//					uuid,
+//					id,
+//					content
+//			);
 		});
 	}
 

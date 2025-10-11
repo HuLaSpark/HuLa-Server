@@ -54,14 +54,13 @@ public class VideoCallMsgHandler extends AbstractMsgHandler<VideoCallMsgDTO> {
 		// 结束消息状态处理
 		Long uid = ContextUtil.getUid();
 		boolean isSender = uid.equals(msg.getFromUid());
-		boolean isCreator = uid.equals(dto.getCreator());
 		CallStatusEnum status = CallStatusEnum.of(dto.getState());
 		if (status == null) return "通话状态未知";
 
 		// 双视角统一规则
 		return switch (status) {
 			case REJECTED ->
-					(isSender == isCreator) ? "已" + status.getDesc() : "对方已" + status.getDesc();
+					!isSender ? "已" + status.getDesc() : "对方已" + status.getDesc();
 			case TIMEOUT ->
 					isSender ? "对方未接听" : "未接听";
 			case CANCEL ->

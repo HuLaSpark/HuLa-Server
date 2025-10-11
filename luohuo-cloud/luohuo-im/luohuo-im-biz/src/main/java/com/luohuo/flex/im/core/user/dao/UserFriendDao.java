@@ -49,7 +49,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 				.or()
 				.eq(UserFriend::getFriendUid, uid)
 				.eq(UserFriend::getUid, friendUid)
-				.select(UserFriend::getId).select(UserFriend::getRoomId)
+				.select(UserFriend::getId, UserFriend::getRoomId)
 				.list();
 	}
 

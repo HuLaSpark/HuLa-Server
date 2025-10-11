@@ -6,13 +6,11 @@ import com.luohuo.flex.im.common.service.cache.AbstractRedisStringCache;
 import com.luohuo.flex.im.core.user.dao.BlackDao;
 import com.luohuo.flex.im.core.user.dao.UserBackpackDao;
 import com.luohuo.flex.im.core.user.dao.UserDao;
-import com.luohuo.flex.im.core.user.dao.UserRoleDao;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.Black;
 import com.luohuo.flex.im.domain.entity.ItemConfig;
 import com.luohuo.flex.im.domain.entity.User;
 import com.luohuo.flex.im.domain.entity.UserBackpack;
-import com.luohuo.flex.im.domain.entity.UserRole;
 import com.luohuo.flex.im.domain.enums.ItemTypeEnum;
 import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
 import com.luohuo.flex.model.entity.base.IpDetail;
@@ -39,7 +37,6 @@ public class UserSummaryCache extends AbstractRedisStringCache<Long, SummeryInfo
     private final UserCache userCache;
     private final UserBackpackDao userBackpackDao;
     private final ItemCache itemCache;
-	private final UserRoleDao userRoleDao;
 	private final BlackDao blackDao;
 
 	/**
@@ -112,19 +109,6 @@ public class UserSummaryCache extends AbstractRedisStringCache<Long, SummeryInfo
 	 */
 	@CacheEvict(cacheNames = "luohuo:user", key = "'findFriend:'+#key")
 	public List<Long> evictFriend(String key) {
-		return null;
-	}
-
-	@Cacheable(cacheNames = "luohuo:user", key = "'roles:'+#uid")
-	public Set<Long> getRoleSet(Long uid) {
-		List<UserRole> userRoles = userRoleDao.listByUid(uid);
-		return userRoles.stream()
-				.map(UserRole::getRoleId)
-				.collect(Collectors.toSet());
-	}
-
-	@CacheEvict(cacheNames = "luohuo:user", key = "'roles'")
-	public Map<Integer, Set<String>> evictrolesSet() {
 		return null;
 	}
 
