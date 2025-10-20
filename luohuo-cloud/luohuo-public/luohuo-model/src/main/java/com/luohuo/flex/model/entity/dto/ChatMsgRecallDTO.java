@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 public class ChatMsgRecallDTO {
     private Long msgId;
     private Long roomId;
-    //撤回的用户
+    //撤回这条消息的用户
     private Long recallUid;
 }

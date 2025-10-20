@@ -30,6 +30,8 @@ public enum WSReqTypeEnum {
 	KICK_USER(12,"踢出用户"),
 	NETWORK_REPORT(13,"通话质量监控"),
 	WEBRTC_SIGNAL(14,"信令消息"),
+	ACK(15, "消息确认接收ack"),
+	READ(16, "消息已读"),
     ;
 
     private final Integer type;

@@ -268,6 +268,11 @@ public interface CacheKeyTable {
 		 * 会话信息
 		 */
 		String USER_CONTACT = "user_contact";
+
+		/**
+		 * 在途消息
+		 */
+		String PASSAGE_MSG = "passage_msg";
 	}
 
 	interface OAUTH {

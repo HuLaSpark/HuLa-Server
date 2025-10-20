@@ -35,7 +35,6 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-
 public class DefDictItemServiceImpl extends SuperServiceImpl<DefDictManager, Long, DefDict> implements DefDictItemService {
 
     private final CachePlusOps cachePlusOps;

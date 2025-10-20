@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
+
 import java.io.Serializable;
 
 
@@ -23,6 +24,9 @@ public class PageBaseReq implements Serializable {
 
     @Schema(description = "页面索引（从1开始）")
     private Integer pageNo = 1;
+
+	@Schema(description = "点击请求")
+	private Boolean click = false;
 
     /**
      * 获取mybatisPlus的page

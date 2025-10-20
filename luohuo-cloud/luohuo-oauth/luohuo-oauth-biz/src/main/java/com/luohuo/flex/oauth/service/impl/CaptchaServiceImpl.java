@@ -144,8 +144,9 @@ public class CaptchaServiceImpl implements CaptchaService {
 
 		String code = RandomUtil.randomNumbers(6);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(bindEmailReq.getEmail(), bindEmailReq.getTemplateCode());
-        cacheOps.set(cacheKey, code);
+		ArgumentAssert.isFalse(cacheOps.exists(cacheKey), "请勿重复发送验证码");
 
+        cacheOps.set(cacheKey, code);
         log.info("邮件验证码 cacheKey={}, code={}", cacheKey, code);
 
         // 在「运营平台」-「消息模板」配置一个「模板标识」为 templateCode， 且「模板内容」中需要有 code 占位符

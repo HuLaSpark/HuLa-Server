@@ -1,7 +1,7 @@
 package com.luohuo.flex.im.core.user.service.impl;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.luohuo.flex.im.core.user.dao.UserStateDao;
+import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.domain.entity.UserState;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
@@ -24,6 +24,7 @@ import java.util.List;
 public class UserStateServiceImpl implements UserStateService {
 
     private UserStateDao userStateDao;
+	private UserCache userCache;
 	private UserSummaryCache userSummaryCache;
 	private UserService userService;
 	private PushService pushService;
@@ -42,17 +43,14 @@ public class UserStateServiceImpl implements UserStateService {
 		}
 
 		UserState userState = userStateDao.getById(userStateId);
-		Boolean changeUserState = userService.changeUserState(uid, userStateId);
+		userService.changeUserState(uid, userStateId);
 
-		if (ObjectUtil.isNotNull(userState) && changeUserState){
-			// 1.清除缓存
-			userSummaryCache.delete(uid);
+		// 1.清除缓存
+		userCache.delete(uid);
+		userSummaryCache.delete(uid);
 
-			// 2.推送数据
-			pushService.pushRoom(uid, WSRespTypeEnum.USER_STATE_CHANGE.getType(), new UserStateVo(uid, userState.getId()));
-			return true;
-		}else {
-			throw new RuntimeException("用户状态更新失败");
-		}
+		// 2.推送数据
+		pushService.pushRoom(uid, WSRespTypeEnum.USER_STATE_CHANGE.getType(), new UserStateVo(uid, userState == null? 0L: userState.getId()));
+		return true;
 	}
 }

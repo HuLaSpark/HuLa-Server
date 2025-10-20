@@ -27,8 +27,8 @@ public class NoticeVO {
 	@Schema(description = "被操作的人")
 	private Long operateId;
 
-	@Schema(description = "群昵称")
-	private String name;
+	@Schema(description = "房间id")
+	private Long roomId;
 
     @Schema(description = "通知内容 申请时填写的")
     private String content;

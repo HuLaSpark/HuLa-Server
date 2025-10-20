@@ -18,9 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MsgReq implements Serializable {
-    @Schema(description ="消息id")
+    @Schema(description ="消息id, 传了消息id默认就是查询消息的接口")
     private List<Long> msgIds;
 
-	@Schema(description ="最后一次ws连接的时间")
-	private Long lastOptTime;
+	@Schema(description ="开启同步消息")
+	private Boolean async = false;
 }

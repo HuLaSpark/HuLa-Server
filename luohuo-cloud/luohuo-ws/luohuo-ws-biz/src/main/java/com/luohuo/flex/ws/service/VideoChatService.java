@@ -3,6 +3,7 @@ package com.luohuo.flex.ws.service;
 import cn.hutool.extra.spring.SpringUtil;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.exception.BizException;
+import com.luohuo.flex.common.OnlineService;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
 import com.luohuo.flex.model.redis.annotation.RedissonLock;

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.luohuo.flex</groupId>
     <artifactId>luohuo-cloud</artifactId>
-    <version>2.6.15</version>
+    <version>3.0.0</version>
     <packaging>pom</packaging>
     <url>https://gitee.com/HuLaSpark/HuLa-Server</url>
     <name>${project.artifactId}</name>
@@ -17,7 +17,6 @@
         <module>luohuo-base</module>
         <module>luohuo-oauth</module>
         <module>luohuo-ws</module>
-        <module>luohuo-presence</module>
         <module>luohuo-im</module>
         <module>luohuo-gateway</module>
         <module>luohuo-support</module>

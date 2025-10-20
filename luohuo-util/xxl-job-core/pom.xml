@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>luohuo-util</artifactId>
 		<groupId>com.luohuo.basic</groupId>
-		<version>2.6.15</version>
+		<version>3.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

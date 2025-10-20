@@ -48,8 +48,8 @@ public class Notice extends Entity<Long> {
 	@TableField("operate_id")
 	private Long operateId;
 
-	@Schema(description = "群聊的名称")
-	private String name;
+	@Schema(description = "房间id")
+	private Long roomId;
 
 	@Schema(description = "通知内容 申请时填写的, 进群、移除时是群聊的名称")
 	private String content;

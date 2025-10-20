@@ -77,7 +77,12 @@ turnserver -a -o -f -r hulaspark.com
 ```
 
 ### 6. 测试服务
+测试地址：https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
 
-https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
+host： 本地直连测试，用在局域网
+
+srflx：公网直连也叫打洞测试，不过图中只有一个srflx返回，正常应该有两个
+
+relay：是中继测试，我们这次测试意思就是我们所在网络使用中继模式才能成功
 
 ![img_13.png](../image/img_13.png)

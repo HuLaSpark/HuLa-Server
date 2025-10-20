@@ -198,6 +198,7 @@ public class UserServiceImpl implements UserService {
         AssertUtil.equal(itemConfig.getType(), ItemTypeEnum.BADGE.getType(), "该徽章不可佩戴");
         // 佩戴徽章
         userDao.wearingBadge(uid, req.getBadgeId());
+		userCache.delete(uid);
 		userSummaryCache.delete(uid);
     }
 
@@ -283,6 +284,7 @@ public class UserServiceImpl implements UserService {
 		boolean save = userDao.updateById(user);
 		if(save){
 			cachePlusOps.hDel("emailCode", req.getUuid());
+			userCache.delete(uid);
 			userSummaryCache.delete(uid);
 		}
 		return save;
@@ -308,6 +310,7 @@ public class UserServiceImpl implements UserService {
 		uw.lambda().set(User::getNum, user.getNum() - 1).eq(User::getId, user.getId());
 		boolean success = userDao.update(uw);
 		if(success){
+			userCache.delete(uid);
 			userSummaryCache.delete(uid);
 		}
 		return success;
@@ -342,12 +345,13 @@ public class UserServiceImpl implements UserService {
         // 保存用户
 		newUser.setCreateBy(1L);
         userDao.save(newUser);
-		// 加上系统机器人好友
-		roomAppService.createSystemFriend(DefValConstants.DEF_ROOM_ID, DefValConstants.DEF_GROUP_ID, newUser.getId());
 
 		// 注入群组信息
 		cachePlusOps.sAdd(PresenceCacheKeyBuilder.groupMembersKey(DefValConstants.DEF_ROOM_ID), newUser.getId());
 		cachePlusOps.sAdd(PresenceCacheKeyBuilder.userGroupsKey(newUser.getId()), DefValConstants.DEF_ROOM_ID);
+
+		// 加上系统机器人好友
+		roomAppService.createSystemFriend(DefValConstants.DEF_ROOM_ID, DefValConstants.DEF_GROUP_ID, newUser.getId());
 
         // 发布用户注册消息
         SpringUtils.publishEvent(new UserRegisterEvent(this, newUser));
