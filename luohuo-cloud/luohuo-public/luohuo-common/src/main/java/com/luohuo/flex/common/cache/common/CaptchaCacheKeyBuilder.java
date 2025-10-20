@@ -1,9 +1,9 @@
 package com.luohuo.flex.common.cache.common;
 
-
 import com.luohuo.basic.model.cache.CacheHashKey;
 import com.luohuo.basic.model.cache.CacheKey;
 import com.luohuo.basic.model.cache.CacheKeyBuilder;
+import com.luohuo.flex.common.cache.CacheKeyModular;
 import com.luohuo.flex.common.cache.CacheKeyTable;
 
 import java.time.Duration;
@@ -29,6 +29,11 @@ public class CaptchaCacheKeyBuilder implements CacheKeyBuilder {
     public static CacheKey build(String key, String template) {
         return new CaptchaCacheKeyBuilder().key(key, template);
     }
+
+	@Override
+	public String getPrefix() {
+		return CacheKeyModular.PREFIX;
+	}
 
     @Override
     public String getTable() {

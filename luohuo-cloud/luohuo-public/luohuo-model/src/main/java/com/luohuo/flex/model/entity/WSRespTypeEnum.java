@@ -31,7 +31,7 @@ public enum WSRespTypeEnum {
     MSG_RECALL("msgRecall", "消息撤回", WSMsgRecall.class),
 	DELETE_FRIEND("deleteFriend", "删除好友", null),
 
-	NOTICE("notice", "通知总线", null),
+	NOTIFY_EVENT("notifyEvent", "通知总线", null),
 	REQUEST_APPROVAL_FRIEND("requestApprovalFriend", "同意好友请求", WSFriendApproval.class),
 	NEW_APPLY("newApply", "好友申请、群聊邀请", WSNotice.class),
 	ROOM_DISSOLUTION("roomDissolution", "群解散", null),

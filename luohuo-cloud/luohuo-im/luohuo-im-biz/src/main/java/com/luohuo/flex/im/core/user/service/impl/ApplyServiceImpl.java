@@ -176,7 +176,7 @@ public class ApplyServiceImpl implements ApplyService {
 				uid,
 				applyId,
 				uid,
-				roomGroup.getName(),
+				roomGroup.getRoomId(),
 				req.getMsg()
 		);
 
@@ -188,7 +188,7 @@ public class ApplyServiceImpl implements ApplyService {
 				groupAdminId,
 				applyId,
 				uid,
-				roomGroup.getName(),
+				roomGroup.getRoomId(),
 				req.getMsg()
 			);
 		}

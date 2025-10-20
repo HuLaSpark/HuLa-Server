@@ -23,14 +23,19 @@ public class NodePushDTO implements Serializable {
      * 指纹与uid的映射
      */
 	private Map<String, Long> deviceUserMap;
+	/**
+	 * 消息唯一hashId
+	 */
+	private Long hashId;
     /**
      * 操作人uid
      */
     private Long uid;
 
-	public NodePushDTO(WsBaseResp<?> wsBaseMsg, Map<String, Long> deviceUserMap, @Nonnull Long uid) {
+	public NodePushDTO(WsBaseResp<?> wsBaseMsg, Map<String, Long> deviceUserMap, @Nonnull Long hashId, @Nonnull Long uid) {
 		this.wsBaseMsg = wsBaseMsg;
 		this.deviceUserMap = deviceUserMap;
+		this.hashId = hashId;
 		this.uid = uid;
 	}
 }

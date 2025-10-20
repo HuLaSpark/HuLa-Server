@@ -49,6 +49,7 @@ public class RefreshTokenGranter {
     public LoginResultVO refresh(String refreshToken) {
         // 1、验证
         Object str = SaTempUtil.parseToken(refreshToken);
+		SaTempUtil.deleteToken(refreshToken);
 
         JSONObject obj = JSONUtil.parseObj(str);
         Long userId = obj.getLong(JWT_KEY_USER_ID);
@@ -102,6 +103,7 @@ public class RefreshTokenGranter {
         resultVO.setToken(tokenSession.getToken());
         resultVO.setExpire(StpUtil.getTokenTimeout());
 		resultVO.setClient(device);
+		resultVO.setUid(uid);
         resultVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
         return resultVO;
     }

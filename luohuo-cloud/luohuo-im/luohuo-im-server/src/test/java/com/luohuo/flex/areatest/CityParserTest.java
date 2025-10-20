@@ -3,6 +3,19 @@ package com.luohuo.flex.areatest;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import cn.hutool.log.StaticLog;
+import com.luohuo.basic.context.ContextUtil;
+import com.luohuo.flex.im.core.chat.dao.ContactDao;
+import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
+import com.luohuo.flex.im.core.chat.dao.RoomGroupDao;
+import com.luohuo.flex.im.core.chat.service.RoomService;
+import com.luohuo.flex.im.core.chat.service.impl.ChatServiceImpl;
+import com.luohuo.flex.im.core.user.dao.UserDao;
+import com.luohuo.flex.im.core.user.dao.UserFriendDao;
+import com.luohuo.flex.im.core.user.service.impl.FriendServiceImpl;
+import com.luohuo.flex.im.domain.entity.Contact;
+import com.luohuo.flex.im.domain.entity.GroupMember;
+import com.luohuo.flex.im.domain.entity.RoomGroup;
+import com.luohuo.flex.im.domain.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +35,47 @@ public class CityParserTest {
     CityParser cityParser;
     @Resource
     SqlCityParserDecorator sqlCityParserDecorator;
+	@Resource
+	UserDao userDao;
+	@Resource
+	UserFriendDao userFriendDao;
+	@Resource
+	ChatServiceImpl chatService;
+	@Resource
+	private RoomService roomService;
+	@Resource
+	private GroupMemberDao groupMemberDao;
+	@Resource
+	private RoomGroupDao roomGroupDao;
+	@Resource
+	private ContactDao contactDao;
+	@Resource
+	private FriendServiceImpl friendService;
+	@Test
+	public void bot() {
+		ContextUtil.setUid(1L);
+		ContextUtil.setTenantId(1L);
+		// 2. 计算会话的最后一条消息id
+		List<User> list = userDao.list();
+		list.forEach(user -> {
+			List<GroupMember> groupList = groupMemberDao.getSelfGroup(user.getId());
+			groupList.forEach(groupMember -> {
+				RoomGroup roomGroup = roomGroupDao.getById(groupMember.getGroupId());
 
+				if(roomGroup!=null){
+					Contact contact = contactDao.get(user.getId(), roomGroup.getRoomId());
+					if(contact == null){
+						// 创建会话
+						chatService.createContact(user.getId(), roomGroup.getRoomId());
+					}
+				}
+			});
+		});
+	}
 
-    /**
-     * 实时爬取最新的地区数据，请执行该方法
-     */
+		/**
+		 * 实时爬取最新的地区数据，请执行该方法
+		 */
     @Test
     public void pullArea() {
 

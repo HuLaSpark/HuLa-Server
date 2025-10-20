@@ -147,6 +147,13 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 				.one();
 	}
 
+	public UserFriend getByFriend2(Long uid1, Long uid2) {
+		return lambdaQuery()
+				.eq(UserFriend::getUid, uid1)
+				.eq(UserFriend::getFriendUid, uid2)
+				.one();
+	}
+
 	/**
 	 * 当好友关系变更时清除缓存
 	 * @param roomId 房间ID

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.luohuo.basic.base.R;
 import com.luohuo.flex.entity.Init;
 import com.luohuo.flex.service.SysConfigService;
-import com.luohuo.flex.storage.StorageDriver;
+import com.luohuo.flex.flex.storage.StorageDriver;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;

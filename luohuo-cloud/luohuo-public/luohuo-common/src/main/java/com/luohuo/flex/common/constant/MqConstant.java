@@ -16,11 +16,29 @@ public interface MqConstant {
     String MSG_PUSH_OUTPUT_TOPIC = "msg_push_output_topic";
     String MSG_PUSH_OUTPUT_TOPIC_GROUP = "msg_push_output_topic_group";
 
+	/**
+	 * 前端收到消息，回执给ws服务，最终进行ack确认
+	 */
+	String MSG_PUSH_ACK_TOPIC = "msg_push_ack_topic";
+	String MSG_PUSH_ACK_TOPIC_GROUP = "msg_push_ack_topic_group";
+
+	/**
+	 * 用户已读某一个房间的消息，回执给ws服务
+	 */
+	String MSG_PUSH_READ_TOPIC = "msg_push_read_topic";
+	String MSG_PUSH_READ_TOPIC_GROUP = "msg_push_read_topic_group";
+
     /**
      * push用户
      */
     String PUSH_TOPIC = "websocket_push";
     String PUSH_GROUP = "websocket_push_group";
+
+	/**
+	 * push用户 [延迟队列]
+	 */
+	String PUSH_DELAY_TOPIC = "websocket_push_delay";
+	String PUSH_DELAY_GROUP = "websocket_push_delay_group";
 
     /**
      * (授权完成后)登录信息mq

@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum GroupRoleEnum {
-    /**
-     *
-     */
     LEADER(1, "群主"),
     MANAGER(2, "管理"),
     MEMBER(3, "普通成员"),
@@ -26,9 +23,6 @@ public enum GroupRoleEnum {
 
     private final Integer type;
     private final String desc;
-
-    public static final List<Integer> ADMIN_LIST = Arrays.asList(GroupRoleEnum.LEADER.getType(), GroupRoleEnum.MANAGER.getType());
-	public static final List<Integer> ROLE_LIST = Arrays.asList(GroupRoleEnum.LEADER.getType(), GroupRoleEnum.MANAGER.getType(), GroupRoleEnum.MEMBER.getType());
 
     private static Map<Integer, GroupRoleEnum> cache;
 
@@ -39,4 +33,15 @@ public enum GroupRoleEnum {
     public static GroupRoleEnum of(Integer type) {
         return cache.get(type);
     }
+
+	/**
+	 * 返回角色的名称
+	 * @param type 传入成员类型
+	 */
+	public static String get(Integer type) {
+		if(type > MANAGER.getType()){
+			return "";
+		}
+		return cache.get(type).getDesc();
+	}
 }

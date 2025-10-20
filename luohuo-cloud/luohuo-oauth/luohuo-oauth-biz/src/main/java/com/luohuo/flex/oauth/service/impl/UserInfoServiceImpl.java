@@ -101,7 +101,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         ArgumentAssert.equals(register.getConfirmPassword(), register.getPassword(), "密码和确认密码不一致");
         DefUser defUser = BeanUtil.toBean(register, DefUser.class);
-        defUserService.registerByEmail(defUser);
+		try {
+			defUserService.registerByEmail(defUser);
+		} catch (Exception e) {
+			if(e.getMessage().contains("Duplicate")){
+				throw new BizException("账号已存在！");
+			}
+		}
 
 		// 2. 根据注册系统构造子系统需要的user参数
 		return switch (LoginEnum.get(register.getSystemType())) {

@@ -38,7 +38,7 @@ public class NoticeServiceImpl implements NoticeService {
 	private void pushNoticeToUser(Long receiverId, Notice notice) {
 		WsBaseResp<NoticeVO> wsMsg = new WsBaseResp<>();
 		wsMsg.setData(convertToVO(notice));
-		wsMsg.setType(WSRespTypeEnum.NOTICE.getType());
+		wsMsg.setType(WSRespTypeEnum.NOTIFY_EVENT.getType());
 		pushService.sendPushMsg(wsMsg, Collections.singletonList(receiverId), notice.getSenderId());
 	}
 
@@ -49,11 +49,11 @@ public class NoticeServiceImpl implements NoticeService {
 
 	@Override
 	public void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, String content) {
-		createNotice(applyType, type, senderId, receiverId, applyId, operate, "", content);
+		createNotice(applyType, type, senderId, receiverId, applyId, operate, 0L, content);
 	}
 
 	@Override
-	public void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, String name, String content) {
+	public void createNotice(RoomTypeEnum applyType, NoticeTypeEnum type, Long senderId, Long receiverId, Long applyId, Long operate, Long roomId, String content) {
 		Notice notice = new Notice();
 		notice.setType(applyType.getType());
 		notice.setEventType(type.getType());
@@ -61,7 +61,7 @@ public class NoticeServiceImpl implements NoticeService {
 		notice.setReceiverId(receiverId);
 		notice.setApplyId(applyId);
 		notice.setOperateId(operate);
-		notice.setName(name);
+		notice.setRoomId(roomId);
 		notice.setContent(content);
 		notice.setIsRead(UNREAD.getCode());
 		notice.setStatus(NoticeStatusEnum.UNTREATED.getStatus());
@@ -102,7 +102,9 @@ public class NoticeServiceImpl implements NoticeService {
 	public PageBaseResp<NoticeVO> getUserNotices(Long uid, PageBaseReq request) {
 		IPage<Notice> noticeIPage = noticeDao.getUserNotices(uid, true, request.plusPage());
 		// 将这些通知设为已读
-		readNotices(uid, noticeIPage);
+		if(request.getClick()){
+			readNotices(uid, noticeIPage);
+		}
 		return PageBaseResp.init(noticeIPage, noticeIPage.getRecords().stream().map(notice -> convertToVO(notice)).collect(Collectors.toList()));
 	}
 
@@ -113,7 +115,7 @@ public class NoticeServiceImpl implements NoticeService {
 		vo.setSenderId(notice.getSenderId());
 		vo.setReceiverId(notice.getReceiverId());
 		vo.setOperateId(notice.getOperateId());
-		vo.setName(notice.getName());
+		vo.setRoomId(notice.getRoomId());
 		vo.setContent(notice.getContent());
 		vo.setEventType(notice.getEventType());
 		vo.setType(notice.getType());

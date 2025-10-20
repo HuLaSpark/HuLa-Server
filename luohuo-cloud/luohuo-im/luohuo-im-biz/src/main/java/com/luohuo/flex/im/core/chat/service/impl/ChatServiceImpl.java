@@ -63,7 +63,6 @@ public class ChatServiceImpl implements ChatService {
     private ContactDao contactDao;
     private RoomCache roomCache;
     private GroupMemberDao groupMemberDao;
-
     /**
      * 发送消息
      */
@@ -188,6 +187,47 @@ public class ChatServiceImpl implements ChatService {
 		return Stream.concat(groupRoomIds.stream(), friendRoomIds.stream()).distinct().collect(Collectors.toList());
 	}
 
+	/**
+	 * 更新会话的最后一条消息ID
+	 */
+	@Async
+	public void updateContactLastMsgIds(Long receiveUid, Map<Long, List<Message>> groupedMessages) {
+		// 获取每个房间的最大消息ID
+		Map<Long, Long> roomMaxMsgIds = new HashMap<>();
+		for (Map.Entry<Long, List<Message>> entry : groupedMessages.entrySet()) {
+			Long roomId = entry.getKey();
+			List<Message> roomMessages = entry.getValue();
+
+			if (CollUtil.isNotEmpty(roomMessages)) {
+				// 找到房间中最大的消息ID
+				Long maxMsgId = roomMessages.stream()
+						.map(Message::getId)
+						.max(Long::compareTo)
+						.orElse(null);
+
+				if (maxMsgId != null) {
+					roomMaxMsgIds.put(roomId, maxMsgId);
+				}
+			}
+		}
+
+		// 批量更新会话的最后一条消息ID
+		if (!roomMaxMsgIds.isEmpty()) {
+			List<Long> roomIds = new ArrayList<>(roomMaxMsgIds.keySet());
+			List<Contact> contacts = contactDao.get(receiveUid, roomIds);
+
+			for (Contact contact : contacts) {
+				Long maxMsgId = roomMaxMsgIds.get(contact.getRoomId());
+				if (maxMsgId != null && (contact.getLastMsgId() == null || maxMsgId > contact.getLastMsgId())) {
+					contact.setLastMsgId(maxMsgId);
+				}
+			}
+
+			contactDao.updateBatchById(contacts);
+			log.info("已更新{}个会话的最后消息ID", contacts.size());
+		}
+	}
+
 	@Override
 	public List<ChatMessageResp> getMsgList(MsgReq msgReq, Long receiveUid) {
 		List<Message> messages;
@@ -198,20 +238,39 @@ public class ChatServiceImpl implements ChatService {
 				return Collections.emptyList();
 			}
 
-			// 2. 计算查询的时间范围（最多15天）
-			LocalDateTime effectiveStartTime = calculateStartTime(msgReq.getLastOptTime());
-			messages = messageDao.list(new LambdaQueryWrapper<Message>().in(Message::getRoomId, roomIds)
-					.between(Message::getCreateTime, effectiveStartTime, LocalDateTime.now()));
+			// 2. 如果开启同步功能，那么把最近N天的消息拉回去, 否则获取所有未ack的消息 [要排除屏蔽的房间的消息]
+			if(msgReq.getAsync()){
+				LocalDateTime effectiveStartTime = calculateStartTime(TimeUtils.getTime(LocalDateTime.now().minusDays(14)));
+				messages = messageDao.list(new LambdaQueryWrapper<Message>().in(Message::getRoomId, roomIds)
+						.between(Message::getCreateTime, effectiveStartTime, LocalDateTime.now()));
+			} else {
+				// 3. 获取到需要拉取的消息的会话，根据会话拿到最后一个ack的消息id TODO 需要走缓存
+				List<Contact> contacts = contactDao.get(receiveUid, roomIds);
+
+				// 查询每个房间中消息id 之后的所有消息
+				LambdaQueryWrapper<Message> batchWrapper = new LambdaQueryWrapper<>();
+				for (Contact contact : contacts) {
+					Long lastMsgId = contact.getLastMsgId() != null ? contact.getLastMsgId() : 0;
+					batchWrapper.or(w -> w.eq(Message::getRoomId, contact.getRoomId()).ge(Message::getId, lastMsgId));
+				}
+				batchWrapper.orderByAsc(Message::getId);
+				messages = messageDao.list(batchWrapper);
+			}
 		} else {
 			messages = getMsgByIds(msgReq.getMsgIds());
 		}
 
 		Map<Long, List<Message>> groupedMessages = messages.stream().collect(Collectors.groupingBy(Message::getRoomId));
 
-		// 3. 转换为响应对象并返回
+		// 5. 转换为响应对象并返回
 		List<ChatMessageResp> baseMessages = new ArrayList<>();
 		for (Long roomId : groupedMessages.keySet()) {
 			baseMessages.addAll(getMsgRespBatch(groupedMessages.get(roomId), receiveUid));
+		}
+
+		// 6. 更新会话的最后一条消息ID [不是查询消息、不是同步数据; 只有是登录获取会话id差额数据的时候才更新会话最后的id]
+		if (CollUtil.isEmpty(msgReq.getMsgIds()) && !msgReq.getAsync()) {
+			updateContactLastMsgIds(receiveUid, groupedMessages);
 		}
 		return baseMessages;
 	}
@@ -267,7 +326,7 @@ public class ChatServiceImpl implements ChatService {
     public void recallMsg(Long uid, ChatMessageBaseReq request) {
         Message message = messageDao.getById(request.getMsgId());
         //校验能不能执行撤回
-		Integer roleId = checkRecall(uid, message);
+		checkRecall(uid, message);
 		recallMsgHandler.recall(uid, getRoomHowPeople(uid, message.getRoomId()), message);
     }
 
@@ -345,19 +404,22 @@ public class ChatServiceImpl implements ChatService {
 	/**
 	 * @return 返回撤回人的权限
 	 */
-	private Integer checkRecall(Long uid, Message message) {
+	private void checkRecall(Long uid, Message message) {
         AssertUtil.isNotEmpty(message, "消息有误");
         AssertUtil.notEqual(message.getType(), MessageTypeEnum.RECALL.getType(), "消息无法撤回");
 
-		GroupMember member = groupMemberCache.getMemberDetail(message.getRoomId(), uid);
-        if (member.getRoleId().equals(GroupRoleEnum.LEADER.getType()) || member.getRoleId().equals(GroupRoleEnum.MANAGER.getType())) {
-            return member.getRoleId();
-        }
+		Room room = roomCache.get(message.getRoomId());
+		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+			GroupMember member = groupMemberCache.getMemberDetail(message.getRoomId(), uid);
+			if (member.getRoleId().equals(GroupRoleEnum.LEADER.getType()) || member.getRoleId().equals(GroupRoleEnum.MANAGER.getType())) {
+				return;
+			}
+		}
+
         boolean self = Objects.equals(uid, message.getFromUid());
         AssertUtil.isTrue(self, "抱歉,您没有权限");
         long between = Duration.between(message.getCreateTime(), LocalDateTime.now()).toMinutes();
         AssertUtil.isTrue(between < 2, "超过2分钟的消息不能撤回");
-		return member.getRoleId();
     }
 
     public List<ChatMessageResp> getMsgRespBatch(List<Message> messages, Long receiveUid) {

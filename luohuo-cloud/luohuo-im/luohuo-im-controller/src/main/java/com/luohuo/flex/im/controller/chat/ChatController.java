@@ -57,12 +57,12 @@ public class ChatController {
     }
 
 	@PostMapping("/msg/list")
-	@Operation(summary ="消息列表")
+	@Operation(summary ="消息列表 [登录时消息同步用的]")
 //    @FrequencyControl(time = 120, count = 20, target = FrequencyControl.Target.IP)
 	public R<List<ChatMessageResp>> getMsgPage(@RequestBody MsgReq msgReq) {
 		List<ChatMessageResp> msgPage = chatService.getMsgList(msgReq, ContextUtil.getUid());
-//		Set<String> blackMembers = getBlackUidSet();
-//		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
+		Set<String> blackMembers = getBlackUidSet();
+		msgPage.removeIf(a -> blackMembers.contains(a.getFromUser().getUid().toString()));
 		return R.success(msgPage);
 	}
 

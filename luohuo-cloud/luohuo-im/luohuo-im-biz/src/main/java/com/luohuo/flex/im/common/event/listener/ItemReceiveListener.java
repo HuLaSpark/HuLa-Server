@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.common.event.listener;
 
 import com.luohuo.flex.im.core.user.service.cache.ItemCache;
+import com.luohuo.flex.im.core.user.service.cache.UserCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ public class ItemReceiveListener {
     private UserDao userDao;
     @Resource
     private ItemCache itemCache;
+	@Resource
+	private UserCache userCache;
     @Resource
 	private UserSummaryCache userSummaryCache;
 
@@ -47,6 +50,7 @@ public class ItemReceiveListener {
             User user = userDao.getById(userBackpack.getUid());
             if (Objects.isNull(user.getItemId())) {
                 userDao.wearingBadge(userBackpack.getUid(), userBackpack.getItemId());
+				userCache.delete(userBackpack.getUid());
 				userSummaryCache.delete(userBackpack.getUid());
             }
         }

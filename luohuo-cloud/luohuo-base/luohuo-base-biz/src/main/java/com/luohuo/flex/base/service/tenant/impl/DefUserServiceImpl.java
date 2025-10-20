@@ -216,15 +216,16 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updatePassword(DefUserPasswordUpdateVO data) {
-//        ArgumentAssert.notEmpty(data.getOldPassword(), "请输入旧密码");
+        ArgumentAssert.notEmpty(data.getOldPassword(), "请输入旧密码");
         DefUser user = superManager.getUserByEmail(2, data.getEmail());
         ArgumentAssert.notNull(user, "用户不存在");
-//        ArgumentAssert.equals(user.getId(), ContextUtil.getUid(), "只能修改自己的密码");
+        ArgumentAssert.equals(user.getId(), ContextUtil.getUid(), "只能修改自己的密码");
 //        String oldPassword = SecureUtil.sha256(data.getOldPassword() + user.getSalt());
 //        ArgumentAssert.equals(user.getPassword(), oldPassword, "旧密码错误");
         CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(data.getEmail(), data.getKey());
         CacheResult<String> code = cacheOps.get(cacheKey);
         ArgumentAssert.equals(code.getValue(), data.getCode(), "验证码不正确");
+		cacheOps.del(cacheKey);
 
         return updateUserPassword(user.getId(), data.getPassword(), user.getSalt());
     }

@@ -22,7 +22,7 @@ public class ProjectUtilsTest {
         vo.setParent("com.luohuo.flex");
         vo.setGroupId("com.luohuo.flex");
         vo.setUtilParent("com.luohuo.basic");
-        vo.setVersion("2.6.15");
+        vo.setVersion("3.0.0");
         vo.setDescription("测试服务");
         vo.setServerPort(8080);
         ProjectUtils.generator(vo, new DatabaseProperties());

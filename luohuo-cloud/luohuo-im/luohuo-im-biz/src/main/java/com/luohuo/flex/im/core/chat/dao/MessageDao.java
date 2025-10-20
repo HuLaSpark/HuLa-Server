@@ -82,15 +82,6 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
 		return this.update(wrapper);
     }
 
-	@TenantIgnore
-	public Integer getUnReadCount(Long roomId, LocalDateTime readTime, Long uid) {
-		return Math.toIntExact(lambdaQuery()
-				.eq(Message::getRoomId, roomId)
-				.gt(Objects.nonNull(readTime), Message::getCreateTime, readTime)
-				.ne(Message::getFromUid, uid)
-				.count());
-	}
-
 	public Map<Long, Integer> batchGetUnReadCount(Collection<Contact> contactList) {
 		return baseMapper.batchGetUnReadCount(contactList);
 	}

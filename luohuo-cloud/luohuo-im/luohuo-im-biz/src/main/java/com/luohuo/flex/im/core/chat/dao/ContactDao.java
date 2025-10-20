@@ -38,7 +38,14 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
                 .one();
     }
 
-    public Integer getReadCount(Message message) {
+	public List<Contact> get(Long uid, List<Long> roomIdList) {
+		return lambdaQuery()
+				.eq(Contact::getUid, uid)
+				.in(Contact::getRoomId, roomIdList)
+				.list();
+	}
+
+	public Integer getReadCount(Message message) {
         return Math.toIntExact(lambdaQuery()
 				.eq(Contact::getHide, false)
                 .eq(Contact::getRoomId, message.getRoomId())
@@ -95,6 +102,11 @@ public class ContactDao extends ServiceImpl<ContactMapper, Contact> {
     public void refreshOrCreateActiveTime(Long roomId, List<Long> memberUidList, Long msgId, LocalDateTime activeTime) {
         baseMapper.refreshOrCreateActiveTime(roomId, memberUidList, msgId, activeTime);
     }
+
+	@TenantIgnore
+	public void refreshOrCreateActive(Object roomId, List<Long> memberUidList, Object msgId, Object activeTime) {
+		baseMapper.refreshOrCreateActive(roomId, memberUidList, msgId, activeTime);
+	}
 
 	public void refreshOrCreate(Long roomId, Long uid) {
 		baseMapper.refreshOrCreate(roomId, uid);

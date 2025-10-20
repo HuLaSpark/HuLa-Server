@@ -139,7 +139,8 @@ public class PushService {
 	 */
 	private void sendToNodeViaMQ(String nodeId, WsBaseResp<?> msg, Map<String, Long> deviceUserMap, Long cuid) {
 		try {
-			rocketMQTemplate.send(MqConstant.PUSH_TOPIC + nodeId, MessageBuilder.withPayload(new NodePushDTO(msg, deviceUserMap, cuid)).build());
+			// TODO 这里要解决一下唯一标识的问题
+			rocketMQTemplate.send(MqConstant.PUSH_TOPIC + nodeId, MessageBuilder.withPayload(new NodePushDTO(msg, deviceUserMap, cuid, cuid)).build());
 		} catch (Exception e) {
 			log.error("MQ转发失败: node={}, devices={}", nodeId, deviceUserMap.keySet(), e);
 		}

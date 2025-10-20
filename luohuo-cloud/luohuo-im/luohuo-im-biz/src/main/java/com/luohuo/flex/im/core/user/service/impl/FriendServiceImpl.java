@@ -6,10 +6,10 @@ import com.google.common.collect.Lists;
 import com.luohuo.basic.cache.redis.BaseRedis;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.model.cache.CacheKey;
+import com.luohuo.flex.common.OnlineService;
 import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
 import com.luohuo.flex.common.constant.DefValConstants;
-import com.luohuo.flex.im.api.PresenceApi;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
@@ -71,7 +71,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 	private BaseRedis baseRedis;
 	private final PushService pushService;
 	private CachePlusOps cachePlusOps;
-	private PresenceApi presenceApi;
+	private OnlineService onlineService;
 
 	/**
 	 * 注入好友关系
@@ -205,6 +205,9 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
             log.info("没有好友关系：{},{}", uid, friendUid);
             return;
         }
+		if (DefValConstants.DEF_BOT_ID.equals(friendUid)) {
+			return;
+		}
         List<Long> friendRecordIds = userFriends.stream().map(UserFriend::getId).collect(Collectors.toList());
         userFriendDao.removeByIds(friendRecordIds);
         // 禁用房间
@@ -226,7 +229,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
         }
 
 		List<Long> friendUids = friendPage.getList().stream().map(UserFriend::getFriendUid).collect(Collectors.toList());
-		Set<Long> onlineList = presenceApi.getOnlineUsersList(friendUids).getData();
+		Set<Long> onlineList = onlineService.getOnlineUsersList(friendUids);
 		return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), onlineList), 0L);
     }
 

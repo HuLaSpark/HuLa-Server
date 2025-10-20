@@ -38,9 +38,6 @@ case $MODULER in
   "luohuo-base-server")
     JAVA_OPT="-server -Xms1024M -Xmx1024M -Xss256k -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M -XX:+UseG1GC"
     ;;
-  "luohuo-presence-server")
-   JAVA_OPT="-server -Xms1024M -Xmx1024M -Xss256k -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M -XX:+UseG1GC"
-    ;;
   "luohuo-ws-server")
      JAVA_OPT="-server -Xms1024M -Xmx1024M -Xss256k -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M -XX:+UseG1GC"
       ;;
