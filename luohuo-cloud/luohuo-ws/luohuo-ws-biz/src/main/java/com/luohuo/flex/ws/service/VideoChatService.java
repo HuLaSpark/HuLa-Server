@@ -169,7 +169,7 @@ public class VideoChatService {
 	 * @param roomId 房间id
 	 */
 	public List<Long> getOnlineUidList(Long roomId) {
-		return onlineService.getGroupOnlineMembers(roomId);
+		return onlineService.getGroupMembers(roomId);
 	}
 
 	/**

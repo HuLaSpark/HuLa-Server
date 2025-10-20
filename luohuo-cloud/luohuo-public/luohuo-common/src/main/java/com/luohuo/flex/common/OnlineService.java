@@ -110,16 +110,24 @@ public class OnlineService {
 	 * @return 返回在线成员的uid
 	 */
 	public List<Long> getGroupOnlineMembers(@PathVariable @NotNull Long roomId) {
-		// 1. 构建缓存键
-		CacheKey cacheKey = PresenceCacheKeyBuilder.onlineGroupMembersKey(roomId);
+		return getGroupMembers(roomId, true);
+	}
 
-		// 2. 获取总在线人数
+	public List<Long> getGroupMembers(@RequestBody Long roomId) {
+		return getGroupMembers(roomId, false);
+	}
+
+	public List<Long> getGroupMembers(@PathVariable @NotNull Long roomId, boolean onlineOnly) {
+		// 1. 根据查询类型构建缓存键
+		CacheKey cacheKey = onlineOnly ? PresenceCacheKeyBuilder.onlineGroupMembersKey(roomId) : PresenceCacheKeyBuilder.groupMembersKey(roomId);
+
+		// 2. 获取集合大小
 		Long total = cachePlusOps.sSize(cacheKey.getKey());
 		if (total == null || total == 0) {
 			return new ArrayList<>();
 		}
 
-		// 4. 查询在线成员
+		// 3. 查询成员
 		return cachePlusOps.sMembers(cacheKey).stream().map(obj -> Long.parseLong(obj.toString())).collect(Collectors.toList());
 	}
 }
