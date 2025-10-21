@@ -77,7 +77,7 @@ public class CaptchaController {
     })
     @Operation(summary = "发送邮箱验证码", description = "发送邮箱验证码")
     @PostMapping(value = "/sendEmailCode")
-    public R<Boolean> sendEmailCode(@RequestBody BindEmailReq bindEmailReq) {
+    public R<Long> sendEmailCode(@RequestBody BindEmailReq bindEmailReq) {
         return captchaService.sendEmailCode(bindEmailReq);
     }
 

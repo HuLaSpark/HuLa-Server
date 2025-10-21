@@ -216,7 +216,7 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updatePassword(DefUserPasswordUpdateVO data) {
-        ArgumentAssert.notEmpty(data.getOldPassword(), "请输入旧密码");
+//        ArgumentAssert.notEmpty(data.getOldPassword(), "请输入旧密码");
         DefUser user = superManager.getUserByEmail(2, data.getEmail());
         ArgumentAssert.notNull(user, "用户不存在");
         ArgumentAssert.equals(user.getId(), ContextUtil.getUid(), "只能修改自己的密码");

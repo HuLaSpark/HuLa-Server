@@ -19,8 +19,7 @@ import com.luohuo.flex.im.domain.vo.request.ChatMessageMemberReq;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
 import com.luohuo.flex.im.domain.vo.request.RoomInfoReq;
 import com.luohuo.flex.im.domain.vo.request.RoomMyInfoReq;
-import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
-import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
+import com.luohuo.flex.im.domain.vo.request.admin.AdminSetReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberAddReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberDelReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
@@ -128,7 +127,7 @@ public class RoomController {
 
     @PutMapping("/group/admin")
     @Operation(summary ="添加管理员")
-    public R<Boolean> addAdmin(@Valid @RequestBody AdminAddReq request) {
+    public R<Boolean> addAdmin(@Valid @RequestBody AdminSetReq request) {
         Long uid = ContextUtil.getUid();
 		roomService.addAdmin(uid, request);
         return R.success();
@@ -136,7 +135,7 @@ public class RoomController {
 
     @DeleteMapping("/group/admin")
     @Operation(summary ="撤销管理员")
-    public R<Boolean> revokeAdmin(@Valid @RequestBody AdminRevokeReq request) {
+    public R<Boolean> revokeAdmin(@Valid @RequestBody AdminSetReq request) {
         Long uid = ContextUtil.getUid();
 		roomService.revokeAdmin(uid, request);
         return R.success();

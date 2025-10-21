@@ -1,8 +1,7 @@
 package com.luohuo.flex.im.core.chat.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
-import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
+import com.luohuo.flex.im.domain.vo.request.admin.AdminSetReq;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
 import jakarta.validation.Valid;
@@ -189,12 +188,12 @@ public interface RoomAppService {
 	/**
 	 * 添加管理员
 	 */
-	void addAdmin(Long uid, @Valid AdminAddReq request);
+	void addAdmin(Long uid, @Valid AdminSetReq request);
 
 	/**
 	 * 移除管理员
 	 */
-	void revokeAdmin(Long uid, @Valid AdminRevokeReq request);
+	void revokeAdmin(Long uid, @Valid AdminSetReq request);
 
 	/**
 	 * 创建系统好友

@@ -28,10 +28,10 @@ import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.*;
 import com.luohuo.flex.im.domain.enums.*;
 import com.luohuo.flex.im.domain.vo.request.ChatMessageReq;
-import com.luohuo.flex.im.domain.vo.request.admin.AdminAddReq;
-import com.luohuo.flex.im.domain.vo.request.admin.AdminRevokeReq;
+import com.luohuo.flex.im.domain.vo.request.admin.AdminSetReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
 import com.luohuo.flex.im.domain.entity.msg.TextMsgReq;
+import com.luohuo.flex.model.entity.ws.AdminChangeDTO;
 import com.luohuo.flex.model.enums.ChatActiveStatusEnum;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
 import jakarta.validation.Valid;
@@ -110,7 +110,13 @@ import java.util.stream.Collectors;
 
 import static com.luohuo.flex.im.core.chat.constant.GroupConst.MAX_MANAGE_COUNT;
 import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.UNREAD;
-
+/**
+ * 聊天室应用服务实现类
+ * - 聊天室创建、管理和维护
+ * - 群组成员管理（添加、删除、管理员设置）
+ * - 聊天消息处理与转发
+ * - 用户会话管理、在线状态管理、公告发布与管理
+ */
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -307,29 +313,24 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	@Override
 	@RedissonLock(prefixKey = "addAdmin:", key = "#request.roomId")
 	@Transactional(rollbackFor = Exception.class)
-	public void addAdmin(Long uid, AdminAddReq request) {
+	public void addAdmin(Long uid, AdminSetReq request) {
 		// 1. 判断群聊是否存在
-		RoomGroup roomGroup = roomGroupCache.getByRoomId(request.getRoomId());
-		AssertUtil.isNotEmpty(roomGroup, GroupErrorEnum.GROUP_NOT_EXIST);
+		RoomGroup roomGroup = verifyGet(uid, request);
 
-		// 2. 判断该用户是否是群主
-		Boolean isLord = groupMemberDao.isLord(roomGroup.getId(), uid);
-		AssertUtil.isTrue(isLord, GroupErrorEnum.NOT_ALLOWED_OPERATION);
-
-		// 3. 判断群成员是否在群中
-		Boolean isGroupShip = groupMemberDao.isGroupShip(roomGroup.getRoomId(), request.getUidList());
-		AssertUtil.isTrue(isGroupShip, GroupErrorEnum.USER_NOT_IN_GROUP);
-
-		// 4. 判断管理员数量是否达到上限
-		// 4.1 查询现有管理员数量
+		// 2. 判断管理员数量是否达到上限
+		// 2.1 查询现有管理员数量
 		List<Long> manageUidList = groupMemberDao.getManageUidList(roomGroup.getId());
-		// 4.2 去重
+		// 2.2 去重
 		HashSet<Long> manageUidSet = new HashSet<>(manageUidList);
 		manageUidSet.addAll(request.getUidList());
 		AssertUtil.isFalse(manageUidSet.size() > MAX_MANAGE_COUNT, GroupErrorEnum.MANAGE_COUNT_EXCEED);
 
-		// 5. 增加管理员
+		// 3. 增加管理员
 		groupMemberDao.addAdmin(roomGroup.getId(), request.getUidList());
+
+		// 5. 发送给所有群成员
+		List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+		pushService.sendPushMsg(MessageAdapter.buildSetAdminMessage(new AdminChangeDTO(roomGroup.getRoomId(), request.getUidList(), true)), memberUidList, uid);
 
 		// 每个被邀请的人都要收到邀请进群的消息
 		setAdminNotice(NoticeTypeEnum.GROUP_SET_ADMIN, uid, request.getUidList(), manageUidList, roomGroup.getRoomId());
@@ -358,7 +359,8 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 //					uid,
 //					uuid,
 //					id,
-//					roomId
+//					roomId,
+//					""
 //			);
 		});
 	}
@@ -372,7 +374,22 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	@Override
 	@RedissonLock(prefixKey = "revokeAdmin:", key = "#request.roomId")
 	@Transactional(rollbackFor = Exception.class)
-	public void revokeAdmin(Long uid, AdminRevokeReq request) {
+	public void revokeAdmin(Long uid, AdminSetReq request) {
+		// 1. 校验
+		RoomGroup roomGroup = verifyGet(uid, request);
+
+		// 2. 撤销管理员
+		groupMemberDao.revokeAdmin(roomGroup.getId(), request.getUidList());
+		List<Long> memberUidList = groupMemberCache.getMemberUidList(roomGroup.getRoomId());
+		pushService.sendPushMsg(MessageAdapter.buildSetAdminMessage(new AdminChangeDTO(roomGroup.getRoomId(), request.getUidList(), false)), memberUidList, uid);
+
+		setAdminNotice(NoticeTypeEnum.GROUP_RECALL_ADMIN, uid, request.getUidList(), new ArrayList<>(), roomGroup.getRoomId());
+	}
+
+	/**
+	 * 校验人员在群里的权限
+	 */
+	private RoomGroup verifyGet(Long uid, AdminSetReq request) {
 		// 1. 判断群聊是否存在
 		RoomGroup roomGroup = roomGroupCache.getByRoomId(request.getRoomId());
 		AssertUtil.isNotEmpty(roomGroup, GroupErrorEnum.GROUP_NOT_EXIST);
@@ -384,10 +401,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 		// 3. 判断群成员是否在群中
 		Boolean isGroupShip = groupMemberDao.isGroupShip(roomGroup.getRoomId(), request.getUidList());
 		AssertUtil.isTrue(isGroupShip, GroupErrorEnum.USER_NOT_IN_GROUP);
-
-		// 4. 撤销管理员
-		groupMemberDao.revokeAdmin(roomGroup.getId(), request.getUidList());
-		setAdminNotice(NoticeTypeEnum.GROUP_RECALL_ADMIN, uid, request.getUidList(), new ArrayList<>(), roomGroup.getRoomId());
+		return roomGroup;
 	}
 
 	/**

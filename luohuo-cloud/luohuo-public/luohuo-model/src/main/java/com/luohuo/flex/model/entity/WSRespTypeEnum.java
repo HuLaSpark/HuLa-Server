@@ -35,6 +35,7 @@ public enum WSRespTypeEnum {
 	REQUEST_APPROVAL_FRIEND("requestApprovalFriend", "同意好友请求", WSFriendApproval.class),
 	NEW_APPLY("newApply", "好友申请、群聊邀请", WSNotice.class),
 	ROOM_DISSOLUTION("roomDissolution", "群解散", null),
+	GROUP_SET_ADMIN("groupSetAdmin", "设置管理员", AdminChangeDTO.class),
 
 	ROOM_GROUP_NOTICE_READ_MSG("roomGroupNoticeReadMsg", "群公告已读", null),
 	FEED_SEND_MSG("feedSendMsg", "朋友圈发布", null),
