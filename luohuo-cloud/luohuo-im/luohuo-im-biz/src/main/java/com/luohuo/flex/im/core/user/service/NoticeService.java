@@ -8,6 +8,9 @@ import com.luohuo.flex.im.domain.vo.res.NoticeVO;
 import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.model.entity.ws.WSNotice;
 
+/**
+ * 系统通知服务，群通知、好友通知
+ */
 public interface NoticeService {
 
 	Notice getByApplyId(Long uid, Long applyId);

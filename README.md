@@ -131,8 +131,8 @@ HuLa-Server 是一款基于 SpringCloud、SpringBoot3、Netty、MyBatis-Plus 和
 8. **目标WS节点消费分发过来的主题消息**
 9. **查找本地会话映射表**
 10. **推送消息到具体客户端**
-11. **客户端返回ACK确认** ![进行中](https://img.shields.io/badge/🐣-进行中-ee9f20?style=flat&labelColor=fef7e6&color=ee9f20)
-12. **更新消息状态为已送达** ![进行中](https://img.shields.io/badge/🐣-进行中-ee9f20?style=flat&labelColor=fef7e6&color=ee9f20)
+11. **客户端返回ACK确认** 
+12. **更新消息状态为已送达** 
 ![messageFlow.png](preview/messageFlow.png)
 
 ## 🌐 性能对比 （WS 服务）

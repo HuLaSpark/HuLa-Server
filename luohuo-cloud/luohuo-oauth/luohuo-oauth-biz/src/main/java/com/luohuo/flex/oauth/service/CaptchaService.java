@@ -56,6 +56,6 @@ public interface CaptchaService {
      * @date 2022/7/26 8:05 PM
      * @create [2022/7/26 8:05 PM ] [tangyh] [初始创建]
      */
-    R<Boolean> sendEmailCode(BindEmailReq bindEmailReq);
+    R<Long> sendEmailCode(BindEmailReq bindEmailReq);
 
 }

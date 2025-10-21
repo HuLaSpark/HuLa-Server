@@ -12,7 +12,7 @@ import java.util.List;
  * @author nyh
  */
 @Data
-public class AdminAddReq {
+public class AdminSetReq {
     @NotNull
     @Schema(description ="房间号")
     private Long roomId;

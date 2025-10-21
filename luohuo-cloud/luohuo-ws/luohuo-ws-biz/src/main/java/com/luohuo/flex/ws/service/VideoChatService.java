@@ -146,7 +146,7 @@ public class VideoChatService {
 	public void forwardSignal(Long senderUid, Long roomId, String signal, String signalType) {
 		// 1. 获取房间内其他成员
 		try {
-			List<Long> uidList = getOnlineUidList(roomId);
+			List<Long> uidList = getUserList(roomId);
 			uidList.remove(senderUid);
 
 			if (uidList.isEmpty()) return;
@@ -168,7 +168,7 @@ public class VideoChatService {
 	 * 获取房间内所有人员id
 	 * @param roomId 房间id
 	 */
-	public List<Long> getOnlineUidList(Long roomId) {
+	public List<Long> getUserList(Long roomId) {
 		return onlineService.getGroupMembers(roomId);
 	}
 
@@ -276,8 +276,8 @@ public class VideoChatService {
 	 * @param data 通知数据
 	 */
 	private <T> List<Long> notifyRoomMembers(Long roomId, Long excludeUid, WSRespTypeEnum respType, T data) {
-		// 1. 获取房间内在线成员
-		List<Long> uidList = getOnlineUidList(roomId);
+		// 1. 获取房间内所有成员
+		List<Long> uidList = getUserList(roomId);
 		if (uidList.isEmpty()) return new ArrayList<>();
 
 		// 2. 排除当前用户

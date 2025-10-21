@@ -3,6 +3,7 @@ package com.luohuo.flex.oauth.service.impl;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.model.vo.query.BindEmailReq;
 import com.luohuo.flex.service.SysConfigService;
@@ -20,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.cache.redis2.CacheResult;
-import com.luohuo.basic.cache.repository.CacheOps;
 import com.luohuo.basic.model.cache.CacheKey;
 import com.luohuo.basic.utils.ArgumentAssert;
 import com.luohuo.flex.base.service.tenant.DefUserService;
@@ -49,7 +49,7 @@ import com.luohuo.flex.msg.facade.MsgFacade;
 public class CaptchaServiceImpl implements CaptchaService {
 
 	private final SysConfigService configService;
-    private final CacheOps cacheOps;
+    private final CachePlusOps cachePlusOps;
     private final CaptchaProperties captchaProperties;
     private final MsgFacade msgFacade;
     private final DefUserService defUserService;
@@ -86,7 +86,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         Captcha captcha = createCaptcha();
 
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, CaptchaTokenGranter.GRANT_TYPE);
-        cacheOps.set(cacheKey, captcha.text().toLowerCase());
+        cachePlusOps.set(cacheKey, captcha.text().toLowerCase());
 
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("uuid", key);
@@ -114,7 +114,7 @@ public class CaptchaServiceImpl implements CaptchaService {
         String code = RandomUtil.randomNumbers(4);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(mobile, templateCode);
         // cacheKey.setExpire(Duration.ofMinutes(15));  // 可以修改有效期
-        cacheOps.set(cacheKey, code);
+        cachePlusOps.set(cacheKey, code);
 
         log.info("短信验证码 cacheKey={}, code={}", cacheKey, code);
 
@@ -127,7 +127,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     }
 
     @Override
-    public R<Boolean> sendEmailCode(BindEmailReq bindEmailReq) {
+    public R<Long> sendEmailCode(BindEmailReq bindEmailReq) {
         if (MsgTemplateCodeEnum.REGISTER_EMAIL.eq(bindEmailReq.getTemplateCode())) {
             // 查user表判断重复
             boolean flag = defUserService.checkEmail(bindEmailReq.getEmail(), null);
@@ -139,14 +139,16 @@ public class CaptchaServiceImpl implements CaptchaService {
         }
 
 //		CacheKey imgKey = CaptchaCacheKeyBuilder.build(bindEmailReq.getClientId(), CaptchaTokenGranter.GRANT_TYPE);
-//		CacheResult<String> result = cacheOps.get(imgKey);
+//		CacheResult<String> result = cachePlusOps.get(imgKey);
 //		ArgumentAssert.isFalse(!bindEmailReq.getCode().equals(result.getValue()), "图片验证码错误");
 
 		String code = RandomUtil.randomNumbers(6);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(bindEmailReq.getEmail(), bindEmailReq.getTemplateCode());
-		ArgumentAssert.isFalse(cacheOps.exists(cacheKey), "请勿重复发送验证码");
+		if(cachePlusOps.exists(cacheKey)){
+			return R.success(cachePlusOps.ttl(cacheKey));
+		}
 
-        cacheOps.set(cacheKey, code);
+        cachePlusOps.set(cacheKey, code);
         log.info("邮件验证码 cacheKey={}, code={}", cacheKey, code);
 
         // 在「运营平台」-「消息模板」配置一个「模板标识」为 templateCode， 且「模板内容」中需要有 code 占位符
@@ -159,7 +161,8 @@ public class CaptchaServiceImpl implements CaptchaService {
 		msgSendVO.addParam("currentTime", TimeUtils.nowToStr());
 
         msgSendVO.addRecipient(bindEmailReq.getEmail());
-        return R.success(msgFacade.sendByTemplate(msgSendVO));
+		msgFacade.sendByTemplate(msgSendVO);
+		return R.success(cachePlusOps.ttl(cacheKey));
     }
 
     @Override
@@ -168,14 +171,14 @@ public class CaptchaServiceImpl implements CaptchaService {
             return R.fail(CAPTCHA_ERROR.build("请输入验证码"));
         }
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(key, templateCode);
-        CacheResult<String> code = cacheOps.get(cacheKey);
+        CacheResult<String> code = cachePlusOps.get(cacheKey);
         if (StrUtil.isEmpty(code.getValue())) {
             return R.fail(CAPTCHA_ERROR.build("验证码已过期"));
         }
         if (!StrUtil.equalsIgnoreCase(value, code.getValue())) {
             return R.fail(CAPTCHA_ERROR.build("验证码不正确"));
         }
-        cacheOps.del(cacheKey);
+        cachePlusOps.del(cacheKey);
         return R.success(true);
     }
 

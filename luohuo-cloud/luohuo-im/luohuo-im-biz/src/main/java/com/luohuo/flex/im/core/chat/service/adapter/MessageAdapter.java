@@ -11,6 +11,7 @@ import com.luohuo.flex.im.domain.vo.response.msg.BodyDTO;
 import com.luohuo.flex.im.domain.vo.response.msg.VideoCallMsgDTO;
 import com.luohuo.flex.im.domain.vo.response.msg.MergeMsgDTO;
 import com.luohuo.flex.im.domain.vo.response.msg.NoticeMsgDTO;
+import com.luohuo.flex.model.entity.ws.AdminChangeDTO;
 import com.luohuo.flex.model.entity.ws.WSNotice;
 import com.luohuo.flex.model.enums.MessageMarkTypeEnum;
 import com.luohuo.flex.im.domain.enums.MessageStatusEnum;
@@ -194,6 +195,16 @@ public class MessageAdapter {
 		WsBaseResp<WSNotice> wsBaseResp = new WsBaseResp<>();
 		wsBaseResp.setType(WSRespTypeEnum.NEW_APPLY.getType());
 		wsBaseResp.setData(resp);
+		return wsBaseResp;
+	}
+
+	/**
+	 * 构建设置管理员
+	 */
+	public static WsBaseResp<AdminChangeDTO> buildSetAdminMessage(AdminChangeDTO adminChangeDTO) {
+		WsBaseResp<AdminChangeDTO> wsBaseResp = new WsBaseResp<>();
+		wsBaseResp.setType(WSRespTypeEnum.GROUP_SET_ADMIN.getType());
+		wsBaseResp.setData(adminChangeDTO);
 		return wsBaseResp;
 	}
 
