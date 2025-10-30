@@ -2,6 +2,13 @@ package com.luohuo.flex.ai.config;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.luohuo.basic.jackson.LuohuoJacksonModule;
+import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.flex.ai.core.AiModelFactory;
 import com.luohuo.flex.ai.core.AiModelFactoryImpl;
 import com.luohuo.flex.ai.core.model.BaiChuanChatModel;
@@ -26,10 +33,22 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.tokenizer.JTokkitTokenCountEstimator;
 import org.springframework.ai.tokenizer.TokenCountEstimator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import static com.luohuo.basic.utils.DateUtils.DEFAULT_DATE_TIME_FORMAT;
 
 @Configuration
 @EnableConfigurationProperties({HulaAiProperties.class,
@@ -242,4 +261,47 @@ public class AiAutoConfiguration {
     private static ToolCallingManager getToolCallingManager() {
         return SpringUtil.getBean(ToolCallingManager.class);
     }
+
+	/**
+	 * Spring 工具类
+	 *
+	 * @param applicationContext 上下文
+	 */
+	@Bean
+	public SpringUtils getSpringUtils(ApplicationContext applicationContext) {
+		SpringUtils instance = SpringUtils.getInstance();
+		SpringUtils.setApplicationContext(applicationContext);
+		return instance;
+	}
+
+	@Bean
+	@Primary
+	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnMissingBean
+	public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
+		ObjectMapper objectMapper = builder.createXmlMapper(false).build();
+		objectMapper
+				.setLocale(Locale.CHINA)
+				//去掉默认的时间戳格式
+				.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+				// 时区
+				.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()))
+				//Date参数日期格式
+				.setDateFormat(new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT, Locale.CHINA))
+
+				//该特性决定parser是否允许JSON字符串包含非引号控制字符（值小于32的ASCII字符，包含制表符和换行符）。 如果该属性关闭，则如果遇到这些字符，则会抛出异常。JSON标准说明书要求所有控制符必须使用引号，因此这是一个非标准的特性
+				.configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(), true)
+				// 忽略不能转义的字符
+				.configure(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature(), true)
+				//在使用spring boot + jpa/hibernate，如果实体字段上加有FetchType.LAZY，并使用jackson序列化为json串时，会遇到SerializationFeature.FAIL_ON_EMPTY_BEANS异常
+				.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+				//忽略未知字段
+				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+				//单引号处理
+				.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		// 注册自定义模块
+		objectMapper.registerModule(new LuohuoJacksonModule()).findAndRegisterModules();
+
+		return objectMapper;
+	}
 }

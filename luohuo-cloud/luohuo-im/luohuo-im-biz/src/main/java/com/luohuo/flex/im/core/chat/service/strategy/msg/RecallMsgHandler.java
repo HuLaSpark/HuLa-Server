@@ -4,10 +4,13 @@ import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.im.core.chat.service.cache.GroupMemberCache;
+import com.luohuo.flex.im.core.chat.service.cache.RoomCache;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.GroupMember;
+import com.luohuo.flex.im.domain.entity.Room;
 import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
+import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.vo.result.tenant.MsgRecallVo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -31,6 +34,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class RecallMsgHandler extends AbstractMsgHandler<Object> {
 
+	private RoomCache roomCache;
 	private MessageDao messageDao;
 	private UserSummaryCache userSummaryCache;
 	private GroupMemberCache groupMemberCache;
@@ -52,8 +56,14 @@ public class RecallMsgHandler extends AbstractMsgHandler<Object> {
 		Long senderUid = msg.getFromUid();
 		Long currentUserUid = ContextUtil.getUid();
 
+		String roleName = "";
+		Room room = roomCache.get(msg.getRoomId());
+		if(room.getType().equals(RoomTypeEnum.GROUP.getType())){
+			GroupMember recallerMember = groupMemberCache.getMemberDetail(msg.getRoomId(), recallerUid);
+			roleName = GroupRoleEnum.get(recallerMember.getRoleId());
+		}
+
 		// 获取撤回者的群成员信息和用户信息
-		GroupMember recallerMember = groupMemberCache.getMemberDetail(msg.getRoomId(), recallerUid);
 		SummeryInfoDTO recallerUserInfo = userSummaryCache.get(recallerUid);
 
 		// 获取被撤回消息发送者的用户信息（用于显示成员名称）
@@ -63,7 +73,7 @@ public class RecallMsgHandler extends AbstractMsgHandler<Object> {
 		boolean isRecallerCurrentUser = Objects.equals(recallerUid, currentUserUid);
 		boolean isSenderCurrentUser = Objects.equals(senderUid, currentUserUid);
 
-		String roleName = GroupRoleEnum.get(recallerMember.getRoleId());
+
 		String messageText;
 
 		if (isRecallerCurrentUser) {

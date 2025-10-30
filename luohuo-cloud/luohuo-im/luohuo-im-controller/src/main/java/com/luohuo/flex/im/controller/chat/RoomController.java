@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luohuo.flex.im.domain.vo.req.IdReqVO;
 import com.luohuo.flex.im.domain.vo.res.IdRespVO;
+import com.luohuo.flex.im.domain.vo.response.GroupResp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -47,12 +48,19 @@ public class RoomController {
     @Resource
     private RoomAppService roomService;
 
-    @GetMapping("/group")
+    @GetMapping("/group/detail")
     @Operation(summary ="群组详情")
     public R<MemberResp> groupDetail(@Valid IdReqVO request) {
         Long uid = ContextUtil.getUid();
         return R.success(roomService.getGroupDetail(uid, request.getId()));
     }
+
+	@GetMapping("/group/info")
+	@Operation(summary ="群组基础信息[没加群的人也可以查]")
+	public R<GroupResp> groupInfo(@Valid IdReqVO request) {
+		Long uid = ContextUtil.getUid();
+		return R.success(roomService.getGroupInfo(uid, request.getId()));
+	}
 
 	@GetMapping("search")
 	@Operation(summary = "查找群聊")

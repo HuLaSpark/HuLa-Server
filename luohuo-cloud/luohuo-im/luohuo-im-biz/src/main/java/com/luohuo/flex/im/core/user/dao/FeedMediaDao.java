@@ -18,13 +18,13 @@ public class FeedMediaDao extends ServiceImpl<FeedMediaMapper, FeedMedia> {
 	/**
 	 * 批量添加朋友圈的资源的数据
 	 * @param feedId 朋友圈id
-	 * @param urls 素材地址
+	 * @param images 素材地址
 	 * @param type 0 纯文字 1 图片 2 视频
 	 */
-	public List<FeedMedia> batchSaveMedia(Long feedId, List<String> urls, Integer type){
+	public List<FeedMedia> batchSaveMedia(Long feedId, List<String> images, Integer type){
 		List<FeedMedia> feedMediaList = new ArrayList<>();
-		for (int i = 0; i < urls.size(); i++) {
-			String url = urls.get(i);
+		for (int i = 0; i < images.size(); i++) {
+			String url = images.get(i);
 			FeedMedia feedMedia = new FeedMedia();
 			feedMedia.setSort(i);
 			feedMedia.setFeedId(feedId);

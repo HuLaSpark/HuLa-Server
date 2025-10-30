@@ -131,9 +131,13 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public AnnouncementsResp getAnnouncement(Long id) {
 		AnnouncementsResp resp = new AnnouncementsResp();
-		BeanUtils.copyProperties(announcementsDao.getById(id), resp);
-		User user = userCache.get(resp.getUid());
-		resp.setUName(user.getName());
+		Announcements announcements = announcementsDao.getById(id);
+		resp.setUid(announcements.getUid());
+		resp.setRoomId(announcements.getRoomId());
+		resp.setTop(announcements.getTop());
+		resp.setContent(announcements.getContent());
+		resp.setCreateTime(announcements.getCreateTime());
+		resp.setId(announcements.getId());
 		return resp;
 	}
 

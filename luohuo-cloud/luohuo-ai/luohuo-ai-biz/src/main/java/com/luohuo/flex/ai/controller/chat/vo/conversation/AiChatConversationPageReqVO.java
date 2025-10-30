@@ -14,7 +14,7 @@ import static com.luohuo.basic.utils.TimeUtils.DEFAULT_YEAR_FORMAT;
 public class AiChatConversationPageReqVO extends PageParam {
 
     @Schema(description = "用户编号", example = "1024")
-    private Long userId;
+	private Long uid;
 
     @Schema(description = "对话标题", example = "你好")
     private String title;

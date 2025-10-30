@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 移除群成员
@@ -23,5 +24,5 @@ public class MemberDelReq {
 
     @NotNull
     @Schema(description ="被移除的uid（主动退群填自己）")
-    private Long uid;
+    private List<Long> uidList;
 }

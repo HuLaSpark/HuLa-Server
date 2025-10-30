@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatRoomResp {
+public class ChatRoomResp implements Serializable {
 	@Schema(description ="会话id")
 	private Long id;
 	@Schema(description ="单聊时对方的id，群聊是groupId")

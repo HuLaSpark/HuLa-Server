@@ -17,6 +17,8 @@ public interface DefValConstants {
 	Long DEF_ROOM_ID = 1L;
 	/** 内置的群组id */
 	Long DEF_GROUP_ID = 1L;
+	/** 贡献者id */
+	Long CONTRIBUTOR_ID = 6L;
     /**
      * 默认的树节点 分隔符
      */

@@ -1,6 +1,5 @@
 package com.luohuo.flex.im.core.user.dao;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.luohuo.flex.im.domain.entity.ItemConfig;
 import com.luohuo.flex.im.core.user.mapper.ItemConfigMapper;
@@ -22,10 +21,5 @@ public class ItemConfigDao extends ServiceImpl<ItemConfigMapper, ItemConfig> {
         return lambdaQuery()
                 .eq(ItemConfig::getType, type)
                 .list();
-    }
-
-    public ItemConfig getByDesc(String desc) {
-        return baseMapper.selectOne(new LambdaQueryWrapper<ItemConfig>()
-                .eq(ItemConfig::getDescribe, desc));
     }
 }

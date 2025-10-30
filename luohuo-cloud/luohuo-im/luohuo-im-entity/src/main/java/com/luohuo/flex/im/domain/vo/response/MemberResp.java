@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author nyh
  */
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberResp {
+public class MemberResp implements Serializable {
 	@Schema(description ="群聊id")
 	private Long groupId;
     @Schema(description ="房间id")

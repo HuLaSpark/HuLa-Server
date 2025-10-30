@@ -62,10 +62,11 @@ public class NoticeDao extends ServiceImpl<NoticeMapper, Notice> {
 		return wsNotice;
 	}
 
-	public void readNotices(Long uid, List<Long> notices) {
+	public void readNotices(Long uid, Integer type, List<Long> notices) {
 		lambdaUpdate()
 				.set(Notice::getIsRead, READ.getCode())
 				.eq(Notice::getIsRead, UNREAD.getCode())
+				.eq(Notice::getType, type)
 				.in(Notice::getId, notices)
 				.eq(Notice::getReceiverId, uid)
 				.update();

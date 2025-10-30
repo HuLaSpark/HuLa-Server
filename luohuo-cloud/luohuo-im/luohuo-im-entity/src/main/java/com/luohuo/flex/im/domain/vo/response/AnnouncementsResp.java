@@ -21,9 +21,6 @@ public class AnnouncementsResp implements Serializable {
 	@Schema(description = "公告发布人id")
 	private Long uid;
 
-	@Schema(description = "公告发布人")
-	private String uName;
-
 	@Schema(description = "发布内容")
 	private String content;
 

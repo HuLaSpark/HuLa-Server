@@ -8,7 +8,7 @@ import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.exception.BizException;
 import com.luohuo.basic.model.cache.CacheHashKey;
 import com.luohuo.flex.common.cache.common.FeedMediaRelCacheKeyBuilder;
-import com.luohuo.flex.im.common.constant.RedisKey;
+import com.luohuo.flex.common.cache.common.FeedTargetRelCacheKeyBuilder;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.core.chat.service.adapter.MemberAdapter;
@@ -68,12 +68,9 @@ public class FeedServiceImpl implements FeedService {
 				CacheHashKey hashKey = FeedMediaRelCacheKeyBuilder.build(feed.getId());
 				CacheResult<List<FeedMedia>> result = cachePlusOps.get(hashKey, t -> feedMediaDao.getMediaByFeedId(feed.getId()));
 				List<FeedMedia> mediaList = result.getValue();
-
-				if(CollUtil.isEmpty(mediaList)){
-					mediaList = feedMediaDao.getMediaByFeedId(feed.getId());
-					cachePlusOps.hSet(hashKey, mediaList);
+				if(CollUtil.isNotEmpty(mediaList)){
+					feedVo.setUrls(mediaList.stream().sorted(Comparator.comparingInt(FeedMedia::getSort)).map(FeedMedia::getUrl).collect(Collectors.toList()));
 				}
-				feedVo.setUrls(mediaList.stream().sorted(Comparator.comparingInt(FeedMedia::getSort)).map(FeedMedia::getUrl).collect(Collectors.toList()));
 			}
 			feedVos.add(feedVo);
 		}
@@ -122,7 +119,6 @@ public class FeedServiceImpl implements FeedService {
 	public void saveFeed(FeedParam param, Long uid, Feed feed) {
 		List<Long> pushList = new ArrayList<>();
 		List<FeedTarget> feedTargets = new ArrayList<>();
-		List<FeedMedia> mediaList = new ArrayList<>();
 		switch (FeedPermissionEnum.get(param.getPermission())){
 			case open -> {
 				// 1. 查询所有好友，排除【不让他看我, 他不看我】的好友
@@ -169,19 +165,17 @@ public class FeedServiceImpl implements FeedService {
 		switch (FeedEnum.get(param.getMediaType())){
 			case WORD -> log.info("发布了一条纯文字朋友圈~~");
 			case IMAGE, VIDEO -> {
-				List<String> urls = param.getUrls();
-				if (CollUtil.isEmpty(urls)){
+				List<String> images = param.getImages();
+				if (CollUtil.isEmpty(images)){
 					throw new RuntimeException("请至少上传一条素材!");
 				}
-				mediaList = feedMediaDao.batchSaveMedia(feed.getId(), urls, param.getMediaType());
+				feedMediaDao.batchSaveMedia(feed.getId(), images, param.getMediaType());
 			}
 		}
 
 		// 3. 缓存权限+素材 告知 pushList 我发布了朋友圈
-		cachePlusOps.hDel(RedisKey.FEED_MEDIA, feed.getId());
-		cachePlusOps.hDel(RedisKey.FEED_TARGET, feed.getId());
-		cachePlusOps.hDel(RedisKey.FEED_MEDIA, feed.getId().toString(), mediaList);
-		cachePlusOps.hDel(RedisKey.FEED_TARGET, feed.getId().toString(), feedTargets);
+//		cachePlusOps.hDel(FeedMediaRelCacheKeyBuilder.build(feed.getId()));
+//		cachePlusOps.hDel(FeedTargetRelCacheKeyBuilder.build(feed.getId()));
 		pushService.sendPushMsg(MemberAdapter.buildFeedPushWS(uid), pushList, uid);
 	}
 
@@ -236,8 +230,8 @@ public class FeedServiceImpl implements FeedService {
 		feedDao.removeById(feedId);
 
 		// 2. 清空缓存
-		cachePlusOps.hDel(RedisKey.FEED_TARGET, feedId);
-		cachePlusOps.hDel(RedisKey.FEED_MEDIA, feedId);
+		cachePlusOps.hDel(FeedTargetRelCacheKeyBuilder.build(feedId));
+		cachePlusOps.hDel(FeedMediaRelCacheKeyBuilder.build(feedId));
 		return true;
 	}
 
@@ -284,11 +278,8 @@ public class FeedServiceImpl implements FeedService {
 
 		// 处理朋友圈权限
 		if(feedVo.getPermission().equals(FeedPermissionEnum.partVisible.getType()) || feedVo.getPermission().equals(FeedPermissionEnum.notAnyone.getType())){
-			CacheResult<Object> cacheResult = cachePlusOps.hGet(FeedMediaRelCacheKeyBuilder.build(feedId));
+			CacheResult<Object> cacheResult = cachePlusOps.hGet(FeedTargetRelCacheKeyBuilder.build(feedId), t -> feedTargetDao.selectFeedTargets(feedId));
 			List<FeedTarget> feedTargets = cacheResult.asList();
-			if(CollUtil.isEmpty(feedTargets)){
-				feedTargets = feedTargetDao.selectFeedTargets(feedId);
-			}
 
 			List<Long> taggetList = feedTargets.stream().filter(item -> item.getType().equals(1)).map(FeedTarget::getTargetId).collect(Collectors.toUnmodifiableList());
 			List<Long> userList = feedTargets.stream().filter(item -> item.getType().equals(2)).map(FeedTarget::getTargetId).collect(Collectors.toUnmodifiableList());

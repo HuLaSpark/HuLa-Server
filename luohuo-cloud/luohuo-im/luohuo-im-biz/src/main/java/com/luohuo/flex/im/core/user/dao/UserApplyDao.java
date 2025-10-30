@@ -3,7 +3,7 @@ package com.luohuo.flex.im.core.user.dao;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
-import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
 import com.luohuo.flex.im.core.user.mapper.UserApplyMapper;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.AGREE;
+import static com.luohuo.flex.im.domain.enums.NoticeStatusEnum.ACCEPTED;
 
 /**
  * <p>
@@ -35,7 +35,7 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
     public UserApply getFriendApproving(Long uid, Long targetUid, boolean initiator) {
         return lambdaQuery().eq(UserApply::getUid, uid)
                 .eq(UserApply::getTargetId, targetUid)
-                .eq(UserApply::getStatus, ApplyStatusEnum.WAIT_APPROVAL.getCode())
+                .eq(UserApply::getStatus, NoticeStatusEnum.UNTREATED.getStatus())
                 .eq(UserApply::getType, RoomTypeEnum.FRIEND.getType())
                 .notIn(initiator,UserApply::getDeleted, ApplyDeletedEnum.applyDeleted())
                 .notIn(!initiator,UserApply::getDeleted, ApplyDeletedEnum.targetDeleted())
@@ -45,13 +45,13 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
     public void agree(Long applyId) {
         lambdaUpdate()
                 .eq(UserApply::getId, applyId)
-                .set(UserApply::getStatus, AGREE.getCode())
+                .set(UserApply::getStatus, ACCEPTED.getStatus())
                 .set(UserApply::getUpdateTime, LocalDateTime.now())
                 .update();
     }
 
-    public void updateStatus(Long applyId, ApplyStatusEnum statusEnum) {
-        lambdaUpdate().set(UserApply::getStatus, statusEnum.getCode())
+    public void updateStatus(Long applyId, NoticeStatusEnum statusEnum) {
+        lambdaUpdate().set(UserApply::getStatus, statusEnum.getStatus())
                 .set(UserApply::getUpdateTime, LocalDateTime.now())
                 .eq(UserApply::getId,applyId)
                 .update();
@@ -67,7 +67,7 @@ public class UserApplyDao extends ServiceImpl<UserApplyMapper, UserApply> {
 	public List<Long> getExistingUsers(Long roomId, HashSet<Long> uidList) {
 		return lambdaQuery()
 				.eq(UserApply::getRoomId, roomId)
-				.eq(UserApply::getStatus, ApplyStatusEnum.WAIT_APPROVAL.getCode())
+				.eq(UserApply::getStatus, NoticeStatusEnum.UNTREATED.getStatus())
 				.in(UserApply::getTargetId, uidList)
 				.list().stream().map(UserApply::getTargetId).collect(Collectors.toList());
 	}

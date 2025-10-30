@@ -27,7 +27,7 @@ public interface AiChatConversationMapper extends BaseMapperX<AiChatConversation
 
     default PageResult<AiChatConversationDO> selectChatConversationPage(AiChatConversationPageReqVO pageReqVO) {
         return selectPage(pageReqVO, new LambdaQueryWrapperX<AiChatConversationDO>()
-                .eqIfPresent(AiChatConversationDO::getUserId, pageReqVO.getUserId())
+                .eq(AiChatConversationDO::getUserId, pageReqVO.getUid())
                 .likeIfPresent(AiChatConversationDO::getTitle, pageReqVO.getTitle())
                 .betweenIfPresent(AiChatConversationDO::getCreateTime, pageReqVO.getCreateTime())
                 .orderByDesc(AiChatConversationDO::getId));

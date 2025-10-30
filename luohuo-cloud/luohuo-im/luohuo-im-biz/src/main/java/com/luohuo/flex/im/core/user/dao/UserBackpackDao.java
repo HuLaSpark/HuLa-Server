@@ -3,7 +3,6 @@ package com.luohuo.flex.im.core.user.dao;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.luohuo.flex.im.domain.entity.ItemConfig;
 import org.springframework.stereotype.Service;
 import com.luohuo.flex.im.common.enums.YesOrNoEnum;
 import com.luohuo.flex.im.domain.entity.UserBackpack;
@@ -67,11 +66,10 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
         return lambdaQuery().eq(UserBackpack::getIdempotent, idempotent).one();
     }
 
-    public long countByUidAndItemId(Long uid, String desc) {
-        ItemConfig itemConfig = itemConfigDao.getByDesc(desc);
+    public long countByUidAndItemId(Long uid, Long itemId) {
         return baseMapper.selectCount(new LambdaQueryWrapper<UserBackpack>()
                 .eq(UserBackpack::getUid, uid)
-                .eq(UserBackpack::getItemId, itemConfig.getId())
+                .eq(UserBackpack::getItemId, itemId)
         );
     }
 }

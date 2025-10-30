@@ -98,5 +98,8 @@ public class AiChatConversationDO extends BaseDO {
      * 上下文的最大 Message 数量
      */
     private Integer maxContexts;
-
+	/**
+	 * 租户id
+	 */
+	private Long tenantId;
 }

@@ -4,7 +4,7 @@ import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.im.core.user.service.NoticeService;
 import com.luohuo.flex.im.domain.vo.req.NoticeReadReq;
-import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
+import com.luohuo.flex.im.domain.vo.req.NoticeReq;
 import com.luohuo.flex.im.domain.vo.res.NoticeVO;
 import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.model.entity.ws.WSNotice;
@@ -24,7 +24,7 @@ public class NoticeController {
     private NoticeService noticeService;
 
     @GetMapping("/page")
-    public R<PageBaseResp<NoticeVO>> getNotices(@Valid PageBaseReq request) {
+    public R<PageBaseResp<NoticeVO>> getNotices(@Valid NoticeReq request) {
         Long uid = ContextUtil.getUid();
         return R.success(noticeService.getUserNotices(uid, request));
     }

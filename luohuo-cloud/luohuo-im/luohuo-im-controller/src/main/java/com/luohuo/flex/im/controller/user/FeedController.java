@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.controller.user;
 
+import com.luohuo.flex.im.domain.vo.req.feed.FeedReq;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
@@ -16,7 +17,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,10 +45,10 @@ public class FeedController {
 		return R.success(feedService.pushFeed(ContextUtil.getUid(), param));
 	}
 
-	@GetMapping("getFeedPermission/{feedId}")
+	@GetMapping("getFeedPermission")
 	@Operation(summary = "查看朋友圈权限")
-	public R<FeedPermission> getFeedPermission(@PathVariable("feedId") Long feedId) {
-		return R.success(feedService.getFeedPermission(ContextUtil.getUid(), feedId));
+	public R<FeedPermission> getFeedPermission(FeedReq feedReq) {
+		return R.success(feedService.getFeedPermission(ContextUtil.getUid(), feedReq.getFeedId()));
 	}
 
 	@PostMapping("edit")
@@ -57,15 +57,15 @@ public class FeedController {
 		return R.success(feedService.editFeed(ContextUtil.getUid(), param));
 	}
 
-	@PostMapping("del/{feedId}")
+	@PostMapping("del")
 	@Operation(summary = "删除朋友圈")
-	public R<Boolean> delFeed(@PathVariable("feedId") Long feedId) {
-		return R.success(feedService.delFeed(feedId));
+	public R<Boolean> delFeed(@RequestBody FeedReq feedReq) {
+		return R.success(feedService.delFeed(feedReq.getFeedId()));
 	}
 
-	@GetMapping("detail/{feedId}")
+	@GetMapping("detail")
 	@Operation(summary = "用户查看详情")
-	public R<FeedVo> feedDetail(@PathVariable("feedId") Long feedId) {
-		return R.success(feedService.feedDetail(feedId));
+	public R<FeedVo> feedDetail(FeedReq feedReq) {
+		return R.success(feedService.feedDetail(feedReq.getFeedId()));
 	}
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author nyh
  */
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessageReadResp {
+public class ChatMessageReadResp implements Serializable {
     @Schema(description ="已读或者未读的用户uid")
     private Long uid;
 }

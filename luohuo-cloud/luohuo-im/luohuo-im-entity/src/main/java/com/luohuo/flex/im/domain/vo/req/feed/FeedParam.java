@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -34,7 +35,7 @@ public class FeedParam extends OperParam {
 	private Integer mediaType;
 
 	@Schema(description = "发布的图片的url")
-	private List<String> urls;
+	private List<String> images;
 
 	@Schema(description = "发布视频的url")
 	private String videoUrl;
@@ -43,7 +44,7 @@ public class FeedParam extends OperParam {
 	 * @see FeedPermissionEnum
 	 */
 	@Schema(description = "privacy -> 私密 open -> 公开 partVisible -> 部分可见 notAnyone -> 不给谁看")
-	@Min(value = 0, message = "请选择正确的可见类型")
+	@Pattern(regexp = "^(privacy|open|partVisible|notAnyone)$", message = "请选择正确的可见类型（privacy/open/partVisible/notAnyone）")
 	private String permission;
 
 	@Schema(description = "permission 限制的用户id")

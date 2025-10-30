@@ -9,6 +9,10 @@
             on g.id = m.group_id
                    and g.room_id = #{roomId}
                    and m.uid = #{uid}
-        limit 1
+        where g.is_del = 0 limit 1
+    </select>
+
+    <select id="getByRoomIdIgnoreDel" resultType="com.luohuo.flex.im.domain.vo.response.GroupResp">
+        select id as group_id, room_id, account, name, avatar from im_room_group where room_id = #{roomId} limit 1
     </select>
 </mapper>

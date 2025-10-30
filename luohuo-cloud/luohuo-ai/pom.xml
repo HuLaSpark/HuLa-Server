@@ -20,7 +20,6 @@
     </properties>
 
     <modules>
-        <module>luohuo-ai-controller</module>
         <module>luohuo-ai-entity</module>
         <module>luohuo-ai-facade</module>
         <module>luohuo-ai-server</module>

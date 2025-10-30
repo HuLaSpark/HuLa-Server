@@ -27,14 +27,14 @@ public class RedisKey {
 	public static final String FEED_MEDIA = BASE_KEY + "feedMedia";
 
 	/**
-	 * 用户徽章
-	 */
-	public static final String USER_ITEM = BASE_KEY + "userItem";
-
-	/**
 	 * 朋友圈权限
 	 */
 	public static final String FEED_TARGET = BASE_KEY + "feedTarget";
+
+	/**
+	 * 用户徽章
+	 */
+	public static final String USER_ITEM = BASE_KEY + "userItem";
 
     /**
      * DefUser用户信息

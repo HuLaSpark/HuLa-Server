@@ -13,7 +13,7 @@ import com.luohuo.flex.common.constant.DefValConstants;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum;
-import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
 import com.luohuo.flex.model.entity.WsBaseResp;
 import jakarta.annotation.PostConstruct;
@@ -137,7 +137,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		userApply.setType(type);
 		userApply.setRoomId(roomId);
 		userApply.setTargetId(targetId);
-		userApply.setStatus(ApplyStatusEnum.WAIT_APPROVAL.getCode());
+		userApply.setStatus(NoticeStatusEnum.UNTREATED.getStatus());
 		userApply.setReadStatus(ApplyReadStatusEnum.UNREAD.getCode());
 		userApply.setApplyFor(true);
 		userApplyDao.save(userApply);

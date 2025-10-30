@@ -365,8 +365,10 @@ public class SessionManager {
 	 * 清空所有会话
 	 */
 	public void clean() {
-		// 1. 标记服务不可用状态
+		// 0. 标记服务不可用状态
 		setAcceptingNewConnections(false);
+		nacosSessionRegistry.deregisterNode();
+
 		// 1. 收集所有设备信息
 		Map<Long, Set<String>> offlineDevices = new HashMap<>();
 		USER_DEVICE_SESSION_MAP.forEach((uid, deviceMap) -> offlineDevices.put(uid, new HashSet<>(deviceMap.keySet())));
@@ -397,8 +399,7 @@ public class SessionManager {
 		USER_DEVICE_SESSION_MAP.clear();
 
 		// 6. 清理路由与节点
-		nacosSessionRegistry.cleanupNodeRoutes();
-		nacosSessionRegistry.deregisterNode();
+		nacosSessionRegistry.cleanupNodeRoutes("");
 	}
 
 	/**

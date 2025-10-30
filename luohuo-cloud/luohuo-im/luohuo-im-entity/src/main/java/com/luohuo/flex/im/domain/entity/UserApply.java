@@ -3,7 +3,7 @@ package com.luohuo.flex.im.domain.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.luohuo.basic.base.entity.Entity;
-import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
+import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -59,7 +59,7 @@ public class UserApply extends Entity<Long> {
 
     /**
 	 * 申请状态
-     * @see ApplyStatusEnum
+     * @see NoticeStatusEnum
      */
     @TableField("status")
     private Integer status;

@@ -239,7 +239,7 @@ public class ChatServiceImpl implements ChatService {
 			}
 
 			// 2. 如果开启同步功能，那么把最近N天的消息拉回去, 否则获取所有未ack的消息 [要排除屏蔽的房间的消息]
-			if(msgReq.getAsync()){
+			if(true || msgReq.getAsync()){
 				LocalDateTime effectiveStartTime = calculateStartTime(TimeUtils.getTime(LocalDateTime.now().minusDays(14)));
 				messages = messageDao.list(new LambdaQueryWrapper<Message>().in(Message::getRoomId, roomIds)
 						.between(Message::getCreateTime, effectiveStartTime, LocalDateTime.now()));

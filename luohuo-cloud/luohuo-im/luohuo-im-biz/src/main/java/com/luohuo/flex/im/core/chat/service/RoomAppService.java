@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminSetReq;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
+import com.luohuo.flex.im.domain.vo.response.GroupResp;
 import jakarta.validation.Valid;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
@@ -30,6 +31,7 @@ import com.luohuo.flex.im.domain.vo.response.ChatRoomResp;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 import com.luohuo.flex.im.domain.vo.req.MergeMessageReq;
 import com.luohuo.flex.model.entity.ws.ChatMemberResp;
+
 import java.util.List;
 
 /**
@@ -55,7 +57,12 @@ public interface RoomAppService {
     /**
      * 获取群组信息
      */
-    MemberResp getGroupDetail(Long uid, long roomId);
+    MemberResp getGroupDetail(Long uid, Long roomId);
+
+	/**
+	 * 获取群组基础信息
+	 */
+	GroupResp getGroupInfo(Long uid, Long roomId);
 
 	/**
 	 * 获取群成员

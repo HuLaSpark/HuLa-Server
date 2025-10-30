@@ -2,7 +2,6 @@ package com.luohuo.flex.base.service.tenant.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -216,10 +215,9 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean updatePassword(DefUserPasswordUpdateVO data) {
-//        ArgumentAssert.notEmpty(data.getOldPassword(), "请输入旧密码");
         DefUser user = superManager.getUserByEmail(2, data.getEmail());
         ArgumentAssert.notNull(user, "用户不存在");
-        ArgumentAssert.equals(user.getId(), ContextUtil.getUid(), "只能修改自己的密码");
+//		ArgumentAssert.notEmpty(data.getOldPassword(), "请输入旧密码");
 //        String oldPassword = SecureUtil.sha256(data.getOldPassword() + user.getSalt());
 //        ArgumentAssert.equals(user.getPassword(), oldPassword, "旧密码错误");
         CacheKey cacheKey = new CaptchaCacheKeyBuilder().key(data.getEmail(), data.getKey());

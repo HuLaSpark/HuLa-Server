@@ -12,7 +12,7 @@ import com.luohuo.flex.im.domain.entity.Notice;
 import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
 import com.luohuo.flex.im.domain.enums.NoticeTypeEnum;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
-import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
+import com.luohuo.flex.im.domain.vo.req.NoticeReq;
 import com.luohuo.flex.im.domain.vo.res.NoticeVO;
 import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.model.entity.WSRespTypeEnum;
@@ -89,21 +89,21 @@ public class NoticeServiceImpl implements NoticeService {
 		}
 	}
 
-	private void readNotices(Long uid, IPage<Notice> noticeIPage) {
+	private void readNotices(Long uid, String applyType, IPage<Notice> noticeIPage) {
 		List<Long> notices = noticeIPage.getRecords()
 				.stream().map(Notice::getId)
 				.collect(Collectors.toList());
 		if(CollUtil.isNotEmpty(notices)){
-			noticeDao.readNotices(uid, notices);
+			noticeDao.readNotices(uid, "friend".equals(applyType)? 2: 1, notices);
 		}
 	}
 
 	@Override
-	public PageBaseResp<NoticeVO> getUserNotices(Long uid, PageBaseReq request) {
+	public PageBaseResp<NoticeVO> getUserNotices(Long uid, NoticeReq request) {
 		IPage<Notice> noticeIPage = noticeDao.getUserNotices(uid, true, request.plusPage());
 		// 将这些通知设为已读
 		if(request.getClick()){
-			readNotices(uid, noticeIPage);
+			readNotices(uid, request.getApplyType(), noticeIPage);
 		}
 		return PageBaseResp.init(noticeIPage, noticeIPage.getRecords().stream().map(notice -> convertToVO(notice)).collect(Collectors.toList()));
 	}

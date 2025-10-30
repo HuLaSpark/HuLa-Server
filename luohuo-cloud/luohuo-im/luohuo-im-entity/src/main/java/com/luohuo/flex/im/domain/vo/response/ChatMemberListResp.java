@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * 群成员列表的成员信息
  * @author nyh
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMemberListResp {
+public class ChatMemberListResp implements Serializable {
     @Schema(description ="uid")
     private Long uid;
     @Schema(description ="用户名称")

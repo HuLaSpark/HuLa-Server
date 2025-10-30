@@ -85,10 +85,12 @@ public class AiChatConversationController {
     }
 
     // ========== 对话管理 ==========
-
     @GetMapping("/page")
     @Operation(summary = "获得对话分页", description = "用于【对话管理】菜单")
     public R<PageResult<AiChatConversationRespVO>> getChatConversationPage(AiChatConversationPageReqVO pageReqVO) {
+		if(ObjUtil.isNull(pageReqVO.getUid())){
+			pageReqVO.setUid(ContextUtil.getUid());
+		}
         PageResult<AiChatConversationDO> pageResult = chatConversationService.getChatConversationPage(pageReqVO);
         if (CollUtil.isEmpty(pageResult.getList())) {
             return success(PageResult.empty());

@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.core.chat.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.luohuo.flex.im.domain.vo.response.GroupResp;
 import org.springframework.stereotype.Repository;
 import com.luohuo.flex.im.domain.entity.RoomGroup;
 
@@ -15,4 +16,6 @@ import com.luohuo.flex.im.domain.entity.RoomGroup;
 public interface RoomGroupMapper extends BaseMapper<RoomGroup> {
 
     boolean checkUser(Long uid, Long roomId);
+
+	GroupResp getByRoomIdIgnoreDel(Long roomId);
 }

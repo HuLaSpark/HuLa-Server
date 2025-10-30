@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import static com.luohuo.flex.im.domain.enums.ApplyReadStatusEnum.UNREAD;
-import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.WAIT_APPROVAL;
+import static com.luohuo.flex.im.domain.enums.NoticeStatusEnum.UNTREATED;
 
 
 /**
@@ -28,7 +28,7 @@ public class FriendAdapter {
         userApplyNew.setMsg(request.getMsg());
         userApplyNew.setType(RoomTypeEnum.FRIEND.getType());
         userApplyNew.setTargetId(request.getTargetUid());
-        userApplyNew.setStatus(WAIT_APPROVAL.getCode());
+        userApplyNew.setStatus(UNTREATED.getStatus());
         userApplyNew.setReadStatus(UNREAD.getCode());
         return userApplyNew;
     }

@@ -3,7 +3,7 @@ package com.luohuo.flex.im.core.user.service;
 import com.luohuo.flex.im.domain.entity.Notice;
 import com.luohuo.flex.im.domain.enums.NoticeTypeEnum;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
-import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
+import com.luohuo.flex.im.domain.vo.req.NoticeReq;
 import com.luohuo.flex.im.domain.vo.res.NoticeVO;
 import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.model.entity.ws.WSNotice;
@@ -44,7 +44,7 @@ public interface NoticeService {
 	/**
 	 * 获取用户通知
 	 */
-	PageBaseResp<NoticeVO> getUserNotices(Long userId, PageBaseReq request);
+	PageBaseResp<NoticeVO> getUserNotices(Long userId, NoticeReq request);
 
 	/**
 	 * 标记为已读

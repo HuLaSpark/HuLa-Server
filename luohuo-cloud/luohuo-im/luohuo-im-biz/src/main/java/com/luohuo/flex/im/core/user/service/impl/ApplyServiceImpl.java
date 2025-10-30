@@ -40,9 +40,8 @@ import com.luohuo.flex.im.domain.entity.RoomGroup;
 import com.luohuo.flex.im.domain.entity.UserApply;
 import com.luohuo.flex.im.domain.entity.UserFriend;
 import com.luohuo.flex.im.domain.enums.ApplyDeletedEnum;
-import com.luohuo.flex.im.domain.enums.ApplyStatusEnum;
-import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
 import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
+import com.luohuo.flex.im.domain.enums.GroupRoleEnum;
 import com.luohuo.flex.im.domain.enums.NoticeTypeEnum;
 import com.luohuo.flex.im.domain.enums.RoomTypeEnum;
 import com.luohuo.flex.im.domain.vo.req.friend.FriendApplyReq;
@@ -59,8 +58,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.AGREE;
-import static com.luohuo.flex.im.domain.enums.ApplyStatusEnum.WAIT_APPROVAL;
+import static com.luohuo.flex.im.domain.enums.NoticeStatusEnum.*;
 
 /**
  * 好友申请、群聊邀请
@@ -107,7 +105,7 @@ public class ApplyServiceImpl implements ApplyService {
         // 是否有待审批的申请记录(别人请求自己的)
         UserApply friendApproving = userApplyDao.getFriendApproving(request.getTargetUid(), uid, false);
         if (Objects.nonNull(friendApproving)) {
-			handlerApply(uid, new ApplyReq(friendApproving.getId(), AGREE.getCode()));
+			handlerApply(uid, new ApplyReq(friendApproving.getId(), ACCEPTED.getStatus()));
             return null;
         }
         // 申请入库
@@ -204,11 +202,11 @@ public class ApplyServiceImpl implements ApplyService {
 			throw new BizException("无效的邀请");
 		}
 
-		if (request.getState().equals(WAIT_APPROVAL.getCode())) {
+		if (request.getState().equals(UNTREATED.getStatus())) {
 			throw new BizException("无效的审批状态");
 		}
 
-		if (!invite.getStatus().equals(WAIT_APPROVAL.getCode())) {
+		if (!invite.getStatus().equals(UNTREATED.getStatus())) {
 			throw new BizException("无效的审批");
 		}
 
@@ -217,18 +215,18 @@ public class ApplyServiceImpl implements ApplyService {
 			throw new BizException("通知无法处理");
 		}
 
-		switch (request.getState()){
-			case 0 -> {
-				userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.REJECT);
+		switch (NoticeStatusEnum.get(request.getState())){
+			case REJECTED -> {
+				userApplyDao.updateStatus(request.getApplyId(), NoticeStatusEnum.REJECTED);
 				// 发送通知
 				notice.setStatus(NoticeStatusEnum.REJECTED.getStatus());
 				noticeService.updateNotice(notice);
 			}
-			case 2 -> {
+			case ACCEPTED -> {
 				// 处理加好友
 				invite.setStatus(request.getState());
 				if(invite.getType().equals(RoomTypeEnum.FRIEND.getType())){
-					AssertUtil.equal(invite.getStatus(), AGREE.getCode(), "已同意好友申请");
+					AssertUtil.equal(invite.getStatus(), ACCEPTED.getStatus(), "已同意好友申请");
 					// 同意申请
 					AtomicReference<Long> atomicRoomId = new AtomicReference(0L);
 					AtomicReference<Boolean> atomicIsFromTempSession = new AtomicReference(false);
@@ -320,10 +318,10 @@ public class ApplyServiceImpl implements ApplyService {
 					SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(infoUid), uid));
 				}
 			}
-			case 3 -> {
+			case IGNORE -> {
 				checkRecord(request);
-				userApplyDao.updateStatus(request.getApplyId(), ApplyStatusEnum.IGNORE);
-				notice.setStatus(NoticeStatusEnum.IGNORE.getStatus());
+				userApplyDao.updateStatus(request.getApplyId(), IGNORE);
+				notice.setStatus(IGNORE.getStatus());
 				noticeService.updateNotice(notice);
 			}
 		}
@@ -354,7 +352,7 @@ public class ApplyServiceImpl implements ApplyService {
     private UserApply checkRecord(ApplyReq request) {
         UserApply userApply = userApplyDao.getById(request.getApplyId());
         AssertUtil.isNotEmpty(userApply, "不存在申请记录");
-        AssertUtil.equal(userApply.getStatus(), WAIT_APPROVAL.getCode(), "对方已是您的好友");
+        AssertUtil.equal(userApply.getStatus(), UNTREATED.getStatus(), "对方已是您的好友");
         return userApply;
     }
 }

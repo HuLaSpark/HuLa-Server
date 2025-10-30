@@ -1,5 +1,6 @@
 package com.luohuo.flex.im.domain.vo.request.member;
 
+import com.luohuo.flex.im.domain.enums.NoticeStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,9 @@ public class ApplyReq {
     @Schema(description ="邀请的id")
     private Long applyId;
 
-	@NotNull(message = "请选择邀请记录")
-	@Schema(description ="0 = 拒绝 2 = 同意 3 = 忽略")
+	/**
+	 * @see NoticeStatusEnum
+	 */
+	@NotNull(message = "请选择审批类型")
 	private Integer state;
 }

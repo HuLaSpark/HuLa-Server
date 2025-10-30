@@ -103,4 +103,8 @@ public class AiChatMessageDO extends BaseDO {
     @TableField(typeHandler = LongListTypeHandler.class)
     private List<Long> segmentIds;
 
+	/**
+	 * 租户id
+	 */
+	private Long tenantId;
 }

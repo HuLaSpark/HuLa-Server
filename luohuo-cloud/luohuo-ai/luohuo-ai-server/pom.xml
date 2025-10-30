@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>com.luohuo.flex</groupId>
-            <artifactId>luohuo-ai-controller</artifactId>
+            <artifactId>luohuo-ai-biz</artifactId>
             <version>${luohuo-project.version}</version>
         </dependency>
 

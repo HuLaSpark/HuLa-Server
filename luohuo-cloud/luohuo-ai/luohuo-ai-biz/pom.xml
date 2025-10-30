@@ -34,7 +34,14 @@
             <artifactId>luohuo-database-mode</artifactId>
             <version>${luohuo-project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-sa-token-ext</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-tenant</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.luohuo.basic</groupId>
             <artifactId>luohuo-all</artifactId>

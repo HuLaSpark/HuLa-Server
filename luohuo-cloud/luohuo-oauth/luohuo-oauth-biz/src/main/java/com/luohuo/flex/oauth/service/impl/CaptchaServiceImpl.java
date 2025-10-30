@@ -145,7 +145,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 		String code = RandomUtil.randomNumbers(6);
         CacheKey cacheKey = CaptchaCacheKeyBuilder.build(bindEmailReq.getEmail(), bindEmailReq.getTemplateCode());
 		if(cachePlusOps.exists(cacheKey)){
-			return R.success(cachePlusOps.ttl(cacheKey));
+			ArgumentAssert.isFalse(true, "验证码还剩"+cachePlusOps.ttl(cacheKey)+"秒过期，可以继续使用");
 		}
 
         cachePlusOps.set(cacheKey, code);
