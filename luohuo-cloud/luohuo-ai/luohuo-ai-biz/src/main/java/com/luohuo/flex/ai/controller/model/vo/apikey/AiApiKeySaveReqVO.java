@@ -31,4 +31,7 @@ public class AiApiKeySaveReqVO {
     @NotNull(message = "状态不能为空")
     private Integer status;
 
+    @Schema(description = "是否公开", example = "false")
+    private Boolean publicStatus;
+
 }

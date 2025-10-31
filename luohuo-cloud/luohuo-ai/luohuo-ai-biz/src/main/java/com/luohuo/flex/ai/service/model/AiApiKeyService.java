@@ -18,23 +18,26 @@ public interface AiApiKeyService {
      * 创建 API 密钥
      *
      * @param createReqVO 创建信息
+     * @param userId      用户编号
      * @return 编号
      */
-    Long createApiKey(@Valid AiApiKeySaveReqVO createReqVO);
+    Long createApiKey(@Valid AiApiKeySaveReqVO createReqVO, Long userId);
 
     /**
      * 更新 API 密钥
      *
      * @param updateReqVO 更新信息
+     * @param userId      用户编号
      */
-    void updateApiKey(@Valid AiApiKeySaveReqVO updateReqVO);
+    void updateApiKey(@Valid AiApiKeySaveReqVO updateReqVO, Long userId);
 
     /**
      * 删除 API 密钥
      *
-     * @param id 编号
+     * @param id     编号
+     * @param userId 用户编号
      */
-    void deleteApiKey(Long id);
+    void deleteApiKey(Long id, Long userId);
 
     /**
      * 获得 API 密钥
@@ -56,9 +59,10 @@ public interface AiApiKeyService {
      * 获得 API 密钥分页
      *
      * @param pageReqVO 分页查询
+     * @param userId    用户编号
      * @return API 密钥分页
      */
-    PageResult<AiApiKeyDO> getApiKeyPage(AiApiKeyPageReqVO pageReqVO);
+    PageResult<AiApiKeyDO> getApiKeyPage(AiApiKeyPageReqVO pageReqVO, Long userId);
 
     /**
      * 获得 API 密钥列表

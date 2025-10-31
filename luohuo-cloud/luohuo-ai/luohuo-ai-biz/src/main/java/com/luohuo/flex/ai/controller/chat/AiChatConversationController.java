@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationCreateMyReqVO;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationPageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationRespVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationUpdateMyReqVO;
@@ -40,7 +41,7 @@ public class AiChatConversationController {
 
     @PostMapping("/create-my")
     @Operation(summary = "创建【我的】聊天对话")
-    public R<Long> createChatConversationMy(@RequestBody @Valid AiChatConversationCreateMyReqVO createReqVO) {
+    public R<AiChatConversationDO> createChatConversationMy(@RequestBody @Valid AiChatConversationCreateMyReqVO createReqVO) {
         return success(chatConversationService.createChatConversationMy(createReqVO, ContextUtil.getUid()));
     }
 
@@ -71,9 +72,8 @@ public class AiChatConversationController {
 
     @DeleteMapping("/delete-my")
     @Operation(summary = "删除聊天对话")
-    @Parameter(name = "id", required = true, description = "对话编号", example = "1024")
-    public R<Boolean> deleteChatConversationMy(@RequestParam("id") Long id) {
-        chatConversationService.deleteChatConversationMy(id, ContextUtil.getUid());
+    public R<Boolean> deleteChatConversationMy(@RequestBody AiDelReqVO reqVO) {
+        chatConversationService.deleteChatConversationMy(reqVO, ContextUtil.getUid());
         return success(true);
     }
 

@@ -25,4 +25,5 @@ public class AiApiKeyRespVO {
     @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer status;
 
+	private Boolean publicStatus;
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessagePageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageRespVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendReqVO;
@@ -78,8 +79,7 @@ public class AiChatMessageController {
     @Operation(summary = "获得指定对话的消息列表")
     @GetMapping("/list-by-conversation-id")
     @Parameter(name = "conversationId", required = true, description = "对话编号", example = "1024")
-    public R<List<AiChatMessageRespVO>> getChatMessageListByConversationId(
-            @RequestParam("conversationId") Long conversationId) {
+    public R<List<AiChatMessageRespVO>> getChatMessageListByConversationId(@RequestParam("conversationId") Long conversationId) {
         AiChatConversationDO conversation = chatConversationService.getChatConversation(conversationId);
         if (conversation == null || ObjUtil.notEqual(conversation.getUserId(), ContextUtil.getUid())) {
             return success(Collections.emptyList());
@@ -129,8 +129,8 @@ public class AiChatMessageController {
     @Operation(summary = "删除指定对话的消息")
     @DeleteMapping("/delete-by-conversation-id")
     @Parameter(name = "conversationId", required = true, description = "对话编号", example = "1024")
-    public R<Boolean> deleteChatMessageByConversationId(@RequestParam("conversationId") Long conversationId) {
-        chatMessageService.deleteChatMessageByConversationId(conversationId, ContextUtil.getUid());
+    public R<Boolean> deleteChatMessageByConversationId(@RequestBody AiDelReqVO reqVOS) {
+        chatMessageService.deleteChatMessageByConversationId(reqVOS, ContextUtil.getUid());
         return success(true);
     }
 

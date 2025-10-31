@@ -47,4 +47,7 @@ public class AiModelRespVO {
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 
+	@Schema(description = "是否公开", example = "false")
+	private Boolean publicStatus;
+
 }

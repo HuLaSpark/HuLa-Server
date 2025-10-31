@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.ai.common.pojo.PageResult;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessagePageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageRespVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendReqVO;
@@ -341,14 +342,16 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
     }
 
     @Override
-    public void deleteChatMessageByConversationId(Long conversationId, Long userId) {
-        // 1. 校验消息存在
-        List<AiChatMessageDO> messages = chatMessageMapper.selectListByConversationId(conversationId);
-        if (CollUtil.isEmpty(messages) || ObjUtil.notEqual(messages.get(0).getUserId(), userId)) {
-            throw exception(CHAT_MESSAGE_NOT_EXIST);
-        }
-        // 2. 执行删除
-        chatMessageMapper.deleteBatchIds(convertList(messages, AiChatMessageDO::getId));
+    public void deleteChatMessageByConversationId(AiDelReqVO reqVOS, Long userId) {
+		reqVOS.getConversationIdList().forEach(conversationId -> {
+			// 1. 校验消息存在
+			List<AiChatMessageDO> messages = chatMessageMapper.selectListByConversationId(conversationId);
+			if (CollUtil.isEmpty(messages) || ObjUtil.notEqual(messages.get(0).getUserId(), userId)) {
+				throw exception(CHAT_MESSAGE_NOT_EXIST);
+			}
+			// 2. 执行删除
+			chatMessageMapper.deleteBatchIds(convertList(messages, AiChatMessageDO::getId));
+		});
     }
 
     @Override

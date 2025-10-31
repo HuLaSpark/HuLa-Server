@@ -3,6 +3,7 @@ package com.luohuo.flex.ai.service.model;
 
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelPageReqVO;
+import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveMyReqVO;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveReqVO;
 import com.luohuo.flex.ai.core.model.MidjourneyApi;
 import com.luohuo.flex.ai.core.model.SunoApi;
@@ -35,6 +36,15 @@ public interface AiModelService {
     Long createModel(@Valid AiModelSaveReqVO createReqVO);
 
     /**
+     * 创建【我的】模型
+     *
+     * @param createReqVO 创建信息
+     * @param userId      用户编号
+     * @return 编号
+     */
+    Long createModelMy(@Valid AiModelSaveMyReqVO createReqVO, Long userId);
+
+    /**
      * 更新模型
      *
      * @param updateReqVO 更新信息
@@ -42,11 +52,27 @@ public interface AiModelService {
     void updateModel(@Valid AiModelSaveReqVO updateReqVO);
 
     /**
+     * 更新【我的】模型
+     *
+     * @param updateReqVO 更新信息
+     * @param userId      用户编号
+     */
+    void updateModelMy(@Valid AiModelSaveMyReqVO updateReqVO, Long userId);
+
+    /**
      * 删除模型
      *
      * @param id 编号
      */
     void deleteModel(Long id);
+
+    /**
+     * 删除【我的】模型
+     *
+     * @param id     编号
+     * @param userId 用户编号
+     */
+    void deleteModelMy(Long id, Long userId);
 
     /**
      * 获得模型
@@ -74,6 +100,15 @@ public interface AiModelService {
     PageResult<AiModelDO> getModelPage(AiModelPageReqVO pageReqVO);
 
     /**
+     * 获得【我的】模型分页
+     *
+     * @param pageReqVO 分页查询
+     * @param userId    用户编号
+     * @return 模型分页
+     */
+    PageResult<AiModelDO> getModelMyPage(AiModelPageReqVO pageReqVO, Long userId);
+
+    /**
      * 校验模型是否可使用
      *
      * @param id 编号
@@ -91,6 +126,20 @@ public interface AiModelService {
      */
     List<AiModelDO> getModelListByStatusAndType(Integer status, Integer type,
                                                 @Nullable String platform);
+
+    /**
+     * 获得模型列表（用户可见）
+     *
+     * 包含：系统级别的公开模型 + 用户自己的私有模型
+     *
+     * @param status   状态
+     * @param type     类型
+     * @param platform 平台，允许空
+     * @param userId   用户编号
+     * @return 模型列表
+     */
+    List<AiModelDO> getModelListByStatusAndTypeAndUserId(Integer status, Integer type,
+                                                         @Nullable String platform, Long userId);
 
     // ========== 与 Spring AI 集成 ==========
 

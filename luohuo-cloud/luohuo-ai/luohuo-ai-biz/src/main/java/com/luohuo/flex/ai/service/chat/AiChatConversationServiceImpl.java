@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationCreateMyReqVO;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationPageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationUpdateMyReqVO;
 import com.luohuo.flex.ai.dal.chat.AiChatConversationDO;
@@ -53,7 +54,7 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
     private AiKnowledgeService knowledgeService;
 
     @Override
-    public Long createChatConversationMy(AiChatConversationCreateMyReqVO createReqVO, Long userId) {
+    public AiChatConversationDO createChatConversationMy(AiChatConversationCreateMyReqVO createReqVO, Long userId) {
         // 1.1 获得 AiChatRoleDO 聊天角色
         AiChatRoleDO role = createReqVO.getRoleId() != null ? chatRoleService.validateChatRole(createReqVO.getRoleId()) : null;
         // 1.2 获得 AiModelDO 聊天模型
@@ -77,7 +78,7 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
             conversation.setTitle(AiChatConversationDO.TITLE_DEFAULT);
         }
         chatConversationMapper.insert(conversation);
-        return conversation.getId();
+        return conversation;
     }
 
     @Override
@@ -120,14 +121,17 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
     }
 
     @Override
-    public void deleteChatConversationMy(Long id, Long userId) {
+    public void deleteChatConversationMy(AiDelReqVO reqVO, Long userId) {
         // 1. 校验对话是否存在
-        AiChatConversationDO conversation = validateChatConversationExists(id);
-        if (conversation == null || ObjUtil.notEqual(conversation.getUserId(), userId)) {
-            throw exception(CHAT_CONVERSATION_NOT_EXISTS);
-        }
+		reqVO.getConversationIdList().forEach(id -> {
+			AiChatConversationDO conversation = validateChatConversationExists(id);
+			if (conversation == null || ObjUtil.notEqual(conversation.getUserId(), userId)) {
+				throw exception(CHAT_CONVERSATION_NOT_EXISTS);
+			}
+		});
+
         // 2. 执行删除
-        chatConversationMapper.deleteById(id);
+        chatConversationMapper.deleteByIds(reqVO.getConversationIdList());
     }
 
     @Override

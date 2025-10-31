@@ -31,15 +31,14 @@ public class BlackInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Map<Integer, Set<String>> blackMap = userSummaryCache.getBlackMap();
-		Long uid = ContextUtil.getUid();
-		if (isBlackList(uid, blackMap.get(BlackTypeEnum.UID.getType()))) {
+		if (isBlackList(ContextUtil.getUid(), blackMap.get(BlackTypeEnum.UID.getType()))) {
 			response.setStatus(HttpStatus.OK.value());
 			R<Object> responseData = R.fail("对不起，不在白名单内");
 			response.setContentType(ContentType.JSON.toString(Charset.forName("UTF-8")));
 			response.getWriter().write(JSONUtil.toJsonStr(responseData));
             return false;
         }
-        if (isBlackList(uid, blackMap.get(BlackTypeEnum.IP.getType()))) {
+        if (isBlackList(ContextUtil.getIP(), blackMap.get(BlackTypeEnum.IP.getType()))) {
 			response.setStatus(HttpStatus.OK.value());
 			R<Object> responseData = R.fail("对不起，不在白名单内");
 			response.setContentType(ContentType.JSON.toString(Charset.forName("UTF-8")));

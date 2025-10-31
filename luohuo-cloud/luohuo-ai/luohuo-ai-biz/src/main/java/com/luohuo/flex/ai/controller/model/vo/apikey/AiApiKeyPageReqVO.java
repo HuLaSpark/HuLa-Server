@@ -17,4 +17,7 @@ public class AiApiKeyPageReqVO extends PageParam {
     @Schema(description = "状态", example = "1")
     private Integer status;
 
+    @Schema(description = "是否公开", example = "true")
+    private Boolean publicStatus;
+
 }

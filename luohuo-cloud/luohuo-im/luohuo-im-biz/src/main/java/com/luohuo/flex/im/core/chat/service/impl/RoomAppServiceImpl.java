@@ -509,10 +509,6 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 	public Boolean updateMyRoomInfo(Long uid, RoomMyInfoReq request) {
 		// 1.校验修改权限
 		Triple<RoomGroup, GroupMember, Boolean> permissionCheck = checkGroupPermission(uid, request.getId());
-		if (!permissionCheck.getRight()) {
-			return false;
-		}
-
 		RoomGroup roomGroup = permissionCheck.getLeft();
 		GroupMember member = permissionCheck.getMiddle();
 

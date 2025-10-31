@@ -51,7 +51,7 @@ public interface AiChatRoleService {
      * @param updateReqVO 更新信息
      * @param userId      用户编号
      */
-    void updateChatRoleMy(AiChatRoleSaveMyReqVO updateReqVO, Long userId);
+    void updateChatRoleMy(AiChatRoleSaveReqVO updateReqVO, Long userId);
 
     /**
      * 删除聊天角色
@@ -117,7 +117,7 @@ public interface AiChatRoleService {
      *
      * @return 分类列表
      */
-    List<String> getChatRoleCategoryList();
+	List<Map<String, String>> getChatRoleCategoryList();
 
     /**
      * 根据名字获得聊天角色

@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 28/10/2025 17:10:28
+ Date: 31/10/2025 19:00:36
 */
 
 SET NAMES utf8mb4;
@@ -23,6 +23,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `ai_api_key`;
 CREATE TABLE `ai_api_key`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `user_id` bigint NOT NULL COMMENT '创建模型的uid',
+  `public_status` bit(1) NOT NULL DEFAULT b'1' COMMENT '公开、私有',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
   `api_key` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密钥',
   `platform` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '平台',
@@ -35,33 +37,12 @@ CREATE TABLE `ai_api_key`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 90154862069761 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_api_key
 -- ----------------------------
-INSERT INTO `ai_api_key` VALUES (1, '【OpenAI】ChatGPT', 'sk-aN6nWn3fILjrgLFT0fC4Aa60B72e4253826c77B29dC94f17', 'OpenAI', 'https://api.holdai.top', 0, '', '2024-05-10 01:37:55', '1', '2025-02-23 16:58:46', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (2, '呵呵', '123321', 'OpenAI', NULL, 0, '1', '2024-05-11 16:46:18', '1', '2024-05-17 15:15:08', b'1', 1);
-INSERT INTO `ai_api_key` VALUES (3, '【Meta】Ollama', ' ', 'Ollama', 'http://127.0.0.1:11434', 0, '1', '2024-05-17 23:04:13', '1', '2024-07-05 01:30:10', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (4, '【百度】文心一言', 'x0cuLZ7XsaTCU08vuJWO87Lg|R9mYF9dl9KASgi5RUq0FQt3wRisSnOcK', 'YiYan', NULL, 0, '1', '2024-05-18 09:26:02', '1', '2024-07-05 01:30:10', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (5, '【讯飞】星火', '75b161ed2aef4719b275d6e7f2a4d4cd|YWYxYWI2MTA4ODI2NGZlYTQyNjAzZTcz', 'XingHuo', NULL, 0, '1', '2024-05-18 10:09:42', '1', '2025-02-23 18:35:06', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (6, '【阿里】通义千问', 'sk-7d903764249848cfa912733146da12d1', 'TongYi', NULL, 0, '1', '2024-05-18 10:33:12', '1', '2025-02-24 10:24:50', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (7, 'StableDiffusion', 'sk-e53UqbboF8QJCscYvzJscJxJXoFcFg4iJjl1oqgE7baJETmx', 'StableDiffusion', NULL, 0, '1', '2024-06-01 15:11:18', '1', '2024-07-05 01:30:10', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (8, '【本地】Ollama', 'null', 'Ollama', 'http://localhost:11434', 0, '1', '2024-06-01 20:04:43', '1', '2025-02-24 09:21:16', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (9, 'Suno', 'Suno', 'Suno', 'http://127.0.0.1:3001', 0, '1', '2024-06-29 09:14:28', '1', '2024-07-05 01:30:10', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (10, 'Midjourney', 'sk-dZEPiVaNcT3FHhef51996bAa0bC74806BeAb620dA5Da10Bf', 'Midjourney', 'https://api.holdai.top/mj', 0, '1', '2024-06-29 09:40:20', '1', '2024-07-05 01:30:10', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (11, 'DeepSeek', 'sk-5b612c071f904fd59808dc07c9a4f1b8', 'DeepSeek', NULL, 0, '1', '2024-07-06 12:06:04', '1', '2025-03-13 21:18:31', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (12, '智谱', '2f35fb6ca4ea41fab898729b7fac086c.6ESSfPcCkxaKEUlR', 'ZhiPu', NULL, 0, '1', '2024-07-06 18:01:15', '1', '2025-03-11 07:47:46', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (13, '【微软 OpenAI】ChatGPT', 'XXX', 'AzureOpenAI', 'https://eastusprejade.openai.azure.com', 0, '1', '2024-08-10 14:09:27', '1', '2024-08-10 15:08:27', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (14, '字节豆包', '5c1b5747-26d2-4ebd-a4e0-dd0e8d8b4272', 'DouBao', NULL, 0, '1', '2025-02-23 19:52:37', '1', '2025-02-23 19:52:37', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (15, '腾讯混元', 'sk-bcd', 'HunYuan', NULL, 0, '1', '2025-02-23 20:59:10', '1', '2025-02-24 09:20:04', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (16, '腾讯知识引擎', 'sk-abc', 'HunYuan', 'https://api.lkeap.cloud.tencent.com', 0, '1', '2025-02-23 20:59:49', '1', '2025-02-24 09:20:00', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (17, '【本地】deepseek-r1', 'null', 'Ollama', 'http://localhost:11434', 0, '1', '2025-02-24 09:20:31', '1', '2025-02-24 09:21:40', b'1', 1);
-INSERT INTO `ai_api_key` VALUES (18, '硅基流动', 'sk-epsakfenqnyzoxhmbucsxlhkdqlcbnimslqoivkshalvdozz', 'SiliconFlow', '', 0, '1', '2025-02-24 20:34:19', '1', '2025-02-24 20:34:19', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (19, 'MiniMax', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiLnjovmlofmlowiLCJVc2VyTmFtZSI6IueOi-aWh-aWjCIsIkFjY291bnQiOiIiLCJTdWJqZWN0SUQiOiIxODk3Mjg3MjQ5NDU2ODA4MzQ2IiwiUGhvbmUiOiIxNTYwMTY5MTM5OSIsIkdyb3VwSUQiOiIxODk3Mjg3MjQ5NDQ4NDE5NzM4IiwiUGFnZU5hbWUiOiIiLCJNYWlsIjoiIiwiQ3JlYXRlVGltZSI6IjIwMjUtMDMtMTEgMTI6NTI6MDIiLCJUb2tlblR5cGUiOjEsImlzcyI6Im1pbmltYXgifQ.aAuB7gWW_oA4IYhh-CF7c9MfWWxKN49B_HK-DYjXaDwwffhiG-H1571z1WQhp9QytWG-DqgLejneeSxkiq1wQIe3FsEP2wz4BmGBct31LehbJu8ehLxg_vg75Uod1nFAHbm5mZz6JSVLNIlSo87Xr3UtSzJhAXlapEkcqlA4YOzOpKrZ8l5_OJPTORTCmHWZYgJcRS-faNiH62ZnUEHUozesTFhubJHo5GfJCw_edlnmfSUocERV1BjWvenhZ9My-aYXNktcW9WaSj9l6gayV7A0Ium_PL55T9ln1PcI8gayiVUKJGJDoqNyF1AF9_aF9NOKtTnQzwNqnZdlTYH6hw', 'MiniMax', NULL, 0, '1', '2025-03-11 20:06:35', '1', '2025-03-11 20:06:35', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (20, '月之暗灭', 'sk-g9ZpHUj5nEBwY9JJCyUxaxKOwC5M8cvpQFg211ksPJ64yIlm', 'Moonshot', NULL, 0, '1', '2025-03-11 20:07:27', '1', '2025-10-28 09:03:46', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (21, 'FastGPT', 'fastgpt-aqcc61kFtF8CeaglnGAfQOCIDWwjGdJVJHv6hIlMo28otFlva2aZNK', 'OpenAI', 'https://cloud.fastgpt.cn/api', 0, '1', '2025-03-12 13:51:06', '1', '2025-03-12 20:06:12', b'0', 1);
-INSERT INTO `ai_api_key` VALUES (22, 'Dify', 'app-4hy2d7fJauSbrKbzTKX1afuP', 'OpenAI', 'http://127.0.0.1:3000', 0, '1', '2025-03-12 21:26:34', '1', '2025-03-12 21:50:29', b'0', 1);
+INSERT INTO `ai_api_key` VALUES (90154862069760, 20901198351872, b'1', 'kimi', 'sk-HD0GKyxX3bYuycGuV5de202U418gczeAYcZVYZucwWrBEu2V', 'Moonshot', NULL, 0, NULL, '2025-10-30 18:43:15', NULL, '2025-10-30 11:26:16', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_chat_conversation
@@ -87,15 +68,14 @@ CREATE TABLE `ai_chat_conversation`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NULL DEFAULT NULL COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1781604279872581774 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 90190392010241 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_conversation
 -- ----------------------------
-INSERT INTO `ai_chat_conversation` VALUES (1781604279872581684, 20901198351872, 10, '新对话', 53, 'qwen-72b-chat', b'0', NULL, '您好，我是您的AI智能助手，我会尽力回答您的问题或提供有用的建议！！！！', 1, 20, 2, '1', '2024-05-20 22:22:39', '1', '2025-10-28 03:38:52', b'1', 1);
-INSERT INTO `ai_chat_conversation` VALUES (1781604279872581685, 20901198351872, 10, 'gpt测试', 53, 'gpt-3.5-turbo', b'1', '2024-05-21 16:26:29', '您好，我是您的AI智能助手，我会尽力回答您的问题或提供有用的建议！！！！', 1, 20, 20, '1', '2024-05-21 09:37:38', '1', '2025-10-28 03:38:52', b'1', 1);
-INSERT INTO `ai_chat_conversation` VALUES (1781604279872581686, 20901198351872, 10, '新的gpt测试', 53, 'gpt-3.5-turbo', b'0', NULL, '您好，我是您的AI智能助手，我会尽力回答您的问题或提供有用的建议！！！！', 1, 20, 20, '1', '2024-05-21 14:43:32', '1', '2025-10-28 03:38:52', b'1', 1);
-INSERT INTO `ai_chat_conversation` VALUES (1781604279872581687, 20901198351872, 10, '新对话', 53, 'gpt-3.5-turbo', b'0', NULL, '您好，我是您的AI智能助手，我会尽力回答您的问题或提供有用的建议！！！！', 1, 20, 20, '1', '2024-05-21 16:37:12', '1', '2025-10-28 03:38:52', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90159593245184, 20901198351872, 90159576467968, 'Hula官方角色', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '我是Hula官方机器人，非常聪明', 0.8, 4096, 10, NULL, '2025-10-30 19:02:02', NULL, '2025-10-30 19:02:02', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90160268528128, 20901198351872, 90159576467968, 'Hula官方角色', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '我是Hula官方机器人，非常聪明', 0.8, 4096, 10, NULL, '2025-10-30 19:04:43', NULL, '2025-10-30 19:04:43', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90190392010240, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-10-30 21:04:26', NULL, '2025-10-30 21:04:26', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_chat_message
@@ -118,17 +98,13 @@ CREATE TABLE `ai_chat_message`  (
   `updater` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '更新人',
   `update_time` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
-  `tenant_id` bigint NULL DEFAULT NULL COMMENT '租户编号',
+  `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2737 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 90190480090626 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_message
 -- ----------------------------
-INSERT INTO `ai_chat_message` VALUES (1481, 1781604279872581686, NULL, 1, 10, 'user', 'gpt-3.5-turbo', 11, '测试小苹果？', b'0', NULL, '1', '2024-05-21 14:47:37', '1', '2024-07-05 01:30:39', b'0', 1);
-INSERT INTO `ai_chat_message` VALUES (1482, 1781604279872581686, 1481, 1, 10, 'assistant', 'gpt-3.5-turbo', 11, '很，我抱无法提供果歉关于\"测试小苹\"的信息。请问您有其他问题或者需要帮助吗？我会尽力回答提或者供帮助。', b'0', NULL, '1', '2024-05-21 14:47:37', NULL, '2024-07-05 01:30:39', b'0', 1);
-INSERT INTO `ai_chat_message` VALUES (1483, 1781604279872581686, NULL, 1, 10, 'user', 'gpt-3.5-turbo', 11, '真的么？', b'0', NULL, '1', '2024-05-21 14:47:59', '1', '2024-07-05 01:30:39', b'0', 1);
-INSERT INTO `ai_chat_message` VALUES (1484, 1781604279872581686, 1483, 1, 10, 'assistant', 'gpt-3.5-turbo', 11, '', b'0', NULL, '1', '2024-05-21 14:47:59', '1', '2024-07-05 01:30:39', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_chat_role
@@ -155,19 +131,13 @@ CREATE TABLE `ai_chat_role`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 90190358455809 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_role
 -- ----------------------------
-INSERT INTO `ai_chat_role` VALUES (10, NULL, 11, '通用 AI 助手', 'http://test.yudao.iocoder.cn/eaef5f41acb911dd718429a0702dcc3c61160d16e57ba1d543132fab58934f9f.png', '助手', 1, '默认角色', '您好，我是您的AI智能助手，我会尽力回答您的问题或提供有用的建议！！！！', NULL, NULL, b'1', 0, '1', '2024-05-13 20:44:48', '1', '2024-07-05 01:30:30', b'0', 1);
-INSERT INTO `ai_chat_role` VALUES (11, NULL, 14, 'Python 专家', 'http://test.yudao.iocoder.cn/5c5528504c307d34af504f39bc4e7007d2f6f31ee00dab699cc91584d1af8aca.png', '编程开发', 2, 'Python', '我希望你能作为一名 python 专家。我将向你提供有关我的技术问题的所有信息，而你的角色是解决我的问题。你应该用你的计算机科学、网络基础设施和 IT 安全知识来解决我的问题。在你的回答中，使用聪明的、简单的、为各种层次的人所理解的语言会有帮助。逐步解释你的解决方案并使用要点是很有帮助的。尽量避免过多的技术细节，但在必要时使用它们。我希望你用解决方案来回答，而不是写任何解释。', NULL, '17', b'1', 0, '1', '2024-05-17 23:23:20', '1', '2025-03-14 21:10:47', b'0', 1);
-INSERT INTO `ai_chat_role` VALUES (12, 1, NULL, '小可爱角色', 'http://test.yudao.iocoder.cn/5752750225f522ba794b16ad0b0e73d268093760546ebc2519b1a5dfc5b064d1.jpg', NULL, 0, '卡比兽，爱睡觉', '你好，我是宠物小精灵大师！', NULL, NULL, b'0', 0, '1', '2024-05-25 13:25:46', '1', '2024-07-05 01:30:30', b'0', 1);
-INSERT INTO `ai_chat_role` VALUES (13, NULL, 17, '写作助手', 'http://test.yudao.iocoder.cn/2a124ba5743f9572fcbd2718a64ba599618c96ddba6c7391ad35906cd3f37f94.png', '写作', 10, '一个厉害的写手高手', '你是一个非常会写作的人！', NULL, NULL, b'1', 0, '1', '2024-07-10 22:55:58', '1', '2024-07-10 22:56:04', b'0', 1);
-INSERT INTO `ai_chat_role` VALUES (14, NULL, 17, '脑图助手', 'http://test.yudao.iocoder.cn/7401c394a43280732e6aaa715fbfefadc33eeb8fab8f45f6b53f1acf6b22ae29.png', '写作', 11, '一个厉害的思维大师！', '你是一位非常优秀的思维导图助手，你会把用户的所有提问都总结成思维导图，然后以 Markdown 格式输出。markdown 只需要输出一级标题，二级标题，三级标题，四级标题，最多输出四级，除此之外不要输出任何其他 markdown 标记。下面是一个合格的例子：\n             # Geek-AI 助手\n             ## 完整的开源系统\n             ### 前端开源\n             ### 后端开源\n             ## 支持各种大模型\n             ### OpenAI\n             ### Azure\n             ### 文心一言\n             ### 通义千问\n             ## 集成多种收费方式\n             ### 支付宝\n             ### 微信\n            除此之外不要任何解释性语句。', NULL, NULL, b'1', 0, '1', '2024-07-29 21:47:20', '1', '2024-07-29 21:48:00', b'0', 1);
-INSERT INTO `ai_chat_role` VALUES (15, NULL, 26, '测试知识库', 'http://test.yudao.iocoder.cn/d3a7656aae53c8f063d4578c7a65f9045ef25420ff32cc32dd121a60abcf9127.png', '助手', 10, '我只是个小助手', '一个问答助手', '3', NULL, b'1', 0, '1', '2025-03-09 17:35:36', '1', '2025-03-09 18:32:34', b'1', 1);
-INSERT INTO `ai_chat_role` VALUES (16, 1, 21, '测试知识库', 'http://test.yudao.iocoder.cn/a2cfbf52d157911ecfb29c4a26b4a19247f6bb2c97a5104c46c970fc235880ef.png', '助手', 0, '测试一下', '一个小助手', '2', NULL, b'0', 0, '1', '2025-03-09 18:33:01', '1', '2025-03-09 18:51:04', b'0', 1);
-INSERT INTO `ai_chat_role` VALUES (17, 1, NULL, '一个可以查询天气的小助手', 'http://test.yudao.iocoder.cn/de74fdbe9ad40173345d4cd1e2b684fcbb5e797f7b7cc37b42dcbaa20dcf6bb3.png', NULL, 0, '查查查天气', '天气小助手', '', '18', b'0', 0, '1', '2025-03-14 20:03:27', '1', '2025-03-14 20:03:27', b'0', 1);
+INSERT INTO `ai_chat_role` VALUES (90159576467968, 20901198351872, 90158209124864, 'Hula官方角色', 'https://cdn.hulaspark.com/avatar/1046762075/43de7a13eda6b8c29622f5b4ca429156.webp', NULL, 0, '我是Hula官方机器人', '我是Hula官方机器人，非常聪明', NULL, NULL, b'0', 0, NULL, '2025-10-30 19:01:58', NULL, '2025-10-30 19:01:58', b'0', 1);
+INSERT INTO `ai_chat_role` VALUES (90190358455808, NULL, 90158209124864, '测试HuLa', 'https://cdn.hulaspark.com/avatar/2439646234/993c2cfc546fabc1ee127037102378d9.webp', '0', 0, '测试', '你是一个vue专家', NULL, NULL, b'1', 0, NULL, '2025-10-30 21:04:17', NULL, '2025-10-30 21:04:17', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_image
@@ -356,6 +326,7 @@ INSERT INTO `ai_mind_map` VALUES (3, 1, '生成一个 Vue 核心关键点', '# V
 DROP TABLE IF EXISTS `ai_model`;
 CREATE TABLE `ai_model`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `user_id` bigint NOT NULL COMMENT '创建模型的uid',
   `key_id` bigint NOT NULL COMMENT 'API 秘钥编号',
   `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '模型名字',
   `model` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '模型标识',
@@ -363,6 +334,7 @@ CREATE TABLE `ai_model`  (
   `type` tinyint NOT NULL COMMENT '模型类型',
   `sort` int NOT NULL COMMENT '排序',
   `status` tinyint NOT NULL COMMENT '状态',
+  `public_status` bit(1) NOT NULL DEFAULT b'1' COMMENT '公开、私有',
   `temperature` double NULL DEFAULT NULL COMMENT '温度参数',
   `max_tokens` int NULL DEFAULT NULL COMMENT '单条回复的最大 Token 数量',
   `max_contexts` int NULL DEFAULT NULL COMMENT '上下文的最大 Message 数量',
@@ -372,59 +344,16 @@ CREATE TABLE `ai_model`  (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 56 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 模型表' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
+  INDEX `idx_public_status`(`public_status` ASC) USING BTREE,
+  INDEX `idx_user_public`(`user_id` ASC, `public_status` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 90158209124865 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 模型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_model
 -- ----------------------------
-INSERT INTO `ai_model` VALUES (9, 4, 'ernie-tiny-8k', 'ernie-tiny-8k', 'YiYan', 1, 100, 0, NULL, NULL, NULL, '', '2024-05-10 01:38:04', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (10, 4, 'ERNIE 4.0', 'ERNIE 4.0', 'YiYan', 1, 100, 0, 1, 4096, 10, '', '2024-05-10 01:38:04', '1', '2025-03-03 01:26:22', b'1', 1);
-INSERT INTO `ai_model` VALUES (11, 1, 'gpt-3.5-turbo', 'gpt-3.5-turbo', 'OpenAI', 1, 0, 0, 1, 4096, 20, '1', '2024-05-11 17:57:56', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (12, 3, 'llama3', 'llama3', 'Ollama', 1, 1, 0, 1, 4096, 10, '1', '2024-05-17 23:16:38', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (13, 5, '星火大模型3.5', 'generalv3.5', 'XingHuo', 1, 5, 0, NULL, NULL, NULL, '1', '2024-05-18 10:10:21', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (14, 6, 'qwen-72b-chat', 'qwen-72b-chat', 'TongYi', 1, 6, 0, 1, 2000, 20, '1', '2024-05-18 10:33:47', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (15, 6, 'Qwen-7B', 'Qwen-7B', 'TongYi', 1, 1000, 0, 1, 4096, 20, '1', '2024-06-01 20:05:14', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (16, 4, 'ernie_speed', 'ernie_speed', 'YiYan', 1, 2000, 0, 1, 4096, 10, '1', '2024-06-02 09:00:21', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (17, 11, 'deepseek-chat', 'deepseek-chat', 'DeepSeek', 1, 300, 0, 0.75, 4096, 20, '1', '2024-07-06 12:06:47', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (18, 11, 'deepseek-reasoner', 'deepseek-reasoner', 'DeepSeek', 1, 301, 0, 1, 4096, 20, '1', '2024-07-06 12:07:25', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (19, 12, 'GLM-4', 'GLM-4', 'ZhiPu', 1, 400, 0, 0.75, 2000, 20, '1', '2024-07-06 18:01:45', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (20, 13, '【微软】gpt-35-turbo', 'gpt-35-turbo', 'AzureOpenAI', 1, 2000, 0, 1, 4096, 20, '1', '2024-08-10 14:10:07', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (21, 8, 'qwen:4b', 'qwen:4b', 'Ollama', 1, 9999, 0, NULL, NULL, NULL, '1', '2025-02-23 19:05:00', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (22, 14, 'doubao-1-5-lite-32k', 'doubao-1-5-lite-32k-250115', 'DouBao', 1, 350, 0, NULL, NULL, NULL, '1', '2025-02-23 19:53:24', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (23, 14, 'deepseek-r1-zijie', 'deepseek-r1-250120', 'DouBao', 1, 351, 0, NULL, NULL, NULL, '1', '2025-02-23 19:58:32', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (24, 15, 'hunyuan-turbo', 'hunyuan-turbo', 'HunYuan', 1, 380, 0, NULL, NULL, NULL, '1', '2025-02-23 21:00:37', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (25, 16, 'deepseek-r1-tengxun', 'deepseek-r1', 'HunYuan', 1, 381, 0, NULL, NULL, NULL, '1', '2025-02-23 21:01:20', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (26, 8, 'deepseek-r1-local', 'deepseek-r1', 'Ollama', 1, 10000, 0, NULL, NULL, NULL, '1', '2025-02-24 09:22:32', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (27, 6, 'deepseek-r1-aliyun', 'deepseek-r1', 'TongYi', 1, 7, 0, NULL, NULL, NULL, '1', '2025-02-24 10:05:51', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (28, 6, 'deepseek-v3-aliyun', 'deepseek-v3', 'TongYi', 1, 8, 0, NULL, NULL, NULL, '1', '2025-02-24 10:24:29', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (29, 18, 'deepseek-r1-siliconflow', 'deepseek-ai/DeepSeek-R1', 'SiliconFlow', 1, 12000, 0, NULL, NULL, NULL, '1', '2025-02-24 20:35:18', '1', '2025-03-03 01:26:22', b'0', 1);
-INSERT INTO `ai_model` VALUES (30, 8, 'nomic-embed-text', 'nomic-embed-text', 'Ollama', 5, 20000, 0, NULL, NULL, NULL, '1', '2025-02-24 20:35:18', '1', '2025-03-03 01:51:28', b'0', 1);
-INSERT INTO `ai_model` VALUES (31, 6, 'wanx-v1', 'wanx-v1', 'TongYi', 2, 3005, 0, NULL, NULL, NULL, '1', '2025-03-03 20:08:49', '1', '2025-03-03 21:36:24', b'0', 1);
-INSERT INTO `ai_model` VALUES (32, 6, 'wanx-sketch-to-image-v1', 'wanx-sketch-to-image-v1', 'TongYi', 2, 3005, 0, NULL, NULL, NULL, '1', '2025-03-03 20:09:05', '1', '2025-03-03 21:36:20', b'0', 1);
-INSERT INTO `ai_model` VALUES (33, 4, 'sd_xl', 'sd_xl', 'YiYan', 2, 3004, 0, NULL, NULL, NULL, '1', '2025-03-03 20:30:49', '1', '2025-03-03 21:36:14', b'0', 1);
-INSERT INTO `ai_model` VALUES (34, 12, 'cogview-3', 'cogview-3', 'ZhiPu', 2, 3003, 0, NULL, NULL, NULL, '1', '2025-03-03 20:31:40', '1', '2025-03-03 21:36:07', b'0', 1);
-INSERT INTO `ai_model` VALUES (35, 1, 'dall-e-3', 'dall-e-3', 'OpenAI', 2, 3002, 0, NULL, NULL, NULL, '1', '2025-03-03 20:56:55', '1', '2025-03-03 21:36:02', b'0', 1);
-INSERT INTO `ai_model` VALUES (36, 1, 'dall-e-2', 'dall-e-2', 'OpenAI', 2, 3002, 0, NULL, NULL, NULL, '1', '2025-03-03 20:57:57', '1', '2025-03-03 21:35:58', b'0', 1);
-INSERT INTO `ai_model` VALUES (37, 7, 'stable-diffusion-v1-6', 'stable-diffusion-v1-6', 'StableDiffusion', 2, 3001, 0, NULL, NULL, NULL, '1', '2025-03-03 21:30:59', '1', '2025-03-03 21:35:48', b'0', 1);
-INSERT INTO `ai_model` VALUES (38, 10, 'midjourney', 'midjourney', 'Midjourney', 2, 3000, 0, NULL, NULL, NULL, '1', '2025-03-03 21:35:01', '1', '2025-03-03 21:35:01', b'0', 1);
-INSERT INTO `ai_model` VALUES (39, 10, 'niji', 'niji', 'Midjourney', 2, 3000, 0, NULL, NULL, NULL, '1', '2025-03-03 21:35:23', '1', '2025-03-03 21:35:23', b'0', 1);
-INSERT INTO `ai_model` VALUES (40, 8, 'mxbai-embed-large', 'mxbai-embed-large', 'Ollama', 5, 20000, 0, NULL, NULL, NULL, '1', '2025-03-10 09:10:33', '1', '2025-03-10 09:10:33', b'0', 1);
-INSERT INTO `ai_model` VALUES (41, 6, 'text-embedding-v3', 'text-embedding-v3', 'TongYi', 5, 20000, 0, NULL, NULL, NULL, '1', '2025-03-10 22:04:30', '1', '2025-03-10 22:04:30', b'0', 1);
-INSERT INTO `ai_model` VALUES (42, 12, 'embedding-3', 'embedding-3', 'ZhiPu', 5, 20000, 0, NULL, NULL, NULL, '1', '2025-03-11 07:48:21', '1', '2025-03-11 07:48:21', b'0', 1);
-INSERT INTO `ai_model` VALUES (43, 1, 'text-embedding-ada-002	', 'text-embedding-ada-002	', 'OpenAI', 5, 20000, 0, NULL, NULL, NULL, '1', '2025-03-11 09:38:09', '1', '2025-03-11 09:40:54', b'0', 1);
-INSERT INTO `ai_model` VALUES (44, 19, 'abab6.5g-chat', 'abab6.5g-chat', 'MiniMax', 1, 500, 0, NULL, NULL, NULL, '1', '2025-03-11 20:08:03', '1', '2025-03-11 20:08:15', b'0', 1);
-INSERT INTO `ai_model` VALUES (45, 19, 'embo-01', 'embo-01', 'MiniMax', 5, 20000, 0, NULL, NULL, NULL, '1', '2025-03-11 20:08:47', '1', '2025-03-11 20:15:17', b'0', 1);
-INSERT INTO `ai_model` VALUES (46, 20, 'moonshot-v1-8k', 'moonshot-v1-8k', 'Moonshot', 1, 600, 0, NULL, NULL, NULL, '1', '2025-03-11 20:10:24', '1', '2025-03-11 20:10:24', b'0', 1);
-INSERT INTO `ai_model` VALUES (47, 21, 'FastGPT', 'FastGPT', 'OpenAI', 1, 8888, 0, NULL, NULL, NULL, '1', '2025-03-12 13:51:46', '1', '2025-03-12 13:51:46', b'0', 1);
-INSERT INTO `ai_model` VALUES (48, 22, 'Dify', 'Dify', 'OpenAI', 1, 8888, 0, NULL, NULL, NULL, '1', '2025-03-12 21:27:34', '1', '2025-03-12 21:27:34', b'0', 1);
-INSERT INTO `ai_model` VALUES (49, 1, 'gpt-4o-mini', 'gpt-4o-mini', 'OpenAI', 1, 0, 0, 1, 4096, 20, '1', '2025-03-13 12:46:02', '1', '2025-03-13 12:47:02', b'0', 1);
-INSERT INTO `ai_model` VALUES (50, 8, 'qwen2.5', 'qwen2.5', 'Ollama', 1, 9999, 0, NULL, NULL, NULL, '1', '2025-03-13 15:05:15', '1', '2025-03-13 20:38:28', b'0', 1);
-INSERT INTO `ai_model` VALUES (51, 19, 'MiniMax-Text-01', 'MiniMax-Text-01', 'MiniMax', 1, 500, 0, NULL, NULL, NULL, '1', '2025-03-13 20:37:48', '1', '2025-03-13 20:38:06', b'0', 1);
-INSERT INTO `ai_model` VALUES (52, 18, 'deepseek-v3-siliconflow-vip', 'Pro/deepseek-ai/DeepSeek-V3', 'SiliconFlow', 1, 12000, 0, NULL, NULL, NULL, '1', '2025-03-13 21:06:01', '1', '2025-03-13 21:06:01', b'0', 1);
-INSERT INTO `ai_model` VALUES (53, 20, 'moonshot-v1-128k', 'moonshot-v1-128k', 'Moonshot', 1, 600, 0, NULL, NULL, NULL, '1', '2025-03-13 21:15:16', '1', '2025-03-13 21:15:16', b'0', 1);
-INSERT INTO `ai_model` VALUES (54, 6, 'qwen-max-latest', 'qwen-max-latest', 'TongYi', 1, 6, 0, NULL, NULL, NULL, '1', '2025-03-13 21:32:27', '1', '2025-03-13 21:34:12', b'0', 1);
-INSERT INTO `ai_model` VALUES (55, 5, '4.0Ultra', '4.0Ultra', 'XingHuo', 1, 5, 0, NULL, NULL, NULL, '1', '2025-03-14 11:24:14', '1', '2025-03-14 11:24:14', b'0', 1);
+INSERT INTO `ai_model` VALUES (90158209124864, 20901198351872, 90154862069760, 'Hula小模型', 'moonshot-v1-128k', 'Moonshot', 1, 0, 0, b'1', 0.8, 4096, 10, NULL, '2025-10-30 18:56:33', NULL, '2025-10-30 11:05:33', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_music
@@ -2302,8 +2231,8 @@ CREATE TABLE `def_user`  (
 -- ----------------------------
 -- Records of def_user
 -- ----------------------------
-INSERT INTO `def_user` VALUES (61170828519936, 2, 'bot', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-08-19 10:05:05', 1, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
-INSERT INTO `def_user` VALUES (61170828519937, 2, '2439646234', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"183.15.179.234\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"183.15.179.234\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-10-28 16:38:01', 1, '2025-03-27 04:23:08', NULL, '2025-10-28 16:55:55', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519936, 2, 'bot', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-10-28 17:08:01', 2, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519937, 2, '2439646234', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"183.15.179.234\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"183.15.179.234\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-10-31 18:11:19', 1, '2025-03-27 04:23:08', NULL, '2025-10-31 18:36:18', 0, 1);
 
 -- ----------------------------
 -- Table structure for def_user_application
@@ -2388,7 +2317,7 @@ CREATE TABLE `extend_interface_log`  (
 -- Records of extend_interface_log
 -- ----------------------------
 INSERT INTO `extend_interface_log` VALUES (66567882983426, 244439130119864323, '阿里短信', 0, 1, '2025-08-26 16:37:01', '2025-08-26 16:37:00', NULL, '2025-08-26 16:37:00', NULL, 0, 0);
-INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 576, 56, '2025-10-28 16:44:42', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
+INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 624, 57, '2025-10-31 17:41:02', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
 
 -- ----------------------------
 -- Table structure for extend_interface_logging
@@ -2602,7 +2531,7 @@ CREATE TABLE `worker_node`  (
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 891 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 921 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of worker_node

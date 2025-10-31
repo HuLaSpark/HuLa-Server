@@ -1,5 +1,6 @@
 package com.luohuo.flex.ai.service.model;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySaveReqVO;
@@ -17,7 +18,6 @@ import static com.luohuo.flex.ai.enums.ErrorCodeConstants.API_KEY_DISABLE;
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.API_KEY_NOT_EXISTS;
 import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 
-
 /**
  * AI API 密钥 Service 实现类
  *
@@ -27,74 +27,112 @@ import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 @Validated
 public class AiApiKeyServiceImpl implements AiApiKeyService {
 
-    @Resource
-    private AiApiKeyMapper apiKeyMapper;
+	@Resource
+	private AiApiKeyMapper apiKeyMapper;
 
-    @Override
-    public Long createApiKey(AiApiKeySaveReqVO createReqVO) {
-        // 插入
-        AiApiKeyDO apiKey = BeanUtils.toBean(createReqVO, AiApiKeyDO.class);
-        apiKeyMapper.insert(apiKey);
-        // 返回
-        return apiKey.getId();
-    }
+	@Override
+	public Long createApiKey(AiApiKeySaveReqVO createReqVO, Long userId) {
+		// 插入
+		AiApiKeyDO apiKey = BeanUtils.toBean(createReqVO, AiApiKeyDO.class);
 
-    @Override
-    public void updateApiKey(AiApiKeySaveReqVO updateReqVO) {
-        // 校验存在
-        validateApiKeyExists(updateReqVO.getId());
-        // 更新
-        AiApiKeyDO updateObj = BeanUtils.toBean(updateReqVO, AiApiKeyDO.class);
-        apiKeyMapper.updateById(updateObj);
-    }
+		// 如果是私有密钥，设置 userId
+		if (createReqVO.getPublicStatus() == null || Boolean.FALSE.equals(createReqVO.getPublicStatus())) {
+			apiKey.setUserId(userId)
+					.setPublicStatus(false);
+			// 私有密钥默认启用
+			if (createReqVO.getStatus() == null) {
+				apiKey.setStatus(CommonStatusEnum.ENABLE.getStatus());
+			}
+		}
 
-    @Override
-    public void deleteApiKey(Long id) {
-        // 校验存在
-        validateApiKeyExists(id);
-        // 删除
-        apiKeyMapper.deleteById(id);
-    }
+		apiKeyMapper.insert(apiKey);
+		return apiKey.getId();
+	}
 
-    private AiApiKeyDO validateApiKeyExists(Long id) {
-        AiApiKeyDO apiKey = apiKeyMapper.selectById(id);
-        if (apiKey == null) {
-            throw exception(API_KEY_NOT_EXISTS);
-        }
-        return apiKey;
-    }
+	@Override
+	public void updateApiKey(AiApiKeySaveReqVO updateReqVO, Long userId) {
+		// 校验存在
+		AiApiKeyDO apiKey = validateApiKeyExists(updateReqVO.getId());
 
-    @Override
-    public AiApiKeyDO getApiKey(Long id) {
-        return apiKeyMapper.selectById(id);
-    }
+		// 权限校验
+		if (Boolean.FALSE.equals(apiKey.getPublicStatus())) {
+			// 私有密钥，只有创建者可以编辑
+			if (ObjectUtil.notEqual(apiKey.getUserId(), userId)) {
+				throw exception(API_KEY_NOT_EXISTS);
+			}
+		} else {
+			// 公开密钥，需要管理员权限
+			if (userId >= 10937855681025L) {
+				throw exception(API_KEY_NOT_EXISTS);
+			}
+		}
 
-    @Override
-    public AiApiKeyDO validateApiKey(Long id) {
-        AiApiKeyDO apiKey = validateApiKeyExists(id);
-        if (CommonStatusEnum.isDisable(apiKey.getStatus())) {
-            throw exception(API_KEY_DISABLE);
-        }
-        return apiKey;
-    }
+		// 更新
+		AiApiKeyDO updateObj = BeanUtils.toBean(updateReqVO, AiApiKeyDO.class);
+		apiKeyMapper.updateById(updateObj);
+	}
 
-    @Override
-    public PageResult<AiApiKeyDO> getApiKeyPage(AiApiKeyPageReqVO pageReqVO) {
-        return apiKeyMapper.selectPage(pageReqVO);
-    }
+	@Override
+	public void deleteApiKey(Long id, Long userId) {
+		// 校验存在
+		AiApiKeyDO apiKey = validateApiKeyExists(id);
 
-    @Override
-    public List<AiApiKeyDO> getApiKeyList() {
-        return apiKeyMapper.selectList();
-    }
+		// 权限校验
+		if (Boolean.FALSE.equals(apiKey.getPublicStatus())) {
+			// 私有密钥，只有创建者可以删除
+			if (ObjectUtil.notEqual(apiKey.getUserId(), userId)) {
+				throw exception(API_KEY_NOT_EXISTS);
+			}
+		} else {
+			// 公开密钥，需要管理员权限
+			if (userId >= 10937855681025L) {
+				throw exception(API_KEY_NOT_EXISTS);
+			}
+		}
 
-    @Override
-    public AiApiKeyDO getRequiredDefaultApiKey(String platform, Integer status) {
-        AiApiKeyDO apiKey = apiKeyMapper.selectFirstByPlatformAndStatus(platform, status);
-        if (apiKey == null) {
-            throw exception(API_KEY_NOT_EXISTS);
-        }
-        return apiKey;
-    }
+		// 删除
+		apiKeyMapper.deleteById(id);
+	}
+
+	private AiApiKeyDO validateApiKeyExists(Long id) {
+		AiApiKeyDO apiKey = apiKeyMapper.selectById(id);
+		if (apiKey == null) {
+			throw exception(API_KEY_NOT_EXISTS);
+		}
+		return apiKey;
+	}
+
+	@Override
+	public AiApiKeyDO getApiKey(Long id) {
+		return apiKeyMapper.selectById(id);
+	}
+
+	@Override
+	public AiApiKeyDO validateApiKey(Long id) {
+		AiApiKeyDO apiKey = validateApiKeyExists(id);
+		if (CommonStatusEnum.isDisable(apiKey.getStatus())) {
+			throw exception(API_KEY_DISABLE);
+		}
+		return apiKey;
+	}
+
+	@Override
+	public PageResult<AiApiKeyDO> getApiKeyPage(AiApiKeyPageReqVO pageReqVO, Long userId) {
+		return apiKeyMapper.selectPageByMy(pageReqVO, userId);
+	}
+
+	@Override
+	public List<AiApiKeyDO> getApiKeyList() {
+		return apiKeyMapper.selectList();
+	}
+
+	@Override
+	public AiApiKeyDO getRequiredDefaultApiKey(String platform, Integer status) {
+		AiApiKeyDO apiKey = apiKeyMapper.selectFirstByPlatformAndStatus(platform, status);
+		if (apiKey == null) {
+			throw exception(API_KEY_NOT_EXISTS);
+		}
+		return apiKey;
+	}
 
 }

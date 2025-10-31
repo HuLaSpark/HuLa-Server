@@ -18,6 +18,8 @@ public class AiChatRoleSaveMyReqVO {
     @NotEmpty(message = "角色名称不能为空")
     private String name;
 
+	private String category;
+
     @Schema(description = "角色头像", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://www.iocoder.cn/1.png")
     @NotEmpty(message = "角色头像不能为空")
     @URL(message = "角色头像必须是 URL 格式")
@@ -37,4 +39,6 @@ public class AiChatRoleSaveMyReqVO {
     @Schema(description = "引用的工具编号列表", example = "1,2,3")
     private List<Long> toolIds;
 
+	@Schema(description = "模型id", example = "1")
+	private Long modelId;
 }

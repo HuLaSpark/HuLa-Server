@@ -1,6 +1,7 @@
 package com.luohuo.flex.im.core.user.service.cache;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.im.common.constant.RedisKey;
 import com.luohuo.flex.im.common.service.cache.AbstractRedisStringCache;
 import com.luohuo.flex.im.core.user.dao.BlackDao;
@@ -112,6 +113,7 @@ public class UserSummaryCache extends AbstractRedisStringCache<Long, SummeryInfo
 		return null;
 	}
 
+	@TenantIgnore
 	@Cacheable(cacheNames = "luohuo:user", key = "'blackList'")
 	public Map<Integer, Set<String>> getBlackMap() {
 		LocalDateTime now = LocalDateTime.now();

@@ -2,6 +2,7 @@ package com.luohuo.flex.ai.service.chat;
 
 
 import com.luohuo.flex.ai.common.pojo.PageResult;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessagePageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendRespVO;
@@ -57,10 +58,10 @@ public interface AiChatMessageService {
     /**
      * 删除指定对话的消息
      *
-     * @param conversationId 对话编号
+     * @param reqVOS 对话编号
      * @param userId 用户编号
      */
-    void deleteChatMessageByConversationId(Long conversationId, Long userId);
+    void deleteChatMessageByConversationId(AiDelReqVO reqVOS, Long userId);
 
     /**
      * 【管理员】删除消息

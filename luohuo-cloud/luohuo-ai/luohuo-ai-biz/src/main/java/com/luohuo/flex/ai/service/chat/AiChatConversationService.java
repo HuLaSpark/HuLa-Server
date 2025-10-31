@@ -2,6 +2,7 @@ package com.luohuo.flex.ai.service.chat;
 
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationCreateMyReqVO;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationPageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationUpdateMyReqVO;
 import com.luohuo.flex.ai.dal.chat.AiChatConversationDO;
@@ -21,7 +22,7 @@ public interface AiChatConversationService {
      * @param userId 用户编号
      * @return 编号
      */
-    Long createChatConversationMy(AiChatConversationCreateMyReqVO createReqVO, Long userId);
+	AiChatConversationDO createChatConversationMy(AiChatConversationCreateMyReqVO createReqVO, Long userId);
 
     /**
      * 更新【我的】聊天对话
@@ -50,10 +51,10 @@ public interface AiChatConversationService {
     /**
      * 删除【我的】聊天对话
      *
-     * @param id 编号
+     * @param reqVO 编号
      * @param userId 用户编号
      */
-    void deleteChatConversationMy(Long id, Long userId);
+    void deleteChatConversationMy(AiDelReqVO reqVO, Long userId);
 
     /**
      * 【管理员】删除聊天对话

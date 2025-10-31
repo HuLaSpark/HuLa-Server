@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Schema(description = "管理后台 - API 模型新增/修改 Request VO")
+@Schema(description = "管理后台 - API 模型新增/修改【我的】 Request VO")
 @Data
-public class AiModelSaveReqVO {
+public class AiModelSaveMyReqVO {
 
     @Schema(description = "编号", example = "2630")
     private Long id;
@@ -33,13 +33,8 @@ public class AiModelSaveReqVO {
     @NotNull(message = "模型类型不能为空")
     private Integer type;
 
-    @Schema(description = "排序", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotNull(message = "排序不能为空")
+    @Schema(description = "排序", example = "1")
     private Integer sort;
-
-    @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotNull(message = "状态不能为空")
-    private Integer status;
 
     @Schema(description = "温度参数", example = "1")
     private Double temperature;
@@ -49,8 +44,5 @@ public class AiModelSaveReqVO {
 
     @Schema(description = "上下文的最大 Message 数量", example = "8192")
     private Integer maxContexts;
-
-    @Schema(description = "是否公开", example = "false")
-    private Boolean publicStatus;
 
 }

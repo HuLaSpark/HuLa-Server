@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * AI 模型 DO
@@ -23,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class AiModelDO extends BaseDO {
 
     /**
@@ -30,6 +32,14 @@ public class AiModelDO extends BaseDO {
      */
     @TableId
     private Long id;
+
+    /**
+     * 用户编号
+     *
+     * 关联 AdminUserDO 的 userId 字段
+     */
+    private Long userId;
+
     /**
      * API 秘钥编号
      *
@@ -67,6 +77,14 @@ public class AiModelDO extends BaseDO {
      * 枚举 {@link CommonStatusEnum}
      */
     private Integer status;
+
+    /**
+     * 是否公开
+     *
+     * 1. true - 公开；系统级别模型，所有用户可见
+     * 2. false - 私有；用户专属模型，仅创建者可见
+     */
+    private Boolean publicStatus;
 
     // ========== 对话配置 ==========
 

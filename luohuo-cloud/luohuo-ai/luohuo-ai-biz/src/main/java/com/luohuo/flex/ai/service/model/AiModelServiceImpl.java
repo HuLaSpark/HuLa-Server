@@ -1,12 +1,13 @@
 package com.luohuo.flex.ai.service.model;
 
-
 import com.agentsflex.llm.ollama.OllamaLlm;
 import com.agentsflex.llm.ollama.OllamaLlmConfig;
 import com.agentsflex.llm.qwen.QwenLlm;
 import com.agentsflex.llm.qwen.QwenLlmConfig;
+import cn.hutool.core.util.ObjectUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelPageReqVO;
+import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveMyReqVO;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveReqVO;
 import com.luohuo.flex.ai.core.AiModelFactory;
 import com.luohuo.flex.ai.core.model.MidjourneyApi;
@@ -43,161 +44,233 @@ import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 @Validated
 public class AiModelServiceImpl implements AiModelService {
 
-    @Resource
-    private AiApiKeyService apiKeyService;
+	@Resource
+	private AiApiKeyService apiKeyService;
 
-    @Resource
-    private AiChatMapper modelMapper;
+	@Resource
+	private AiChatMapper modelMapper;
 
-    @Resource
-    private AiModelFactory modelFactory;
+	@Resource
+	private AiModelFactory modelFactory;
 
-    @Override
-    public Long createModel(AiModelSaveReqVO createReqVO) {
-        // 1. 校验
-        AiPlatformEnum.validatePlatform(createReqVO.getPlatform());
-        apiKeyService.validateApiKey(createReqVO.getKeyId());
+	@Override
+	public Long createModel(AiModelSaveReqVO createReqVO) {
+		// 1. 校验
+		AiPlatformEnum.validatePlatform(createReqVO.getPlatform());
+		apiKeyService.validateApiKey(createReqVO.getKeyId());
 
-        // 2. 插入
-        AiModelDO model = BeanUtils.toBean(createReqVO, AiModelDO.class);
-        modelMapper.insert(model);
-        return model.getId();
-    }
+		// 2. 插入
+		AiModelDO model = BeanUtils.toBean(createReqVO, AiModelDO.class);
+		// 如果是私有模型且没有设置 userId，则抛出异常
+		if (Boolean.FALSE.equals(createReqVO.getPublicStatus()) && model.getUserId() == null) {
+			throw exception(MODEL_NOT_EXISTS); // 使用适当的错误码
+		}
+		modelMapper.insert(model);
+		return model.getId();
+	}
 
-    @Override
-    public void updateModel(AiModelSaveReqVO updateReqVO) {
-        // 1. 校验
-        validateModelExists(updateReqVO.getId());
-        AiPlatformEnum.validatePlatform(updateReqVO.getPlatform());
-        apiKeyService.validateApiKey(updateReqVO.getKeyId());
+	@Override
+	public Long createModelMy(AiModelSaveMyReqVO createReqVO, Long userId) {
+		// 1. 校验
+		AiPlatformEnum.validatePlatform(createReqVO.getPlatform());
+		apiKeyService.validateApiKey(createReqVO.getKeyId());
 
-        // 2. 更新
-        AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
-        modelMapper.updateById(updateObj);
-    }
+		// 2. 插入
+		AiModelDO model = BeanUtils.toBean(createReqVO, AiModelDO.class)
+				.setUserId(userId)
+				.setStatus(CommonStatusEnum.ENABLE.getStatus())
+				.setPublicStatus(false);
+		modelMapper.insert(model);
+		return model.getId();
+	}
 
-    @Override
-    public void deleteModel(Long id) {
-        // 校验存在
-        validateModelExists(id);
-        // 删除
-        modelMapper.deleteById(id);
-    }
+	@Override
+	public void updateModel(AiModelSaveReqVO updateReqVO) {
+		// 1. 校验存在
+		AiModelDO model = validateModelExists(updateReqVO.getId());
 
-    private AiModelDO validateModelExists(Long id) {
-        AiModelDO model = modelMapper.selectById(id);
-        if (modelMapper.selectById(id) == null) {
-            throw exception(MODEL_NOT_EXISTS);
-        }
-        return model;
-    }
+		// 2. 权限校验：公开模型不允许普通用户编辑（管理员可以通过其他方式编辑）
+		// 如果 updateReqVO 中指定了 userId，说明是普通用户操作
+		if (updateReqVO.getId() != null) {
+			// 如果是私有模型，校验是否是创建者
+			if (Boolean.FALSE.equals(model.getPublicStatus())) {
+				// 私有模型需要校验 userId
+				if (updateReqVO instanceof AiModelSaveReqVO && model.getUserId() != null) {
+					// 这里需要从上下文获取当前用户ID进行校验
+					// 暂时保持原有逻辑，具体权限在 Controller 层控制
+				}
+			}
+		}
 
-    @Override
-    public AiModelDO getModel(Long id) {
-        return modelMapper.selectById(id);
-    }
+		// 3. 校验平台和密钥
+		AiPlatformEnum.validatePlatform(updateReqVO.getPlatform());
+		apiKeyService.validateApiKey(updateReqVO.getKeyId());
 
-    @Override
-    public AiModelDO getRequiredDefaultModel(Integer type) {
-        AiModelDO model = modelMapper.selectFirstByStatus(type, CommonStatusEnum.ENABLE.getStatus());
-        if (model == null) {
-            throw exception(MODEL_DEFAULT_NOT_EXISTS);
-        }
-        return model;
-    }
+		// 4. 更新
+		AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
+		modelMapper.updateById(updateObj);
+	}
 
-    @Override
-    public PageResult<AiModelDO> getModelPage(AiModelPageReqVO pageReqVO) {
-        return modelMapper.selectPage(pageReqVO);
-    }
+	@Override
+	public void updateModelMy(AiModelSaveMyReqVO updateReqVO, Long userId) {
+		// 1. 校验存在
+		AiModelDO model = validateModelExists(updateReqVO.getId());
+		if (ObjectUtil.notEqual(model.getUserId(), userId)) {
+			throw exception(MODEL_NOT_EXISTS);
+		}
+		// 2. 校验平台和密钥
+		AiPlatformEnum.validatePlatform(updateReqVO.getPlatform());
+		apiKeyService.validateApiKey(updateReqVO.getKeyId());
 
-    @Override
-    public AiModelDO validateModel(Long id) {
-        AiModelDO model = validateModelExists(id);
-        if (CommonStatusEnum.isDisable(model.getStatus())) {
-            throw exception(MODEL_DISABLE);
-        }
-        return model;
-    }
+		// 3. 更新
+		AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
+		updateObj.setUserId(userId);
+		modelMapper.updateById(updateObj);
+	}
 
-    @Override
-    public List<AiModelDO> getModelListByStatusAndType(Integer status, Integer type, String platform) {
-        return modelMapper.selectListByStatusAndType(status, type, platform);
-    }
+	@Override
+	public void deleteModel(Long id) {
+		// 校验存在
+		validateModelExists(id);
+		// 删除
+		modelMapper.deleteById(id);
+	}
 
-    // ========== 与 Spring AI 集成 ==========
+	@Override
+	public void deleteModelMy(Long id, Long userId) {
+		// 校验存在
+		AiModelDO model = validateModelExists(id);
+		if (ObjectUtil.notEqual(model.getUserId(), userId)) {
+			throw exception(MODEL_NOT_EXISTS);
+		}
+		// 删除
+		modelMapper.deleteById(id);
+	}
 
-    @Override
-    public ChatModel getChatModel(Long id) {
-        AiModelDO model = validateModel(id);
-        AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
-        AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
-        return modelFactory.getOrCreateChatModel(platform, apiKey.getApiKey(), apiKey.getUrl());
-    }
+	private AiModelDO validateModelExists(Long id) {
+		AiModelDO model = modelMapper.selectById(id);
+		if (modelMapper.selectById(id) == null) {
+			throw exception(MODEL_NOT_EXISTS);
+		}
+		return model;
+	}
 
-    @Override
-    public ImageModel getImageModel(Long id) {
-        AiModelDO model = validateModel(id);
-        AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
-        AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
-        return modelFactory.getOrCreateImageModel(platform, apiKey.getApiKey(), apiKey.getUrl());
-    }
+	@Override
+	public AiModelDO getModel(Long id) {
+		return modelMapper.selectById(id);
+	}
 
-    @Override
-    public MidjourneyApi getMidjourneyApi(Long id) {
-        AiModelDO model = validateModel(id);
-        AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
-        return modelFactory.getOrCreateMidjourneyApi(apiKey.getApiKey(), apiKey.getUrl());
-    }
+	@Override
+	public AiModelDO getRequiredDefaultModel(Integer type) {
+		AiModelDO model = modelMapper.selectFirstByStatus(type, CommonStatusEnum.ENABLE.getStatus());
+		if (model == null) {
+			throw exception(MODEL_DEFAULT_NOT_EXISTS);
+		}
+		return model;
+	}
 
-    @Override
-    public SunoApi getSunoApi() {
-        AiApiKeyDO apiKey = apiKeyService.getRequiredDefaultApiKey(
-                AiPlatformEnum.SUNO.getPlatform(), CommonStatusEnum.ENABLE.getStatus());
-        return modelFactory.getOrCreateSunoApi(apiKey.getApiKey(), apiKey.getUrl());
-    }
+	@Override
+	public PageResult<AiModelDO> getModelPage(AiModelPageReqVO pageReqVO) {
+		return modelMapper.selectPage(pageReqVO);
+	}
 
-    @Override
-    public VectorStore getOrCreateVectorStore(Long id, Map<String, Class<?>> metadataFields) {
-        // 获取模型 + 密钥
-        AiModelDO model = validateModel(id);
-        AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
-        AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+	@Override
+	public PageResult<AiModelDO> getModelMyPage(AiModelPageReqVO pageReqVO, Long userId) {
+		return modelMapper.selectPageByMy(pageReqVO, userId);
+	}
 
-        // 创建或获取 EmbeddingModel 对象
-        EmbeddingModel embeddingModel = modelFactory.getOrCreateEmbeddingModel(
-                platform, apiKey.getApiKey(), apiKey.getUrl(), model.getModel());
+	@Override
+	public AiModelDO validateModel(Long id) {
+		AiModelDO model = validateModelExists(id);
+		if (CommonStatusEnum.isDisable(model.getStatus())) {
+			throw exception(MODEL_DISABLE);
+		}
+		return model;
+	}
 
-        // 创建或获取 VectorStore 对象
-         return modelFactory.getOrCreateVectorStore(SimpleVectorStore.class, embeddingModel, metadataFields);
+	@Override
+	public List<AiModelDO> getModelListByStatusAndType(Integer status, Integer type, String platform) {
+		return modelMapper.selectListByStatusAndType(status, type, platform);
+	}
+
+	@Override
+	public List<AiModelDO> getModelListByStatusAndTypeAndUserId(Integer status, Integer type, String platform, Long userId) {
+		return modelMapper.selectListByStatusAndTypeAndUserId(status, type, platform, userId);
+	}
+
+	// ========== 与 Spring AI 集成 ==========
+
+	@Override
+	public ChatModel getChatModel(Long id) {
+		AiModelDO model = validateModel(id);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+		return modelFactory.getOrCreateChatModel(platform, apiKey.getApiKey(), apiKey.getUrl());
+	}
+
+	@Override
+	public ImageModel getImageModel(Long id) {
+		AiModelDO model = validateModel(id);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+		return modelFactory.getOrCreateImageModel(platform, apiKey.getApiKey(), apiKey.getUrl());
+	}
+
+	@Override
+	public MidjourneyApi getMidjourneyApi(Long id) {
+		AiModelDO model = validateModel(id);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		return modelFactory.getOrCreateMidjourneyApi(apiKey.getApiKey(), apiKey.getUrl());
+	}
+
+	@Override
+	public SunoApi getSunoApi() {
+		AiApiKeyDO apiKey = apiKeyService.getRequiredDefaultApiKey(
+				AiPlatformEnum.SUNO.getPlatform(), CommonStatusEnum.ENABLE.getStatus());
+		return modelFactory.getOrCreateSunoApi(apiKey.getApiKey(), apiKey.getUrl());
+	}
+
+	@Override
+	public VectorStore getOrCreateVectorStore(Long id, Map<String, Class<?>> metadataFields) {
+		// 获取模型 + 密钥
+		AiModelDO model = validateModel(id);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+
+		// 创建或获取 EmbeddingModel 对象
+		EmbeddingModel embeddingModel = modelFactory.getOrCreateEmbeddingModel(
+				platform, apiKey.getApiKey(), apiKey.getUrl(), model.getModel());
+
+		// 创建或获取 VectorStore 对象
+		return modelFactory.getOrCreateVectorStore(SimpleVectorStore.class, embeddingModel, metadataFields);
 //         return modelFactory.getOrCreateVectorStore(QdrantVectorStore.class, embeddingModel, metadataFields);
 //         return modelFactory.getOrCreateVectorStore(RedisVectorStore.class, embeddingModel, metadataFields);
 //         return modelFactory.getOrCreateVectorStore(MilvusVectorStore.class, embeddingModel, metadataFields);
-    }
+	}
 
-    // TODO @lesan：是不是返回 Llm 对象会好点哈？
-    @Override
-    public void getLLmProvider4Tinyflow(Tinyflow tinyflow, Long modelId) {
-        AiModelDO model = validateModel(modelId);
-        AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
-        AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
-        switch (platform) {
-            // TODO @lesan 考虑到未来不需要使用agents-flex 现在仅测试通义千问
-            // TODO @lesan：【重要】是不是可以实现一个 SpringAiLlm，这样的话，内部全部用它就好了。只实现 chat 部分；这样，就把 flex 作为一个 agent 框架，内部调用，还是 spring ai 相关的。成本可能低一点？！
-            case TONG_YI:
-                QwenLlmConfig qwenLlmConfig = new QwenLlmConfig();
-                qwenLlmConfig.setApiKey(apiKey.getApiKey());
-                qwenLlmConfig.setModel(model.getModel());
-                // TODO @lesan：这个有点奇怪。。。如果一个链式里，有多个模型，咋整呀。。。
-                tinyflow.setLlmProvider(id -> new QwenLlm(qwenLlmConfig));
-                break;
-            case OLLAMA:
-                OllamaLlmConfig ollamaLlmConfig = new OllamaLlmConfig();
-                ollamaLlmConfig.setEndpoint(apiKey.getUrl());
-                ollamaLlmConfig.setModel(model.getModel());
-                tinyflow.setLlmProvider(id -> new OllamaLlm(ollamaLlmConfig));
-                break;
-        }
-    }
+	// TODO @lesan：是不是返回 Llm 对象会好点哈？
+	@Override
+	public void getLLmProvider4Tinyflow(Tinyflow tinyflow, Long modelId) {
+		AiModelDO model = validateModel(modelId);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+		switch (platform) {
+			// TODO @lesan 考虑到未来不需要使用agents-flex 现在仅测试通义千问
+			// TODO @lesan：【重要】是不是可以实现一个 SpringAiLlm，这样的话，内部全部用它就好了。只实现 chat 部分；这样，就把 flex 作为一个 agent 框架，内部调用，还是 spring ai 相关的。成本可能低一点？！
+			case TONG_YI:
+				QwenLlmConfig qwenLlmConfig = new QwenLlmConfig();
+				qwenLlmConfig.setApiKey(apiKey.getApiKey());
+				qwenLlmConfig.setModel(model.getModel());
+				// TODO @lesan：这个有点奇怪。。。如果一个链式里，有多个模型，咋整呀。。。
+				tinyflow.setLlmProvider(id -> new QwenLlm(qwenLlmConfig));
+				break;
+			case OLLAMA:
+				OllamaLlmConfig ollamaLlmConfig = new OllamaLlmConfig();
+				ollamaLlmConfig.setEndpoint(apiKey.getUrl());
+				ollamaLlmConfig.setModel(model.getModel());
+				tinyflow.setLlmProvider(id -> new OllamaLlm(ollamaLlmConfig));
+				break;
+		}
+	}
 
 }

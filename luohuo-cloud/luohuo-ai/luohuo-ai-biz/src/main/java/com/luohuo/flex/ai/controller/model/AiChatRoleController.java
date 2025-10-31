@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.luohuo.basic.base.R.success;
 
@@ -33,63 +34,36 @@ public class AiChatRoleController {
     @Resource
     private AiChatRoleService chatRoleService;
 
-    @GetMapping("/my-page")
-    @Operation(summary = "获得【我的】聊天角色分页")
-    public R<PageResult<AiChatRoleRespVO>> getChatRoleMyPage(@Valid AiChatRolePageReqVO pageReqVO) {
-        PageResult<AiChatRoleDO> pageResult = chatRoleService.getChatRoleMyPage(pageReqVO, ContextUtil.getUid());
-        return success(BeanUtils.toBean(pageResult, AiChatRoleRespVO.class));
-    }
-
-    @GetMapping("/get-my")
-    @Operation(summary = "获得【我的】聊天角色")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    public R<AiChatRoleRespVO> getChatRoleMy(@RequestParam("id") Long id) {
-        AiChatRoleDO chatRole = chatRoleService.getChatRole(id);
-        if (ObjUtil.notEqual(chatRole.getUserId(), ContextUtil.getUid())) {
-            return success(null);
-        }
-        return success(BeanUtils.toBean(chatRole, AiChatRoleRespVO.class));
-    }
-
-    @PostMapping("/create-my")
-    @Operation(summary = "创建【我的】聊天角色")
-    public R<Long> createChatRoleMy(@Valid @RequestBody AiChatRoleSaveMyReqVO createReqVO) {
-        return success(chatRoleService.createChatRoleMy(createReqVO, ContextUtil.getUid()));
-    }
-
-    @PutMapping("/update-my")
-    @Operation(summary = "更新【我的】聊天角色")
-    public R<Boolean> updateChatRoleMy(@Valid @RequestBody AiChatRoleSaveMyReqVO updateReqVO) {
-        chatRoleService.updateChatRoleMy(updateReqVO, ContextUtil.getUid());
-        return success(true);
-    }
-
-    @DeleteMapping("/delete-my")
-    @Operation(summary = "删除【我的】聊天角色")
-    @Parameter(name = "id", description = "编号", required = true)
-    public R<Boolean> deleteChatRoleMy(@RequestParam("id") Long id) {
-        chatRoleService.deleteChatRoleMy(id, ContextUtil.getUid());
-        return success(true);
-    }
-
-    @GetMapping("/category-list")
-    @Operation(summary = "获得聊天角色的分类列表")
-    public R<List<String>> getChatRoleCategoryList() {
-        return success(chatRoleService.getChatRoleCategoryList());
-    }
-
-    // ========== 角色管理 ==========
-
     @PostMapping("/create")
     @Operation(summary = "创建聊天角色")
     public R<Long> createChatRole(@Valid @RequestBody AiChatRoleSaveReqVO createReqVO) {
+        if (createReqVO.getPublicStatus() == null || Boolean.FALSE.equals(createReqVO.getPublicStatus())) {
+            AiChatRoleSaveMyReqVO myReqVO = BeanUtils.toBean(createReqVO, AiChatRoleSaveMyReqVO.class);
+            return success(chatRoleService.createChatRoleMy(myReqVO, ContextUtil.getUid()));
+        }
+        // 管理员创建公开角色
         return success(chatRoleService.createChatRole(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新聊天角色")
     public R<Boolean> updateChatRole(@Valid @RequestBody AiChatRoleSaveReqVO updateReqVO) {
-        chatRoleService.updateChatRole(updateReqVO);
+        AiChatRoleDO chatRole = chatRoleService.getChatRole(updateReqVO.getId());
+        if (chatRole == null) {
+            return success(false);
+        }
+
+        Long uid = ContextUtil.getUid();
+        if (Boolean.FALSE.equals(chatRole.getPublicStatus())) {
+            if (ObjUtil.notEqual(chatRole.getUserId(), uid)) {
+                return success(false); // 无权限
+            }
+            chatRoleService.updateChatRoleMy(updateReqVO, uid);
+        } else {
+            if (uid < 10937855681025L) {
+                chatRoleService.updateChatRole(updateReqVO);
+            }
+        }
         return success(true);
     }
 
@@ -97,7 +71,22 @@ public class AiChatRoleController {
     @Operation(summary = "删除聊天角色")
     @Parameter(name = "id", description = "编号", required = true)
     public R<Boolean> deleteChatRole(@RequestParam("id") Long id) {
-        chatRoleService.deleteChatRole(id);
+        AiChatRoleDO chatRole = chatRoleService.getChatRole(id);
+        if (chatRole == null) {
+            return success(false);
+        }
+
+        Long uid = ContextUtil.getUid();
+        if (Boolean.FALSE.equals(chatRole.getPublicStatus())) {
+            if (ObjUtil.notEqual(chatRole.getUserId(), uid)) {
+                return success(false); // 无权限
+            }
+            chatRoleService.deleteChatRoleMy(id, uid);
+        } else {
+            if (uid < 10937855681025L) {
+                chatRoleService.deleteChatRole(id);
+            }
+        }
         return success(true);
     }
 
@@ -110,10 +99,16 @@ public class AiChatRoleController {
     }
 
     @GetMapping("/page")
-    @Operation(summary = "获得聊天角色分页")
+    @Operation(summary = "获得聊天角色分页（包含系统公开角色和用户私有角色）")
     public R<PageResult<AiChatRoleRespVO>> getChatRolePage(@Valid AiChatRolePageReqVO pageReqVO) {
-        PageResult<AiChatRoleDO> pageResult = chatRoleService.getChatRolePage(pageReqVO);
+        PageResult<AiChatRoleDO> pageResult = chatRoleService.getChatRoleMyPage(pageReqVO, ContextUtil.getUid());
         return success(BeanUtils.toBean(pageResult, AiChatRoleRespVO.class));
+    }
+
+    @GetMapping("/category-list")
+    @Operation(summary = "获得聊天角色的分类列表")
+    public R<List<Map<String, String>>> getChatRoleCategoryList() {
+        return success(chatRoleService.getChatRoleCategoryList());
     }
 
 }
