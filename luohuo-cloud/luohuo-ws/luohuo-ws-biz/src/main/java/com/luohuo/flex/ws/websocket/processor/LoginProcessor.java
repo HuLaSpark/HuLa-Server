@@ -24,15 +24,13 @@
 //	@Resource
 //	private SessionManager sessionManager;
 //    @Override
-//    public boolean supports(String payload) {
-//        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+//    public boolean supports(WSBaseReq req) {
 //        return WSReqTypeEnum.LOGIN.equals(WSReqTypeEnum.of(req.getType()));
 //    }
 //
 //    @Override
-//    public void process(WebSocketSession session, Long uid, String payload) {
+//    public void process(WebSocketSession session, Long uid, WSBaseReq req) {
 //		try {
-//			WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
 //			String qrToken = req.getData().getStr("qrToken");
 //
 //			// 1. 验证Token有效性

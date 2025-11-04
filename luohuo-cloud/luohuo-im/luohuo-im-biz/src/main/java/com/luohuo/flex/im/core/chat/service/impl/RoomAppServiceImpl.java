@@ -489,7 +489,7 @@ public class RoomAppServiceImpl implements RoomAppService, InitializingBean {
 
 				// 4. 异步清理缓存
 				CompletableFuture.runAsync(() -> {
-					roomGroupCache.delete(roomGroup.getId());
+					roomGroupCache.delete(roomGroup.getRoomId());
 					roomGroupCache.evictGroup(roomGroup.getAccount());
 				});
 

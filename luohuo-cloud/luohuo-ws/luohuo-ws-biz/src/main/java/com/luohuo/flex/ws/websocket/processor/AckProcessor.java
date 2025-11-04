@@ -28,19 +28,18 @@ public class AckProcessor implements MessageProcessor {
 	private RocketMQTemplate rocketMQTemplate;
 
     @Override
-    public boolean supports(String payload) {
-        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
         return WSReqTypeEnum.ACK.eq(req.getType());
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
+    public void process(WebSocketSession session, Long uid, WSBaseReq payload) {
 		if(ReactiveContextUtil.getTenantId() == null){
 			ReactiveContextUtil.setTenantId(DefValConstants.DEF_TENANT_ID);
 			ReactiveContextUtil.setUid(uid);
 		}
 
-		AckMessageDTO req = JSONUtil.toBean(JSONUtil.toBean(payload, WSBaseReq.class).getData(), AckMessageDTO.class);
+		AckMessageDTO req = JSONUtil.toBean(payload.getData(), AckMessageDTO.class);
 		req.setUid(uid);
 		rocketMQTemplate.send(MqConstant.MSG_PUSH_ACK_TOPIC, MessageBuilder.withPayload(req).build());
 	}

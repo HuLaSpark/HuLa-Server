@@ -7,12 +7,17 @@ import com.luohuo.basic.cache.redis2.CacheResult;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.exception.BizException;
 import com.luohuo.basic.model.cache.CacheHashKey;
+import com.luohuo.flex.common.cache.common.FeedCommentCacheKeyBuilder;
+import com.luohuo.flex.common.cache.common.FeedLikeCacheKeyBuilder;
 import com.luohuo.flex.common.cache.common.FeedMediaRelCacheKeyBuilder;
 import com.luohuo.flex.common.cache.common.FeedTargetRelCacheKeyBuilder;
+import com.luohuo.flex.im.domain.entity.FeedLike;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.core.chat.service.adapter.MemberAdapter;
+import com.luohuo.flex.im.core.user.dao.FeedCommentDao;
 import com.luohuo.flex.im.core.user.dao.FeedDao;
+import com.luohuo.flex.im.core.user.dao.FeedLikeDao;
 import com.luohuo.flex.im.core.user.dao.FeedMediaDao;
 import com.luohuo.flex.im.core.user.dao.FeedTargetDao;
 import com.luohuo.flex.im.core.user.dao.UserFriendDao;
@@ -24,18 +29,19 @@ import com.luohuo.flex.im.domain.enums.FeedPermissionEnum;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedParam;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedPermission;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedVo;
+import com.luohuo.flex.im.domain.vo.resp.feed.FeedLikeVo;
+import com.luohuo.flex.im.domain.vo.resp.feed.FeedCommentVo;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.core.user.service.FeedService;
+import com.luohuo.flex.im.core.user.service.FeedCommentService;
 import com.luohuo.flex.im.core.user.service.UserTargetRelService;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,17 +59,54 @@ public class FeedServiceImpl implements FeedService {
 	private final UserFriendDao userFriendDao;
 	private final CachePlusOps cachePlusOps;
 	private final FeedTargetDao feedTargetDao;
+	private final FeedCommentDao feedCommentDao;
+	private final FeedCommentService feedCommentService;
+	private final FeedLikeDao feedLikeDao;
+	private final UserSummaryCache userSummaryCache;
 
 	/**
 	 * @param feedList 朋友圈基础内容
+	 * @param currentUid 当前用户ID
 	 * @return
 	 */
-	private List<FeedVo> buildFeedResp(List<Feed> feedList) {
+	private List<FeedVo> buildFeedResp(List<Feed> feedList, Long currentUid) {
+		return buildFeedResp(feedList, false, currentUid);
+	}
+
+	/**
+	 * @param feedList 朋友圈基础内容
+	 * @param currentUid 当前用户ID（用于判断是否已点赞）
+	 * @return
+	 */
+	private List<FeedVo> buildFeedResp(List<Feed> feedList, boolean isDetail, Long currentUid) {
 		List<FeedVo> feedVos = new ArrayList<>();
+
+		// 批量获取所有发布者的用户信息
+		Set<Long> userIds = feedList.stream().map(Feed::getUid).collect(Collectors.toSet());
+		Map<Long, SummeryInfoDTO> userInfoMap = userSummaryCache.getBatch(new ArrayList<>(userIds));
+
+		// 批量获取当前用户对所有朋友圈的点赞状态
+		Map<Long, Boolean> likeStatusMap = new HashMap<>();
+		if (CollUtil.isNotEmpty(feedList)) {
+			List<Long> feedIds = feedList.stream().map(Feed::getId).collect(Collectors.toList());
+			for (Long feedId : feedIds) {
+				FeedLike like = feedLikeDao.get(currentUid, feedId);
+				likeStatusMap.put(feedId, Objects.nonNull(like));
+			}
+		}
+
 		for (Feed feed : feedList) {
 			FeedVo feedVo = new FeedVo();
 			BeanUtil.copyProperties(feed, feedVo);
 
+			// 添加发布者信息
+			SummeryInfoDTO userInfo = userInfoMap.get(feed.getUid());
+			if (ObjectUtil.isNotNull(userInfo)) {
+				feedVo.setUserName(userInfo.getName());
+				feedVo.setUserAvatar(userInfo.getAvatar());
+			}
+
+			// 添加媒体信息
 			if(!feed.getMediaType().equals(FeedEnum.WORD.getType())){
 				CacheHashKey hashKey = FeedMediaRelCacheKeyBuilder.build(feed.getId());
 				CacheResult<List<FeedMedia>> result = cachePlusOps.get(hashKey, t -> feedMediaDao.getMediaByFeedId(feed.getId()));
@@ -72,6 +115,46 @@ public class FeedServiceImpl implements FeedService {
 					feedVo.setUrls(mediaList.stream().sorted(Comparator.comparingInt(FeedMedia::getSort)).map(FeedMedia::getUrl).collect(Collectors.toList()));
 				}
 			}
+
+			// 添加点赞信息
+			Integer likeCount = feedLikeDao.getLikeCount(feed.getId());
+			feedVo.setLikeCount(likeCount);
+
+			// 设置当前用户是否已点赞
+			feedVo.setHasLiked(likeStatusMap.getOrDefault(feed.getId(), false));
+
+			// 获取点赞列表（返回全部，前端按高度显示）
+			List<Long> likeUidList = feedLikeDao.getLikeUidList(feed.getId());
+
+			if (CollUtil.isNotEmpty(likeUidList)) {
+				Map<Long, SummeryInfoDTO> likeUserInfoMap = userSummaryCache.getBatch(likeUidList);
+				List<FeedLikeVo> likeList = likeUidList.stream()
+						.map(uid -> {
+							SummeryInfoDTO likeUserInfo = likeUserInfoMap.get(uid);
+							if (ObjectUtil.isNull(likeUserInfo)) {
+								return null;
+							}
+							return FeedLikeVo.builder()
+									.uid(uid)
+									.userName(likeUserInfo.getName())
+									.userAvatar(likeUserInfo.getAvatar())
+									.build();
+						})
+						.filter(Objects::nonNull)
+						.collect(Collectors.toList());
+				feedVo.setLikeList(likeList);
+			}
+
+			// 添加评论数量
+			Integer commentCount = feedCommentDao.getCommentCount(feed.getId());
+			feedVo.setCommentCount(commentCount);
+
+			// 获取评论列表（返回全部，前端按高度显示）
+			List<FeedCommentVo> commentList = feedCommentService.getCommentList(feed.getId(), null);
+			if (CollUtil.isNotEmpty(commentList)) {
+				feedVo.setCommentList(commentList);
+			}
+
 			feedVos.add(feedVo);
 		}
 		return feedVos;
@@ -123,7 +206,7 @@ public class FeedServiceImpl implements FeedService {
 		}).collect(Collectors.toList());
 
 		// 4. 合并朋友圈内容
-		List<FeedVo> result = buildFeedResp(filteredFeeds);
+		List<FeedVo> result = buildFeedResp(filteredFeeds, uid);
 		return CursorPageBaseResp.init(page, result, page.getTotal());
 	}
 
@@ -274,14 +357,18 @@ public class FeedServiceImpl implements FeedService {
 	 */
 	@Transactional
 	public Boolean delFeed(Long feedId){
-		// 1. 首先将朋友圈素材、权限删除
+		// 1. 首先将朋友圈素材、权限、评论、点赞删除
 		feedMediaDao.delMediaByFeedId(feedId);
 		feedTargetDao.delByFeedId(feedId);
+		feedCommentDao.delByFeedId(feedId);
+		feedLikeDao.delByFeedId(feedId);
 		feedDao.removeById(feedId);
 
 		// 2. 清空缓存
 		cachePlusOps.del(FeedTargetRelCacheKeyBuilder.build(feedId));
 		cachePlusOps.del(FeedMediaRelCacheKeyBuilder.build(feedId));
+		cachePlusOps.del(FeedCommentCacheKeyBuilder.build(feedId));
+		cachePlusOps.del(FeedLikeCacheKeyBuilder.build(feedId));
 		return true;
 	}
 
@@ -291,24 +378,19 @@ public class FeedServiceImpl implements FeedService {
 
 	/**
 	 * 查看朋友圈
-	 * @param feedId
+	 * @param feedId 朋友圈ID
+	 * @param uid 当前用户ID
 	 * @return
 	 */
-	public FeedVo feedDetail(Long feedId) {
-		FeedVo feed = getDetail(feedId);
-
-		if(!feed.getMediaType().equals(FeedEnum.WORD.getType())){
-			// 使用带回调的方式，自动处理缓存读写
-			CacheHashKey hashKey = FeedMediaRelCacheKeyBuilder.build(feedId);
-			CacheResult<List<FeedMedia>> result = cachePlusOps.get(hashKey, t -> feedMediaDao.getMediaByFeedId(feedId));
-			List<FeedMedia> feedMediaList = result.getValue();
-
-			if (CollUtil.isNotEmpty(feedMediaList)){
-				feed.setUrls(feedMediaList.stream().sorted(Comparator.comparingInt(FeedMedia::getSort)).map(FeedMedia::getUrl).collect(Collectors.toList()));
-			}
+	public FeedVo feedDetail(Long feedId, Long uid) {
+		Feed feed = feedDao.getById(feedId);
+		if (ObjectUtil.isNull(feed)) {
+			return null;
 		}
 
-		return feed;
+		// 使用 buildFeedResp 方法构建详情页的响应（isDetail=true，显示全部点赞）
+		List<FeedVo> feedVos = buildFeedResp(List.of(feed), true, uid);
+		return feedVos.isEmpty() ? null : feedVos.get(0);
 	}
 
 	/**
@@ -317,7 +399,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	public FeedPermission getFeedPermission(Long uid, Long feedId) {
-		FeedVo feedVo = feedDetail(feedId);
+		FeedVo feedVo = feedDetail(feedId, uid);
 		if(ObjectUtil.isNull(feedVo)){
 			throw new RuntimeException("请选择朋友圈!");
 		}

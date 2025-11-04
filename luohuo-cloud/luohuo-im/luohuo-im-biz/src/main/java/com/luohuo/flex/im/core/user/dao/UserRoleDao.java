@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserRoleDao extends ServiceImpl<UserRoleMapper, UserRole> {
 
-    public Set<Long> listByUid(Long uid) {
-        return lambdaQuery()
-                .eq(UserRole::getUid, uid).select(UserRole::getUid).list().stream().map(UserRole::getUid).collect(Collectors.toSet());
-    }
+	public Set<Long> listByUid(Long uid) {
+		return lambdaQuery()
+				.eq(UserRole::getUid, uid).select(UserRole::getUid).list().stream().map(UserRole::getUid).collect(Collectors.toSet());
+	}
 }

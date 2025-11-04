@@ -38,16 +38,13 @@ public class QualityMonitorProcessor implements MessageProcessor {
 	private final VideoChatService videoService;
 	private final PushService pushService;
 
-    public boolean supports(String payload) {
-		WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
 		return NETWORK_REPORT.eq(req.getType()) ||
 				SCREEN_SHARING.eq(req.getType());
     }
 
 	@Override
-	public void process(WebSocketSession session, Long uid, String payload) {
-		WSBaseReq baseReq = JSONUtil.toBean(payload, WSBaseReq.class);
-
+	public void process(WebSocketSession session, Long uid, WSBaseReq baseReq) {
 		switch (WSReqTypeEnum.of(baseReq.getType())) {
 			case NETWORK_REPORT -> handleNetworkReport(uid, baseReq);
 			case SCREEN_SHARING -> handleScreenSharing(uid, baseReq);

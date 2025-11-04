@@ -17,11 +17,11 @@ import java.util.List;
 @Service
 public class UserEmojiDao extends ServiceImpl<UserEmojiMapper, UserEmoji> {
 
-    public List<UserEmoji> listByUid(Long uid) {
-        return lambdaQuery().eq(UserEmoji::getUid, uid).list();
-    }
+	public List<UserEmoji> listByUid(Long uid) {
+		return lambdaQuery().eq(UserEmoji::getUid, uid).list();
+	}
 
-    public int countByUid(Long uid) {
-        return Math.toIntExact(lambdaQuery().eq(UserEmoji::getUid, uid).count());
-    }
+	public int countByUid(Long uid) {
+		return Math.toIntExact(lambdaQuery().eq(UserEmoji::getUid, uid).count());
+	}
 }

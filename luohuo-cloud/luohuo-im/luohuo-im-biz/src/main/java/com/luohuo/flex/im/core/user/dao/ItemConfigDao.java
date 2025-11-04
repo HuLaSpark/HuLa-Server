@@ -17,9 +17,9 @@ import java.util.List;
 @Service
 public class ItemConfigDao extends ServiceImpl<ItemConfigMapper, ItemConfig> {
 
-    public List<ItemConfig> getByType(Integer type) {
-        return lambdaQuery()
-                .eq(ItemConfig::getType, type)
-                .list();
-    }
+	public List<ItemConfig> getByType(Integer type) {
+		return lambdaQuery()
+				.eq(ItemConfig::getType, type)
+				.list();
+	}
 }

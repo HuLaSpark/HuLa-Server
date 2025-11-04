@@ -34,17 +34,14 @@ public class RoomAdminProcessor implements MessageProcessor {
 	private final PushService pushService;
 	private final RoomTimeoutService roomTimeoutService;
 
-    public boolean supports(String payload) {
-		WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
 		return CLOSE_ROOM.eq(req.getType()) ||
 				KICK_USER.eq(req.getType()) ||
 				MEDIA_MUTE_ALL.eq(req.getType());
     }
 
 	@Override
-	public void process(WebSocketSession session, Long uid, String payload) {
-		WSBaseReq baseReq = JSONUtil.toBean(payload, WSBaseReq.class);
-
+	public void process(WebSocketSession session, Long uid, WSBaseReq baseReq) {
 		switch (WSReqTypeEnum.of(baseReq.getType())) {
 			case CLOSE_ROOM -> handleCloseRoom(uid, baseReq);
 			case KICK_USER -> handleKickUser(uid, baseReq);

@@ -14,6 +14,7 @@ public class FeedTargetDao extends ServiceImpl<FeedTargetMapper, FeedTarget> {
 
 	/**
 	 * 删除朋友圈和标签的管理
+	 *
 	 * @param feedId
 	 * @return
 	 */

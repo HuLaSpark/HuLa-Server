@@ -55,6 +55,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 查询他不看我的好友
+	 *
 	 * @param uid 操作人
 	 * @return
 	 */
@@ -70,6 +71,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 查询不让他看我的好友
+	 *
 	 * @param uid 操作人
 	 * @return
 	 */
@@ -85,6 +87,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 查询我不看他的好友
+	 *
 	 * @param uid 操作人
 	 * @return
 	 */
@@ -100,6 +103,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 查询仅聊天的好友
+	 *
 	 * @param uid 操作人
 	 * @return
 	 */
@@ -123,10 +127,11 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 	/**
 	 * TODO 这里也要重构
 	 * 获取到当前登录人员的所有的好友的信息
+	 *
 	 * @return
 	 */
 	@Cacheable(cacheNames = "luohuo:friend", key = "'list:'+#uid")
-	public List<Long> getAllFriendIdsByUid(Long uid){
+	public List<Long> getAllFriendIdsByUid(Long uid) {
 		LambdaQueryWrapper<UserFriend> queryWrapper = Wrappers.lambdaQuery();
 		queryWrapper.select(UserFriend::getFriendUid)
 				.eq(UserFriend::getUid, uid);
@@ -135,6 +140,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 根据房间号+自己的id 定位好友关系
+	 *
 	 * @param roomId
 	 * @param uid
 	 * @return
@@ -156,8 +162,9 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 当好友关系变更时清除缓存
+	 *
 	 * @param roomId 房间ID
-	 * @param uid 用户ID
+	 * @param uid    用户ID
 	 */
 	@CacheEvict(cacheNames = "luohuo:userFriend", key = "'room:'+#roomId+':uid:'+#uid")
 	public void evictFriendCache(Long roomId, Long uid) {
@@ -165,6 +172,7 @@ public class UserFriendDao extends ServiceImpl<UserFriendMapper, UserFriend> {
 
 	/**
 	 * 查询所有好友房间
+	 *
 	 * @param roomIdList 房间id
 	 */
 	public List<UserFriend> getAllRoomInfo(List<Long> roomIdList) {

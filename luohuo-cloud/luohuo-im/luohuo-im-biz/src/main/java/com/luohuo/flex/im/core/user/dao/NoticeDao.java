@@ -36,7 +36,8 @@ public class NoticeDao extends ServiceImpl<NoticeMapper, Notice> {
 
 	/**
 	 * 查询当前用户的通知
-	 * @param uid 登录用户
+	 *
+	 * @param uid        登录用户
 	 * @param onlyUnread 通知状态
 	 * @return
 	 */
@@ -53,7 +54,7 @@ public class NoticeDao extends ServiceImpl<NoticeMapper, Notice> {
 		wsNotice.setUid(uid);
 
 		for (FriendUnreadDto friendUnreadDto : unReadCountByTypeMap) {
-			if(friendUnreadDto.getType().equals(RoomTypeEnum.FRIEND.getType())){
+			if (friendUnreadDto.getType().equals(RoomTypeEnum.FRIEND.getType())) {
 				wsNotice.setUnReadCount4Friend(friendUnreadDto.getCount());
 			} else {
 				wsNotice.setUnReadCount4Group(friendUnreadDto.getCount());

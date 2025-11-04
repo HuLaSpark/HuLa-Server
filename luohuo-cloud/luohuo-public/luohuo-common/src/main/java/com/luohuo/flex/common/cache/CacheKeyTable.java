@@ -265,6 +265,16 @@ public interface CacheKeyTable {
 		String FEED_TARGET = "feedTarget";
 
 		/**
+		 * 朋友圈评论
+		 */
+		String FEED_COMMENT = "feedComment";
+
+		/**
+		 * 朋友圈点赞
+		 */
+		String FEED_LIKE = "feedLike";
+
+		/**
 		 * 会话信息
 		 */
 		String USER_CONTACT = "user_contact";

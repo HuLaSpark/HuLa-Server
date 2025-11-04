@@ -35,16 +35,14 @@ public class MediaControlProcessor implements MessageProcessor {
     private final VideoChatService videoService;
 
     @Override
-    public boolean supports(String payload) {
-        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
         return MEDIA_MUTE_AUDIO.eq(req.getType()) ||
 				MEDIA_MUTE_ALL.eq(req.getType()) ||
                	MEDIA_MUTE_VIDEO.eq(req.getType());
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
-        WSBaseReq baseReq = JSONUtil.toBean(payload, WSBaseReq.class);
+    public void process(WebSocketSession session, Long uid, WSBaseReq baseReq) {
         MediaControlVO control = JSONUtil.toBean(baseReq.getData(), MediaControlVO.class);
         
         // 转发媒体控制指令给房间内其他成员

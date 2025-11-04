@@ -39,10 +39,11 @@ public interface FeedService {
 
 	/**
 	 * 查看朋友圈
-	 * @param feedId
+	 * @param feedId 朋友圈ID
+	 * @param uid 当前用户ID
 	 * @return
 	 */
-	FeedVo feedDetail(Long feedId);
+	FeedVo feedDetail(Long feedId, Long uid);
 
 	/**
 	 * 获取朋友圈的可见权限

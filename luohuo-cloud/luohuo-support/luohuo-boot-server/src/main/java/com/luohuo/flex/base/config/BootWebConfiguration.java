@@ -16,11 +16,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.luohuo.basic.boot.config.BaseConfig;
 import com.luohuo.basic.constant.Constants;
 import com.luohuo.basic.log.event.SysLogListener;
+import cn.dev33.satoken.filter.SaTokenContextFilterForJakartaServlet;
 import com.luohuo.flex.base.interceptor.AuthenticationSaInterceptor;
 import com.luohuo.flex.base.interceptor.TokenContextFilter;
 import com.luohuo.flex.common.properties.IgnoreProperties;
 import com.luohuo.flex.common.properties.SystemProperties;
 import com.luohuo.flex.oauth.facade.LogFacade;
+import jakarta.servlet.DispatcherType;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import java.util.EnumSet;
 
 /**
  * 基础服务-Web配置
@@ -48,6 +52,22 @@ public class BootWebConfiguration extends BaseConfig implements WebMvcConfigurer
     public HandlerInterceptor getSaFilter() {
         return new AuthenticationSaInterceptor(ignoreProperties, defResourceFacade);
     }
+
+    /**
+     * 注册 SaToken 上下文过滤器，用于初始化 SaToken 上下文
+     * 这个过滤器必须在所有其他过滤器之前执行，以确保 SaToken 上下文被正确初始化
+     */
+	@Bean
+	public FilterRegistrationBean saTokenContextFilterForJakartaServlet() {
+		FilterRegistrationBean bean = new FilterRegistrationBean<>(new SaTokenContextFilterForJakartaServlet());
+		// 配置 Filter 拦截的 URL 模式
+		bean.addUrlPatterns("/*");
+		// 设置 Filter 的执行顺序,数值越小越先执行
+		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		bean.setAsyncSupported(true);
+		bean.setDispatcherTypes(EnumSet.of(DispatcherType.ASYNC, DispatcherType.REQUEST));
+		return bean;
+	}
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

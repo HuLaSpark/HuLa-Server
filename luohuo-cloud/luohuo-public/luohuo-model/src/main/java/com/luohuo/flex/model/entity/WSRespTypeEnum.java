@@ -39,6 +39,7 @@ public enum WSRespTypeEnum {
 
 	ROOM_GROUP_NOTICE_READ_MSG("roomGroupNoticeReadMsg", "群公告已读", null),
 	FEED_SEND_MSG("feedSendMsg", "朋友圈发布", null),
+	FEED_NOTIFY("feedNotify", "朋友圈通知（点赞/评论）", null),
 	ROOM_NOTIFICATION("roomNotification", "会话消息接收类型改变", null),
 	SHIELD("shield", "你已屏蔽好友的消息", null),
 	UNBLOCK("unblock", "你已解除屏蔽好友的消息", null),

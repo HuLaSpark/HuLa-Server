@@ -26,14 +26,13 @@ public class ReadProcessor implements MessageProcessor {
 	private RocketMQTemplate rocketMQTemplate;
 
     @Override
-    public boolean supports(String payload) {
-        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
         return WSReqTypeEnum.READ.eq(req.getType());
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
-		ReadMessageDTO req = JSONUtil.toBean(JSONUtil.toBean(payload, WSBaseReq.class).getData(), ReadMessageDTO.class);
+    public void process(WebSocketSession session, Long uid, WSBaseReq payload) {
+		ReadMessageDTO req = JSONUtil.toBean(payload.getData(), ReadMessageDTO.class);
 		req.setUid(uid);
 		rocketMQTemplate.send(MqConstant.MSG_PUSH_READ_TOPIC, MessageBuilder.withPayload(req).build());
     }

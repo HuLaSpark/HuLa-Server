@@ -23,7 +23,7 @@ import com.luohuo.flex.im.service.tenant.EmailService;
 import java.time.LocalDateTime;
 
 /**
- * 邮箱服务 TODO 整合实现
+ * 邮箱服务
  */
 @Slf4j
 @Service

@@ -35,15 +35,13 @@ public class VideoProcessor implements MessageProcessor {
 	private final RoomTimeoutService roomTimeoutService;
 
     @Override
-    public boolean supports(String payload) {
-		WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
 		return WEBRTC_SIGNAL.eq(req.getType()) ||
 				VIDEO_HEARTBEAT.eq(req.getType());
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
-		WSBaseReq baseReq = JSONUtil.toBean(payload, WSBaseReq.class);
+    public void process(WebSocketSession session, Long uid, WSBaseReq baseReq) {
 
 		// 处理不同情况的会话消息
 		switch (WSReqTypeEnum.of(baseReq.getType())) {

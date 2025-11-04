@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 31/10/2025 19:00:36
+ Date: 04/11/2025 19:45:03
 */
 
 SET NAMES utf8mb4;
@@ -37,12 +37,13 @@ CREATE TABLE `ai_api_key`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 90154862069761 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 91865840302593 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_api_key
 -- ----------------------------
 INSERT INTO `ai_api_key` VALUES (90154862069760, 20901198351872, b'1', 'kimi', 'sk-HD0GKyxX3bYuycGuV5de202U418gczeAYcZVYZucwWrBEu2V', 'Moonshot', NULL, 0, NULL, '2025-10-30 18:43:15', NULL, '2025-10-30 11:26:16', b'0', 1);
+INSERT INTO `ai_api_key` VALUES (91865840302592, 10937855681024, b'0', 'Hula', 'sk-dmyowzmrlwjgmfogkaynoqpqfuaodyvcwmqbbxbugmauofci', 'Other', 'https://api.siliconflow.cn/v1/chat/completions', 0, NULL, '2025-11-04 12:02:04', NULL, '2025-11-04 12:02:04', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_chat_conversation
@@ -68,14 +69,62 @@ CREATE TABLE `ai_chat_conversation`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NULL DEFAULT NULL COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 90190392010241 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 91963672443393 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_conversation
 -- ----------------------------
 INSERT INTO `ai_chat_conversation` VALUES (90159593245184, 20901198351872, 90159576467968, 'Hula官方角色', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '我是Hula官方机器人，非常聪明', 0.8, 4096, 10, NULL, '2025-10-30 19:02:02', NULL, '2025-10-30 19:02:02', b'0', 1);
 INSERT INTO `ai_chat_conversation` VALUES (90160268528128, 20901198351872, 90159576467968, 'Hula官方角色', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '我是Hula官方机器人，非常聪明', 0.8, 4096, 10, NULL, '2025-10-30 19:04:43', NULL, '2025-10-30 19:04:43', b'0', 1);
-INSERT INTO `ai_chat_conversation` VALUES (90190392010240, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-10-30 21:04:26', NULL, '2025-10-30 21:04:26', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90190392010240, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-10-30 21:04:26', NULL, '2025-11-01 21:17:17', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90544185752064, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-10-31 20:30:16', NULL, '2025-11-01 07:54:13', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90639270623744, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 02:48:07', NULL, '2025-11-01 07:54:09', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90711748196864, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:36:06', NULL, '2025-11-01 07:38:22', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90711752391168, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:36:07', NULL, '2025-11-01 07:38:21', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90711756585472, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:36:08', NULL, '2025-11-01 07:38:20', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90711756585473, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:36:09', NULL, '2025-11-01 07:38:19', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90711760779776, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:36:10', NULL, '2025-11-01 07:38:18', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90711769168384, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:36:11', NULL, '2025-11-01 07:38:16', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90712415091200, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:38:45', NULL, '2025-11-01 07:38:47', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90712759024128, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:40:08', NULL, '2025-11-01 07:42:25', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90712763218432, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:40:08', NULL, '2025-11-01 07:42:24', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90712763218433, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:40:08', NULL, '2025-11-01 07:42:23', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90712767412736, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:40:09', NULL, '2025-11-01 07:42:22', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90712771607040, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:40:10', NULL, '2025-11-01 07:42:21', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90713224591872, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:41:59', NULL, '2025-11-01 07:42:20', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90714143144448, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:45:38', NULL, '2025-11-01 07:45:39', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90715393047040, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:50:35', NULL, '2025-11-01 07:50:38', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90716315793920, 11225442329600, 90190358455808, '小试牛刀', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 07:54:15', NULL, '2025-11-01 08:11:49', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90719184697856, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 08:05:40', NULL, '2025-11-01 08:11:47', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90719507659264, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 08:06:57', NULL, '2025-11-01 08:11:46', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90720778533376, 11225442329600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 08:12:00', NULL, '2025-11-01 08:12:00', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (90918409943552, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-01 21:17:19', NULL, '2025-11-02 10:56:01', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91009791244800, 10937855681024, 90190358455808, '新的聊天91009791244800', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 03:20:26', NULL, '2025-11-02 03:21:17', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91009925462528, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 03:20:58', NULL, '2025-11-02 03:21:03', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91085058030080, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 08:19:30', NULL, '2025-11-02 10:56:55', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91124627094016, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 10:56:45', NULL, '2025-11-03 17:10:25', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91124790671872, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 10:57:23', NULL, '2025-11-03 17:10:21', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91255690705408, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 19:37:32', NULL, '2025-11-03 17:10:17', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91278583216640, 91277941125632, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 21:08:31', NULL, '2025-11-02 21:08:31', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91278864235008, 91277941125632, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-02 21:09:37', NULL, '2025-11-02 21:09:37', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91392118831616, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-03 04:39:39', NULL, '2025-11-03 17:10:15', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91546326612480, 91542639456768, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-03 14:52:25', NULL, '2025-11-03 14:52:25', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91547207416320, 91539938324992, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-03 14:55:55', NULL, '2025-11-03 14:55:55', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91581109975552, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-03 17:10:38', NULL, '2025-11-04 13:10:59', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91582871583232, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-03 17:17:39', NULL, '2025-11-04 13:11:00', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91647820380672, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-03 21:35:44', NULL, '2025-11-04 13:11:01', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91866154875392, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 12:03:19', NULL, '2025-11-04 13:11:02', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91883204721152, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 13:11:04', NULL, '2025-11-04 14:58:33', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91883380881920, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 13:11:46', NULL, '2025-11-04 13:11:46', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91883619957248, 91880733913600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 13:12:42', NULL, '2025-11-04 13:12:42', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91883624151552, 91880733913600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 13:12:44', NULL, '2025-11-04 13:12:44', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91883645123072, 91880733913600, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 13:12:49', NULL, '2025-11-04 13:12:49', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91902066506240, 91901021762048, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 14:26:01', NULL, '2025-11-04 18:26:58', b'1', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91910266370560, 10937855681024, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 14:58:35', NULL, '2025-11-04 14:58:35', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91932869474816, 44100975922176, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 16:28:24', NULL, '2025-11-04 16:28:24', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91948023495168, 86483537072128, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 17:28:38', NULL, '2025-11-04 17:28:38', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91962976188928, 91901021762048, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 18:28:03', NULL, '2025-11-04 18:28:03', b'0', 1);
+INSERT INTO `ai_chat_conversation` VALUES (91963672443392, 91901021762048, 90190358455808, '测试HuLa', 90158209124864, 'moonshot-v1-128k', b'0', NULL, '你是一个vue专家', 0.8, 4096, 10, NULL, '2025-11-04 18:30:49', NULL, '2025-11-04 18:30:49', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_chat_message
@@ -100,7 +149,7 @@ CREATE TABLE `ai_chat_message`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 90190480090626 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 91948065438210 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_message
@@ -131,13 +180,14 @@ CREATE TABLE `ai_chat_role`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 90190358455809 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 90544886200833 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_role
 -- ----------------------------
 INSERT INTO `ai_chat_role` VALUES (90159576467968, 20901198351872, 90158209124864, 'Hula官方角色', 'https://cdn.hulaspark.com/avatar/1046762075/43de7a13eda6b8c29622f5b4ca429156.webp', NULL, 0, '我是Hula官方机器人', '我是Hula官方机器人，非常聪明', NULL, NULL, b'0', 0, NULL, '2025-10-30 19:01:58', NULL, '2025-10-30 19:01:58', b'0', 1);
 INSERT INTO `ai_chat_role` VALUES (90190358455808, NULL, 90158209124864, '测试HuLa', 'https://cdn.hulaspark.com/avatar/2439646234/993c2cfc546fabc1ee127037102378d9.webp', '0', 0, '测试', '你是一个vue专家', NULL, NULL, b'1', 0, NULL, '2025-10-30 21:04:17', NULL, '2025-10-30 21:04:17', b'0', 1);
+INSERT INTO `ai_chat_role` VALUES (90544886200832, NULL, 90158209124864, '敲你母牛🐔', 'https://cdn.hulaspark.com/avatar/k2439646234/8421975045ef869aa5d841f7c4a050a4.webp', 'AI助手', 1, '精通编程语言', 'vue高手', NULL, NULL, b'1', 0, NULL, '2025-10-31 20:33:03', NULL, '2025-10-31 20:33:03', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_image
@@ -348,12 +398,13 @@ CREATE TABLE `ai_model`  (
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
   INDEX `idx_public_status`(`public_status` ASC) USING BTREE,
   INDEX `idx_user_public`(`user_id` ASC, `public_status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 90158209124865 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 模型表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 91866029046273 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 模型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_model
 -- ----------------------------
 INSERT INTO `ai_model` VALUES (90158209124864, 20901198351872, 90154862069760, 'Hula小模型', 'moonshot-v1-128k', 'Moonshot', 1, 0, 0, b'1', 0.8, 4096, 10, NULL, '2025-10-30 18:56:33', NULL, '2025-10-30 11:05:33', b'0', 1);
+INSERT INTO `ai_model` VALUES (91866029046272, 10937855681024, 91865840302592, '测试', '测试1', 'OpenAI', 1, 0, 0, b'0', 0.8, 4096, 10, NULL, '2025-11-04 12:02:48', NULL, '2025-11-04 12:02:48', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_music
@@ -2232,7 +2283,7 @@ CREATE TABLE `def_user`  (
 -- Records of def_user
 -- ----------------------------
 INSERT INTO `def_user` VALUES (61170828519936, 2, 'bot', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-10-28 17:08:01', 2, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
-INSERT INTO `def_user` VALUES (61170828519937, 2, '2439646234', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"183.15.179.234\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"183.15.179.234\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-10-31 18:11:19', 1, '2025-03-27 04:23:08', NULL, '2025-10-31 18:36:18', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519937, 2, '2439646234', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"113.89.34.18\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"113.89.34.18\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-11-04 19:34:05', 1, '2025-03-27 04:23:08', NULL, '2025-11-04 19:41:35', 0, 1);
 
 -- ----------------------------
 -- Table structure for def_user_application
@@ -2317,7 +2368,7 @@ CREATE TABLE `extend_interface_log`  (
 -- Records of extend_interface_log
 -- ----------------------------
 INSERT INTO `extend_interface_log` VALUES (66567882983426, 244439130119864323, '阿里短信', 0, 1, '2025-08-26 16:37:01', '2025-08-26 16:37:00', NULL, '2025-08-26 16:37:00', NULL, 0, 0);
-INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 624, 57, '2025-10-31 17:41:02', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
+INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 777, 57, '2025-11-04 19:11:50', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
 
 -- ----------------------------
 -- Table structure for extend_interface_logging
@@ -2531,7 +2582,7 @@ CREATE TABLE `worker_node`  (
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 921 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 931 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of worker_node

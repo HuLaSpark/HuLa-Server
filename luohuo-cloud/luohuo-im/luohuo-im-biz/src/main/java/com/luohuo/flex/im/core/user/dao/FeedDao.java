@@ -19,6 +19,7 @@ public class FeedDao extends ServiceImpl<FeedMapper, Feed> {
 
 	/**
 	 * 查询朋友圈列表（包括指定用户列表的朋友圈）
+	 *
 	 * @param uidList 用户ID列表（包括当前用户和好友）
 	 * @param request 分页请求
 	 * @return 朋友圈分页结果

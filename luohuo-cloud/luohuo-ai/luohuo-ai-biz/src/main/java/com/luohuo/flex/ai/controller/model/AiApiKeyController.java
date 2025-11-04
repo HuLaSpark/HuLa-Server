@@ -1,6 +1,7 @@
 package com.luohuo.flex.ai.controller.model;
 
 import com.luohuo.flex.ai.common.pojo.PageResult;
+import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyBalanceRespVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyRespVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySaveReqVO;
@@ -74,6 +75,13 @@ public class AiApiKeyController {
     public R<List<AiModelRespVO>> getApiKeySimpleList() {
         List<AiApiKeyDO> list = apiKeyService.getApiKeyList();
         return success(convertList(list, key -> new AiModelRespVO().setId(key.getId()).setName(key.getName())));
+    }
+
+    @GetMapping("/balance")
+    @Operation(summary = "查询 API 密钥余额")
+    @Parameter(name = "id", description = "API密钥编号", required = true, example = "1024")
+    public R<AiApiKeyBalanceRespVO> getApiKeyBalance(@RequestParam("id") Long id) {
+        return success(apiKeyService.getApiKeyBalance(id, ContextUtil.getUid()));
     }
 
 }

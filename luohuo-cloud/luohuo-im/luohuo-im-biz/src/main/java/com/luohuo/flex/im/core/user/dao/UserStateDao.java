@@ -19,7 +19,7 @@ import java.util.List;
 public class UserStateDao extends ServiceImpl<UserStateMapper, UserState> {
 
 	@Cacheable(cacheNames = "luohuo:user", key = "'state'")
-	public List<UserState> list(){
+	public List<UserState> list() {
 		return lambdaQuery()
 				.list();
 	}

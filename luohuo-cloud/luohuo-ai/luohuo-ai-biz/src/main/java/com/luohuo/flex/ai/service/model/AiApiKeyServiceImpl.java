@@ -1,17 +1,27 @@
 package com.luohuo.flex.ai.service.model;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
+import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyBalanceRespVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySaveReqVO;
 import com.luohuo.flex.ai.dal.model.AiApiKeyDO;
+import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import com.luohuo.flex.ai.enums.CommonStatusEnum;
 import com.luohuo.flex.ai.mapper.model.AiApiKeyMapper;
 import com.luohuo.flex.ai.utils.BeanUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.API_KEY_DISABLE;
@@ -23,6 +33,7 @@ import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
  *
  * @author 芋道源码
  */
+@Slf4j
 @Service
 @Validated
 public class AiApiKeyServiceImpl implements AiApiKeyService {
@@ -133,6 +144,226 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 			throw exception(API_KEY_NOT_EXISTS);
 		}
 		return apiKey;
+	}
+
+	@Override
+	public AiApiKeyBalanceRespVO getApiKeyBalance(Long id, Long userId) {
+		// 1. 校验 API Key 是否存在
+		AiApiKeyDO apiKey = validateApiKeyExists(id);
+
+		// 2. 权限校验
+		if (Boolean.FALSE.equals(apiKey.getPublicStatus())) {
+			// 私有密钥，只有创建者可以查询
+			if (ObjectUtil.notEqual(apiKey.getUserId(), userId)) {
+				throw exception(API_KEY_NOT_EXISTS);
+			}
+		}
+
+		// 3. 根据平台查询余额
+		AiPlatformEnum platformEnum;
+		try {
+			platformEnum = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+		} catch (IllegalArgumentException e) {
+			return AiApiKeyBalanceRespVO.builder()
+					.id(id)
+					.platform(apiKey.getPlatform())
+					.supported(false)
+					.success(false)
+					.errorMessage("不支持的平台: " + apiKey.getPlatform())
+					.build();
+		}
+
+		return queryBalanceByPlatform(apiKey, platformEnum);
+	}
+
+	/**
+	 * 根据平台查询余额
+	 */
+	private AiApiKeyBalanceRespVO queryBalanceByPlatform(AiApiKeyDO apiKey, AiPlatformEnum platform) {
+		try {
+			switch (platform) {
+				case MOONSHOT:
+					return queryMoonshotBalance(apiKey);
+				case DEEP_SEEK:
+					return queryDeepSeekBalance(apiKey);
+				case SILICON_FLOW:
+					return querySiliconFlowBalance(apiKey);
+				default:
+					return AiApiKeyBalanceRespVO.builder()
+							.id(apiKey.getId())
+							.platform(apiKey.getPlatform())
+							.supported(false)
+							.success(false)
+							.errorMessage("该平台暂不支持余额查询")
+							.build();
+			}
+		} catch (Exception e) {
+			log.error("查询API Key余额失败, platform={}, error={}", platform.getPlatform(), e.getMessage(), e);
+			return AiApiKeyBalanceRespVO.builder()
+					.id(apiKey.getId())
+					.platform(apiKey.getPlatform())
+					.supported(true)
+					.success(false)
+					.errorMessage("查询失败: " + e.getMessage())
+					.build();
+		}
+	}
+
+	/**
+	 * 查询月之暗面(Moonshot/Kimi)余额
+	 * API文档: https://platform.moonshot.cn/docs/api/balance
+	 */
+	private AiApiKeyBalanceRespVO queryMoonshotBalance(AiApiKeyDO apiKey) {
+		String baseUrl = StrUtil.isNotBlank(apiKey.getUrl()) ? apiKey.getUrl() : "https://api.moonshot.cn";
+		String url = baseUrl + "/v1/user/balance";
+
+		HttpResponse response = HttpRequest.get(url)
+				.header("Authorization", "Bearer " + apiKey.getApiKey())
+				.header("Content-Type", "application/json")
+				.timeout(10000)
+				.execute();
+
+		if (!response.isOk()) {
+			throw new RuntimeException("HTTP请求失败: " + response.getStatus());
+		}
+
+		JSONObject jsonResponse = JSONUtil.parseObj(response.body());
+
+		// 解析响应
+		List<AiApiKeyBalanceRespVO.BalanceInfo> balanceInfos = new ArrayList<>();
+		BigDecimal totalBalance = BigDecimal.ZERO;
+
+		if (jsonResponse.containsKey("data")) {
+			JSONObject data = jsonResponse.getJSONObject("data");
+			if (data.containsKey("available_balance")) {
+				BigDecimal balance = data.getBigDecimal("available_balance");
+				balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+						.currency("CNY")
+						.totalBalance(balance)
+						.available(true)
+						.build());
+				totalBalance = balance;
+			}
+		}
+
+		return AiApiKeyBalanceRespVO.builder()
+				.id(apiKey.getId())
+				.platform(apiKey.getPlatform())
+				.supported(true)
+				.success(true)
+				.balanceInfos(balanceInfos)
+				.totalBalance(totalBalance)
+				.build();
+	}
+
+	/**
+	 * 查询DeepSeek余额
+	 * API文档: https://api-docs.deepseek.com/api/get-user-balance
+	 */
+	private AiApiKeyBalanceRespVO queryDeepSeekBalance(AiApiKeyDO apiKey) {
+		String baseUrl = StrUtil.isNotBlank(apiKey.getUrl()) ? apiKey.getUrl() : "https://api.deepseek.com";
+		String url = baseUrl + "/user/balance";
+
+		HttpResponse response = HttpRequest.get(url)
+				.header("Authorization", "Bearer " + apiKey.getApiKey())
+				.header("Accept", "application/json")
+				.timeout(10000)
+				.execute();
+
+		if (!response.isOk()) {
+			throw new RuntimeException("HTTP请求失败: " + response.getStatus());
+		}
+
+		JSONObject jsonResponse = JSONUtil.parseObj(response.body());
+
+		// 解析响应
+		List<AiApiKeyBalanceRespVO.BalanceInfo> balanceInfos = new ArrayList<>();
+		BigDecimal totalBalance = BigDecimal.ZERO;
+
+		if (jsonResponse.getBool("is_available", false) && jsonResponse.containsKey("balance_infos")) {
+			for (Object item : jsonResponse.getJSONArray("balance_infos")) {
+				JSONObject balanceInfo = (JSONObject) item;
+				String currency = balanceInfo.getStr("currency");
+				BigDecimal total = new BigDecimal(balanceInfo.getStr("total_balance"));
+				BigDecimal granted = balanceInfo.containsKey("granted_balance")
+						? new BigDecimal(balanceInfo.getStr("granted_balance")) : BigDecimal.ZERO;
+				BigDecimal toppedUp = balanceInfo.containsKey("topped_up_balance")
+						? new BigDecimal(balanceInfo.getStr("topped_up_balance")) : BigDecimal.ZERO;
+
+				balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+						.currency(currency)
+						.totalBalance(total)
+						.grantedBalance(granted)
+						.toppedUpBalance(toppedUp)
+						.available(true)
+						.build());
+
+				// 简单累加（实际应该考虑汇率转换）
+				totalBalance = totalBalance.add(total);
+			}
+		}
+
+		return AiApiKeyBalanceRespVO.builder()
+				.id(apiKey.getId())
+				.platform(apiKey.getPlatform())
+				.supported(true)
+				.success(true)
+				.balanceInfos(balanceInfos)
+				.totalBalance(totalBalance)
+				.build();
+	}
+
+	/**
+	 * 查询硅基流动余额
+	 * API文档: https://docs.siliconflow.cn/cn/api-reference/userinfo/get-user-info
+	 */
+	private AiApiKeyBalanceRespVO querySiliconFlowBalance(AiApiKeyDO apiKey) {
+		String baseUrl = StrUtil.isNotBlank(apiKey.getUrl()) ? apiKey.getUrl() : "https://api.siliconflow.cn";
+		String url = baseUrl + "/v1/user/info";
+
+		HttpResponse response = HttpRequest.get(url)
+				.header("Authorization", "Bearer " + apiKey.getApiKey())
+				.header("Content-Type", "application/json")
+				.timeout(10000)
+				.execute();
+
+		if (!response.isOk()) {
+			throw new RuntimeException("HTTP请求失败: " + response.getStatus());
+		}
+
+		JSONObject jsonResponse = JSONUtil.parseObj(response.body());
+
+		// 解析响应
+		List<AiApiKeyBalanceRespVO.BalanceInfo> balanceInfos = new ArrayList<>();
+		BigDecimal totalBalance = BigDecimal.ZERO;
+
+		if (jsonResponse.getInt("code") == 20000 && jsonResponse.containsKey("data")) {
+			JSONObject data = jsonResponse.getJSONObject("data");
+
+			// 硅基流动返回的余额字段
+			BigDecimal balance = data.getBigDecimal("balance", BigDecimal.ZERO);
+			BigDecimal chargeBalance = data.getBigDecimal("chargeBalance", BigDecimal.ZERO);
+			BigDecimal total = data.getBigDecimal("totalBalance", BigDecimal.ZERO);
+
+			balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+					.currency("CNY")
+					.totalBalance(total)
+					.grantedBalance(balance.subtract(chargeBalance).max(BigDecimal.ZERO))
+					.toppedUpBalance(chargeBalance)
+					.available("normal".equals(data.getStr("status")))
+					.build());
+
+			totalBalance = total;
+		}
+
+		return AiApiKeyBalanceRespVO.builder()
+				.id(apiKey.getId())
+				.platform(apiKey.getPlatform())
+				.supported(true)
+				.success(true)
+				.balanceInfos(balanceInfos)
+				.totalBalance(totalBalance)
+				.build();
 	}
 
 }

@@ -265,6 +265,8 @@ spring:
       - classpath:config/${spring.profiles.active}/rocketmq.yml
       - classpath:config/${spring.profiles.active}/redis.yml
       - classpath:config/${spring.profiles.active}/mysql.yml
+      - classpath:config/${spring.profiles.active}/base-server.yml
+      - classpath:config/${spring.profiles.active}/ai-server.yml
   mvc:
     pathmatch:
       # 升级springboot2.6.6后临时处理，防止swagger报错

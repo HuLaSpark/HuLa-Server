@@ -1,6 +1,5 @@
 package com.luohuo.flex.ws.websocket.processor;
 
-import cn.hutool.json.JSONUtil;
 import com.luohuo.flex.model.ws.WSBaseReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -15,13 +14,12 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 @Component
 public class DefaultMessageProcessor implements MessageProcessor {
     @Override
-    public boolean supports(String payload) {
+    public boolean supports(WSBaseReq req) {
         return true;
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
-        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public void process(WebSocketSession session, Long uid, WSBaseReq req) {
         log.warn("未知消息类型: {}", req.getType());
     }
 }

@@ -1,6 +1,5 @@
 package com.luohuo.flex.ws.websocket.processor;
 
-import cn.hutool.json.JSONUtil;
 import com.luohuo.flex.model.ws.WSBaseReq;
 import com.luohuo.flex.model.enums.WSReqTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +15,12 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 @Component
 public class HeartbeatProcessor implements MessageProcessor {
     @Override
-    public boolean supports(String payload) {
-        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
         return WSReqTypeEnum.HEARTBEAT.eq(req.getType());
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
+    public void process(WebSocketSession session, Long uid, WSBaseReq req) {
         log.info("收到用户 {} 的心跳", uid);
     }
 }

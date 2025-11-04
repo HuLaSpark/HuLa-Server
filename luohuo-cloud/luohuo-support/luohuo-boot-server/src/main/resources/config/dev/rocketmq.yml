@@ -1,13 +1,11 @@
-# 相当于 rocketmq.yml
 luohuo:
   rocketmq:
     # 若系统中有除了zipkin之外的地方使用了mq ，则一定不能设置成false
     enabled: true
-    ip: 117.72.82.249
+    ip: 192.168.1.37
     port: 9876
     access-key: 'earthearth'
     secret-key: 'mq000000'
-
 
 rocketmq:
   ip: ${luohuo.rocketmq.ip}

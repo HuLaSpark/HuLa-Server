@@ -53,16 +53,13 @@ public class VideoCallProcessor implements MessageProcessor {
 	private final RoomTimeoutService roomTimeoutService;
 
     @Override
-    public boolean supports(String payload) {
-        WSBaseReq req = JSONUtil.toBean(payload, WSBaseReq.class);
+    public boolean supports(WSBaseReq req) {
         return VIDEO_CALL_REQUEST.eq(req.getType()) ||
                VIDEO_CALL_RESPONSE.eq(req.getType());
     }
 
     @Override
-    public void process(WebSocketSession session, Long uid, String payload) {
-        WSBaseReq baseReq = JSONUtil.toBean(payload, WSBaseReq.class);
-        
+    public void process(WebSocketSession session, Long uid, WSBaseReq baseReq) {
         switch (WSReqTypeEnum.of(baseReq.getType())) {
             case VIDEO_CALL_REQUEST -> handleCallRequest(uid, baseReq);
             case VIDEO_CALL_RESPONSE -> handleCallResponse(uid, baseReq);

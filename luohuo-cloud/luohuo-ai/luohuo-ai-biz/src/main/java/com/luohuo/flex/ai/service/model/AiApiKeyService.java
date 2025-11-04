@@ -1,6 +1,7 @@
 package com.luohuo.flex.ai.service.model;
 
 import com.luohuo.flex.ai.common.pojo.PageResult;
+import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyBalanceRespVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySaveReqVO;
 import com.luohuo.flex.ai.dal.model.AiApiKeyDO;
@@ -79,5 +80,14 @@ public interface AiApiKeyService {
      * @return API 密钥
      */
     AiApiKeyDO getRequiredDefaultApiKey(String platform, Integer status);
+
+    /**
+     * 查询 API 密钥余额
+     *
+     * @param id     API 密钥编号
+     * @param userId 用户编号
+     * @return 余额信息
+     */
+    AiApiKeyBalanceRespVO getApiKeyBalance(Long id, Long userId);
 
 }

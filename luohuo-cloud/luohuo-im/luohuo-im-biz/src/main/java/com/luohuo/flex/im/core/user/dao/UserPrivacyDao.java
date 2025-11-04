@@ -9,38 +9,38 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserPrivacyDao extends ServiceImpl<UserPrivacyMapper, UserPrivacy> {
-    
-    /**
-     * 获取用户隐私设置
-     */
-    public UserPrivacy getByUid(Long uid) {
-        return lambdaQuery().eq(UserPrivacy::getUid, uid).one();
-    }
-    
-    /**
-     * 初始化用户隐私设置
-     */
-    @Transactional
-    public boolean initUserPrivacy(Long uid) {
-        UserPrivacy privacy = new UserPrivacy();
-        privacy.setUid(uid);
-        privacy.setIsPrivate(false);
-        privacy.setAllowTempSession(true);
-        privacy.setSearchableByPhone(true);
-        privacy.setSearchableByAccount(true);
-        privacy.setSearchableByUsername(true);
-        privacy.setShowOnlineStatus(true);
-        privacy.setAllowAddFriend(true);
-        privacy.setAllowGroupInvite(true);
-        privacy.setHideProfile(false);
-        return save(privacy);
-    }
-    
-    /**
-     * 更新隐私设置
-     */
-    @Transactional
-    public boolean updatePrivacy(Long uid, PrivacySettingReq req) {
+
+	/**
+	 * 获取用户隐私设置
+	 */
+	public UserPrivacy getByUid(Long uid) {
+		return lambdaQuery().eq(UserPrivacy::getUid, uid).one();
+	}
+
+	/**
+	 * 初始化用户隐私设置
+	 */
+	@Transactional
+	public boolean initUserPrivacy(Long uid) {
+		UserPrivacy privacy = new UserPrivacy();
+		privacy.setUid(uid);
+		privacy.setIsPrivate(false);
+		privacy.setAllowTempSession(true);
+		privacy.setSearchableByPhone(true);
+		privacy.setSearchableByAccount(true);
+		privacy.setSearchableByUsername(true);
+		privacy.setShowOnlineStatus(true);
+		privacy.setAllowAddFriend(true);
+		privacy.setAllowGroupInvite(true);
+		privacy.setHideProfile(false);
+		return save(privacy);
+	}
+
+	/**
+	 * 更新隐私设置
+	 */
+	@Transactional
+	public boolean updatePrivacy(Long uid, PrivacySettingReq req) {
 		return lambdaUpdate()
 				.eq(UserPrivacy::getUid, uid)
 				.set(req.getIsPrivate() != null, UserPrivacy::getIsPrivate, req.getIsPrivate())
@@ -53,7 +53,7 @@ public class UserPrivacyDao extends ServiceImpl<UserPrivacyMapper, UserPrivacy> 
 				.set(req.getAllowGroupInvite() != null, UserPrivacy::getAllowGroupInvite, req.getAllowGroupInvite())
 				.set(req.getHideProfile() != null, UserPrivacy::getHideProfile, req.getHideProfile())
 				.update();
-    }
+	}
 
 	public Boolean checkAllowTempSession(Long uid) {
 		return baseMapper.checkAllowTempSession(uid);

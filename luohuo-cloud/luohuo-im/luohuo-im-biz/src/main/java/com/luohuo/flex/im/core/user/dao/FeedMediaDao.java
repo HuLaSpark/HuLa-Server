@@ -17,11 +17,12 @@ public class FeedMediaDao extends ServiceImpl<FeedMediaMapper, FeedMedia> {
 
 	/**
 	 * 批量添加朋友圈的资源的数据
+	 *
 	 * @param feedId 朋友圈id
 	 * @param images 素材地址
-	 * @param type 0 纯文字 1 图片 2 视频
+	 * @param type   0 纯文字 1 图片 2 视频
 	 */
-	public List<FeedMedia> batchSaveMedia(Long feedId, List<String> images, Integer type){
+	public List<FeedMedia> batchSaveMedia(Long feedId, List<String> images, Integer type) {
 		List<FeedMedia> feedMediaList = new ArrayList<>();
 		for (int i = 0; i < images.size(); i++) {
 			String url = images.get(i);
@@ -37,6 +38,7 @@ public class FeedMediaDao extends ServiceImpl<FeedMediaMapper, FeedMedia> {
 
 	/**
 	 * 删除朋友圈的资源等消息
+	 *
 	 * @param feedId
 	 * @return
 	 */
@@ -46,6 +48,7 @@ public class FeedMediaDao extends ServiceImpl<FeedMediaMapper, FeedMedia> {
 
 	/**
 	 * 通过id获取到朋友圈资源信息
+	 *
 	 * @param feedId
 	 * @return
 	 */

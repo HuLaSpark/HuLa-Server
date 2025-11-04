@@ -1,12 +1,12 @@
 luohuo:
   cache:
     type: REDIS
+    serializer-type: JACK_SON
   redis:
-    ip: 127.0.0.1
+    ip: 192.168.1.37
     port: 16379
-    password: 'mq0000'
-    database: 7
-
+    password: luo.123456
+    database: 1
 spring:
   cache:
     type: GENERIC
