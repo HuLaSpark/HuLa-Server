@@ -74,7 +74,7 @@ public class AiApiKeyController {
     @Operation(summary = "获得 API 密钥分页列表")
     public R<List<AiModelRespVO>> getApiKeySimpleList() {
         List<AiApiKeyDO> list = apiKeyService.getApiKeyList();
-        return success(convertList(list, key -> new AiModelRespVO().setId(key.getId()).setName(key.getName())));
+        return success(convertList(list, key -> new AiModelRespVO().setId(key.getId()).setName(key.getName()).setPlatform(key.getPlatform())));
     }
 
     @GetMapping("/balance")
