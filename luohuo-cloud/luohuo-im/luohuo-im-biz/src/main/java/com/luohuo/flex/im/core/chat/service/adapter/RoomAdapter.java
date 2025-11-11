@@ -65,7 +65,7 @@ public class RoomAdapter {
         ChatMessageReq chatMessageReq = new ChatMessageReq();
         chatMessageReq.setRoomId(roomId);
         chatMessageReq.setMsgType(MessageTypeEnum.SYSTEM.getType());
-        String body = applyFor? String.format("%s申请加入群聊", inviter.getName()):
+        String body = applyFor? String.format("%s加入群聊", inviter.getName()):
 				String.format("%s邀请%s加入群聊", inviter.getName(), member.values().stream().map(User::getName).collect(Collectors.joining("、")));
         chatMessageReq.setBody(body);
         return chatMessageReq;

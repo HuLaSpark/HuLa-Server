@@ -18,6 +18,9 @@ public class AiChatConversationUpdateMyReqVO {
     @Schema(description = "是否置顶", example = "true")
     private Boolean pinned;
 
+    @Schema(description = "角色编号", example = "1")
+    private Long roleId;
+
     @Schema(description = "模型编号", example = "1")
     private Long modelId;
 

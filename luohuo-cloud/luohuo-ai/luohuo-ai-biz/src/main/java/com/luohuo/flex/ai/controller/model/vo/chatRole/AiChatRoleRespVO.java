@@ -23,8 +23,10 @@ public class AiChatRoleRespVO implements VO {
     @Schema(description = "模型编号", example = "17640")
     @Trans(type = TransType.SIMPLE, target = AiModelDO.class, fields = { "name", "model" }, refs = { "modelName", "model" })
     private Long modelId;
+
     @Schema(description = "模型名字", example = "张三")
     private String modelName;
+
     @Schema(description = "模型标识", example = "gpt-3.5-turbo-0125")
     private String model;
 

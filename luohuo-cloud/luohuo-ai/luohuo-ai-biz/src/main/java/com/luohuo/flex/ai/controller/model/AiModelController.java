@@ -37,7 +37,7 @@ public class AiModelController {
 	@PostMapping("/create")
 	@Operation(summary = "创建模型")
 	public R<Long> createModel(@Valid @RequestBody AiModelSaveReqVO createReqVO) {
-		if (createReqVO.getPublicStatus() == null || !createReqVO.getPublicStatus()) {
+		if (createReqVO.getPublicStatus() == null || Integer.valueOf(1).equals(createReqVO.getPublicStatus())) {
 			AiModelSaveMyReqVO myReqVO = BeanUtils.toBean(createReqVO, AiModelSaveMyReqVO.class);
 			return success(modelService.createModelMy(myReqVO, ContextUtil.getUid()));
 		}
@@ -53,17 +53,12 @@ public class AiModelController {
 		}
 
 		Long uid = ContextUtil.getUid();
-		if (Boolean.FALSE.equals(model.getPublicStatus())) {
-			if (ObjUtil.notEqual(model.getUserId(), uid)) {
-				return success(false); // 无权限
-			}
-			AiModelSaveMyReqVO myReqVO = BeanUtils.toBean(updateReqVO, AiModelSaveMyReqVO.class);
-			modelService.updateModelMy(myReqVO, ContextUtil.getUid());
-		} else {
-			if (uid < 10937855681025L){
-				modelService.updateModel(updateReqVO);
-			}
+		if (ObjUtil.notEqual(model.getUserId(), uid)) {
+			return success(false);
 		}
+
+		AiModelSaveMyReqVO myReqVO = BeanUtils.toBean(updateReqVO, AiModelSaveMyReqVO.class);
+		modelService.updateModelMy(myReqVO, ContextUtil.getUid());
 		return success(true);
 	}
 
@@ -77,16 +72,11 @@ public class AiModelController {
 		}
 
 		Long uid = ContextUtil.getUid();
-		if (Boolean.FALSE.equals(model.getPublicStatus())) {
-			if (ObjUtil.notEqual(model.getUserId(), uid)) {
-				return success(false); // 无权限
-			}
-			modelService.deleteModelMy(id, ContextUtil.getUid());
-		} else {
-			if (uid < 10937855681025L){
-				modelService.deleteModel(id);
-			}
+		if (ObjUtil.notEqual(model.getUserId(), uid)) {
+			return success(false);
 		}
+
+		modelService.deleteModelMy(id, uid);
 		return success(true);
 	}
 
@@ -112,7 +102,7 @@ public class AiModelController {
 	public R<List<AiModelRespVO>> getModelSimpleList(@RequestParam("type") Integer type, @RequestParam(value = "platform", required = false) String platform) {
 		List<AiModelDO> list = modelService.getModelListByStatusAndTypeAndUserId(CommonStatusEnum.ENABLE.getStatus(), type, platform, ContextUtil.getUid());
 		return success(convertList(list, model -> new AiModelRespVO().setId(model.getId())
-				.setName(model.getName()).setModel(model.getModel()).setPlatform(model.getPlatform())));
+				.setName(model.getName()).setModel(model.getModel()).setUserId(model.getUserId()).setPlatform(model.getPlatform())));
 	}
 
 }

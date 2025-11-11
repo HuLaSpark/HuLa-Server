@@ -21,6 +21,9 @@ public class AiModelSaveReqVO {
     @NotEmpty(message = "模型名字不能为空")
     private String name;
 
+    @Schema(description = "模型头像", example = "https://example.com/avatar.png")
+    private String avatar;
+
     @Schema(description = "模型标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "gpt-3.5-turbo-0125")
     @NotEmpty(message = "模型标识不能为空")
     private String model;
@@ -50,7 +53,7 @@ public class AiModelSaveReqVO {
     @Schema(description = "上下文的最大 Message 数量", example = "8192")
     private Integer maxContexts;
 
-    @Schema(description = "是否公开", example = "false")
-    private Boolean publicStatus;
+    @Schema(description = "是否公开：0-公开，1-私有", example = "0")
+    private Integer publicStatus;
 
 }

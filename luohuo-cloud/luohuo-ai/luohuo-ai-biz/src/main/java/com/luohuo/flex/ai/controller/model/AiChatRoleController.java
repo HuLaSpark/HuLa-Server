@@ -54,16 +54,10 @@ public class AiChatRoleController {
         }
 
         Long uid = ContextUtil.getUid();
-        if (Boolean.FALSE.equals(chatRole.getPublicStatus())) {
-            if (ObjUtil.notEqual(chatRole.getUserId(), uid)) {
-                return success(false); // 无权限
-            }
-            chatRoleService.updateChatRoleMy(updateReqVO, uid);
-        } else {
-            if (uid < 10937855681025L) {
-                chatRoleService.updateChatRole(updateReqVO);
-            }
-        }
+		if (ObjUtil.notEqual(chatRole.getUserId(), uid)) {
+			return success(false);
+		}
+		chatRoleService.updateChatRoleMy(updateReqVO, uid);
         return success(true);
     }
 
@@ -77,16 +71,11 @@ public class AiChatRoleController {
         }
 
         Long uid = ContextUtil.getUid();
-        if (Boolean.FALSE.equals(chatRole.getPublicStatus())) {
-            if (ObjUtil.notEqual(chatRole.getUserId(), uid)) {
-                return success(false); // 无权限
-            }
-            chatRoleService.deleteChatRoleMy(id, uid);
-        } else {
-            if (uid < 10937855681025L) {
-                chatRoleService.deleteChatRole(id);
-            }
+        if (ObjUtil.notEqual(chatRole.getUserId(), uid)) {
+            return success(false);
         }
+
+		chatRoleService.deleteChatRoleMy(id, uid);
         return success(true);
     }
 

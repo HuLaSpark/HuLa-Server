@@ -51,6 +51,10 @@ public class AiModelDO extends BaseDO {
      */
     private String name;
     /**
+     * 模型头像
+     */
+    private String avatar;
+    /**
      * 模型标志
      */
     private String model;
@@ -81,10 +85,10 @@ public class AiModelDO extends BaseDO {
     /**
      * 是否公开
      *
-     * 1. true - 公开；系统级别模型，所有用户可见
-     * 2. false - 私有；用户专属模型，仅创建者可见
+     * 0 - 公开；系统级别模型，所有用户可见
+     * 1 - 私有；用户专属模型，仅创建者可见
      */
-    private Boolean publicStatus;
+    private Integer publicStatus;
 
     // ========== 对话配置 ==========
 

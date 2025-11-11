@@ -4,7 +4,6 @@ import com.luohuo.basic.base.R;
 import com.luohuo.flex.im.api.hystrix.ImUserApiFallback;
 import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
-import com.luohuo.flex.model.entity.base.IpInfo;
 import com.luohuo.flex.model.entity.base.RefreshIpInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

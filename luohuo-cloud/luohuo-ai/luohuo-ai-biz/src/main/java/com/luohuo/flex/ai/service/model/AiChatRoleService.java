@@ -39,13 +39,6 @@ public interface AiChatRoleService {
     Long createChatRoleMy(AiChatRoleSaveMyReqVO createReqVO, Long userId);
 
     /**
-     * 更新聊天角色
-     *
-     * @param updateReqVO 更新信息
-     */
-    void updateChatRole(@Valid AiChatRoleSaveReqVO updateReqVO);
-
-    /**
      * 创建【我的】聊天角色
      *
      * @param updateReqVO 更新信息

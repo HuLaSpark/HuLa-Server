@@ -304,18 +304,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-	public Boolean subElectricity(Long uid) {
-		User user = userDao.getById(uid);
-		UpdateWrapper<User> uw = new UpdateWrapper<>();
-		uw.lambda().set(User::getNum, user.getNum() - 1).eq(User::getId, user.getId());
-		boolean success = userDao.update(uw);
-		if(success){
-			userCache.delete(uid);
-			userSummaryCache.delete(uid);
-		}
-		return success;
-	}
-
     @Override
     @Transactional
     public Boolean register(UserRegisterVo userRegisterVo) {
@@ -340,6 +328,7 @@ public class UserServiceImpl implements UserService {
 				.resume("这个人还没有填写个人简介呢")
                 .openId(userRegisterVo.getOpenId())
 				.tenantId(userRegisterVo.getTenantId())
+				.context(false)
                 .build();
 
         // 保存用户

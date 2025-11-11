@@ -8,6 +8,7 @@ import com.luohuo.flex.ai.dal.BaseDO;
 import com.luohuo.flex.ai.dal.knowledge.AiKnowledgeSegmentDO;
 import com.luohuo.flex.ai.dal.model.AiChatRoleDO;
 import com.luohuo.flex.ai.dal.model.AiModelDO;
+import com.luohuo.flex.ai.enums.AiChatMessageContentTypeEnum;
 import com.luohuo.flex.ai.handler.LongListTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -91,6 +92,11 @@ public class AiChatMessageDO extends BaseDO {
     private String content;
 
     /**
+     * 推理思考内容（用于支持思考模型，如 DeepSeek R1）
+     */
+    private String reasoningContent;
+
+    /**
      * 是否携带上下文
      */
     private Boolean useContext;
@@ -102,6 +108,15 @@ public class AiChatMessageDO extends BaseDO {
      */
     @TableField(typeHandler = LongListTypeHandler.class)
     private List<Long> segmentIds;
+
+    /**
+     * 消息内容类型
+     *
+     * 枚举 {@link AiChatMessageContentTypeEnum}
+     *
+     * 用于标记消息内容的类型（文本、图片、视频、音频等），方便前端渲染
+     */
+    private Integer msgType;
 
 	/**
 	 * 租户id

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * AI API 密钥余额查询响应 VO
  *
- * @author fansili
+ * @author 乾乾
  */
 @Schema(description = "管理后台 - AI API 密钥余额查询 Response VO")
 @Data

@@ -41,6 +41,11 @@ public class AiImageDO extends BaseDO {
     private Long userId;
 
     /**
+     * 对话编号（可选，用于关联到聊天对话）
+     */
+    private Long conversationId;
+
+    /**
      * 提示词
      */
     private String prompt;
@@ -120,6 +125,13 @@ public class AiImageDO extends BaseDO {
      * 1. midjourney proxy：关联的 task id
      */
     private String taskId;
+
+    /**
+     * 聊天消息编号
+     *
+     * 关联 ai_chat_message 表的 id
+     */
+    private Long chatMessageId;
 
 }
 

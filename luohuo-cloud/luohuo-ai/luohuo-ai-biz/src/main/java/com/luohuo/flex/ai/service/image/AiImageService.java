@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * AI 绘图 Service 接口
  *
- * @author fansili
+ * @author 乾乾
  */
 public interface AiImageService {
 

@@ -21,6 +21,9 @@ public class AiModelSaveMyReqVO {
     @NotEmpty(message = "模型名字不能为空")
     private String name;
 
+    @Schema(description = "模型头像", example = "https://example.com/avatar.png")
+    private String avatar;
+
     @Schema(description = "模型标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "gpt-3.5-turbo-0125")
     @NotEmpty(message = "模型标识不能为空")
     private String model;
@@ -32,6 +35,11 @@ public class AiModelSaveMyReqVO {
     @Schema(description = "模型类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "模型类型不能为空")
     private Integer type;
+
+	private Integer status;
+
+	@Schema(description = "是否公开：0-公开，1-私有", example = "0")
+	private Integer publicStatus;
 
     @Schema(description = "排序", example = "1")
     private Integer sort;

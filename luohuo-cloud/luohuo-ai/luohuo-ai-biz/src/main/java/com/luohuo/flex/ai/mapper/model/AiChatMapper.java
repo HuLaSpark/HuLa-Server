@@ -44,17 +44,17 @@ public interface AiChatMapper extends BaseMapperX<AiModelDO> {
 		if (reqVO.getPublicStatus() == null) {
 			// 未指定：返回所有公开模型 + 用户私有模型
 			wrapper.and(w -> w
-					.eq(AiModelDO::getPublicStatus, true)
+					.eq(AiModelDO::getPublicStatus, 0) // 0=公开
 					.or()
 					.eq(AiModelDO::getUserId, userId)
 			);
-		} else if (Boolean.TRUE.equals(reqVO.getPublicStatus())) {
+		} else if (Integer.valueOf(0).equals(reqVO.getPublicStatus())) {
 			// 只查询公开模型
-			wrapper.eq(AiModelDO::getPublicStatus, true);
+			wrapper.eq(AiModelDO::getPublicStatus, 0);
 		} else {
 			// 只查询用户私有模型
 			wrapper.eq(AiModelDO::getUserId, userId)
-					.eq(AiModelDO::getPublicStatus, false);
+					.eq(AiModelDO::getPublicStatus, 1); // 1=私有
 		}
 
 		wrapper.orderByAsc(AiModelDO::getSort);
@@ -77,12 +77,12 @@ public interface AiChatMapper extends BaseMapperX<AiModelDO> {
 				.eq(AiModelDO::getType, type)
 				.eqIfPresent(AiModelDO::getPlatform, platform)
 				.and(wrapper -> wrapper
-						// 公开模型
-						.eq(AiModelDO::getPublicStatus, true)
-						// 或用户自己的私有模型
+						// 公开模型（publicStatus=0）
+						.eq(AiModelDO::getPublicStatus, 0)
+						// 或用户自己的私有模型（publicStatus=1）
 						.or()
 						.eq(AiModelDO::getUserId, userId)
-						.eq(AiModelDO::getPublicStatus, false)
+						.eq(AiModelDO::getPublicStatus, 1)
 				)
 				.orderByAsc(AiModelDO::getSort));
 	}

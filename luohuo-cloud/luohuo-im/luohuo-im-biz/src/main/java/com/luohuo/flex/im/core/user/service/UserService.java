@@ -119,12 +119,5 @@ public interface UserService {
 	 */
 	Boolean bindEmail(Long uid, BindEmailReq req);
 
-	/**
-	 * 扣减ai调用次数
-	 * @param uid
-	 * @return
-	 */
-	Boolean subElectricity(Long uid);
-
 	Boolean register(UserRegisterVo userRegisterVo);
 }

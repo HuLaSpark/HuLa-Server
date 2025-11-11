@@ -15,15 +15,15 @@ import com.luohuo.flex.satoken.interceptor.NotAllowWriteInterceptor;
  */
 @RequiredArgsConstructor
 public class GlobalMvcConfigurer implements WebMvcConfigurer {
-    private final SystemProperties systemProperties;
+	private final SystemProperties systemProperties;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new HeaderThreadLocalInterceptor())
-                .addPathPatterns("/**")
-                .order(-20);
-        registry.addInterceptor(new NotAllowWriteInterceptor(systemProperties))
-                .addPathPatterns("/**")
-                .order(Integer.MIN_VALUE);
-    }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new HeaderThreadLocalInterceptor())
+				.addPathPatterns("/**")
+				.order(-20);
+		registry.addInterceptor(new NotAllowWriteInterceptor(systemProperties))
+				.addPathPatterns("/**")
+				.order(Integer.MIN_VALUE);
+	}
 }

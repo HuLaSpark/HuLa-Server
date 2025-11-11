@@ -26,10 +26,15 @@ import com.luohuo.flex.ai.core.model.HunYuanChatModel;
 import com.luohuo.flex.ai.core.model.MidjourneyApi;
 import com.luohuo.flex.ai.core.model.SunoApi;
 import com.luohuo.flex.ai.core.model.XingHuoChatModel;
-import com.luohuo.flex.ai.core.model.silicon.SiliconFlowApiConstants;
-import com.luohuo.flex.ai.core.model.silicon.SiliconFlowChatModel;
-import com.luohuo.flex.ai.core.model.silicon.SiliconFlowImageApi;
-import com.luohuo.flex.ai.core.model.silicon.SiliconFlowImageModel;
+import com.luohuo.flex.ai.core.model.audio.AudioModel;
+import com.luohuo.flex.ai.core.model.silicon.*;
+import com.luohuo.flex.ai.core.model.gitee.GiteeAiAudioApi;
+import com.luohuo.flex.ai.core.model.gitee.GiteeAiAudioModel;
+import com.luohuo.flex.ai.core.model.gitee.GiteeAiAudioOptions;
+import com.luohuo.flex.ai.core.model.gitee.GiteeAiVideoApi;
+import com.luohuo.flex.ai.core.model.gitee.GiteeAiVideoModel;
+import com.luohuo.flex.ai.core.model.gitee.GiteeAiVideoOptions;
+import com.luohuo.flex.ai.core.model.video.VideoModel;
 import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import com.luohuo.basic.utils.collection.CollectionUtils;
 import io.micrometer.observation.ObservationRegistry;
@@ -78,10 +83,13 @@ import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiAudioSpeechModel;
+import org.springframework.ai.openai.OpenAiAudioSpeechOptions;
 import org.springframework.ai.openai.OpenAiEmbeddingModel;
 import org.springframework.ai.openai.OpenAiEmbeddingOptions;
 import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.openai.api.OpenAiAudioApi;
 import org.springframework.ai.openai.api.OpenAiImageApi;
 import org.springframework.ai.openai.api.common.OpenAiApiConstants;
 import org.springframework.ai.qianfan.QianFanChatModel;
@@ -138,6 +146,7 @@ public class AiModelFactoryImpl implements AiModelFactory {
             case MOONSHOT -> buildMoonshotChatModel(apiKey, url);
             case XING_HUO -> buildXingHuoChatModel(apiKey);
             case BAI_CHUAN -> buildBaiChuanChatModel(apiKey);
+            case GITEE_AI -> buildGiteeAiChatModel(apiKey); // Gitee AI 兼容 OpenAI 接口
             case OPENAI -> buildOpenAiChatModel(apiKey, url);
             case AZURE_OPENAI -> buildAzureOpenAiChatModel(apiKey, url);
             case OLLAMA -> buildOllamaChatModel(url);
@@ -215,6 +224,8 @@ public class AiModelFactoryImpl implements AiModelFactory {
                 return buildZhiPuAiImageModel(apiKey, url);
             case OPENAI:
                 return buildOpenAiImageModel(apiKey, url);
+            case GITEE_AI:
+                return buildGiteeAiImageModel(apiKey);
             case SILICON_FLOW:
                 return buildSiliconFlowImageModel(apiKey,url);
             case STABLE_DIFFUSION:
@@ -446,6 +457,16 @@ public class AiModelFactoryImpl implements AiModelFactory {
         return OpenAiChatModel.builder().openAiApi(openAiApi).toolCallingManager(getToolCallingManager()).build();
     }
 
+    /**
+     * 构建 Gitee AI 聊天模型（兼容 OpenAI 接口）
+     */
+    private static OpenAiChatModel buildGiteeAiChatModel(String apiKey) {
+        // OpenAI 客户端会自动添加 /v1，所以这里只用 https://ai.gitee.com
+        String baseUrl = "https://ai.gitee.com";
+        OpenAiApi openAiApi = OpenAiApi.builder().baseUrl(baseUrl).apiKey(apiKey).build();
+        return OpenAiChatModel.builder().openAiApi(openAiApi).toolCallingManager(getToolCallingManager()).build();
+    }
+
     // TODO @芋艿：手头暂时没密钥，使用建议再测试下
     /**
      * 可参考 {@link AzureOpenAiAutoConfiguration}
@@ -469,6 +490,16 @@ public class AiModelFactoryImpl implements AiModelFactory {
     private OpenAiImageModel buildOpenAiImageModel(String openAiToken, String url) {
         url = StrUtil.blankToDefault(url, OpenAiApiConstants.DEFAULT_BASE_URL);
         OpenAiImageApi openAiApi = OpenAiImageApi.builder().baseUrl(url).apiKey(openAiToken).build();
+        return new OpenAiImageModel(openAiApi);
+    }
+
+    /**
+     * 构建 Gitee AI 图片模型（兼容 OpenAI 接口）
+     */
+    private OpenAiImageModel buildGiteeAiImageModel(String apiKey) {
+        // OpenAI 客户端会自动添加 /v1，所以这里只用 https://ai.gitee.com
+        String baseUrl = "https://ai.gitee.com";
+        OpenAiImageApi openAiApi = OpenAiImageApi.builder().baseUrl(baseUrl).apiKey(apiKey).build();
         return new OpenAiImageModel(openAiApi);
     }
 
@@ -729,5 +760,73 @@ public class AiModelFactoryImpl implements AiModelFactory {
 
     private static FunctionCallbackResolver getFunctionCallbackResolver() {
         return SpringUtil.getBean(FunctionCallbackResolver.class);
+    }
+
+    // ========== VideoModel 相关方法 ==========
+
+    @Override
+    public VideoModel getOrCreateVideoModel(AiPlatformEnum platform, String apiKey, String url) {
+        String cacheKey = buildClientCacheKey(VideoModel.class, platform, apiKey, url);
+        return Singleton.get(cacheKey, (Func0<VideoModel>) () -> {
+            switch (platform) {
+                case SILICON_FLOW:
+                    return buildSiliconFlowVideoModel(apiKey);
+                case GITEE_AI:
+                    return buildGiteeAiVideoModel(apiKey);
+                // TODO: 添加其他平台支持
+                // case DEEP_SEEK:
+                //     return buildDeepSeekVideoModel(apiKey, url);
+                // case KIMI:
+                //     return buildKimiVideoModel(apiKey, url);
+                default:
+                    throw new IllegalArgumentException(StrUtil.format("未知平台({})", platform));
+            }
+        });
+    }
+
+    private VideoModel buildSiliconFlowVideoModel(String apiKey) {
+        SiliconFlowVideoApi videoApi = new SiliconFlowVideoApi(apiKey);
+        return new SiliconFlowVideoModel(videoApi);
+    }
+
+    /**
+     * 构建 Gitee AI 视频模型
+     */
+    private VideoModel buildGiteeAiVideoModel(String apiKey) {
+        GiteeAiVideoApi videoApi = new GiteeAiVideoApi(apiKey);
+        return new GiteeAiVideoModel(videoApi);
+    }
+
+    // ========== AudioModel 相关方法 ==========
+
+    @Override
+    public AudioModel getOrCreateAudioModel(AiPlatformEnum platform, String apiKey, String url) {
+        String cacheKey = buildClientCacheKey(AudioModel.class, platform, apiKey, url);
+        return Singleton.get(cacheKey, (Func0<AudioModel>) () -> {
+            switch (platform) {
+                case SILICON_FLOW:
+                    return buildSiliconFlowAudioModel(apiKey);
+                case GITEE_AI:
+                    return buildGiteeAiAudioModel(apiKey);
+                // TODO: 添加其他平台支持
+                // case DEEP_SEEK:
+                //     return buildDeepSeekAudioModel(apiKey, url);
+                // case KIMI:
+                //     return buildKimiAudioModel(apiKey, url);
+                default:
+                    throw new IllegalArgumentException(StrUtil.format("未知平台({})", platform));
+            }
+        });
+    }
+
+    private AudioModel buildSiliconFlowAudioModel(String apiKey) {
+        SiliconFlowAudioApi audioApi = new SiliconFlowAudioApi(apiKey);
+        return new SiliconFlowAudioModel(audioApi);
+    }
+
+    private AudioModel buildGiteeAiAudioModel(String apiKey) {
+        // 使用 GiteeAiAudioApi 构建 API 客户端
+        GiteeAiAudioApi audioApi = new GiteeAiAudioApi(apiKey);
+        return new GiteeAiAudioModel(audioApi);
     }
 }

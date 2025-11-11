@@ -15,7 +15,7 @@ import reactor.core.publisher.Flux;
  * 1. 混元大模型：基于 <a href="https://cloud.tencent.com/document/product/1729/111007">知识引擎原子能力</a> 实现
  * 2. 知识引擎原子能力：基于 <a href="https://cloud.tencent.com/document/product/1772/115969">知识引擎原子能力</a> 实现
  *
- * @author fansili
+ * @author 乾乾
  */
 @Slf4j
 @RequiredArgsConstructor

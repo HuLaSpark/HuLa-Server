@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * AI 聊天消息 Service 接口
  *
- * @author fansili
+ * @author 乾乾
  */
 public interface AiChatMessageService {
 
@@ -85,5 +85,17 @@ public interface AiChatMessageService {
      * @return 聊天消息的分页
      */
     PageResult<AiChatMessageDO> getChatMessagePage(AiChatMessagePageReqVO pageReqVO);
+
+    /**
+     * 保存生成内容消息（用于音频、图片、视频等生成功能）
+     * 不调用 AI 模型，直接保存用户提示词和生成结果
+     *
+     * @param conversationId 对话编号
+     * @param prompt 用户提示词
+     * @param generatedContent 生成的内容（音频 URL、图片 URL 等）
+     * @param userId 用户编号
+     * @return 保存结果
+     */
+    AiChatMessageSendRespVO saveGeneratedContent(Long conversationId, String prompt, String generatedContent, Long userId, Integer msgType);
 
 }

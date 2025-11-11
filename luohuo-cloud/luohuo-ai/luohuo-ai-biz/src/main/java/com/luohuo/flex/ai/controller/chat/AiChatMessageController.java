@@ -76,6 +76,16 @@ public class AiChatMessageController {
         return chatMessageService.sendChatMessageStream(sendReqVO, ContextUtil.getUid());
     }
 
+    @Operation(summary = "保存生成内容消息", description = "用于音频、图片、视频等生成功能，不调用 AI 模型。消息类型会根据模型类型自动确定")
+    @PostMapping("/save-generated-content")
+    public R<AiChatMessageSendRespVO> saveGeneratedContent(
+            @RequestParam("conversationId") Long conversationId,
+            @RequestParam("prompt") String prompt,
+            @RequestParam("generatedContent") String generatedContent,
+            @RequestParam(value = "msgType", required = false) @Deprecated Integer msgType) {
+        return success(chatMessageService.saveGeneratedContent(conversationId, prompt, generatedContent, ContextUtil.getUid(), msgType));
+    }
+
     @Operation(summary = "获得指定对话的消息列表")
     @GetMapping("/list-by-conversation-id")
     @Parameter(name = "conversationId", required = true, description = "对话编号", example = "1024")
@@ -135,7 +145,6 @@ public class AiChatMessageController {
     }
 
     // ========== 对话管理 ==========
-
     @GetMapping("/page")
     @Operation(summary = "获得消息分页", description = "用于【对话管理】菜单")
     public R<PageResult<AiChatMessageRespVO>> getChatMessagePage(AiChatMessagePageReqVO pageReqVO) {

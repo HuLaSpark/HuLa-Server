@@ -15,10 +15,11 @@ public enum AiModelTypeEnum implements ArrayValuable<Integer> {
 
     CHAT(1, "对话"),
     IMAGE(2, "图片"),
-    VOICE(3, "语音"),
-    VIDEO(4, "视频"),
+    AUDIO(3, "音频"),
     EMBEDDING(5, "向量"),
-    RERANK(6, "重排序");
+    RERANK(6, "重排序"),
+    TEXT_TO_VIDEO(7, "文生视频"),
+    IMAGE_TO_VIDEO(8, "图生视频");
 
     /**
      * 类型

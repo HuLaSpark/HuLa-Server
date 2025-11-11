@@ -6,6 +6,8 @@ import com.luohuo.flex.im.core.user.dao.FeedDao;
 import com.luohuo.flex.im.core.user.dao.FeedLikeDao;
 import com.luohuo.flex.im.core.user.dao.UserFriendDao;
 import com.luohuo.flex.im.core.user.service.FeedNotifyService;
+import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.Feed;
 import com.luohuo.flex.im.domain.entity.FeedComment;
 import com.luohuo.flex.im.domain.entity.FeedLike;
@@ -32,18 +34,31 @@ public class FeedNotifyServiceImpl implements FeedNotifyService {
 	private final FeedDao feedDao;
 	private final UserFriendDao userFriendDao;
 	private final PushService pushService;
+	private final UserSummaryCache userSummaryCache;
 
 	@Override
 	public void notifyFeedLike(FeedLike feedLike) {
 		try {
-			// 1. 获取跟朋友圈有关系的好友
+			// 1. 获取朋友圈信息
+			Feed feed = feedDao.getById(feedLike.getFeedId());
+			if (feed == null) return;
+
+			// 2. 获取跟朋友圈有关系的好友
 			Set<Long> interactiveUidSet = getInteractiveUid(feedLike.getFeedId(), feedLike.getUid());
 			if (interactiveUidSet == null) return;
 
-			// 2. 构建通知消息 - 点赞：uid、feedId（无 comment 字段）
+			// 3. 获取操作人信息
+			SummeryInfoDTO userInfo = userSummaryCache.get(feedLike.getUid());
+
+			// 4. 构建通知消息 - 点赞：uid（操作人）、feedId、feedOwnerUid（朋友圈发布人）、operatorName、operatorAvatar（无 comment 字段）
 			Map<String, Object> data = new HashMap<>();
-			data.put("uid", feedLike.getUid());
+			data.put("uid", feedLike.getUid());  // 操作人UID（点赞的人）
 			data.put("feedId", feedLike.getFeedId());
+			data.put("feedOwnerUid", feed.getUid());  // 朋友圈发布人UID（被点赞的人）
+			if (userInfo != null) {
+				data.put("operatorName", userInfo.getName());
+				data.put("operatorAvatar", userInfo.getAvatar());
+			}
 
 			sendFeedNotify(data, interactiveUidSet, feedLike.getUid(), "点赞");
 		} catch (Exception e) {
@@ -84,15 +99,27 @@ public class FeedNotifyServiceImpl implements FeedNotifyService {
 	public void notifyFeedComment(FeedComment feedComment) {
 		try {
 			// 1. 获取朋友圈信息
+			Feed feed = feedDao.getById(feedComment.getFeedId());
+			if (feed == null) return;
+
+			// 2. 获取跟朋友圈有关系的好友
 			Set<Long> interactiveUidSet = getInteractiveUid(feedComment.getFeedId(), feedComment.getUid());
 			if (interactiveUidSet == null) return;
 
-			// 2. 构建通知消息 - 评论：uid、feedId、comment、replyCommentId
+			// 3. 获取操作人信息
+			SummeryInfoDTO userInfo = userSummaryCache.get(feedComment.getUid());
+
+			// 4. 构建通知消息 - 评论：uid（操作人）、feedId、feedOwnerUid（朋友圈发布人）、comment、replyCommentId、operatorName、operatorAvatar
 			Map<String, Object> data = new HashMap<>();
 			data.put("replyCommentId", feedComment.getReplyCommentId());
-			data.put("uid", feedComment.getUid());
+			data.put("uid", feedComment.getUid());  // 操作人UID（评论的人）
 			data.put("feedId", feedComment.getFeedId());
+			data.put("feedOwnerUid", feed.getUid());  // 朋友圈发布人UID（被评论的人）
 			data.put("comment", feedComment.getContent());
+			if (userInfo != null) {
+				data.put("operatorName", userInfo.getName());
+				data.put("operatorAvatar", userInfo.getAvatar());
+			}
 
 			sendFeedNotify(data, interactiveUidSet, feedComment.getUid(), "评论");
 		} catch (Exception e) {
@@ -118,15 +145,27 @@ public class FeedNotifyServiceImpl implements FeedNotifyService {
 	@Override
 	public void notifyFeedUnlike(Long feedId, Long uid) {
 		try {
-			// 1. 获取跟朋友圈有关系的好友
+			// 1. 获取朋友圈信息
+			Feed feed = feedDao.getById(feedId);
+			if (feed == null) return;
+
+			// 2. 获取跟朋友圈有关系的好友
 			Set<Long> interactiveUidSet = getInteractiveUid(feedId, uid);
 			if (interactiveUidSet == null) return;
 
-			// 2. 构建通知消息 - 取消点赞：uid、feedId、isUnlike=true（无 comment 字段）
+			// 3. 获取操作人信息
+			SummeryInfoDTO userInfo = userSummaryCache.get(uid);
+
+			// 4. 构建通知消息 - 取消点赞：uid（操作人）、feedId、feedOwnerUid（朋友圈发布人）、isUnlike=true、operatorName、operatorAvatar
 			Map<String, Object> data = new HashMap<>();
-			data.put("uid", uid);
+			data.put("uid", uid);  // 操作人UID（取消点赞的人）
 			data.put("feedId", feedId);
-			data.put("isUnlike", true);  // 标记为取消点赞
+			data.put("feedOwnerUid", feed.getUid());  // 朋友圈发布人UID（被取消点赞的人）
+			data.put("isUnlike", true);
+			if (userInfo != null) {
+				data.put("operatorName", userInfo.getName());
+				data.put("operatorAvatar", userInfo.getAvatar());
+			}
 
 			sendFeedNotify(data, interactiveUidSet, uid, "取消点赞");
 		} catch (Exception e) {

@@ -35,6 +35,9 @@ public class AiImageDrawReqVO {
     @NotNull(message = "图片宽度不能为空")
     private Integer width;
 
+    @Schema(description = "对话编号（可选，用于关联到聊天对话）", example = "1024")
+    private Long conversationId;
+
     // ========== 各平台绘画的拓展参数 ==========
 
     /**

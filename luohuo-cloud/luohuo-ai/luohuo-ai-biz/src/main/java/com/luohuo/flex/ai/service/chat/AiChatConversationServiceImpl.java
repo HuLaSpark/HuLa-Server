@@ -36,7 +36,7 @@ import static com.luohuo.basic.utils.collection.CollectionUtils.convertList;
 /**
  * AI 聊天对话 Service 实现类
  *
- * @author fansili
+ * @author 乾乾
  */
 @Service
 @Validated
@@ -88,13 +88,20 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
         if (ObjUtil.notEqual(conversation.getUserId(), userId)) {
             throw exception(CHAT_CONVERSATION_NOT_EXISTS);
         }
-        // 1.2 校验模型是否存在（修改模型的情况）
+
+        // 1.2 校验角色是否存在
+        AiChatRoleDO role = null;
+        if (updateReqVO.getRoleId() != null) {
+            role = chatRoleService.validateChatRole(updateReqVO.getRoleId());
+        }
+
+        // 1.3 校验模型是否存在
         AiModelDO model = null;
         if (updateReqVO.getModelId() != null) {
             model = modalService.validateModel(updateReqVO.getModelId());
         }
 
-        // 1.3 校验知识库是否存在
+        // 1.4 校验知识库是否存在
         if (updateReqVO.getKnowledgeId() != null) {
             knowledgeService.validateKnowledgeExists(updateReqVO.getKnowledgeId());
         }
@@ -104,7 +111,13 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
         if (Boolean.TRUE.equals(updateReqVO.getPinned())) {
             updateObj.setPinnedTime(LocalDateTime.now());
         }
+        if (role != null) {
+            updateObj.setRoleId(role.getId());
+            updateObj.setTitle(role.getName());
+            updateObj.setSystemMessage(role.getSystemMessage());
+        }
         if (model != null) {
+			updateObj.setModelId(model.getId());
             updateObj.setModel(model.getModel());
         }
         chatConversationMapper.updateById(updateObj);

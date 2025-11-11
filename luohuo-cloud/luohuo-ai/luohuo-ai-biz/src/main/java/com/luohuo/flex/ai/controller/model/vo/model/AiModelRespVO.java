@@ -17,8 +17,14 @@ public class AiModelRespVO {
     @Schema(description = "API 秘钥编号", example = "22042")
     private Long keyId;
 
+	@Schema(description = "创建人", example = "22042")
+	private Long userId;
+
     @Schema(description = "模型名字", example = "张三")
     private String name;
+
+    @Schema(description = "模型头像", example = "https://example.com/avatar.png")
+    private String avatar;
 
     @Schema(description = "模型标识", example = "gpt-3.5-turbo-0125")
     private String model;
@@ -47,7 +53,7 @@ public class AiModelRespVO {
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 
-	@Schema(description = "是否公开", example = "false")
-	private Boolean publicStatus;
+	@Schema(description = "是否公开：0-公开，1-私有", example = "0")
+	private Integer publicStatus;
 
 }

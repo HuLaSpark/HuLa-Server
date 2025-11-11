@@ -2,7 +2,7 @@ package com.luohuo.flex.ai.service.model;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
+import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.model.vo.chatRole.AiChatRolePageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.chatRole.AiChatRoleSaveMyReqVO;
@@ -53,6 +53,7 @@ public class AiChatRoleServiceImpl implements AiChatRoleService {
 
         // 保存角色
         AiChatRoleDO chatRole = BeanUtils.toBean(createReqVO, AiChatRoleDO.class);
+		chatRole.setUserId(ContextUtil.getUid());
         chatRoleMapper.insert(chatRole);
         return chatRole.getId();
     }
@@ -68,20 +69,6 @@ public class AiChatRoleServiceImpl implements AiChatRoleService {
         AiChatRoleDO chatRole = BeanUtils.toBean(createReqVO, AiChatRoleDO.class).setUserId(userId).setStatus(CommonStatusEnum.ENABLE.getStatus()).setPublicStatus(false);
         chatRoleMapper.insert(chatRole);
         return chatRole.getId();
-    }
-
-    @Override
-    public void updateChatRole(AiChatRoleSaveReqVO updateReqVO) {
-        // 校验存在
-        validateChatRoleExists(updateReqVO.getId());
-        // 校验文档
-        validateDocuments(updateReqVO.getKnowledgeIds());
-        // 校验工具
-        validateTools(updateReqVO.getToolIds());
-
-        // 更新角色
-        AiChatRoleDO updateObj = BeanUtils.toBean(updateReqVO, AiChatRoleDO.class);
-        chatRoleMapper.updateById(updateObj);
     }
 
     @Override

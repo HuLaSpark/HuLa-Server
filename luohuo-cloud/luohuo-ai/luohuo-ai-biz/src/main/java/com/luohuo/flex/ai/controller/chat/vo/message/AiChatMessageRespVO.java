@@ -1,5 +1,6 @@
 package com.luohuo.flex.ai.controller.chat.vo.message;
 
+import com.luohuo.flex.ai.enums.AiChatMessageContentTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -32,6 +33,15 @@ public class AiChatMessageRespVO {
 
     @Schema(description = "模型标志", requiredMode = Schema.RequiredMode.REQUIRED, example = "gpt-3.5-turbo")
     private String model;
+
+	/**
+	 * 消息内容类型
+	 *
+	 * 枚举 {@link AiChatMessageContentTypeEnum}
+	 *
+	 * 用于标记消息内容的类型（文本、图片、视频、音频等），方便前端渲染
+	 */
+	private Integer msgType;
 
     @Schema(description = "模型编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "123")
     private Long modelId;

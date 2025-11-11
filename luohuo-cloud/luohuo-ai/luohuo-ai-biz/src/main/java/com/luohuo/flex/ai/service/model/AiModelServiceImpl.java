@@ -5,6 +5,7 @@ import com.agentsflex.llm.ollama.OllamaLlmConfig;
 import com.agentsflex.llm.qwen.QwenLlm;
 import com.agentsflex.llm.qwen.QwenLlmConfig;
 import cn.hutool.core.util.ObjectUtil;
+import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveMyReqVO;
@@ -34,11 +35,10 @@ import java.util.Map;
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.*;
 import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 
-
 /**
  * AI 模型 Service 实现类
  *
- * @author fansili
+ * @author 乾乾
  */
 @Service
 @Validated
@@ -62,9 +62,10 @@ public class AiModelServiceImpl implements AiModelService {
 		// 2. 插入
 		AiModelDO model = BeanUtils.toBean(createReqVO, AiModelDO.class);
 		// 如果是私有模型且没有设置 userId，则抛出异常
-		if (Boolean.FALSE.equals(createReqVO.getPublicStatus()) && model.getUserId() == null) {
+		if (Integer.valueOf(1).equals(createReqVO.getPublicStatus()) && model.getUserId() == null) {
 			throw exception(MODEL_NOT_EXISTS); // 使用适当的错误码
 		}
+		model.setUserId(ContextUtil.getUid());
 		modelMapper.insert(model);
 		return model.getId();
 	}
@@ -79,36 +80,9 @@ public class AiModelServiceImpl implements AiModelService {
 		AiModelDO model = BeanUtils.toBean(createReqVO, AiModelDO.class)
 				.setUserId(userId)
 				.setStatus(CommonStatusEnum.ENABLE.getStatus())
-				.setPublicStatus(false);
+				.setPublicStatus(1); // 1=私有
 		modelMapper.insert(model);
 		return model.getId();
-	}
-
-	@Override
-	public void updateModel(AiModelSaveReqVO updateReqVO) {
-		// 1. 校验存在
-		AiModelDO model = validateModelExists(updateReqVO.getId());
-
-		// 2. 权限校验：公开模型不允许普通用户编辑（管理员可以通过其他方式编辑）
-		// 如果 updateReqVO 中指定了 userId，说明是普通用户操作
-		if (updateReqVO.getId() != null) {
-			// 如果是私有模型，校验是否是创建者
-			if (Boolean.FALSE.equals(model.getPublicStatus())) {
-				// 私有模型需要校验 userId
-				if (updateReqVO instanceof AiModelSaveReqVO && model.getUserId() != null) {
-					// 这里需要从上下文获取当前用户ID进行校验
-					// 暂时保持原有逻辑，具体权限在 Controller 层控制
-				}
-			}
-		}
-
-		// 3. 校验平台和密钥
-		AiPlatformEnum.validatePlatform(updateReqVO.getPlatform());
-		apiKeyService.validateApiKey(updateReqVO.getKeyId());
-
-		// 4. 更新
-		AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
-		modelMapper.updateById(updateObj);
 	}
 
 	@Override
@@ -149,7 +123,7 @@ public class AiModelServiceImpl implements AiModelService {
 
 	private AiModelDO validateModelExists(Long id) {
 		AiModelDO model = modelMapper.selectById(id);
-		if (modelMapper.selectById(id) == null) {
+		if (model == null) {
 			throw exception(MODEL_NOT_EXISTS);
 		}
 		return model;
@@ -214,6 +188,22 @@ public class AiModelServiceImpl implements AiModelService {
 		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
 		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
 		return modelFactory.getOrCreateImageModel(platform, apiKey.getApiKey(), apiKey.getUrl());
+	}
+
+	@Override
+	public com.luohuo.flex.ai.core.model.video.VideoModel getVideoModel(Long id) {
+		AiModelDO model = validateModel(id);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+		return modelFactory.getOrCreateVideoModel(platform, apiKey.getApiKey(), apiKey.getUrl());
+	}
+
+	@Override
+	public com.luohuo.flex.ai.core.model.audio.AudioModel getAudioModel(Long id) {
+		AiModelDO model = validateModel(id);
+		AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(apiKey.getPlatform());
+		return modelFactory.getOrCreateAudioModel(platform, apiKey.getApiKey(), apiKey.getUrl());
 	}
 
 	@Override

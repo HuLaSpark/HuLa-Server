@@ -49,4 +49,20 @@ public class StorageDriver {
 		}
 		return null;
 	}
+
+	/**
+	 * 上传字节数组到存储服务
+	 *
+	 * @param data 文件字节数组
+	 * @param fileExtension 文件扩展名（如 "mp3"）
+	 * @return 文件访问URL
+	 */
+	public String uploadBytes(byte[] data, String fileExtension) {
+		switch (this.engine) {
+			case "qiniu" -> {
+				return new QiNiuStorage(this.getConfig()).uploadBytes(data, fileExtension);
+			}
+			default -> throw new IllegalArgumentException("不支持的存储引擎: " + this.engine);
+		}
+	}
 }

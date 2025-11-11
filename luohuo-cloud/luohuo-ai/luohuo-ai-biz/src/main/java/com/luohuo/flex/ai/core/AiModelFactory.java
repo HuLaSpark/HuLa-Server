@@ -2,6 +2,8 @@ package com.luohuo.flex.ai.core;
 
 import com.luohuo.flex.ai.core.model.MidjourneyApi;
 import com.luohuo.flex.ai.core.model.SunoApi;
+import com.luohuo.flex.ai.core.model.audio.AudioModel;
+import com.luohuo.flex.ai.core.model.video.VideoModel;
 import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -104,5 +106,29 @@ public interface AiModelFactory {
     VectorStore getOrCreateVectorStore(Class<? extends VectorStore> type,
                                        EmbeddingModel embeddingModel,
                                        Map<String, Class<?>> metadataFields);
+
+    /**
+     * 基于指定配置，获得 VideoModel 对象
+     *
+     * 如果不存在，则进行创建
+     *
+     * @param platform 平台
+     * @param apiKey API KEY
+     * @param url API URL
+     * @return VideoModel 对象
+     */
+    VideoModel getOrCreateVideoModel(AiPlatformEnum platform, String apiKey, String url);
+
+    /**
+     * 基于指定配置，获得 AudioModel 对象
+     *
+     * 如果不存在，则进行创建
+     *
+     * @param platform 平台
+     * @param apiKey API KEY
+     * @param url API URL
+     * @return AudioModel 对象
+     */
+    AudioModel getOrCreateAudioModel(AiPlatformEnum platform, String apiKey, String url);
 
 }

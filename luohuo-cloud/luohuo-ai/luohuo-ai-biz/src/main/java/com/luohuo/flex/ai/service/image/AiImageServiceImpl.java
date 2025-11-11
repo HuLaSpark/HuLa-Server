@@ -5,6 +5,7 @@ import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -24,8 +25,16 @@ import com.luohuo.flex.ai.dal.model.AiModelDO;
 import com.luohuo.flex.ai.enums.AiImageStatusEnum;
 import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import com.luohuo.flex.ai.mapper.image.AiImageMapper;
+import com.luohuo.flex.ai.service.chat.AiChatMessageService;
 import com.luohuo.flex.ai.service.model.AiModelService;
+import com.luohuo.flex.ai.service.model.AiModelUsageService;
 import com.luohuo.flex.ai.utils.BeanUtils;
+import com.luohuo.flex.service.SysConfigService;
+import com.qiniu.http.Response;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.Region;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.util.Auth;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.image.ImageModel;
@@ -50,11 +59,10 @@ import static com.luohuo.basic.utils.collection.CollectionUtils.convertSet;
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.*;
 import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 
-
 /**
  * AI 绘画 Service 实现类
  *
- * @author fansili
+ * @author 乾乾
  */
 @Service
 @Slf4j
@@ -65,6 +73,15 @@ public class AiImageServiceImpl implements AiImageService {
 
     @Resource
     private AiImageMapper imageMapper;
+
+    @Resource
+    private AiModelUsageService modelUsageService;
+
+    @Resource
+    private AiChatMessageService chatMessageService;
+
+    @Resource
+    private SysConfigService sysConfigService;
 
     @Override
     public PageResult<AiImageDO> getImagePageMy(Long userId, AiImagePageReqVO pageReqVO) {
@@ -94,13 +111,16 @@ public class AiImageServiceImpl implements AiImageService {
         // 1. 校验模型
         AiModelDO model = modelService.validateModel(drawReqVO.getModelId());
 
-        // 2. 保存数据库
+        // 2. 检查并扣减模型使用次数
+        modelUsageService.checkAndDeductUsage(userId, model);
+
+        // 3. 保存数据库
         AiImageDO image = BeanUtils.toBean(drawReqVO, AiImageDO.class).setUserId(userId)
                 .setPlatform(model.getPlatform()).setModelId(model.getId()).setModel(model.getModel())
                 .setPublicStatus(false).setStatus(AiImageStatusEnum.IN_PROGRESS.getStatus());
         imageMapper.insert(image);
 
-        // 3. 异步绘制，后续前端通过返回的 id 进行轮询结果
+        // 4. 异步绘制，后续前端通过返回的 id 进行轮询结果
         getSelf().executeDrawImage(image, drawReqVO, model);
         return image.getId();
     }
@@ -117,15 +137,19 @@ public class AiImageServiceImpl implements AiImageService {
                 throw new IllegalArgumentException("生成结果为空");
             }
 
-            // 2. 上传到文件服务
-            String b64Json = response.getResult().getOutput().getB64Json();
-            byte[] fileContent = StrUtil.isNotEmpty(b64Json) ? Base64.decode(b64Json)
-                    : HttpUtil.downloadBytes(response.getResult().getOutput().getUrl());
-//            String filePath = fileApi.createFile(fileContent);
+            // 1.3 提取图片 URL
+            String picUrl = extractImageUrl(response, model);
 
-            // 3. 更新数据库
+            // 2. 更新数据库
             imageMapper.updateById(new AiImageDO().setId(image.getId()).setStatus(AiImageStatusEnum.SUCCESS.getStatus())
-                    .setPicUrl(null).setFinishTime(LocalDateTime.now()));
+                    .setPicUrl(picUrl).setFinishTime(LocalDateTime.now()));
+
+            // 3. 创建聊天消息(异步执行,不影响主流程)
+            try {
+                createChatMessage(image, picUrl);
+            } catch (Exception e) {
+                log.error("[executeDrawImage] 创建聊天消息失败，imageId={}", image.getId(), e);
+            }
         } catch (Exception ex) {
             log.error("[executeDrawImage][image({}) 生成异常]", image, ex);
             imageMapper.updateById(new AiImageDO().setId(image.getId())
@@ -137,6 +161,14 @@ public class AiImageServiceImpl implements AiImageService {
     private static ImageOptions buildImageOptions(AiImageDrawReqVO draw, AiModelDO model) {
         if (ObjUtil.equal(model.getPlatform(), AiPlatformEnum.OPENAI.getPlatform())) {
             // https://platform.openai.com/docs/api-reference/images/create
+            return OpenAiImageOptions.builder().withModel(model.getModel())
+                    .withHeight(draw.getHeight()).withWidth(draw.getWidth())
+                    .withStyle(MapUtil.getStr(draw.getOptions(), "style")) // 风格
+                    .withResponseFormat("b64_json")
+                    .build();
+        } else if (ObjUtil.equal(model.getPlatform(), AiPlatformEnum.GITEE_AI.getPlatform())) {
+            // https://ai.gitee.com/docs/products/apis/images-vision/lora
+            // Gitee AI 兼容 OpenAI 图片生成接口
             return OpenAiImageOptions.builder().withModel(model.getModel())
                     .withHeight(draw.getHeight()).withWidth(draw.getWidth())
                     .withStyle(MapUtil.getStr(draw.getOptions(), "style")) // 风格
@@ -175,6 +207,75 @@ public class AiImageServiceImpl implements AiImageService {
                     .build();
         }
         throw new IllegalArgumentException("不支持的 AI 平台：" + model.getPlatform());
+    }
+
+    /**
+     * 从 ImageResponse 中提取图片 URL
+     * - OpenAI/Gitee AI: 返回 b64_json（Base64 编码的图片数据）
+     * - 硅基流动/其他: 返回 url（图片 URL）
+     */
+    private String extractImageUrl(ImageResponse response, AiModelDO model) {
+        String url = response.getResult().getOutput().getUrl();
+        String b64Json = response.getResult().getOutput().getB64Json();
+
+        // 如果有 URL，直接返回
+        if (StrUtil.isNotBlank(url)) {
+            return url;
+        }
+
+        // 如果有 Base64 数据，上传到存储服务
+        if (StrUtil.isNotBlank(b64Json)) {
+            try {
+                byte[] imageData = Base64.decode(b64Json);
+                String imageUrl = uploadImageToStorage(imageData);
+                log.info("[extractImageUrl][平台({}) Base64 图片上传成功，url: {}]", model.getPlatform(), imageUrl);
+                return imageUrl;
+            } catch (Exception e) {
+                log.error("[extractImageUrl][平台({}) Base64 图片上传失败]", model.getPlatform(), e);
+                throw new RuntimeException("图片上传失败: " + e.getMessage(), e);
+            }
+        }
+
+        throw new IllegalArgumentException("图片生成结果为空（无 URL 也无 Base64 数据）");
+    }
+
+    /**
+     * 上传图片到存储服务（七牛云）
+     */
+    private String uploadImageToStorage(byte[] imageData) {
+        try {
+            String accessKey = sysConfigService.get("qnAccessKey");
+            String secretKey = sysConfigService.get("qnSecretKey");
+            String bucket = sysConfigService.get("qnStorageName");
+            String cdnDomain = sysConfigService.get("qnStorageCDN");
+
+            Auth auth = Auth.create(accessKey, secretKey);
+            String upToken = auth.uploadToken(bucket);
+
+            Configuration cfg = new Configuration(Region.autoRegion());
+            UploadManager uploadManager = new UploadManager(cfg);
+
+            String fileName = "ai/image/" + IdUtil.fastSimpleUUID() + ".png";
+
+            // 上传到七牛云
+            Response response = uploadManager.put(imageData, fileName, upToken);
+
+            if (response.isOK()) {
+                String url = cdnDomain;
+                if (!url.endsWith("/")) {
+                    url += "/";
+                }
+                url += fileName;
+                log.info("[uploadImageToStorage][图片上传成功，fileName: {}, url: {}]", fileName, url);
+                return url;
+            } else {
+                log.error("[uploadImageToStorage][图片上传失败，response: {}]", response.bodyString());
+                throw new RuntimeException("七牛云上传失败: " + response.bodyString());
+            }
+        } catch (Exception e) {
+            log.error("[uploadImageToStorage][图片上传异常]", e);
+            throw new RuntimeException("七牛云上传异常: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -358,6 +459,43 @@ public class AiImageServiceImpl implements AiImageService {
                 .setOptions(image.getOptions()).setTaskId(actionResponse.result());
         imageMapper.insert(newImage);
         return newImage.getId();
+    }
+
+    /**
+     * 创建聊天消息
+     * 将生成的图片保存到聊天消息中
+     *
+     * @param image 图片记录
+     * @param picUrl 图片URL
+     */
+    private void createChatMessage(AiImageDO image, String picUrl) {
+        try {
+            // 如果没有 conversationId,则不创建聊天消息
+            if (image.getConversationId() == null) {
+                log.info("[createChatMessage] 图片生成成功，但未关联对话，imageId={}, picUrl={}", image.getId(), picUrl);
+                return;
+            }
+
+            // 直接存储图片 URL，不使用 Markdown 格式
+            // 前端会根据 msgType 字段判断是图片类型，自动渲染为图片
+            // msgType 会根据模型类型自动确定，无需手动传入
+
+            // 调用 chatMessageService 保存消息
+            var result = chatMessageService.saveGeneratedContent(
+                    image.getConversationId(),
+                    image.getPrompt(),
+                    picUrl,  // 直接存储 URL
+                    image.getUserId(),
+                    null
+            );
+
+            // 更新 image 记录，保存 chatMessageId
+            imageMapper.updateById(new AiImageDO().setId(image.getId()).setChatMessageId(result.getReceive().getId()));
+
+            log.info("[createChatMessage] 图片消息已保存到数据库，imageId={}, chatMessageId={}", image.getId(), result.getReceive().getId());
+        } catch (Exception e) {
+            log.error("[createChatMessage] 创建聊天消息失败，imageId={}", image.getId(), e);
+        }
     }
 
     /**

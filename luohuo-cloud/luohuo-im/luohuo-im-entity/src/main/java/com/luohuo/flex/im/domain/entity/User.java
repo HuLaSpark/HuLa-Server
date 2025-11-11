@@ -109,9 +109,6 @@ public class User extends Entity<Long> {
 	@Schema(description = "是否开启上下文[AI模块]")
 	private Boolean context;
 
-	@Schema(description = "调用次数[AI模块]")
-	private Integer num;
-
 	/**
 	 * 用户类型 UserTypeEnum
 	 * 参见 {@link UserTypeEnum}

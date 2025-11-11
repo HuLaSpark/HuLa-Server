@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -57,6 +58,7 @@ import static com.luohuo.basic.utils.DateUtils.DEFAULT_DATE_TIME_FORMAT;
         MilvusVectorStoreProperties.class,
         MilvusServiceClientProperties.class // 解析 Milvus 配置
 })
+@EnableAsync
 @Slf4j
 public class AiAutoConfiguration {
     @Bean
@@ -142,7 +144,8 @@ public class AiAutoConfiguration {
                         .build())
                 .toolCallingManager(getToolCallingManager())
                 .build();
-        return new SiliconFlowChatModel(openAiChatModel);
+        TokenCountEstimator tokenCountEstimator = new JTokkitTokenCountEstimator();
+        return new SiliconFlowChatModel(openAiChatModel, tokenCountEstimator);
     }
 
     @Bean

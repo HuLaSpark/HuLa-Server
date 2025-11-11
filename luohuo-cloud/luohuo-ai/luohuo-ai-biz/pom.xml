@@ -232,6 +232,23 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- 七牛云SDK -->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- config-sdk 用于获取七牛云配置 -->
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-config-sdk</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

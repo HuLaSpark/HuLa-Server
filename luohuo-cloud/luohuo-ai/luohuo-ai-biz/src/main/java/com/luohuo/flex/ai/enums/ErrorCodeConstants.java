@@ -19,6 +19,7 @@ public interface ErrorCodeConstants {
     ErrorCode MODEL_DISABLE = new ErrorCode(1_040_001_001, "模型({})已禁用!");
     ErrorCode MODEL_DEFAULT_NOT_EXISTS = new ErrorCode(1_040_001_002, "操作失败，找不到默认模型");
     ErrorCode MODEL_USE_TYPE_ERROR = new ErrorCode(1_040_001_003, "操作失败，该模型的模型类型不正确");
+    ErrorCode MODEL_USAGE_LIMIT_EXCEEDED = new ErrorCode(1_040_001_004, "公开模型使用次数已用完，每个用户限制使用10次");
 
     // ========== API 聊天角色 1-040-002-000 ==========
     ErrorCode CHAT_ROLE_NOT_EXISTS = new ErrorCode(1_040_002_000, "聊天角色不存在");
@@ -31,6 +32,7 @@ public interface ErrorCodeConstants {
     // ========== API 聊天消息 1-040-004-000 ==========
     ErrorCode CHAT_MESSAGE_NOT_EXIST = new ErrorCode(1_040_004_000, "消息不存在!");
     ErrorCode CHAT_STREAM_ERROR = new ErrorCode(1_040_004_001, "对话生成异常!");
+    ErrorCode CHAT_PROMPT_TOO_LONG = new ErrorCode(1_040_004_002, "对话内容过长，请减少对话历史或缩短消息内容");
 
     // ========== API 绘画 1-040-005-000 ==========
     ErrorCode IMAGE_NOT_EXISTS = new ErrorCode(1_040_005_000, "图片不存在!");
@@ -39,6 +41,12 @@ public interface ErrorCodeConstants {
 
     // ========== API 音乐 1-040-006-000 ==========
     ErrorCode MUSIC_NOT_EXISTS = new ErrorCode(1_040_006_000, "音乐不存在!");
+
+    // ========== API 音频 1-040-006-050 ==========
+    ErrorCode AUDIO_NOT_EXISTS = new ErrorCode(1_040_006_050, "音频不存在!");
+
+    // ========== API 视频 1-040-006-100 ==========
+    ErrorCode VIDEO_NOT_EXISTS = new ErrorCode(1_040_006_100, "视频不存在!");
 
     // ========== API 写作 1-040-007-000 ==========
     ErrorCode WRITE_NOT_EXISTS = new ErrorCode(1_040_007_000, "作文不存在!");
@@ -65,5 +73,8 @@ public interface ErrorCodeConstants {
     // ========== AI 工作流 1-040-011-000 ==========
     ErrorCode WORKFLOW_NOT_EXISTS = new ErrorCode(1_040_011_000, "工作流不存在");
     ErrorCode WORKFLOW_CODE_EXISTS = new ErrorCode(1_040_011_001, "工作流标识已存在");
+
+    // ========== AI 使用限制 1-040-012-000 ==========
+    ErrorCode AI_USAGE_LIMIT_EXCEEDED = new ErrorCode(1_040_012_000, "AI使用次数已用完");
 
 }

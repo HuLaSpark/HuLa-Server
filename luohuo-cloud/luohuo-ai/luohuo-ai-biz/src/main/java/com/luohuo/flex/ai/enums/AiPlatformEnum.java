@@ -35,6 +35,8 @@ public enum AiPlatformEnum {
 
     BAI_CHUAN("BaiChuan","百川智能"), // 百川智能
 
+	GITEE_AI("GiteeAI","Gitee AI"), // Gitee AI 魔力方舟
+
     // ========== 国外平台 ==========
 
     OPENAI("OpenAI","OpenAI"), // OpenAI 官方

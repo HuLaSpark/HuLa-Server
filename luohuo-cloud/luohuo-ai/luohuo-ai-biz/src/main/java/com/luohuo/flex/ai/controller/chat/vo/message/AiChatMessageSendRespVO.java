@@ -31,6 +31,9 @@ public class AiChatMessageSendRespVO {
         @Schema(description = "聊天内容", requiredMode = Schema.RequiredMode.REQUIRED, example = "你好，你好啊")
         private String content;
 
+        @Schema(description = "推理思考内容（用于支持思考模型）", example = "让我思考一下...")
+        private String reasoningContent;
+
         @Schema(description = "知识库段落编号数组", example = "[1,2,3]")
         private List<Long> segmentIds;
 

@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * AI 模型 Service 接口
  *
- * @author fansili
+ * @author 乾乾
  * @since 2024/4/24 19:42
  */
 public interface AiModelService {
@@ -43,13 +43,6 @@ public interface AiModelService {
      * @return 编号
      */
     Long createModelMy(@Valid AiModelSaveMyReqVO createReqVO, Long userId);
-
-    /**
-     * 更新模型
-     *
-     * @param updateReqVO 更新信息
-     */
-    void updateModel(@Valid AiModelSaveReqVO updateReqVO);
 
     /**
      * 更新【我的】模型
@@ -158,6 +151,22 @@ public interface AiModelService {
      * @return ImageModel 对象
      */
     ImageModel getImageModel(Long id);
+
+    /**
+     * 获得 VideoModel 对象
+     *
+     * @param id 编号
+     * @return VideoModel 对象
+     */
+    com.luohuo.flex.ai.core.model.video.VideoModel getVideoModel(Long id);
+
+    /**
+     * 获得 AudioModel 对象
+     *
+     * @param id 编号
+     * @return AudioModel 对象
+     */
+    com.luohuo.flex.ai.core.model.audio.AudioModel getAudioModel(Long id);
 
     /**
      * 获得 MidjourneyApi 对象
