@@ -71,9 +71,9 @@ public class AiApiKeyController {
     }
 
     @GetMapping("/simple-list")
-    @Operation(summary = "获得 API 密钥分页列表")
+    @Operation(summary = "获得 API 密钥简单列表（包含系统公开密钥和用户私有密钥）")
     public R<List<AiModelRespVO>> getApiKeySimpleList() {
-        List<AiApiKeyDO> list = apiKeyService.getApiKeyList();
+        List<AiApiKeyDO> list = apiKeyService.getApiKeyList(ContextUtil.getUid());
         return success(convertList(list, key -> new AiModelRespVO().setId(key.getId()).setName(key.getName()).setPlatform(key.getPlatform())));
     }
 

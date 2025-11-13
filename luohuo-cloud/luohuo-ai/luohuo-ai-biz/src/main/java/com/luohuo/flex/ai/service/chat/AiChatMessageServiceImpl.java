@@ -203,10 +203,10 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 
 			// 响应结果
 			String newContent = chunk.getResult() != null ? chunk.getResult().getOutput().getText() : null;
-			newContent = StrUtil.nullToDefault(newContent, ""); // 避免 null 的 情况
+			newContent = StrUtil.nullToDefault(newContent, "");
 			contentBuffer.append(newContent);
 
-			// 提取推理内容（从 metadata 中获取，如果存在）
+			// 提取推理内容
 			String newReasoningContent = null;
 			if (chunk.getMetadata() != null && chunk.getMetadata().containsKey("reasoning_content")) {
 				newReasoningContent = String.valueOf(chunk.getMetadata().get("reasoning_content"));
@@ -220,25 +220,22 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 							.setReasoningContent(newReasoningContent)
 							.setSegments(segments)));
 		}).doOnComplete(() -> {
-			// 忽略租户，因为 Flux 异步无法透传租户
-			String content = contentBuffer.toString();
-			String reasoningContent = reasoningBuffer.toString();
-			AiChatMessageDO updateMessage = new AiChatMessageDO()
-					.setId(assistantMessage.getId())
-					.setContent(content);
-			if (StrUtil.isNotEmpty(reasoningContent)) {
-				updateMessage.setReasoningContent(reasoningContent);
+			// 手动设置租户信息（因为 Flux 异步会切换线程，导致 ThreadLocal 丢失）
+			try {
+				ContextUtil.setIgnore(true);
+
+				String content = contentBuffer.toString();
+				String reasoningContent = reasoningBuffer.toString();
+				AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content);
+				if (StrUtil.isNotEmpty(reasoningContent)) {
+					updateMessage.setReasoningContent(reasoningContent);
+				}
+				chatMessageMapper.updateById(updateMessage);
+			} finally {
+				ContextUtil.setIgnore(false);
 			}
-			chatMessageMapper.updateById(updateMessage);
-			ContextUtil.setIgnore(false);
-		}).doOnError(throwable -> {
-			log.error("[sendChatMessageStream][userId({}) sendReqVO({}) 发生异常]", userId, sendReqVO, throwable);
-			// 忽略租户，因为 Flux 异步无法透传租户
-			ContextUtil.setIgnore(false);
-		}).onErrorResume(error -> {
-			ContextUtil.setIgnore(false);
-			return Flux.just(error(ErrorCodeConstants.CHAT_STREAM_ERROR));
-		});
+		}).doOnError(throwable -> log.error("[sendChatMessageStream][userId({}) sendReqVO({}) 发生异常]", userId, sendReqVO, throwable))
+		.onErrorResume(error -> Flux.just(error(ErrorCodeConstants.CHAT_STREAM_ERROR)));
 	}
 
 	private List<AiKnowledgeSegmentSearchRespBO> recallKnowledgeSegment(String content,

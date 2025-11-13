@@ -55,6 +55,12 @@ public class HulaAiProperties {
     @SuppressWarnings("SpellCheckingInspection")
     private SunoProperties suno;
 
+    /**
+     * OpenRouter
+     */
+    @SuppressWarnings("SpellCheckingInspection")
+    private OpenRouterProperties openrouter;
+
     @Data
     public static class DeepSeekProperties {
 
@@ -153,6 +159,19 @@ public class HulaAiProperties {
         private boolean enable = false;
 
         private String baseUrl;
+
+    }
+
+    @Data
+    public static class OpenRouterProperties {
+        private String enable;
+        private String apiKey;
+        private String baseUrl;  // 支持自定义 Base URL（可用于代理）
+
+        private String model;
+        private Double temperature;
+        private Integer maxTokens;
+        private Double topP;
 
     }
 }

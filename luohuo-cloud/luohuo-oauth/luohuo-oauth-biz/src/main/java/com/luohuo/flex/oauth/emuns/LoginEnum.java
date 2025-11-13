@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 @Getter
 @AllArgsConstructor
 public enum LoginEnum {
-    ACCOUNT(1, "管理端登录: admin|RAM"),
+	MANAGER(1, "管理端登录: admin|RAM"),
 	IM(2, "IM系统登录"),
     ;
     private final Integer val;

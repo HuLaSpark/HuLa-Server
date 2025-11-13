@@ -66,11 +66,12 @@ public interface AiApiKeyService {
     PageResult<AiApiKeyDO> getApiKeyPage(AiApiKeyPageReqVO pageReqVO, Long userId);
 
     /**
-     * 获得 API 密钥列表
+     * 获得 API 密钥列表（包含系统公开密钥和用户私有密钥）
      *
+     * @param userId 用户编号
      * @return API 密钥列表
      */
-    List<AiApiKeyDO> getApiKeyList();
+    List<AiApiKeyDO> getApiKeyList(Long userId);
 
     /**
      * 获得默认的 API 密钥

@@ -54,8 +54,8 @@ public class MobileTokenGranter extends AbstractTokenGranter implements TokenGra
 	@Resource
     private CaptchaService captchaService;
 
-	public MobileTokenGranter(SystemProperties systemProperties, DefClientService defClientService, DefUserService defUserService, BaseEmployeeService baseEmployeeService, BaseOrgService baseOrgService, SaTokenConfig saTokenConfig, ImUserApi userApi) {
-		super(systemProperties, defClientService, defUserService, baseEmployeeService, baseOrgService, saTokenConfig, userApi);
+	public MobileTokenGranter(SystemProperties systemProperties, DefClientService defClientService, DefUserService defUserService, BaseEmployeeService baseEmployeeService, BaseOrgService baseOrgService, SaTokenConfig saTokenConfig, ImUserApi userApi, com.luohuo.flex.oauth.biz.StpInterfaceBiz stpInterfaceBiz) {
+		super(systemProperties, defClientService, defUserService, baseEmployeeService, baseOrgService, saTokenConfig, userApi, stpInterfaceBiz);
 	}
 
 	@Override

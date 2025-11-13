@@ -48,8 +48,8 @@ public class QrCodeGranter extends AbstractTokenGranter {
 	@Resource
 	protected CachePlusOps cachePlusOps;
 
-	public QrCodeGranter(SystemProperties systemProperties, DefClientService defClientService, DefUserService defUserService, BaseEmployeeService baseEmployeeService, BaseOrgService baseOrgService, SaTokenConfig saTokenConfig, ImUserApi imUserApi) {
-		super(systemProperties, defClientService, defUserService, baseEmployeeService, baseOrgService, saTokenConfig, imUserApi);
+	public QrCodeGranter(SystemProperties systemProperties, DefClientService defClientService, DefUserService defUserService, BaseEmployeeService baseEmployeeService, BaseOrgService baseOrgService, SaTokenConfig saTokenConfig, ImUserApi imUserApi, com.luohuo.flex.oauth.biz.StpInterfaceBiz stpInterfaceBiz) {
+		super(systemProperties, defClientService, defUserService, baseEmployeeService, baseOrgService, saTokenConfig, imUserApi, stpInterfaceBiz);
 	}
 
 	public QrCodeResp generateQRCode() {

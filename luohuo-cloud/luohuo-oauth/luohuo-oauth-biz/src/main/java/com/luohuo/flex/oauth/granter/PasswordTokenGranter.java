@@ -57,8 +57,8 @@ public class PasswordTokenGranter extends AbstractTokenGranter implements TokenG
 
     public static final String GRANT_TYPE = "PASSWORD";
 
-	public PasswordTokenGranter(SystemProperties systemProperties, DefClientService defClientService, DefUserService defUserService, BaseEmployeeService baseEmployeeService, BaseOrgService baseOrgService, SaTokenConfig saTokenConfig, ImUserApi userApi) {
-		super(systemProperties, defClientService, defUserService, baseEmployeeService, baseOrgService, saTokenConfig, userApi);
+	public PasswordTokenGranter(SystemProperties systemProperties, DefClientService defClientService, DefUserService defUserService, BaseEmployeeService baseEmployeeService, BaseOrgService baseOrgService, SaTokenConfig saTokenConfig, ImUserApi userApi, com.luohuo.flex.oauth.biz.StpInterfaceBiz stpInterfaceBiz) {
+		super(systemProperties, defClientService, defUserService, baseEmployeeService, baseOrgService, saTokenConfig, userApi, stpInterfaceBiz);
 	}
 
 	@Override
@@ -79,12 +79,12 @@ public class PasswordTokenGranter extends AbstractTokenGranter implements TokenG
 		if (emailLogin) {
 			return defUserService.getUserByEmail(systemType, account);
 		}
-		boolean mobileLogin = ValidatorUtil.isMobile(account);
-		if (mobileLogin) {
+
+		DefUser defUser = defUserService.getUserByUsername(systemType, account);
+		if (defUser == null) {
 			return defUserService.getUserByMobile(systemType, account);
 		}
-
-		return defUserService.getUserByUsername(systemType, account);
+		return defUser;
 	}
 
     /**

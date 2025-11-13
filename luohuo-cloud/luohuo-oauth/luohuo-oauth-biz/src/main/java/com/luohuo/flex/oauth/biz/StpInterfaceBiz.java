@@ -33,8 +33,6 @@ public class StpInterfaceBiz {
     public List<String> getPermissionList() {
         SaSession tokenSession = StpUtil.getTokenSession();
         long employeeId = tokenSession.getLong(JWT_KEY_U_ID);
-        // 超管 返回 *
-
         List<DefResource> list;
         boolean isAdmin = baseRoleService.checkRole(employeeId, RoleConstant.TENANT_ADMIN);
         List<String> resourceCodes = Collections.emptyList();

@@ -3,6 +3,7 @@ package com.luohuo.flex.controller.tenant;
 import com.luohuo.basic.annotation.log.WebLog;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.base.controller.SuperCacheController;
+import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.database.mybatis.conditions.Wraps;
 import com.luohuo.basic.interfaces.echo.EchoService;
 import com.luohuo.flex.base.entity.tenant.DefTenant;
@@ -83,5 +84,15 @@ public class DefTenantController extends SuperCacheController<DefTenantService, 
     @WebLog("修改租户状态")
     public R<Boolean> updateState(@NotNull(message = "请修改正确的企业") @RequestParam Long id, @RequestParam @NotNull(message = "请传递状态值") Boolean state) {
         return success(superService.updateState(id, state));
+    }
+
+    @Operation(summary = "查询用户的可用企业", description = "查询用户的可用企业")
+    @GetMapping("/listTenantByUserId")
+    @WebLog("查询用户的可用企业")
+    public R<List<DefTenantResultVO>> listTenantByUserId(@RequestParam(required = false) Long userId) {
+        if (userId == null) {
+            userId = ContextUtil.getUserId();
+        }
+        return success(superService.listTenantByUserId(userId));
     }
 }

@@ -41,6 +41,8 @@ public enum AiPlatformEnum {
 
     OPENAI("OpenAI","OpenAI"), // OpenAI 官方
 
+    OPENROUTER("OpenRouter","OpenRouter"), // OpenRouter
+
     AZURE_OPENAI("AzureOpenAI","AzureOpenAI"), // OpenAI 微软
 
     OLLAMA("Ollama","Ollama"),

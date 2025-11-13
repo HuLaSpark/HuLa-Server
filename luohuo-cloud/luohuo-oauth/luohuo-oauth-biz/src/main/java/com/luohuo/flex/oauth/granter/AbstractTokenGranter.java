@@ -27,6 +27,7 @@ import com.luohuo.basic.exception.TokenExceedException;
 import com.luohuo.flex.common.utils.ToolsUtil;
 import com.luohuo.flex.model.entity.ws.OffLineResp;
 import com.luohuo.flex.model.event.UserOfflineEvent;
+import com.luohuo.flex.oauth.biz.StpInterfaceBiz;
 import com.luohuo.flex.oauth.emuns.LoginEnum;
 import com.luohuo.flex.model.event.UserOnlineEvent;
 import com.luohuo.flex.im.api.ImUserApi;
@@ -89,6 +90,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
     protected final BaseOrgService baseOrgService;
     protected final SaTokenConfig saTokenConfig;
 	protected final ImUserApi imUserApi;
+	protected final StpInterfaceBiz stpInterfaceBiz;
     @Override
     public R<LoginResultVO> login(LoginParamVO loginParam) {
         // 1. 参数校验
@@ -146,7 +148,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 	 * @return
 	 */
 	private Long findUid(Long defUid, Long tenantId, Integer systemType) {
-		if(LoginEnum.ACCOUNT.getVal().equals(systemType)){
+		if(LoginEnum.MANAGER.getVal().equals(systemType)){
 			return baseEmployeeService.getEmployeeByUser(defUid).getId();
 		} else {
 			return imUserApi.findById(defUid, tenantId).getData();
@@ -412,6 +414,14 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 			tokenSession.set(HEADER_TENANT_ID, userInfo.getTenantId());
 		} else {
 			tokenSession.delete(HEADER_TENANT_ID);
+		}
+
+		// 3. 保存权限列表和角色列表到 Session; Gateway 是响应式的，不能直接查询数据库，所以从 Session 中读取
+		if(userInfo.getSystemType().equals(LoginEnum.MANAGER.getVal())){
+			List<String> permissionList = stpInterfaceBiz.getPermissionList();
+			List<String> roleList = stpInterfaceBiz.getRoleList();
+			tokenSession.set("permissionList", permissionList);
+			tokenSession.set("roleList", roleList);
 		}
 
         LoginResultVO resultVO = new LoginResultVO();

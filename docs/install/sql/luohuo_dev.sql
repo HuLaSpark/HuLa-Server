@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 11/11/2025 15:41:19
+ Date: 13/11/2025 19:05:32
 */
 
 SET NAMES utf8mb4;
@@ -37,7 +37,7 @@ CREATE TABLE `ai_api_key`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 94423954721793 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 94780244072449 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_api_key
@@ -137,7 +137,7 @@ CREATE TABLE `ai_chat_message`  (
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_msg_type`(`msg_type` ASC) USING BTREE COMMENT '消息内容类型索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 94449229597698 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 94900830313986 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_message
@@ -371,7 +371,7 @@ CREATE TABLE `ai_model_usage_record`  (
   UNIQUE INDEX `uk_user_model`(`user_id` ASC, `model_id` ASC, `deleted` ASC) USING BTREE COMMENT '用户-模型唯一索引',
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE COMMENT '用户ID索引',
   INDEX `idx_model_id`(`model_id` ASC) USING BTREE COMMENT '模型ID索引'
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 公开模型使用记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 公开模型使用记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_model_usage_record
@@ -437,12 +437,29 @@ CREATE TABLE `ai_platform`  (
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_platform`(`platform` ASC, `deleted` ASC) USING BTREE COMMENT '平台代码唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 平台配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 平台配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_platform
 -- ----------------------------
 INSERT INTO `ai_platform` VALUES (1, 'Moonshot', '月之暗灭', 'Moonshot (KIMI)', 'moonshot-v1-8k, moonshot-v1-32k, moonshot-v1-128k', 'https://platform.moonshot.cn/docs', '请前往 Moonshot 官网查看可用模型列表', 1, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (2, 'DeepSeek', 'DeepSeek', 'DeepSeek', 'deepseek-chat, deepseek-coder, deepseek-reasoner', 'https://api-docs.deepseek.com/zh-cn/guides/reasoning_model', '请前往 DeepSeek 官网查看可用模型列表', 2, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 03:05:33', b'0', 1);
+INSERT INTO `ai_platform` VALUES (3, 'YiYan', '文心一言', 'Baidu (文心一言)', 'ernie-bot-4, ernie-bot-turbo, ernie-bot', 'https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html', '请前往百度智能云官网查看可用模型列表', 13, 0, '', '2025-11-11 01:19:48', '', '2025-11-12 11:15:21', b'0', 1);
+INSERT INTO `ai_platform` VALUES (4, 'TongYi', '通义千问', 'Alibaba (通义千问)', 'qwen-turbo, qwen-plus, qwen-max, qwen-long', 'https://help.aliyun.com/zh/dashscope/developer-reference/model-square', '请前往阿里云官网查看可用模型列表', 4, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (5, 'HunYuan', '混元', 'Tencent (混元)', 'hunyuan-lite, hunyuan-standard, hunyuan-pro', 'https://cloud.tencent.com/document/product/1729', '请前往腾讯云官网查看可用模型列表', 5, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (6, 'ZhiPu', '智谱', 'Zhipu (智谱)', 'glm-4, glm-3-turbo, glm-4v', 'https://open.bigmodel.cn/dev/api', '请前往智谱 AI 官网查看可用模型列表', 6, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (7, 'XingHuo', '星火', 'XingHuo (星火)', 'generalv3.5, generalv3, generalv2.1', 'https://www.xfyun.cn/doc/spark/Web.html', '请前往讯飞星火官网查看可用模型列表', 7, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (8, 'DouBao', '豆包', 'DouBao (豆包)', 'doubao-lite-4k, doubao-lite-32k, doubao-pro-4k', 'https://www.volcengine.com/docs/82379', '请前往字节豆包官网查看可用模型列表', 8, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (9, 'SiliconFlow', '硅基流动', 'SiliconFlow (硅基流动)', 'Qwen/Qwen2-7B-Instruct, meta-llama/Llama-2-7b-chat-hf, Wan-AI/Wan2.2-T2V-A14B, THUDM/GLM-Z1-9B-0414, Kwai-Kolors/Kolors', 'https://docs.siliconflow.cn/cn/userguide/capabilities/text-generation', '请前往硅基流动官网查看可用模型列表', 2, 0, '', '2025-11-11 01:19:48', '', '2025-11-12 11:15:26', b'0', 1);
+INSERT INTO `ai_platform` VALUES (10, 'MiniMax', 'MiniMax', 'MiniMax', 'abab6.5-chat, abab5.5-chat, abab5-chat', 'https://www.minimaxi.com/document/guides/chat', '请前往 MiniMax 官网查看可用模型列表', 10, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (11, 'BaiChuan', '百川智能', 'BaiChuan (百川)', 'Baichuan2-Turbo, Baichuan2-Turbo-192k, Baichuan2-53B', 'https://platform.baichuan-ai.com/docs/api', '请前往百川智能官网查看可用模型列表', 11, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (12, 'GiteeAI', 'Gitee AI', 'Gitee AI (魔力方舟)', 'tts-1, tts-1-hd, gpt-4o, gpt-4o-mini', 'https://ai.gitee.com/docs', '请前往 Gitee AI 魔力方舟官网查看可用模型列表', 2, 0, '', '2025-11-11 01:19:48', '', '2025-11-12 11:15:29', b'0', 1);
+INSERT INTO `ai_platform` VALUES (13, 'OpenAI', 'OpenAI', 'OpenAI', 'gpt-4, gpt-4-turbo, gpt-3.5-turbo, gpt-4o', 'https://platform.openai.com/docs/models', '请前往 OpenAI 官网查看可用模型列表', 13, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (14, 'AzureOpenAI', 'Azure OpenAI', 'Azure OpenAI', 'gpt-4, gpt-35-turbo, gpt-4-turbo', 'https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models', '请前往 Azure OpenAI 官网查看可用模型列表', 14, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (15, 'Anthropic', 'Anthropic', 'Anthropic', 'claude-3-opus, claude-3-sonnet, claude-3-haiku', 'https://docs.anthropic.com/claude/docs/models-overview', '请前往 Anthropic 官网查看可用模型列表', 15, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (16, 'Google', 'Google', 'Google', 'gemini-pro, gemini-pro-vision, gemini-1.5-pro', 'https://ai.google.dev/models', '请前往 Google AI 官网查看可用模型列表', 16, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (17, 'Ollama', 'Ollama', 'Ollama', 'llama2, mistral, neural-chat, dolphin-mixtral', 'https://ollama.ai/library', '请前往 Ollama 官网查看可用模型列表', 17, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
+INSERT INTO `ai_platform` VALUES (18, 'OpenRouter', 'OpenRouter', 'OpenRouter', 'openai/gpt-3.5-turbo, openai/gpt-4, anthropic/claude-3-opus', 'https://openrouter.ai/docs', '请前往 OpenRouter 官网查看可用模型列表', 3, 0, '', '2025-11-12 04:16:46', '', '2025-11-12 11:15:13', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_tool
@@ -665,11 +682,7 @@ CREATE TABLE `base_employee`  (
 -- ----------------------------
 -- Records of base_employee
 -- ----------------------------
-INSERT INTO `base_employee` VALUES (160566476187631622, 0, b'1', 1451532876054003712, 1, 1451532667655815168, NULL, '超管', 0, '', '20', '10', b'1', 1452186486253289472, '2021-11-21 16:45:25', 1452186486253289472, '2021-11-21 16:45:25', 1, 0, 1);
-INSERT INTO `base_employee` VALUES (1452186486492364800, 0, b'1', 1451532876054003712, 2, 1451532727697276928, 1451532821628715008, '内置超管-啊汤哥', 0, '', '20', '10', b'1', 2, '2021-10-24 16:13:33', 1452186486253289472, '2021-11-09 20:36:44', 2, 0, 1);
-INSERT INTO `base_employee` VALUES (1454329823978586112, 0, b'1', 1451532876054003712, 1454329823852756992, 1451532773234835456, NULL, '门店管理员-最后哥', 0, '', '20', '10', b'1', 1451549146992345088, '2021-10-30 14:10:25', 1451549146992345088, '2021-10-30 14:10:25', 1, 0, 1);
-INSERT INTO `base_employee` VALUES (1457904456589901824, 0, b'1', 1458051094994223104, 1457904455960756224, 1451532773234835456, NULL, '普通用户-小沙比', 0, '', '20', '10', b'1', 1451549146992345088, '2021-11-09 10:54:44', 2, '2024-10-08 15:31:36', 0, 0, 1);
-INSERT INTO `base_employee` VALUES (1457904456589901825, 0, b'1', 1458051094994223104, 649219302184284167, 1451532773234835456, NULL, 'Dawn', 0, '', '20', '10', b'1', 1451549146992345088, '2021-11-09 10:54:44', 2, '2024-10-08 15:31:36', 0, 0, 1);
+INSERT INTO `base_employee` VALUES (1, 0, b'1', 1458051094994223104, 61170828529941, 1451532773234835456, NULL, '2439646234', 0, '', '20', '10', b'1', 1451549146992345088, '2021-11-09 10:54:44', 2, '2024-10-08 15:31:36', 0, 0, 1);
 
 -- ----------------------------
 -- Table structure for base_employee_org_rel
@@ -1649,6 +1662,7 @@ CREATE TABLE `def_login_log`  (
 -- ----------------------------
 -- Records of def_login_log
 -- ----------------------------
+INSERT INTO `def_login_log` VALUES (95232381660672, NULL, NULL, NULL, '192.168.1.37', '', '15659754644', '04', '用户不存在！', '2025-11-13', 'ReactorNetty/1.2.2', 'Unknown', '', 'Unknown', '0|0|0|内网IP|内网IP', '2025-11-13 18:59:30', NULL, '2025-11-13 18:59:30', NULL, 0);
 
 -- ----------------------------
 -- Table structure for def_msg_template
@@ -2008,6 +2022,7 @@ CREATE TABLE `def_resource_api`  (
 INSERT INTO `def_resource_api` VALUES (167906188749438980, 1460537873248813056, 'DefUserController', 'lamp-system-server', 'POST', '用户-查找同一企业下的用户', '/system/defUser/pageUser', b'0', 1452186486253289472, '2021-12-11 13:27:53', 1452186486253289472, '2021-12-11 13:27:53', 0);
 INSERT INTO `def_resource_api` VALUES (167906188749438981, 1460537873248813056, 'MsgController', 'lamp-base-server', 'GET', '消息表-查询消息中心', '/base/msg/{id}', b'0', 1452186486253289472, '2021-12-11 13:27:53', 1452186486253289472, '2021-12-11 13:27:53', 0);
 INSERT INTO `def_resource_api` VALUES (167906188749438982, 1460537873248813056, 'BaseRoleController', 'lamp-base-server', 'POST', '角色-批量查询', '/base/baseRole/query', b'0', 1452186486253289472, '2021-12-11 13:27:53', 1452186486253289472, '2021-12-11 13:27:53', 0);
+INSERT INTO `def_resource_api` VALUES (167990267029221490, 1457665354649042944, 'DefTenantController', 'lamp-base-server', 'GET', '租户列表', '/base/defTenant/listTenantByUserId', b'0', 1452186486253289472, '2021-12-11 23:39:45', 1452186486253289472, '2021-12-11 23:39:45', 0);
 INSERT INTO `def_resource_api` VALUES (167990267029225477, 1457620585302458368, 'BaseEmployeeController', 'lamp-base-server', 'GET', '员工-单体查询', '/base/baseEmployee/{id}', b'0', 1452186486253289472, '2021-12-11 20:40:32', 1452186486253289472, '2021-12-11 20:40:32', 0);
 INSERT INTO `def_resource_api` VALUES (167990267029225478, 1457620528469639168, 'BaseEmployeeController', 'lamp-base-server', 'DELETE', '员工-删除', '/base/baseEmployee', b'0', 1452186486253289472, '2021-12-11 20:45:26', 1452186486253289472, '2021-12-11 20:45:26', 0);
 INSERT INTO `def_resource_api` VALUES (167990267029225479, 1457620470995091456, 'BaseEmployeeController', 'lamp-base-server', 'PUT', '员工-修改', '/base/baseEmployee', b'0', 1452186486253289472, '2021-12-11 20:46:52', 1452186486253289472, '2021-12-11 20:46:52', 0);
@@ -2229,6 +2244,7 @@ CREATE TABLE `def_tenant`  (
   `contact_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人',
   `contact_mobile` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '联系手机',
   `status` tinyint NOT NULL DEFAULT 0 COMMENT '租户状态（0正常 1停用）',
+  `state` tinyint NOT NULL DEFAULT 0 COMMENT 'state (正式租户、非正式租户的停用启用状态)',
   `website` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '绑定域名',
   `package_id` bigint NOT NULL COMMENT '租户套餐编号',
   `expire_time` datetime NOT NULL COMMENT '过期时间',
@@ -2244,7 +2260,7 @@ CREATE TABLE `def_tenant`  (
 -- ----------------------------
 -- Records of def_tenant
 -- ----------------------------
-INSERT INTO `def_tenant` VALUES (1, '系统默认租户', 1, 'aa', 'aa', 1, '', 12, '2028-06-20 14:21:35', 5, NULL, NULL, NULL, NULL, 0);
+INSERT INTO `def_tenant` VALUES (1, '系统默认租户', 1, '络火科技', '18173516309', 1, 0, '', 12, '2028-06-20 14:21:35', 5, NULL, NULL, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for def_tenant_application_rel
@@ -2315,8 +2331,8 @@ CREATE TABLE `def_user`  (
 -- ----------------------------
 -- Records of def_user
 -- ----------------------------
-INSERT INTO `def_user` VALUES (61170828519936, 2, 'bot', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-10-28 17:08:01', 2, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
-INSERT INTO `def_user` VALUES (61170828519937, 2, '2439646234', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"183.15.178.3\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"183.15.178.3\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-11-10 17:44:08', 1, '2025-03-27 04:23:08', NULL, '2025-11-10 19:31:46', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519936, 2, '15147891644', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-10-28 17:08:01', 2, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519937, 2, '13275346112', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"61.141.64.252\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"61.141.64.252\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-11-13 18:13:04', 1, '2025-03-27 04:23:08', NULL, '2025-11-13 18:42:30', 0, 1);
 
 -- ----------------------------
 -- Table structure for def_user_application
@@ -2353,6 +2369,7 @@ CREATE TABLE `def_user_tenant_rel`  (
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_by` bigint NULL DEFAULT NULL COMMENT '最后更新人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '最后更新时间',
+  `is_del` bit(1) NOT NULL DEFAULT b'0' COMMENT '逻辑删除',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_utr_user_tenant`(`user_id` ASC, `tenant_id` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '员工' ROW_FORMAT = Dynamic;
@@ -2360,21 +2377,11 @@ CREATE TABLE `def_user_tenant_rel`  (
 -- ----------------------------
 -- Records of def_user_tenant_rel
 -- ----------------------------
-INSERT INTO `def_user_tenant_rel` VALUES (160566476187631622, b'1', 1, b'1', 1, 1, '2021-12-12 12:12:12', 1452186486253289472, '2021-12-12 12:12:12');
-INSERT INTO `def_user_tenant_rel` VALUES (529156515081825280, b'0', 1457904455960756224, b'1', 528674722830400514, 2, '2024-08-10 23:18:52', 2, '2024-08-10 23:18:52');
-INSERT INTO `def_user_tenant_rel` VALUES (559374036665933915, b'0', 1454329823852756992, b'1', 559374036665933836, 2, '2024-10-31 11:21:46', 2, '2024-10-31 11:21:46');
-INSERT INTO `def_user_tenant_rel` VALUES (559374036665933925, b'0', 1454329823852756992, b'1', 1, 2, '2024-10-31 11:23:12', 2, '2024-10-31 11:23:12');
-INSERT INTO `def_user_tenant_rel` VALUES (561686163590261772, b'0', 1457904455960756224, b'1', 1, 2, '2024-11-06 15:31:11', 2, '2024-11-06 15:31:11');
-INSERT INTO `def_user_tenant_rel` VALUES (561686163590261775, b'0', 1459157721822527488, b'1', 1, 2, '2024-11-06 15:32:36', 2, '2024-11-06 15:32:36');
-INSERT INTO `def_user_tenant_rel` VALUES (568844692956704872, b'1', 1457904455960756224, b'1', 568844692956704788, 2, '2024-11-25 22:38:37', 2, '2024-11-25 22:38:37');
-INSERT INTO `def_user_tenant_rel` VALUES (585361260276598784, b'0', 1457904455960756224, b'1', 585361238801760256, 2, '2025-01-09 11:14:14', 2, '2025-01-09 11:14:14');
-INSERT INTO `def_user_tenant_rel` VALUES (608003790990285344, b'0', 1457904455960756224, b'1', 607814606270829667, 2, '2025-03-11 14:57:21', 2, '2025-03-11 14:57:21');
-INSERT INTO `def_user_tenant_rel` VALUES (608003790990285345, b'0', 1454329823852756992, b'1', 607814606270829667, 2, '2025-03-11 14:57:21', 2, '2025-03-11 14:57:21');
-INSERT INTO `def_user_tenant_rel` VALUES (636720990303838307, b'0', 1459157721822527488, b'1', 636720990303838214, 2, '2025-05-27 20:07:20', 2, '2025-05-27 20:07:20');
-INSERT INTO `def_user_tenant_rel` VALUES (636720990303838409, b'0', 1459157721822527488, b'1', 636720990303838329, 2, '2025-05-27 20:09:31', 2, '2025-05-27 20:09:31');
-INSERT INTO `def_user_tenant_rel` VALUES (639195488466789469, b'0', 2, b'1', 639195488466789388, 2, '2025-06-03 12:11:22', 2, '2025-06-03 12:11:22');
-INSERT INTO `def_user_tenant_rel` VALUES (639195488466789556, b'0', 2, b'1', 639195488466789475, 2, '2025-06-03 12:15:40', 2, '2025-06-03 12:15:40');
-INSERT INTO `def_user_tenant_rel` VALUES (1452186486492364800, b'1', 2, b'1', 1, 1, '2021-12-12 12:12:12', 1, '2021-12-12 12:12:12');
+INSERT INTO `def_user_tenant_rel` VALUES (160566476187631622, b'1', 61170828529941, b'1', 1, 1, '2021-12-12 12:12:12', 1452186486253289472, '2021-12-12 12:12:12', b'0');
+INSERT INTO `def_user_tenant_rel` VALUES (559374036665933925, b'0', 1454329823852756992, b'1', 1, 2, '2024-10-31 11:23:12', 2, '2024-10-31 11:23:12', b'0');
+INSERT INTO `def_user_tenant_rel` VALUES (561686163590261772, b'0', 1457904455960756224, b'1', 1, 2, '2024-11-06 15:31:11', 2, '2024-11-06 15:31:11', b'0');
+INSERT INTO `def_user_tenant_rel` VALUES (561686163590261775, b'0', 1459157721822527488, b'1', 1, 2, '2024-11-06 15:32:36', 2, '2024-11-06 15:32:36', b'0');
+INSERT INTO `def_user_tenant_rel` VALUES (1452186486492364800, b'1', 2, b'1', 1, 1, '2021-12-12 12:12:12', 1, '2021-12-12 12:12:12', b'0');
 
 -- ----------------------------
 -- Table structure for extend_interface_log
@@ -2401,7 +2408,7 @@ CREATE TABLE `extend_interface_log`  (
 -- Records of extend_interface_log
 -- ----------------------------
 INSERT INTO `extend_interface_log` VALUES (66567882983426, 244439130119864323, '阿里短信', 0, 1, '2025-08-26 16:37:01', '2025-08-26 16:37:00', NULL, '2025-08-26 16:37:00', NULL, 0, 0);
-INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 907, 58, '2025-11-11 10:43:50', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
+INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 977, 58, '2025-11-13 18:50:10', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
 
 -- ----------------------------
 -- Table structure for extend_interface_logging
@@ -2615,10 +2622,33 @@ CREATE TABLE `worker_node`  (
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 969 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 976 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of worker_node
 -- ----------------------------
+
+-- ----------------------------
+-- Function structure for generate_account_by_id
+-- ----------------------------
+DROP FUNCTION IF EXISTS `generate_account_by_id`;
+delimiter ;;
+CREATE FUNCTION `generate_account_by_id`(user_id BIGINT)
+ RETURNS varchar(11) CHARSET utf8mb4 COLLATE utf8mb4_bin
+  DETERMINISTIC
+BEGIN
+    DECLARE hash_value BIGINT UNSIGNED;
+    DECLARE account_number BIGINT;
+    
+    -- 使用 MD5 哈希算法（避免溢出）
+    SET hash_value = CONV(SUBSTRING(MD5(user_id), 1, 10), 16, 10);
+    
+    -- 生成11位账号：10000000000 ~ 19999999999
+    SET account_number = 10000000000 + (hash_value % 10000000000);
+    
+    RETURN CAST(account_number AS CHAR);
+END
+;;
+delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;

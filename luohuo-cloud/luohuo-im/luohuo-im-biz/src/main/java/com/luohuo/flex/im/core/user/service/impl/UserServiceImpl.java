@@ -3,8 +3,6 @@ package com.luohuo.flex.im.core.user.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
@@ -313,26 +311,30 @@ public class UserServiceImpl implements UserService {
         if (userDao.existsByEmailAndIdNot(null, userRegisterVo.getEmail())) {
 			return false;
         }
-        String account = userRegisterVo.getEmail().split("@")[0];
-        boolean exists = userDao.count(new QueryWrapper<User>().lambda().eq(User::getAccount, account)) > 0;
 
-        // 2. 走注册流程
-		final User newUser = User.builder()
+        // 2. 直接使用 OAuth 服务传递过来的账号和用户名
+        String account = userRegisterVo.getAccount();
+        String userName = userRegisterVo.getName();
+
+        log.info("用户注册，邮箱：{}，DefUser ID：{}，账号：{}，用户名：{}", userRegisterVo.getEmail(), userRegisterVo.getUserId(), account, userName);
+
+        // 3. 创建 IM 用户
+        User newUser = User.builder()
                 .userId(userRegisterVo.getUserId())
                 .avatar(userRegisterVo.getAvatar())
-                .account(exists? userRegisterVo.getEmail(): account)
+                .account(account)
                 .email(userRegisterVo.getEmail())
-				.sex(userRegisterVo.getSex())
-				.userType(userRegisterVo.getUserType())
-                .name(userRegisterVo.getName())
-				.resume("这个人还没有填写个人简介呢")
+                .sex(userRegisterVo.getSex())
+                .userType(userRegisterVo.getUserType())
+                .name(userName)
+                .resume("这个人还没有填写个人简介呢")
                 .openId(userRegisterVo.getOpenId())
-				.tenantId(userRegisterVo.getTenantId())
-				.context(false)
+                .tenantId(userRegisterVo.getTenantId())
+                .context(false)
                 .build();
 
         // 保存用户
-		newUser.setCreateBy(1L);
+        newUser.setCreateBy(1L);
         userDao.save(newUser);
 
 		// 注入群组信息

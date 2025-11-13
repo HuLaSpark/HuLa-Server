@@ -47,3 +47,77 @@ spring:
       api-key: xxxx
     moonshot: # 月之暗灭（KIMI）
       api-key: sk-abc
+
+# 自定义 AI 配置
+luohuo:
+  ai:
+    # DeepSeek
+    deepseek:
+      enable: false
+      api-key: sk-xxx
+      model: deepseek-chat
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 字节豆包
+    doubao:
+      enable: false
+      api-key: sk-xxx
+      model: doubao-pro-4k
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 硅基流动
+    siliconflow:
+      enable: false
+      api-key: sk-xxx
+      model: Qwen/Qwen2.5-7B-Instruct
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 腾讯混元
+    hunyuan:
+      enable: false
+      api-key: sk-xxx
+      base-url: https://api.hunyuan.cloud.tencent.com/v1
+      model: hunyuan-lite
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 讯飞星火
+    xinghuo:
+      enable: false
+      app-id: xxx
+      app-key: xxx
+      secret-key: xxx
+      model: generalv3.5
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 百川智能
+    baichuan:
+      enable: false
+      api-key: sk-xxx
+      model: Baichuan2-Turbo
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # OpenRouter
+    openrouter:
+      enable: false
+      api-key: sk-xxx
+      base-url: https://openrouter.ai/api  # 可选，默认为 https://openrouter.ai/api，如果需要代理可以修改为代理地址
+      model: openai/gpt-3.5-turbo
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # Midjourney
+    midjourney:
+      enable: false
+      base-url: http://127.0.0.1:8080
+      api-key: xxx
+      notify-url: http://127.0.0.1:48080/admin-api/ai/image/midjourney/notify
+    # Suno
+    suno:
+      enable: false
+      base-url: http://127.0.0.1:8080

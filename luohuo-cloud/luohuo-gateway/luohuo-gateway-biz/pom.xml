@@ -57,5 +57,12 @@
             <optional>true</optional>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Sa-Token 响应式版本（用于 StpInterfaceServiceImpl） -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

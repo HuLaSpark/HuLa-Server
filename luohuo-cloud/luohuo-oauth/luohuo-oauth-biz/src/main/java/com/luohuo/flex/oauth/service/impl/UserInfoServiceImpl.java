@@ -116,7 +116,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				userRegisterVo.setAccount(defUser.getUsername());
 				userRegisterVo.setEmail(register.getEmail());
 				userRegisterVo.setUserId(defUser.getId());
-				userRegisterVo.setName(defUser.getUsername());
+				userRegisterVo.setName(defUser.getNickName());
 				userRegisterVo.setOpenId(defUser.getWxOpenId());
 				userRegisterVo.setSex(defUser.getSex());
 				userRegisterVo.setAvatar(defUser.getAvatar());
@@ -127,7 +127,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				}
 				yield defUser.getEmail();
 			}
-			case ACCOUNT -> {
+			case MANAGER -> {
 				// 2.1 注册后台管理员、RAM账号
 				BaseEmployee baseEmployee = new BaseEmployee();
 				baseEmployee.setName(defUser.getUsername());

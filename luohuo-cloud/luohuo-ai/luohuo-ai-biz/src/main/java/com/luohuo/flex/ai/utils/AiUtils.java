@@ -54,12 +54,14 @@ public class AiUtils {
                 return MoonshotChatOptions.builder().model(model).temperature(temperature).maxTokens(maxTokens)
                         .functions(toolNames).toolContext(toolContext).build();
             case OPENAI:
-            case DEEP_SEEK: // 复用 OpenAI 客户端
-            case DOU_BAO: // 复用 OpenAI 客户端
-            case HUN_YUAN: // 复用 OpenAI 客户端
-            case XING_HUO: // 复用 OpenAI 客户端
-            case SILICON_FLOW: // 复用 OpenAI 客户端
-            case BAI_CHUAN: // 复用 OpenAI 客户端
+            case DEEP_SEEK:
+            case DOU_BAO:
+            case HUN_YUAN:
+            case XING_HUO:
+            case SILICON_FLOW:
+            case BAI_CHUAN:
+            case OPENROUTER:
+            case GITEE_AI: // 复用 OpenAI 客户端
                 return OpenAiChatOptions.builder().model(model).temperature(temperature).maxTokens(maxTokens)
                         .toolNames(toolNames).toolContext(toolContext).build();
             case AZURE_OPENAI:

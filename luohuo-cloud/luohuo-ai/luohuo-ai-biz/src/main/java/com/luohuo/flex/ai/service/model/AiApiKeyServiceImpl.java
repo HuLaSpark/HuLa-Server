@@ -13,6 +13,7 @@ import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySaveReqVO;
 import com.luohuo.flex.ai.dal.model.AiApiKeyDO;
 import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import com.luohuo.flex.ai.enums.CommonStatusEnum;
+import com.luohuo.flex.ai.mapper.LambdaQueryWrapperX;
 import com.luohuo.flex.ai.mapper.model.AiApiKeyMapper;
 import com.luohuo.flex.ai.utils.BeanUtils;
 import jakarta.annotation.Resource;
@@ -133,8 +134,15 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 	}
 
 	@Override
-	public List<AiApiKeyDO> getApiKeyList() {
-		return apiKeyMapper.selectList();
+	public List<AiApiKeyDO> getApiKeyList(Long userId) {
+		// 返回所有公开密钥 + 用户私有密钥
+		return apiKeyMapper.selectList(new LambdaQueryWrapperX<AiApiKeyDO>()
+				.and(w -> w
+						.eq(AiApiKeyDO::getPublicStatus, true)
+						.or()
+						.eq(AiApiKeyDO::getUserId, userId)
+				)
+				.orderByDesc(AiApiKeyDO::getId));
 	}
 
 	@Override

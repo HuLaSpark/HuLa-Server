@@ -10,7 +10,6 @@ import com.luohuo.flex.im.core.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>
@@ -72,7 +71,4 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
 		return baseMapper.selectCount(wrapper) > 0;
 	}
 
-	public List<User> getByIds(Set<Long> uidSet) {
-		return baseMapper.selectBatchIds(uidSet);
-	}
 }

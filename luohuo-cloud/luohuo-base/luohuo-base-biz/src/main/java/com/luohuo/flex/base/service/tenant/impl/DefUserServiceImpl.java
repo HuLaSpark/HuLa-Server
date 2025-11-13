@@ -24,6 +24,7 @@ import com.luohuo.basic.utils.ArgumentAssert;
 import com.luohuo.basic.utils.BeanPlusUtil;
 import com.luohuo.flex.base.entity.tenant.DefUser;
 import com.luohuo.flex.base.manager.tenant.DefUserManager;
+import com.luohuo.flex.base.service.tenant.AccountGenerator;
 import com.luohuo.flex.base.service.tenant.DefUserService;
 import com.luohuo.flex.base.vo.query.tenant.DefUserPageQuery;
 import com.luohuo.flex.base.vo.query.tenant.DefUserResultVO;
@@ -68,6 +69,7 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
 
     private final AppendixService appendixService;
     private final SystemProperties systemProperties;
+    private final AccountGenerator accountGenerator;
 
     @Override
     public Map<Serializable, Object> findByIds(Set<Serializable> ids) {
@@ -159,23 +161,44 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
     @Override
     public String registerByEmail(DefUser defUser) {
         ArgumentAssert.isFalse(checkMobile(defUser.getEmail(), null), "邮箱：{}已经存在", defUser.getMobile());
-        setDefUser(defUser);
-        defUser.setNickName(defUser.getEmail());
 
+        // 先设置基本信息（不设置账号）
+        defUser.setTenantId(1L);
+        defUser.setSalt(RandomUtil.randomString(20));
+        defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));
+        defUser.setPasswordErrorNum(0);
+        defUser.setReadonly(false);
+        defUser.setState(true);
+        defUser.setUsername("temp_" + System.currentTimeMillis());  // 临时用户名
         superManager.save(defUser);
+
+        String account = accountGenerator.generateAccountByUserId(defUser.getId());
+        if (StrUtil.isEmpty(defUser.getNickName())) {
+            defUser.setNickName("hula用户_" + account.substring(account.length() - 6));
+        }
+
+        defUser.setUsername(account);
+        superManager.updateById(defUser);
+
+        log.info("用户注册成功，邮箱：{}，用户ID：{}，生成账号：{}，昵称：{}", defUser.getEmail(), defUser.getId(), account, defUser.getNickName());
         return defUser.getEmail();
     }
 
     private void setDefUser(DefUser defUser) {
-		String account = defUser.getEmail().split("@")[0];
 		defUser.setTenantId(1L);
         defUser.setSalt(RandomUtil.randomString(20));
         defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));
         defUser.setPasswordErrorNum(0);
         defUser.setReadonly(false);
         defUser.setState(true);
-        defUser.setUsername(account);
-		defUser.setNickName(defUser.getNickName());
+
+        // 如果已经有ID，生成账号；否则使用临时账号
+        if (defUser.getId() != null && defUser.getId() > 0) {
+            String account = accountGenerator.generateAccountByUserId(defUser.getId());
+            defUser.setUsername(account);
+        } else {
+            defUser.setUsername("temp_" + System.currentTimeMillis());
+        }
     }
 
 

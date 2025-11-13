@@ -18,6 +18,8 @@ import com.luohuo.flex.ai.core.model.HunYuanChatModel;
 import com.luohuo.flex.ai.core.model.MidjourneyApi;
 import com.luohuo.flex.ai.core.model.SunoApi;
 import com.luohuo.flex.ai.core.model.XingHuoChatModel;
+import com.luohuo.flex.ai.core.model.openrouter.OpenRouterApiConstants;
+import com.luohuo.flex.ai.core.model.openrouter.OpenRouterChatModel;
 import com.luohuo.flex.ai.core.model.silicon.SiliconFlowApiConstants;
 import com.luohuo.flex.ai.core.model.silicon.SiliconFlowChatModel;
 import lombok.extern.slf4j.Slf4j;
@@ -234,6 +236,38 @@ public class AiAutoConfiguration {
                 .toolCallingManager(getToolCallingManager())
                 .build();
         return new BaiChuanChatModel(openAiChatModel);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "luohuo.ai.openrouter.enable", havingValue = "true")
+    public OpenRouterChatModel openRouterChatClient(HulaAiProperties hulaAiProperties) {
+        HulaAiProperties.OpenRouterProperties properties = hulaAiProperties.getOpenrouter();
+        return buildOpenRouterChatClient(properties);
+    }
+
+    public OpenRouterChatModel buildOpenRouterChatClient(HulaAiProperties.OpenRouterProperties properties) {
+        if (StrUtil.isEmpty(properties.getModel())) {
+            properties.setModel(OpenRouterApiConstants.MODEL_DEFAULT);
+        }
+        // 支持自定义 Base URL（可用于代理）
+        String baseUrl = StrUtil.isNotEmpty(properties.getBaseUrl())
+                ? properties.getBaseUrl()
+                : OpenRouterApiConstants.DEFAULT_BASE_URL;
+
+        OpenAiChatModel openAiChatModel = OpenAiChatModel.builder()
+                .openAiApi(OpenAiApi.builder()
+                        .baseUrl(baseUrl)
+                        .apiKey(properties.getApiKey())
+                        .build())
+                .defaultOptions(OpenAiChatOptions.builder()
+                        .model(properties.getModel())
+                        .temperature(properties.getTemperature())
+                        .maxTokens(properties.getMaxTokens())
+                        .topP(properties.getTopP())
+                        .build())
+                .toolCallingManager(getToolCallingManager())
+                .build();
+        return new OpenRouterChatModel(openAiChatModel);
     }
 
     @Bean

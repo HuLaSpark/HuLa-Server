@@ -27,13 +27,12 @@ import com.luohuo.flex.ai.core.model.MidjourneyApi;
 import com.luohuo.flex.ai.core.model.SunoApi;
 import com.luohuo.flex.ai.core.model.XingHuoChatModel;
 import com.luohuo.flex.ai.core.model.audio.AudioModel;
+import com.luohuo.flex.ai.core.model.openrouter.OpenRouterChatModel;
 import com.luohuo.flex.ai.core.model.silicon.*;
 import com.luohuo.flex.ai.core.model.gitee.GiteeAiAudioApi;
 import com.luohuo.flex.ai.core.model.gitee.GiteeAiAudioModel;
-import com.luohuo.flex.ai.core.model.gitee.GiteeAiAudioOptions;
 import com.luohuo.flex.ai.core.model.gitee.GiteeAiVideoApi;
 import com.luohuo.flex.ai.core.model.gitee.GiteeAiVideoModel;
-import com.luohuo.flex.ai.core.model.gitee.GiteeAiVideoOptions;
 import com.luohuo.flex.ai.core.model.video.VideoModel;
 import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import com.luohuo.basic.utils.collection.CollectionUtils;
@@ -146,7 +145,8 @@ public class AiModelFactoryImpl implements AiModelFactory {
             case MOONSHOT -> buildMoonshotChatModel(apiKey, url);
             case XING_HUO -> buildXingHuoChatModel(apiKey);
             case BAI_CHUAN -> buildBaiChuanChatModel(apiKey);
-            case GITEE_AI -> buildGiteeAiChatModel(apiKey); // Gitee AI 兼容 OpenAI 接口
+            case GITEE_AI -> buildGiteeAiChatModel(apiKey);
+            case OPENROUTER -> buildOpenRouterChatModel(apiKey); // OpenRouter 兼容 OpenAI 接口
             case OPENAI -> buildOpenAiChatModel(apiKey, url);
             case AZURE_OPENAI -> buildAzureOpenAiChatModel(apiKey, url);
             case OLLAMA -> buildOllamaChatModel(url);
@@ -180,6 +180,8 @@ public class AiModelFactoryImpl implements AiModelFactory {
                 return SpringUtil.getBean(XingHuoChatModel.class);
             case BAI_CHUAN:
                 return SpringUtil.getBean(AzureOpenAiChatModel.class);
+            case OPENROUTER:
+                return SpringUtil.getBean(OpenRouterChatModel.class);
             case OPENAI:
                 return SpringUtil.getBean(OpenAiChatModel.class);
             case AZURE_OPENAI:
@@ -465,6 +467,15 @@ public class AiModelFactoryImpl implements AiModelFactory {
         String baseUrl = "https://ai.gitee.com";
         OpenAiApi openAiApi = OpenAiApi.builder().baseUrl(baseUrl).apiKey(apiKey).build();
         return OpenAiChatModel.builder().openAiApi(openAiApi).toolCallingManager(getToolCallingManager()).build();
+    }
+
+    /**
+     * 构建 OpenRouter 聊天模型
+     */
+    private static OpenRouterChatModel buildOpenRouterChatModel(String apiKey) {
+        HulaAiProperties.OpenRouterProperties properties = new HulaAiProperties.OpenRouterProperties();
+        properties.setApiKey(apiKey);
+        return new AiAutoConfiguration().buildOpenRouterChatClient(properties);
     }
 
     // TODO @芋艿：手头暂时没密钥，使用建议再测试下

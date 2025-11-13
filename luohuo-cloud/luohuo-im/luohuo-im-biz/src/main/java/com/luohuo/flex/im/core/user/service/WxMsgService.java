@@ -1,7 +1,6 @@
 package com.luohuo.flex.im.core.user.service;
 
-import com.baidu.fsg.uid.Base62Encoder;
-import com.baidu.fsg.uid.UidGenerator;
+import cn.hutool.core.lang.UUID;
 import com.luohuo.basic.cache.redis2.CacheResult;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.service.MQProducer;
@@ -22,7 +21,6 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -57,14 +55,8 @@ public class WxMsgService {
     @Resource
     private UserDao userDao;
 
-    @Resource
-    private UserService userService;
-
 //    @Resource
 //    private LoginService loginService;
-
-	@Resource
-	private UidGenerator uidGenerator;
 
 	@Resource
 	private CachePlusOps cachePlusOps;
@@ -121,18 +113,14 @@ public class WxMsgService {
     }
 
     private void fillUserInfo(Long uid, WxOAuth2UserInfo userInfo) {
-        User fillUser = UserAdapter.buildAuthorizeUser(uid, Base62Encoder.createAccount(uidGenerator.getUid()), userInfo);
-        // TODO 循环防止账号重复，存在bug
-        for (int i = 0; i < 5; i++) {
-            try {
-                userDao.updateById(fillUser);
-                return;
-            } catch (DuplicateKeyException e) {
-                log.info("fill userInfo duplicate uid:{},info:{}", uid, userInfo);
-            } catch (Exception e) {
-                log.error("fill userInfo fail uid:{},info:{}", uid, userInfo);
-            }
-            fillUser.setAccount(Base62Encoder.createAccount(uidGenerator.getUid()));
+        // 基于用户ID生成11位纯数字账号
+        User fillUser = UserAdapter.buildAuthorizeUser(uid, UUID.fastUUID().toString(), userInfo);
+
+        try {
+            userDao.updateById(fillUser);
+        } catch (Exception e) {
+            log.error("微信用户信息填充失败，uid:{}, info:{}", uid, userInfo, e);
+            throw new RuntimeException("微信用户信息填充失败", e);
         }
     }
 }

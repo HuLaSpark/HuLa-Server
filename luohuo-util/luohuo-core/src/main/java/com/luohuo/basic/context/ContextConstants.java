@@ -44,6 +44,16 @@ public final class ContextConstants {
     public static final String JWT_KEY_DEPT_ID = "CurrentDeptId";
 	public static final String JWT_KEY_DEVICE = "loginDevice";
 	public static final String JWT_KEY_SYSTEM_TYPE = "systemType";
+
+	/**
+	 * Session 中存储权限列表的 key
+	 */
+	public static final String JWT_KEY_PERMISSION_LIST = "permissionList";
+
+	/**
+	 * Session 中存储角色列表的 key
+	 */
+	public static final String JWT_KEY_ROLE_LIST = "roleList";
     /**
      * JWT中封装的 随机数
      */
