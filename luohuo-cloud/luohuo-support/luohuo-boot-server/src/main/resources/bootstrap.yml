@@ -1,0 +1,23 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: @project.artifactId@
+    # 单体版不需要配置这个配置
+    path: ''
+  profiles:
+    active: @profile.active@
+
+logging:
+  file:
+    path: '@logging.file.path@'
+    name: ${logging.file.path}/${spring.application.name}/root.log
+  config: classpath:logback-spring.xml
+  level:
+    druid.sql.Statement: debug
+
+# 用于/actuator/info
+info:
+  name: '@project.name@'
+  description: '@project.description@'
+  version: '@project.version@'

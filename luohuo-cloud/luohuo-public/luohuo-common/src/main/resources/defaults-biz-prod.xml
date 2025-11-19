@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <!-- logback/defaults-prod.xml 文件位于luohuo-util/luohuo-log-starter/src/main/resources -->
+    <include resource="logback/defaults-prod.xml"/>
+
+    <!-- 基础服务 -->
+    <logger name="com.luohuo.flex.base.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="ASYNC_CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.base.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="ASYNC_SERVICE_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.base.mapper" additivity="false" level="${log.level.mapper}">
+        <appender-ref ref="ASYNC_MAPPER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.datascope.mapper" additivity="false" level="${log.level.mapper}">
+        <appender-ref ref="ASYNC_MAPPER_APPENDER"/>
+    </logger>
+    <!-- 文件服务 -->
+    <logger name="com.luohuo.flex.file.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="ASYNC_CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.file.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="ASYNC_SERVICE_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.file.mapper" additivity="false" level="${log.level.mapper}">
+        <appender-ref ref="ASYNC_MAPPER_APPENDER"/>
+    </logger>
+
+    <!-- 租户服务 -->
+    <logger name="com.luohuo.flex.im.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="ASYNC_CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.im.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="ASYNC_SERVICE_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.im.mapper" additivity="false" level="${log.level.mapper}">
+        <appender-ref ref="ASYNC_MAPPER_APPENDER"/>
+    </logger>
+
+    <!-- 认证服务 -->
+    <logger name="com.luohuo.flex.oauth.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="ASYNC_CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.oauth.mapper" additivity="false" level="${log.level.mapper}">
+        <appender-ref ref="ASYNC_MAPPER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.oauth" additivity="true" level="${log.level.service}">
+        <appender-ref ref="ASYNC_SERVICE_APPENDER"/>
+    </logger>
+
+    <!-- 消息服务 -->
+    <logger name="com.luohuo.flex.msg.controller" additivity="true" level="${log.level.controller}">
+        <appender-ref ref="ASYNC_CONTROLLER_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.msg.service" additivity="true" level="${log.level.service}">
+        <appender-ref ref="ASYNC_SERVICE_APPENDER"/>
+    </logger>
+    <logger name="com.luohuo.flex.msg.mapper" additivity="false" level="${log.level.mapper}">
+        <appender-ref ref="ASYNC_MAPPER_APPENDER"/>
+    </logger>
+</included>

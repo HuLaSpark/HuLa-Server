@@ -1,0 +1,130 @@
+package com.luohuo.flex.im.core.user.service;
+
+import com.luohuo.flex.im.api.vo.UserRegisterVo;
+import com.luohuo.flex.im.domain.dto.ItemInfoDTO;
+import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
+import com.luohuo.flex.im.domain.entity.User;
+import com.luohuo.flex.im.domain.vo.req.user.*;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
+import com.luohuo.flex.im.domain.vo.resp.user.BlackPageResp;
+import com.luohuo.flex.im.domain.vo.resp.user.UserSearchResp;
+import com.luohuo.flex.model.entity.base.IpInfo;
+import com.luohuo.flex.model.vo.query.BindEmailReq;
+import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
+import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 用户表 服务类
+ * </p>
+ *
+ * @author nyh
+ */
+public interface UserService {
+
+	/**
+	 * 刷新ip信息
+	 * @param uid 用户id
+	 */
+	Boolean refreshIpInfo(Long uid, IpInfo ipInfo);
+
+	/**
+	 * 校验邮箱是否存在
+	 * @param email 邮箱
+	 */
+	Boolean checkEmail(String email);
+
+	/**
+	 * @param defUserId 主系统的userId
+	 * @param tenantId
+	 * @return
+	 */
+	Long getUIdByUserId(Long defUserId, Long tenantId);
+
+	/**
+	 * 获取用户基础信息 [DB]
+	 *
+	 * @param uid
+	 *
+	 */
+	User getUserById(Long uid);
+
+    /**
+     * 获取前端展示信息
+     *
+     * @param uid
+     *
+     */
+    UserInfoResp getUserInfo(Long uid);
+
+	/**
+	 * 查询用户列表
+	 *
+	 * @param uidList
+	 *
+	 */
+	List<SummeryInfoDTO> getUserInfo(List<Long> uidList);
+
+    /**
+     * 修改用户名
+     *
+     * @param uid
+     * @param req
+     */
+    void modifyInfo(Long uid, ModifyNameReq req);
+
+
+    /**
+     * 修改头像
+     * @param uid 用户id
+     * @param req 请求体
+     */
+    void modifyAvatar(Long uid, ModifyAvatarReq req);
+
+    /**
+     * 用户徽章列表
+     *
+     * @param uid
+     */
+    List<BadgeResp> badges(Long uid);
+
+    /**
+     * 佩戴徽章
+     *
+     * @param uid
+     * @param req
+     */
+    void wearingBadge(Long uid, WearingBadgeReq req);
+
+    void addBlack(BlackAddReq req);
+
+    void editBlack(BlackEditReq req);
+
+    void removeBlack(BlackRemoveReq req);
+
+    PageBaseResp<BlackPageResp> blackPage(BlackPageReq req);
+
+    PageBaseResp<UserSearchResp> searchUser(UserSearchReq req);
+
+    List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
+
+	/**
+	 * 更改用户状态
+	 * @param uid
+	 * @param userStateId
+	 * @return
+	 */
+	Boolean changeUserState(Long uid, Long userStateId);
+
+	/**
+	 * 绑定邮箱
+	 * @param uid
+	 * @param req
+	 * @return
+	 */
+	Boolean bindEmail(Long uid, BindEmailReq req);
+
+	Boolean register(UserRegisterVo userRegisterVo);
+}

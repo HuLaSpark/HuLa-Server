@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-system</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>luohuo-system-biz</artifactId>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- 第三方文件存储：华为云存储 -->
+        <dependency>
+            <groupId>com.huaweicloud</groupId>
+            <artifactId>esdk-obs-java</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-core</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- 第三方文件存储：阿里云oss -->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jersey-core</artifactId>
+                    <groupId>com.sun.jersey</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jakarta.activation-api</artifactId>
+                    <groupId>jakarta.activation</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--第三方文件存储： 七牛oss -->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- 第三方文件存储： FastDFS -->
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>fastdfs-client</artifactId>
+        </dependency>
+        <!-- 第三方文件存储：minio  -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-system-entity</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-database-mode</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <!--   自定义缓存   -->
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-config-sdk</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-databases</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-cache-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-echo-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-mvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+                    <groupId>org.jboss.spec.javax.annotation</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- @RefreshScope 需要使用 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-context</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

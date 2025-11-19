@@ -1,0 +1,334 @@
+luohuo:
+  feign:
+    # xxl-job-admin 的地址
+    job-server: http://127.0.0.1:8767
+  scan:
+    enabled: true
+    basePackage: com.luohuo
+  system:
+    # 登录时否验证密码有效性 （常用于开发环境快速登录）
+    verifyPassword: true
+    # 登录时否验证验证码有效性 （常用于开发环境快速登录）
+    verifyCaptcha: true
+    # 默认用户密码
+    defPwd: '123456'
+    # 密码最大输错次数  小于0不限制
+    maxPasswordErrorNum: 10
+    # 密码错误锁定用户时间  除了0表示锁定到今天结束，还支持m、h、d、w、M、y等单位
+    passwordErrorLockUserTime: '0'
+    # log记录 com.luohuo.flex.controller/service/biz包下 参数
+    recordLuohuo: false
+    # log记录 com.luohuo.flex.controller/service/biz包下 所有方法的参数
+    recordLuohuoArgs: true
+    # log记录 com.luohuo.flex.controller/service/biz包下 所有方法的返回值
+    recordLuohuoResult: true
+    # 缓存Key前缀
+    cachePrefix: lb
+    # oauth 服务扫描枚举类的包路径
+    enumPackage: "com.luohuo"
+    # 演示环境启用
+    notAllowWrite: false
+    notAllowWriteList:
+      POST:
+        - /defResource
+        - /defTenantApplicationRel/cancel
+      PUT:
+        - /defResource
+        - /defResource/moveResource
+      DELETE:
+        - /defResource*/**
+        - /defTenant*/**
+        - /defApplication*/**
+        - /defUser*/**
+        - /defParameter*/**
+        - /defDict*/**
+        - /defClient*/**
+  ignore:
+    # 是否启用网关的 uri权限鉴权 (设置为false，则后台不校验访问权限)
+    authEnabled: true
+    # 前端校验按钮 是否区分大小写
+    caseSensitive: false
+    # 系统没有配置某个URI时，是否允许访问
+    notConfigUriAllow: false
+    anyone: # 请求中 需要携带Tenant 且 需要携带Token(不需要登录)，但不需要验证uri权限
+      ALL:
+        - /anyone/**
+        - /service/model/*/json
+        - /service/model/*/save
+        - /service/editor/stencilset
+    anyUser: # 请求中 需要携带Tenant，但 不需要携带Token(不需要登录) 和 不需要验证uri权限
+      ALL:
+        - /anyUser/**
+    anyTenant: # 请求中 不需要携带Tenant 且 不需要携带Token(不需要登录) 和 不需要验证uri权限
+      ALL:
+        - /anyTenant/**
+  echo: #详情看: EchoProperties
+    # 是否启用 远程数据 手动注入
+    enabled: true
+    # 是否启用 远程数据 注解AOP注入
+    aop-enabled: true
+    # 字典类型 和 code 的分隔符
+    dictSeparator: '###'
+    # 多个字典code 之间的的分隔符
+    dictItemSeparator: ','
+    # 递归最大深度
+    maxDepth: 3
+    # 本地缓存配置信息 生产慎用
+    guavaCache:
+      enabled: false
+      maximumSize: 1000
+      refreshWriteTime: 2
+      refreshThreadPoolSize: 10
+  webmvc:
+    undertow: true
+    header: false
+  log: # 详情看：OptLogProperties
+    # 开启记录操作日志
+    enabled: true
+    # 记录到什么地方  DB:mysql LOGGER:日志文件
+    type: DB
+  xss:
+    # 是否开启 xss 过滤器  详情看：XssProperties
+    enabled: true
+    # 是否启用 RequestBody 注解标记的参数 反序列化时过滤XSS
+    requestBodyEnabled: false
+    ignoreParamValues:
+      - noxss
+  captcha:
+    # 登录界面的验证码配置 详情看：CaptchaProperties
+    type: ARITHMETIC
+    width: 158
+    height: 58
+    len: 2
+    charType: 2
+  async: # 全局线程池配置
+    corePoolSize: 2
+    maxPoolSize: 50
+    queueCapacity: 10000
+    keepAliveSeconds: 300
+    threadNamePrefix: 'luohuo-async-executor-'
+  file:
+    storageType: LOCAL #  FAST_DFS LOCAL MIN_IO ALI_OSS HUAWEI_OSS QINIU_OSS
+    delFile: false
+    suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
+    local:
+      storage-path: /Users/tangyh/data/projects/uploadfile/file/     # 文件存储路径  （ 某些版本的 window 需要改成  D:\\data\\projects\\uploadfile\\file\\  ）
+      urlPrefix: http://127.0.0.1/file/   # 文件访问 （部署nginx后，配置nginx的ip，并配置nginx静态代理storage-path地址的静态资源）
+      inner-url-prefix: null  #  内网的url前缀
+    fastDfs:
+      urlPrefix: https://fastdfs.tangyh.top/
+    ali:
+      # 请填写自己的阿里云存储配置
+      uriPrefix: "http://zuihou-admin-cloud.oss-cn-beijing.aliyuncs.com/"
+      bucket-name: "zuihou-admin-cloud"
+      endpoint: "oss-cn-beijing.aliyuncs.com"
+      access-key-id: "填写你的id"
+      access-key-secret: "填写你的秘钥"
+    minIo:
+      endpoint: "http://127.0.0.1:9000/"
+      accessKey: "luohuo"
+      secretKey: "luohuo"
+      bucket: "dev"
+    huawei:
+      uriPrefix: "dev.obs.cn-southwest-2.myhuaweicloud.com"
+      endpoint: "obs.cn-southwest-2.myhuaweicloud.com"
+      accessKey: "1"
+      secretKey: "2"
+      location: "cn-southwest-2"
+      bucket: "dev"
+    qiNiu:
+      zone: "z0"
+      accessKey: "1"
+      secretKey: "2"
+      bucket: "zuihou_admin_cloud"
+  generator:
+    outputDir: /Users/luohuo/github/luohuo-cloud
+    frontOutputDir: /Users/luohuo/github/luohuo-web
+    frontSoyOutputDir: /Users/luohuo/github/luohuo-web-pro-soybean
+    frontVben5OutputDir: /Users/luohuo/github/luohuo-web-vben-max/apps/web-antd
+    # 作者
+    author: qianqian
+    # 默认项目
+    projectType: BOOT
+    #  # 去除表前缀
+    #  tablePrefix:
+    #    - xxx_
+    #  # 去除字段前缀
+    #  fieldPrefix:
+    #    - xxx_
+    #  # 去除字段后缀
+    #  fieldSuffix:
+    #    - xxx_
+    # 项目前缀
+    projectPrefix: 'luohuo'
+    superClass: SUPER_CLASS
+    # 生成方式
+    genType: GEN
+    packageInfoConfig: # 其他配置建议保持PackageInfoConfig中的默认值
+      # 生成代码位于 src/main/java 下的基础包
+      parent: 'com.luohuo.flex'
+      utilParent: 'com.luohuo.basic'
+    entity-config:
+      # 时间类型对应策略  ONLY_DATE: java.util  SQL_PACK:java.sql  TIME_PACK: java.time
+      dateType: TIME_PACK
+      # Entity类的父类
+      entitySuperClass: ENTITY
+      # 指定生成的主键的ID类型 (${superClass} == NONE 时，新生成的实体才生效)
+      idType: INPUT
+      # 数据库表字段映射到实体的命名策略
+      columnNaming: underline_to_camel
+      # 忽略字段（字段名）
+      # ignoreColumns:
+      #   - xxx
+      # 【实体】 是否生成字段常量
+      columnConstant: false
+      # 【实体、VO】是否为链式模型
+      chain: true
+      # 【实体、VO】 是否为lombok模型
+      lombok: true
+      # 乐观锁字段名称
+      versionColumnName: ''
+      # 乐观锁属性名称
+      versionPropertyName: ''
+      # 逻辑删除字段名称
+      logicDeleteColumnName: ''
+      # 逻辑删除属性名称
+      logicDeletePropertyName: ''
+      fillColumnName:
+        xxx: INSERT
+      # 格式化SaveVO文件名称
+      formatSaveVoFileName: ''
+      # 格式化UpdateVO文件名称
+      formatUpdateVoFileName: ''
+      # 格式化ResultVO文件名称
+      formatResultVoFileName: ''
+      # 格式化 PageQuery 文件名称
+      formatPageQueryFileName: ''
+    mapperConfig:
+      formatMapperFileName: ''
+      formatXmlFileName: ''
+      mapperAnnotation: false
+      #    columnAnnotationTablePrefix:
+      #      - xxx
+      baseResultMap: true
+      cache: false
+      baseColumnList: true
+      cacheClass: org.apache.ibatis.cache.decorators.LoggingCache
+    #  serviceConfig:
+    #  managerConfig:
+    #  controllerConfig:
+    #  webProConfig:
+    fileOverrideStrategy:
+      entityFileOverride: OVERRIDE
+      sqlFileOverride: OVERRIDE
+      mapperFileOverride: EXIST_IGNORE
+      xmlFileOverride: OVERRIDE
+      managerFileOverride: EXIST_IGNORE
+      serviceFileOverride: EXIST_IGNORE
+      controllerFileOverride: EXIST_IGNORE
+      apiModelFileOverride: OVERRIDE
+      langFileOverride: OVERRIDE
+      indexEditTreeFileOverride: EXIST_IGNORE
+      dataFileOverride: EXIST_IGNORE
+    constantsPackage:
+      # 业务服务 后台手动改动过的枚举
+      FieldFill: com.baomidou.mybatisplus.annotation.FieldFill
+      SuperClassEnum: com.luohuo.flex.generator.enumeration.SuperClassEnum
+      EntitySuperClassEnum: com.luohuo.flex.generator.enumeration.EntitySuperClassEnum
+      # common 常量
+      EchoDictType: com.luohuo.flex.model.constant.EchoDictType
+      EchoApi: com.luohuo.flex.model.constant.EchoApi
+      # common 公共枚举
+      HttpMethod: com.luohuo.flex.model.enumeration.HttpMethod
+      BooleanEnum: com.luohuo.flex.model.enumeration.BooleanEnum
+      StateEnum: com.luohuo.flex.model.enumeration.StateEnum
+      UserStatusEnum: com.luohuo.flex.model.enumeration.base.UserStatusEnum
+      RoleCategoryEnum: com.luohuo.flex.model.enumeration.base.RoleCategoryEnum
+      ActiveStatusEnum: com.luohuo.flex.model.enumeration.base.ActiveStatusEnum
+      OrgTypeEnum: com.luohuo.flex.model.enumeration.base.OrgTypeEnum
+      FileType: com.luohuo.flex.model.enumeration.base.FileType
+      DateType: com.luohuo.flex.model.enumeration.base.DateType
+      DictClassifyEnum: com.luohuo.flex.model.enumeration.system.DictClassifyEnum
+      DefTenantStatusEnum: com.luohuo.flex.model.enumeration.system.DefTenantStatusEnum
+      DataTypeEnum: com.luohuo.flex.model.enumeration.system.DataTypeEnum
+      TenantConnectTypeEnum: com.luohuo.flex.model.enumeration.system.TenantConnectTypeEnum
+
+spring:
+  config:
+    # 配置优先级： ./application-${spring.profiles.active}.yml >= ./application.yml >= /config/${spring.profiles.active}/*.yml  >= bootstrap-${spring.profiles.active}.yml >= bootstrap.yml
+    # import的文件顺序越靠后，优先级越大
+    import:
+      - classpath:config/${spring.profiles.active}/common.yml
+      - classpath:config/${spring.profiles.active}/doc.yml
+      - classpath:config/${spring.profiles.active}/oss.yml
+      - classpath:config/${spring.profiles.active}/sa-token.yml
+      - classpath:config/${spring.profiles.active}/rocketmq.yml
+      - classpath:config/${spring.profiles.active}/redis.yml
+      - classpath:config/${spring.profiles.active}/mysql.yml
+      - classpath:config/${spring.profiles.active}/base-server.yml
+      - classpath:config/${spring.profiles.active}/ai-server.yml
+  mvc:
+    pathmatch:
+      # 升级springboot2.6.6后临时处理，防止swagger报错
+      matching-strategy: ANT_PATH_MATCHER
+  lifecycle:
+    # 优雅停机宽限期时间
+    timeout-per-shutdown-phase: 30s
+  servlet:
+    # 上传文件最大值
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 512MB
+
+server:
+  # 优雅停机
+  shutdown: GRACEFUL
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+#  undertow:
+#    threads:
+#      io: 4 # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+#      worker: 80  # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+#    buffer-size: 2048  # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理 , 每块buffer的空间大小,越小的空间被利用越充分
+#    direct-buffers: true  # 是否分配的直接内存
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+      enabled: true
+
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+  hystrix:
+    enabled: false
+  sentinel:
+    enabled: true
+  client:
+    config:
+      default:
+        # feign client 调用全局超时时间
+        connectTimeout: 60000
+        readTimeout: 60000
+    #支持压缩的mime types
+  compression: # 请求压缩
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response: # 响应压缩
+      enabled: true
+
+
+

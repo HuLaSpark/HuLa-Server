@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-dependencies-parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../luohuo-dependencies-parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>luohuo-im</artifactId>
+    <name>${project.artifactId}</name>
+    <description>系统服务-后台管理相关的业务（IM、IM后台、包括群组管理、好友关系、消息存储等）</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>luohuo-im-entity</module>
+        <module>luohuo-im-biz</module>
+        <module>luohuo-im-controller</module>
+        <module>luohuo-im-facade</module>
+        <module>luohuo-im-server</module>
+    </modules>
+
+</project>

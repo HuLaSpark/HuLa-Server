@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>luohuo-util</artifactId>
+        <groupId>com.luohuo.basic</groupId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>luohuo-mvc</artifactId>
+    <name>${project.artifactId}</name>
+    <description>公共模块</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-validator-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-databases</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-cache-starter</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

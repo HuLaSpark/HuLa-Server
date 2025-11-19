@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.im.core.chat.mapper.GroupMemberMapper">
+
+    <select id="getMemberListByUid" resultType="com.luohuo.flex.model.entity.ws.ChatMember">
+        select id, group_id, uid, role_id, remark, my_name, de_friend from im_group_member g WHERE is_del = 0 and uid IN
+        <foreach collection="memberList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getMemberListByGroupId" resultType="com.luohuo.flex.model.entity.ws.ChatMemberResp">
+        select id, group_id, uid, role_id, remark, my_name, de_friend from im_group_member g WHERE is_del = 0 and group_id = #{groupId}
+    </select>
+</mapper>

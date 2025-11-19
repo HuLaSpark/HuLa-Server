@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-dependencies-parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../luohuo-dependencies-parent/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>luohuo-ws</artifactId>
+    <name>${project.artifactId}</name>
+    <description>负责维护WebSocket连接，并转发实时消息到前端</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>luohuo-ws-server</module>
+        <module>luohuo-ws-entity</module>
+        <module>luohuo-ws-biz</module>
+    </modules>
+</project>

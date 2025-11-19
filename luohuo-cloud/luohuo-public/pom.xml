@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-dependencies-parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../luohuo-dependencies-parent/pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.luohuo.flex</groupId>
+    <artifactId>luohuo-public</artifactId>
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>业务相关公共模块</description>
+    <modules>
+        <module>luohuo-model</module>
+        <module>luohuo-config-sdk</module>
+        <module>luohuo-common</module>
+        <module>luohuo-database-mode</module>
+        <module>luohuo-file-sdk</module>
+        <module>luohuo-data-scope-sdk</module>
+        <module>luohuo-sa-token-ext</module>
+        <module>luohuo-router</module>
+        <module>luohuo-login-user-facade</module>
+    </modules>
+
+</project>

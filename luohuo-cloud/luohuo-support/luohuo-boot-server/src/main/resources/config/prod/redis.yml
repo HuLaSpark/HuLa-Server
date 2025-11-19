@@ -1,0 +1,18 @@
+luohuo:
+  cache:
+    type: REDIS
+  redis:
+    ip: 127.0.0.1
+    port: 16379
+    password: 'SbtyMveYNfLzTks7H0apCmyStPzWJqjy'
+    database: 7
+
+spring:
+  cache:
+    type: GENERIC
+  data:
+    redis:
+      host: ${luohuo.redis.ip}
+      password: ${luohuo.redis.password}
+      port: ${luohuo.redis.port}
+      database: ${luohuo.redis.database}

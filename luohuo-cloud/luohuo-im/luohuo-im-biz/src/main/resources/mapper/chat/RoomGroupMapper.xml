@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.im.core.chat.mapper.RoomGroupMapper">
+
+    <select id="checkUser" resultType="java.lang.Boolean">
+        select g.id
+        from im_room_group g
+            inner join im_group_member m
+            on g.id = m.group_id
+                   and g.room_id = #{roomId}
+                   and m.uid = #{uid}
+        where g.is_del = 0 limit 1
+    </select>
+
+    <select id="getByRoomIdIgnoreDel" resultType="com.luohuo.flex.im.domain.vo.response.GroupResp">
+        select id as group_id, room_id, account, name, avatar from im_room_group where room_id = #{roomId} limit 1
+    </select>
+</mapper>

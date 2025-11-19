@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.im.core.chat.mapper.ContactMapper">
+
+    <insert id="refreshOrCreateActiveTime">
+        INSERT INTO im_contact (room_id, uid, last_msg_id, active_time, is_del) VALUES
+        <foreach collection="memberUidList" item="uid" separator=",">
+            (#{roomId},#{uid},#{msgId},#{activeTime},0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_del = 0,
+        hide = 0,
+        last_msg_id = VALUES(last_msg_id),
+        active_time = VALUES(active_time)
+    </insert>
+
+    <!--  执行这个sql是因为前端有消息没被收到，每次更新当前会话未收到的消息时只更新最小的id那个  -->
+    <insert id="refreshOrCreateActive">
+        INSERT INTO im_contact (room_id, uid, last_msg_id, active_time, is_del) VALUES
+        <foreach collection="memberUidList" item="uid" separator=",">
+            (#{roomId},#{uid},#{msgId},#{activeTime},0)
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_del = IF(#{msgId} &lt; last_msg_id, 0, is_del),
+        hide = IF(#{msgId} &lt; last_msg_id, 0, hide),
+        last_msg_id = IF(#{msgId} &lt; last_msg_id, VALUES(last_msg_id), last_msg_id),
+        active_time = IF(#{msgId} &lt; last_msg_id, VALUES(active_time), active_time)
+    </insert>
+
+    <insert id="refreshOrCreate">
+        INSERT INTO im_contact (room_id, uid, is_del) VALUES (#{roomId},#{uid},0)
+        ON DUPLICATE KEY UPDATE is_del = 0, hide = 0
+    </insert>
+</mapper>

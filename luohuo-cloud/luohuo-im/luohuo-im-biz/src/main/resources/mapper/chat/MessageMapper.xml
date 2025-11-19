@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.im.core.chat.mapper.MessageMapper">
+
+    <select id="batchGetUnReadCount" resultType="java.util.Map">
+        SELECT room_id, COUNT(*) AS unread_count
+        FROM im_message
+        WHERE (room_id, create_time) IN (
+        <foreach collection="contactList" item="contact" separator=",">
+            (#{contact.roomId}, #{contact.readTime})
+        </foreach>
+        )
+        GROUP BY room_id
+    </select>
+</mapper>

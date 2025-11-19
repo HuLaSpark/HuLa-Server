@@ -1,0 +1,17 @@
+${AnsiColor.BRIGHT_YELLOW}
+  ,--,                            ,---,
+,--.'|                          ,--.' |
+|  | :            ,--,   ,---.  |  |  :             ,--,   ,---.
+:  : '          ,'_ /|  '   ,'\ :  :  :           ,'_ /|  '   ,'\
+|  ' |     .--. |  | : /   /   |:  |  |,--.  .--. |  | : /   /   |
+'  | |   ,'_ /| :  . |.   ; ,. :|  :  '   |,'_ /| :  . |.   ; ,. :
+|  | :   |  ' | |  . .'   | |: :|  |   /' :|  ' | |  . .'   | |: :
+'  : |__ |  | ' |  | |'   | .; :'  :  | | ||  | ' |  | |'   | .; :
+|  | '.'|:  | : ;  ; ||   :    ||  |  ' | ::  | : ;  ; ||   :    |
+;  :    ;'  :  `--'   \\   \  / |  :  :_:,''  :  `--'   \\   \  /
+|  ,   / :  ,      .-./ `----'  |  | ,'    :  ,      .-./ `----'
+ ---`-'   `--`----'             `--''       `--`----'
+Spring Boot Version: ${spring-boot.version}
+当前服务: ${spring.application.name}   激活环境: ${spring.profiles.active}   当前版本: ${info.version}
+nacos访问地址: http://${luohuo.nacos.ip}:${luohuo.nacos.web-port}    nacos命名空间: ${luohuo.nacos.namespace}
+${AnsiColor.DEFAULT}

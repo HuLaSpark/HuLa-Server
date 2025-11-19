@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>luohuo-generator</artifactId>
+        <groupId>com.luohuo.flex</groupId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>luohuo-generator-biz</artifactId>
+    <name>${project.artifactId}</name>
+    <description>在线代码生成器模块-业务模块</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-im-entity</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-generator-entity</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-oauth-api</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-file-sdk</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-data-scope-sdk</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-echo-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-mvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.basic</groupId>
+            <artifactId>luohuo-log-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

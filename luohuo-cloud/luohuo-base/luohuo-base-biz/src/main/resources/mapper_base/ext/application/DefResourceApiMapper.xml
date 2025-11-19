@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.base.mapper.application.DefResourceApiMapper">
+    <sql id="Ra_Column_List">
+        ra.id,ra.create_by,ra.create_time,ra.update_by,ra.update_time,
+        ra.resource_id, ra.controller, ra.spring_application_name, ra.request_method, ra.name, ra.uri
+    </sql>
+
+
+</mapper>

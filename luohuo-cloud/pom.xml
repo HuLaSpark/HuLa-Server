@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.luohuo.flex</groupId>
+    <artifactId>luohuo-cloud</artifactId>
+    <version>3.0.0</version>
+    <packaging>pom</packaging>
+    <url>https://gitee.com/HuLaSpark/HuLa-Server</url>
+    <name>${project.artifactId}</name>
+    <description>luohuo-cloud</description>
+
+    <modules>
+        <module>luohuo-dependencies-parent</module>
+        <module>luohuo-public</module>
+        <module>luohuo-base</module>
+        <module>luohuo-oauth</module>
+        <module>luohuo-ws</module>
+        <module>luohuo-im</module>
+        <module>luohuo-gateway</module>
+        <module>luohuo-support</module>
+        <module>luohuo-generator</module>
+        <module>luohuo-ai</module>
+        <module>luohuo-system</module>
+    </modules>
+</project>

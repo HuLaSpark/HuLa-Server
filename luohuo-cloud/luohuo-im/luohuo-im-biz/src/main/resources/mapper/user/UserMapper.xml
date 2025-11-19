@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.im.core.user.mapper.UserMapper">
+
+    <update id="changeUserState">
+        UPDATE im_user
+        SET user_state_id = #{userStateId}
+        WHERE id = #{employeeId}
+    </update>
+
+    <select id="getFriend" resultType="com.luohuo.flex.im.domain.vo.response.ChatMemberListResp">
+        SELECT id AS uid, name, avatar, account
+        FROM im_user
+        WHERE account like #{key}
+    </select>
+</mapper>

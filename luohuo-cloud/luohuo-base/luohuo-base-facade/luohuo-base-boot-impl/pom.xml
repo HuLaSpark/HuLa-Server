@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.luohuo.flex</groupId>
+        <artifactId>luohuo-base-facade</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>luohuo-base-boot-impl</artifactId>
+    <name>${project.artifactId}</name>
+    <description>基础服务-单体版实现</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-base-api</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.luohuo.flex</groupId>
+            <artifactId>luohuo-base-biz</artifactId>
+            <version>${luohuo-project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

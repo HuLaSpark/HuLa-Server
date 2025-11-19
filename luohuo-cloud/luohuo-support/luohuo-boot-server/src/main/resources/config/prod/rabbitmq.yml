@@ -1,0 +1,19 @@
+# 相当于 rocketmq.yml
+luohuo:
+  rabbitmq:
+    # 若系统中有除了zipkin之外的地方使用了mq ，则一定不能设置成false
+    enabled: false
+    ip: 127.0.0.1
+    port: 5672
+    username: 'luohuo'
+    password: 'luohuo'
+
+spring:
+  rabbitmq:
+    enabled: ${luohuo.rabbitmq.enabled}
+    host: ${luohuo.rabbitmq.ip}
+    port: ${luohuo.rabbitmq.port}
+    username: ${luohuo.rabbitmq.username}
+    password: ${luohuo.rabbitmq.password}
+    listener:
+      type: direct # simple direct

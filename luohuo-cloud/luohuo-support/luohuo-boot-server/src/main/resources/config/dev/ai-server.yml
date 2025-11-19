@@ -1,0 +1,123 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.autoconfigure.vectorstore.qdrant.QdrantVectorStoreAutoConfiguration # 禁用 AI 模块的 Qdrant，手动创建
+      - org.springframework.ai.autoconfigure.vectorstore.milvus.MilvusVectorStoreAutoConfiguration # 禁用 AI 模块的 Milvus，手动创建
+  main:
+    allow-circular-references: true # 允许循环依赖，因为项目是三层架构，无法避免这个情况。
+  ai:
+    vectorstore: # 向量存储
+      redis:
+        initialize-schema: true
+        index: knowledge_index # Redis 中向量索引的名称：用于存储和检索向量数据的索引标识符，所有相关的向量搜索操作都会基于这个索引进行
+        prefix: "knowledge_segment:" # Redis 中存储向量数据的键名前缀：这个前缀会添加到每个存储在 Redis 中的向量数据键名前，每个 document 都是一个 hash 结构
+      qdrant:
+        initialize-schema: true
+        collection-name: knowledge_segment # Qdrant 中向量集合的名称：用于存储向量数据的集合标识符，所有相关的向量操作都会在这个集合中进行
+        host: 127.0.0.1
+        port: 6334
+      milvus:
+        initialize-schema: true
+        database-name: default # Milvus 中数据库的名称
+        collection-name: knowledge_segment # Milvus 中集合的名称：用于存储向量数据的集合标识符，所有相关的向量操作都会在这个集合中进行
+        client:
+          host: 127.0.0.1
+          port: 19530
+    qianfan: # 文心一言
+      api-key: x0cuLZ7XsaTCU08vuJWO87Lg
+      secret-key: R9mYF9dl9KASgi5RUq0FQt3wRisSnOcK
+    zhipuai: # 智谱 AI
+      api-key: 32f84543e54eee31f8d56b2bd6020573.3vh9idLJZ2ZhxDEs
+    openai: # OpenAI 官方
+      api-key: sk-aN6nWn3fILjrgLFT0fC4Aa60B72e4253826c77B29dC94f17
+      base-url: https://api.gptsapi.net
+    azure: # OpenAI 微软
+      openai:
+        endpoint: https://eastusprejade.openai.azure.com
+        api-key: xxx
+    ollama:
+      base-url: http://127.0.0.1:11434
+      chat:
+        model: llama3
+    stabilityai:
+      api-key: sk-e53UqbboF8QJCscYvzJscJxJXoFcFg4iJjl1oqgE7baJETmx
+    dashscope: # 通义千问
+      api-key: sk-71800982914041848008480000000000
+    minimax: # Minimax：https://www.minimaxi.com/
+      api-key: xxxx
+    moonshot: # 月之暗灭（KIMI）
+      api-key: sk-abc
+
+# 自定义 AI 配置
+luohuo:
+  ai:
+    # DeepSeek
+    deepseek:
+      enable: false
+      api-key: sk-xxx
+      model: deepseek-chat
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 字节豆包
+    doubao:
+      enable: false
+      api-key: sk-xxx
+      model: doubao-pro-4k
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 硅基流动
+    siliconflow:
+      enable: false
+      api-key: sk-xxx
+      model: Qwen/Qwen2.5-7B-Instruct
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 腾讯混元
+    hunyuan:
+      enable: false
+      api-key: sk-xxx
+      base-url: https://api.hunyuan.cloud.tencent.com/v1
+      model: hunyuan-lite
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 讯飞星火
+    xinghuo:
+      enable: false
+      app-id: xxx
+      app-key: xxx
+      secret-key: xxx
+      model: generalv3.5
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # 百川智能
+    baichuan:
+      enable: false
+      api-key: sk-xxx
+      model: Baichuan2-Turbo
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # OpenRouter
+    openrouter:
+      enable: false
+      api-key: sk-xxx
+      base-url: https://openrouter.ai/api  # 可选，默认为 https://openrouter.ai/api，如果需要代理可以修改为代理地址
+      model: openai/gpt-3.5-turbo
+      temperature: 0.7
+      max-tokens: 4096
+      top-p: 1.0
+    # Midjourney
+    midjourney:
+      enable: false
+      base-url: http://127.0.0.1:8080
+      api-key: xxx
+      notify-url: http://127.0.0.1:48080/admin-api/ai/image/midjourney/notify
+    # Suno
+    suno:
+      enable: false
+      base-url: http://127.0.0.1:8080

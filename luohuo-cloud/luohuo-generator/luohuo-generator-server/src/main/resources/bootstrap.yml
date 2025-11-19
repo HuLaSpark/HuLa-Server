@@ -1,0 +1,71 @@
+luohuo:
+  swagger:
+    version: '@project.version@'
+  nacos:
+    ip: ${NACOS_IP:@nacos.ip@}
+    port: ${NACOS_PORT:@nacos.port@}
+    namespace: ${NACOS_NAMESPACE:@nacos.namespace@}
+    username: ${NACOS_USERNAME:@nacos.username@}
+    password: ${NACOS_PASSWORD:@nacos.password@}
+  sentinel:
+    dashboard: ${SENTINEL_DASHBOARD:@sentinel.dashboard@}
+  seata:
+    ip: ${SEATA_IP:@seata.ip@}
+    port: ${SEATA_PORT:@seata.port@}
+    namespace: ${SEATA_NAMESPACE:@seata.namespace@}
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: @project.artifactId@
+    # 此参数一定要和 luohuo-gateway-server.yml 文件中配置的 路由前缀(predicates参数) 一致！ （可以参考 system或base 服务）
+    path: /generator
+  profiles:
+    active: @profile.active@
+  cloud:
+    sentinel:
+      enabled: true
+      filter:
+        enabled: true
+      eager: true  # 取消Sentinel控制台懒加载
+      transport:
+        dashboard: ${luohuo.sentinel.dashboard}
+    nacos:
+      config:
+        server-addr: ${luohuo.nacos.ip}:${luohuo.nacos.port}
+        file-extension: yml
+        namespace: ${luohuo.nacos.namespace}
+        shared-configs:
+          - dataId: common.yml
+            refresh: true
+          - dataId: redis.yml
+            refresh: false
+          - dataId: '@database.type@'
+            refresh: true
+          - dataId: rocketmq.yml
+            refresh: false
+        enabled: true
+        username: ${luohuo.nacos.username}
+        password: ${luohuo.nacos.password}
+      discovery:
+        username: ${luohuo.nacos.username}
+        password: ${luohuo.nacos.password}
+        server-addr: ${luohuo.nacos.ip}:${luohuo.nacos.port}
+        namespace: ${luohuo.nacos.namespace}
+        metadata: # 元数据，用于权限服务实时获取各个服务的所有接口
+          management.context-path: ${server.servlet.context-path:}${spring.mvc.servlet.path:}${management.endpoints.web.base-path:}
+          grayversion: luohuo
+
+logging:
+  file:
+    path: '@logging.file.path@'
+    name: ${logging.file.path}/${spring.application.name}/root.log
+  config: classpath:logback-spring.xml
+  level:
+    druid.sql.Statement: debug
+# 用于/actuator/info
+info:
+  name: '@project.name@'
+  description: '@project.description@'
+  version: '@project.version@'

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.msg.mapper.ExtendInterfaceLogMapper">
+    <!--
+        代码生成器 by 2022-07-09 23:58:59
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.luohuo.flex.msg.entity.ExtendInterfaceLog">
+        <id column="id" property="id"/>
+        <result column="interface_id" property="interfaceId"/>
+        <result column="name" property="name"/>
+        <result column="success_count" property="successCount"/>
+        <result column="fail_count" property="failCount"/>
+        <result column="last_exec_time" property="lastExecTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , interface_id, name, success_count, fail_count, last_exec_time,
+        create_time, create_by, update_time, update_by
+    </sql>
+
+</mapper>

@@ -1,0 +1,18 @@
+luohuo:
+  cache:
+    type: REDIS
+    serializer-type: JACK_SON
+  redis:
+    ip: 192.168.1.37
+    port: 16379
+    password: luo.123456
+    database: 1
+spring:
+  cache:
+    type: GENERIC
+  data:
+    redis:
+      host: ${luohuo.redis.ip}
+      password: ${luohuo.redis.password}
+      port: ${luohuo.redis.port}
+      database: ${luohuo.redis.database}

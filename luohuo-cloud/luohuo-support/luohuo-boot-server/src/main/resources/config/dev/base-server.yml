@@ -1,0 +1,72 @@
+luohuo:
+  file:
+    storageType: LOCAL  #  FAST_DFS LOCAL MIN_IO ALI_OSS HUAWEI_OSS QINIU_OSS
+    delFile: false
+    suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,xls,xlsx,txt,file,bin,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db
+    publicBucket:
+      - public
+    local:
+      storagePath: /Users/luohuo/data/projects/uploadfile/file/     # 文件存储路径  （ 某些版本的 window 需要改成  D:\\data\\projects\\uploadfile\\file\\  ）
+      urlPrefix: http://127.0.0.1/file/   # 文件访问 （部署nginx后，配置nginx的ip，并配置nginx静态代理storage-path地址的静态资源）
+      innerUrlPrefix: null  #  内网的url前缀
+    fastDfs:
+      urlPrefix: https://fastdfs.hula.com/
+    ali:
+      # 请填写自己的阿里云存储配置
+      urlPrefix: "https://luohuo-admin-cloud.oss-cn-beijing.aliyuncs.com/"
+      bucket: "luohuo-admin-cloud"
+      endpoint: "oss-cn-beijing.aliyuncs.com"
+      accessKeyId: "填写你的id"
+      accessKeySecret: "填写你的秘钥"
+    minIo:
+      endpoint: "https://static.luohuo.top/"
+      accessKey: "luohuo"
+      secretKey: "123."
+      bucket: "dev"
+    huawei:
+      uriPrefix: https://123-dev.obs.cn-southwest-2.myhuaweicloud.com/
+      endpoint: "obs.cn-southwest-2.myhuaweicloud.com"
+      accessKey: "123"
+      secretKey: "123"
+      bucket: "123-dev"
+      location: "cn-123-2"
+    qiNiu:
+      domain: cdn.hula
+      useHttps: true
+      zone: "z0"
+      accessKey: "1"
+      secretKey: "2"
+      bucket: "luohuo_admin_cloud"
+
+#FAST_DFS配置
+fdfs:
+  soTimeout: 1500
+  connectTimeout: 600
+  thumb-image:
+    width: 150
+    height: 150
+  tracker-list:
+    - 39.108.109.234:22122
+  pool:
+    #从池中借出的对象的最大数目
+    max-total: 153
+    max-wait-millis: 102
+    jmx-name-base: 1
+    jmx-name-prefix: 1
+# 这里也需要配置
+spring:
+  mail:
+    # 网易邮箱SMTP服务器
+    host: smtp.163.com
+    # SSL端口
+    port: 465
+    # 发件人邮箱
+    username: nongyehon1g919@163.com
+    # 邮箱SMTP授权码
+    password: YZ7ju1X6W11WSbx2e
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+          auth: true

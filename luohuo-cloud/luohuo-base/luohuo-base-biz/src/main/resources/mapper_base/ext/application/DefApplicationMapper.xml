@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luohuo.flex.base.mapper.application.DefApplicationMapper">
+    <sql id="A_Column_List">
+        a.id, a.create_by, a.create_time, a.update_by, a.update_time, a.redirect,
+        a.app_key, a.app_secret, a.name, a.version, a.type, a.introduce, a.remark, a.url, a.is_visible, a.sort_value
+    </sql>
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ResultVOMap" type="com.luohuo.flex.base.vo.result.application.DefApplicationResultVO"
+               extends="BaseResultMap">
+        <result column="expiration_time" jdbcType="TIMESTAMP" property="expirationTime"/>
+    </resultMap>
+
+    <!-- 查询我的应用 -->
+    <select id="findMyApplication" parameterType="java.util.Map" resultMap="ResultVOMap">
+        select
+        <include refid="A_Column_List"/>
+        from def_application a
+        <where>
+            <if test="name != null and name != ''">
+                and a.name like #{name, typeHandler=fullLike}
+            </if>
+            and a.is_visible = 1
+        </where>
+        order by a.sort_value asc
+    </select>
+</mapper>
