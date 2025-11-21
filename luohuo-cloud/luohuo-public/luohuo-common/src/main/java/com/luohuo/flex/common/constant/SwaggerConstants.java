@@ -1,7 +1,7 @@
 package com.luohuo.flex.common.constant;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2020/11/22 5:41 下午
  */
 public class SwaggerConstants {

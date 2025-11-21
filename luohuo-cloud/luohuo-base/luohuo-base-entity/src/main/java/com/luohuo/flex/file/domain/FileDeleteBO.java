@@ -7,7 +7,7 @@ import com.luohuo.flex.file.enumeration.FileStorageType;
 /**
  * 文件删除
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/05/07
  */
 @Data

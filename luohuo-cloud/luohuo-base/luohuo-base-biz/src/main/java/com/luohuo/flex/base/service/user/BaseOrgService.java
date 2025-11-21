@@ -18,7 +18,7 @@ import java.util.Set;
  * 组织
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-18
  */
 public interface BaseOrgService extends SuperCacheService<Long, BaseOrg> {

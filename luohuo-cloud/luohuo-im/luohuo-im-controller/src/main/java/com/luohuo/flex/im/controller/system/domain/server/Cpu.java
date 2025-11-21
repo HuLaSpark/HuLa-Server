@@ -6,7 +6,7 @@ import com.luohuo.basic.utils.ArithUtil;
 /**
  * CPU相关信息
  *
- * @author zuihou
+ * @author 乾乾
  */
 public class Cpu {
     /**

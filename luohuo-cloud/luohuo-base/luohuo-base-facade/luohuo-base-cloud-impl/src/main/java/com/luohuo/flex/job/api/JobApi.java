@@ -9,7 +9,7 @@ import com.luohuo.basic.constant.Constants;
 import com.luohuo.flex.job.dto.XxlJobInfoVO;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2021/1/4 11:52 下午
  */
 @FeignClient(name = "JobApi", url = "${" + Constants.PROJECT_PREFIX + ".feign.job-server:http://127.0.0.1:8767}", path = "/xxl-job-admin")

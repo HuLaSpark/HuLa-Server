@@ -27,7 +27,7 @@ import java.util.function.Function;
  * @param <M>      Manager
  * @param <Id>     ID
  * @param <Entity> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年02月27日18:15:17
  */
 public abstract class SuperCacheServiceImpl<M extends SuperCacheManager<Entity>, Id extends Serializable, Entity extends SuperEntity<?>>

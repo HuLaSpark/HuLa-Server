@@ -51,7 +51,7 @@ import static com.luohuo.basic.exception.code.ResponseEnum.REQUIRED_FILE_PARAM_E
 /**
  * 全局异常统一处理
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2017-12-13 17:04
  */
 @SuppressWarnings("AlibabaUndefineMagicConstant")

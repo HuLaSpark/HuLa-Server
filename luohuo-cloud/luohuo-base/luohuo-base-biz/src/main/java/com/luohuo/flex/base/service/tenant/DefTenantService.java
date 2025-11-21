@@ -54,7 +54,7 @@ public interface DefTenantService extends SuperCacheService<Long, DefTenant> {
      * @param reviewComments 审核意见
      * @return
      */
-    Boolean updateStatus(Long id, String status, String reviewComments);
+    Boolean updateStatus(Long id, Integer status, String reviewComments);
 
     /**
      * 查询用户的可用企业

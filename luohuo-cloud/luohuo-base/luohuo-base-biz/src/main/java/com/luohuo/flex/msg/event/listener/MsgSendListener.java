@@ -13,7 +13,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * 消息发送事件监听
  * 目的： 解耦
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月18日17:39:59
  */
 @Component

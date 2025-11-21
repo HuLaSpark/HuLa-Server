@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 包括id、create_time、create_by、update_by、update_time、label、parent_id、sort_value 字段的表继承的树形实体
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/05/05
  */
 @Getter

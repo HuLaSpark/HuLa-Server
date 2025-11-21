@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.IEnum;
 /**
  * 枚举类型基类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/26
  */
 public interface BaseEnum extends IEnum<String> {

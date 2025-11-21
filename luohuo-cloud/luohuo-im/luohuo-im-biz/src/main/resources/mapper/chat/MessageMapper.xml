@@ -5,11 +5,10 @@
     <select id="batchGetUnReadCount" resultType="java.util.Map">
         SELECT room_id, COUNT(*) AS unread_count
         FROM im_message
-        WHERE (room_id, create_time) IN (
-        <foreach collection="contactList" item="contact" separator=",">
-            (#{contact.roomId}, #{contact.readTime})
+        WHERE
+        <foreach collection="contactList" item="contact" separator=" OR ">
+            (room_id = #{contact.roomId} AND create_time > #{contact.readTime} and from_uid &lt;&gt; #{uid})
         </foreach>
-        )
         GROUP BY room_id
     </select>
 </mapper>

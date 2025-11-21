@@ -43,7 +43,7 @@ import static com.luohuo.flex.common.constant.SwaggerConstants.DATA_TYPE_STRING;
  * 资源
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-09-13
  */
 @Slf4j

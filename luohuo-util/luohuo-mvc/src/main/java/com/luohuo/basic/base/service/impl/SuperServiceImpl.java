@@ -27,7 +27,7 @@ import java.util.List;
  * @param <M>      Manager
  * @param <Id>     ID
  * @param <Entity> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年02月27日18:15:17
  */
 public class SuperServiceImpl<M extends SuperManager<Entity>, Id extends Serializable, Entity extends SuperEntity<?>> implements SuperService<Id, Entity> {

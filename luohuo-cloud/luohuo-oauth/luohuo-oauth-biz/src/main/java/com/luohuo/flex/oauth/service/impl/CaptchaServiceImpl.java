@@ -40,7 +40,7 @@ import com.luohuo.flex.msg.facade.MsgFacade;
 /**
  * 验证码服务
  *
- * @author zuihou
+ * @author 乾乾
  */
 @Service
 @RequiredArgsConstructor

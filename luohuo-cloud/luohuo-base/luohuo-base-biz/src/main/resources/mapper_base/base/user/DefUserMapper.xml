@@ -14,11 +14,6 @@
         <result column="email" jdbcType="VARCHAR" property="email"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
         <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
-        <result column="wx_open_id" jdbcType="VARCHAR" property="wxOpenId"/>
-        <result column="dd_open_id" jdbcType="VARCHAR" property="ddOpenId"/>
-        <result column="readonly" jdbcType="BIT" property="readonly"/>
-        <result column="nation" jdbcType="CHAR" property="nation"/>
-        <result column="education" jdbcType="CHAR" property="education"/>
         <result column="sex" jdbcType="CHAR" property="sex"/>
         <result column="state" jdbcType="BIT" property="state"/>
         <result column="work_describe" jdbcType="VARCHAR" property="workDescribe"/>
@@ -33,8 +28,8 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id
-        ,create_by,create_time,update_by,update_time, nation, education,
-        username, nick_name, email, mobile, id_card, wx_open_id, dd_open_id, readonly, sex, state, work_describe, password_error_last_time, password_error_num, password_expire_time, password, salt, last_login_time
+        ,create_by,create_time,update_by,update_time,
+        username, nick_name, email, mobile, id_card, sex, state, work_describe, password_error_last_time, password_error_num, password_expire_time, password, salt, last_login_time
     </sql>
 
 </mapper>

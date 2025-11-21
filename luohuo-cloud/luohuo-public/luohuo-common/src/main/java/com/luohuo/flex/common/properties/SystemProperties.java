@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * 登录配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021/1/28 7:57 下午
  */
 @Setter

@@ -6,7 +6,9 @@ import com.luohuo.flex.im.domain.entity.AnnouncementsReadRecord;
 import com.luohuo.flex.im.domain.entity.Room;
 import com.luohuo.flex.im.domain.entity.RoomFriend;
 import com.luohuo.flex.im.domain.entity.RoomGroup;
+import com.luohuo.flex.im.domain.vo.req.room.GroupPageReq;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
 import com.luohuo.flex.im.domain.vo.response.MemberResp;
 
@@ -50,6 +52,16 @@ public interface RoomService {
 	 * @param uid 登录用户id
 	 */
 	List<MemberResp> groupList(Long uid);
+
+	/**
+	 * 获取所有群聊列表（不需要权限）
+	 */
+	List<MemberResp> getAllGroupList();
+
+	/**
+	 * 分页查询所有群聊列表（支持按群昵称和群成员昵称搜索）
+	 */
+	PageBaseResp<MemberResp> getGroupPage(GroupPageReq req);
 
     /**
      * 校验当前用户是否在群里

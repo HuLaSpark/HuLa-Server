@@ -1,16 +1,22 @@
 package com.luohuo.flex.im.core.chat.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baidu.fsg.uid.Base62Encoder;
 import com.baidu.fsg.uid.UidGenerator;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.im.core.chat.dao.AnnouncementsDao;
 import com.luohuo.flex.im.core.chat.dao.AnnouncementsReadRecordDao;
 import com.luohuo.flex.im.core.chat.dao.ContactDao;
+import com.luohuo.flex.im.core.user.dao.UserDao;
 import com.luohuo.flex.im.domain.entity.*;
+import com.luohuo.flex.im.domain.vo.req.room.GroupPageReq;
 import com.luohuo.flex.im.domain.vo.request.GroupAddReq;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
 import com.luohuo.flex.im.core.chat.dao.GroupMemberDao;
 import com.luohuo.flex.im.core.chat.dao.RoomDao;
@@ -27,9 +33,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -44,6 +49,7 @@ public class RoomServiceImpl implements RoomService {
 	private AnnouncementsReadRecordDao announcementsReadRecordDao;
     private UserCache userCache;
     private RoomGroupDao roomGroupDao;
+	private UserDao userDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -101,6 +107,85 @@ public class RoomServiceImpl implements RoomService {
     public List<MemberResp> groupList(Long uid) {
 		return roomDao.groupList(uid);
     }
+
+    @Override
+    public List<MemberResp> getAllGroupList() {
+        return roomDao.getAllGroupList();
+    }
+
+	@Override
+	public PageBaseResp<MemberResp> getGroupPage(GroupPageReq req) {
+		// 去掉前后空格
+		String groupNameKeyword = StrUtil.trim(req.getGroupNameKeyword());
+		String memberNameKeyword = StrUtil.trim(req.getMemberNameKeyword());
+
+		// 查询所有群聊
+		LambdaQueryWrapper<RoomGroup> wrapper = new LambdaQueryWrapper<>();
+		wrapper.orderByDesc(RoomGroup::getCreateTime);
+		Page<RoomGroup> page = roomGroupDao.page(req.plusPage(), wrapper);
+
+		// 如果没有搜索关键词，直接返回所有群聊
+		if (StrUtil.isBlank(groupNameKeyword) && StrUtil.isBlank(memberNameKeyword)) {
+			List<MemberResp> list = page.getRecords().stream()
+					.map(roomGroup -> {
+						MemberResp resp = new MemberResp();
+						resp.setRoomId(roomGroup.getRoomId());
+						resp.setGroupId(roomGroup.getId());
+						resp.setGroupName(roomGroup.getName());
+						resp.setAccount(roomGroup.getAccount());
+						resp.setAvatar(roomGroup.getAvatar());
+						resp.setAllowScanEnter(roomGroup.getAllowScanEnter());
+						return resp;
+					})
+					.collect(Collectors.toList());
+
+			return PageBaseResp.init((int) page.getCurrent(), (int) page.getSize(), page.getTotal(), list);
+		}
+
+		// 有搜索关键词，需要按群昵称和/或群成员昵称过滤
+		List<MemberResp> filteredList = page.getRecords().stream()
+				.map(roomGroup -> {
+					MemberResp resp = new MemberResp();
+					resp.setRoomId(roomGroup.getRoomId());
+					resp.setGroupId(roomGroup.getId());
+					resp.setGroupName(roomGroup.getName());
+					resp.setAccount(roomGroup.getAccount());
+					resp.setAvatar(roomGroup.getAvatar());
+					resp.setAllowScanEnter(roomGroup.getAllowScanEnter());
+					return resp;
+				})
+				.filter(resp -> {
+					boolean matchGroupName = true;
+					boolean matchMemberName = true;
+
+					// 如果有群昵称关键词，检查群昵称是否匹配
+					if (StrUtil.isNotBlank(groupNameKeyword)) {
+						matchGroupName = StrUtil.isNotBlank(resp.getGroupName()) &&
+								StrUtil.contains(resp.getGroupName(), groupNameKeyword);
+					}
+
+					// 如果有群成员昵称关键词，检查群成员昵称是否匹配
+					if (StrUtil.isNotBlank(memberNameKeyword)) {
+						List<Long> memberUidList = groupMemberDao.getMemberUidList(resp.getGroupId(), null);
+						if (memberUidList != null && !memberUidList.isEmpty()) {
+							// 查询所有成员的用户信息
+							List<User> users = userDao.listByIds(memberUidList);
+							// 检查是否有成员昵称包含搜索关键词
+							matchMemberName = users.stream()
+									.anyMatch(user -> StrUtil.isNotBlank(user.getName()) &&
+											StrUtil.contains(user.getName(), memberNameKeyword));
+						} else {
+							matchMemberName = false;
+						}
+					}
+
+					// 两个条件都要满足（AND关系）
+					return matchGroupName && matchMemberName;
+				})
+				.collect(Collectors.toList());
+
+		return PageBaseResp.init((int) page.getCurrent(), (int) page.getSize(), (long) filteredList.size(), filteredList);
+	}
 
     @Override
     public void checkUser(Long uid, Long roomId) {

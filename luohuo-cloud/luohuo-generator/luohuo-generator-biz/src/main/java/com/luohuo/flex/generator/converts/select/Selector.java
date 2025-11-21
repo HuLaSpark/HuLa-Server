@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * 一旦结果被选择，其他的分支将不再被调用
  *
  * @author hanchunlin
- * @author zuihou
+ * @author 乾乾
  * Created at 2020/6/11 16:55
  */
 public class Selector<P, T> {

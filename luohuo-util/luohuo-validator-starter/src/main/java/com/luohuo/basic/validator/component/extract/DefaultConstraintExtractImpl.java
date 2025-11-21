@@ -71,7 +71,7 @@ import static com.luohuo.basic.validator.utils.ValidatorConstants.PATTERN;
 /**
  * 缺省的约束提取器
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-14 12:12
  */
 @Slf4j

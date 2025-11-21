@@ -10,7 +10,7 @@ import com.luohuo.flex.msg.vo.update.ExtendMsgSendVO;
 /**
  * 消息接口
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2024年09月20日10:37:50
  *
  */

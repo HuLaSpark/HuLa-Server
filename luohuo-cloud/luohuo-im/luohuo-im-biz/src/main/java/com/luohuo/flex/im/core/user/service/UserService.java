@@ -4,13 +4,12 @@ import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.dto.ItemInfoDTO;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.im.domain.entity.User;
+import com.luohuo.flex.im.domain.vo.req.user.*;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
+import com.luohuo.flex.im.domain.vo.resp.user.BlackPageResp;
+import com.luohuo.flex.im.domain.vo.resp.user.UserSearchResp;
 import com.luohuo.flex.model.entity.base.IpInfo;
 import com.luohuo.flex.model.vo.query.BindEmailReq;
-import com.luohuo.flex.im.domain.vo.req.user.BlackReq;
-import com.luohuo.flex.im.domain.vo.req.user.ItemInfoReq;
-import com.luohuo.flex.im.domain.vo.req.user.ModifyAvatarReq;
-import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
-import com.luohuo.flex.im.domain.vo.req.user.WearingBadgeReq;
 import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
 
@@ -99,7 +98,15 @@ public interface UserService {
      */
     void wearingBadge(Long uid, WearingBadgeReq req);
 
-    void black(BlackReq req);
+    void addBlack(BlackAddReq req);
+
+    void editBlack(BlackEditReq req);
+
+    void removeBlack(BlackRemoveReq req);
+
+    PageBaseResp<BlackPageResp> blackPage(BlackPageReq req);
+
+    PageBaseResp<UserSearchResp> searchUser(UserSearchReq req);
 
     List<ItemInfoDTO> getItemInfo(ItemInfoReq req);
 

@@ -7,7 +7,7 @@ import com.luohuo.basic.utils.ArgumentAssert;
 import com.luohuo.flex.msg.strategy.domain.BaseProperty;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/7/10 0010 18:56
  */
 @Data

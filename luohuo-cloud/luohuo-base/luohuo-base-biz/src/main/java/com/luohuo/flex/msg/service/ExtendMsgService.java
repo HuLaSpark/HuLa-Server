@@ -15,7 +15,7 @@ import com.luohuo.flex.msg.vo.update.ExtendMsgSendVO;
  * 消息
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-07-10 11:41:17
  * @create [2022-07-10 11:41:17] [zuihou] [代码生成器生成]
  */

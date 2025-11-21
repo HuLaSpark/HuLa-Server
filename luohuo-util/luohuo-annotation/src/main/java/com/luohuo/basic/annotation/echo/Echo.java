@@ -22,7 +22,7 @@ import static cn.hutool.core.text.CharSequenceUtil.EMPTY;
  * 强烈建议：不要对象之间互相依赖
  * 如： User 想要注入 File， File也想注入User
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年01月18日17:59:25
  */
 @Retention(RetentionPolicy.RUNTIME)

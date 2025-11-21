@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * 封装字段上标记了 Echo 注解的字段
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/5/8 下午9:19
  */
 @Data

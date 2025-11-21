@@ -11,7 +11,7 @@ import com.luohuo.flex.base.entity.system.DefDict;
  * 字典
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-04
  */
 @Repository

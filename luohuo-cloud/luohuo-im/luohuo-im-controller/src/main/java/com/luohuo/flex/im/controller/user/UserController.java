@@ -5,6 +5,7 @@ import com.luohuo.flex.im.api.vo.UserRegisterVo;
 import com.luohuo.flex.im.domain.dto.SummeryInfoDTO;
 import com.luohuo.flex.model.entity.base.RefreshIpInfo;
 import com.luohuo.flex.model.entity.base.UserReq;
+import com.luohuo.flex.model.vo.query.BindEmailReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -12,25 +13,28 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
-import com.luohuo.basic.validator.utils.AssertUtil;
 import com.luohuo.flex.im.domain.dto.ItemInfoDTO;
-import com.luohuo.flex.im.domain.enums.RoleTypeEnum;
-import com.luohuo.flex.model.vo.query.BindEmailReq;
-import com.luohuo.flex.im.domain.vo.req.user.BlackReq;
+import com.luohuo.flex.im.domain.vo.req.user.BlackAddReq;
+import com.luohuo.flex.im.domain.vo.req.user.BlackEditReq;
+import com.luohuo.flex.im.domain.vo.req.user.BlackPageReq;
+import com.luohuo.flex.im.domain.vo.req.user.BlackRemoveReq;
+import com.luohuo.flex.im.domain.vo.req.user.UserSearchReq;
 import com.luohuo.flex.im.domain.vo.req.user.ItemInfoReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyAvatarReq;
 import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
 import com.luohuo.flex.im.domain.vo.req.user.WearingBadgeReq;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
+import com.luohuo.flex.im.domain.vo.resp.user.BlackPageResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
-import com.luohuo.flex.im.core.user.service.RoleService;
+import com.luohuo.flex.im.domain.vo.resp.user.UserSearchResp;
 import com.luohuo.flex.im.core.user.service.UserService;
 
 import java.util.List;
 
 /**
  * 用户表 前端控制器
- * @author nyh
+ * @author 乾乾
  */
 @RestController
 @RequestMapping("/user")
@@ -39,8 +43,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-    @Resource
-    private RoleService roleService;
 
 	@PostMapping("refreshIpInfo")
 	@Operation(summary ="刷新IP信息、物理地址")
@@ -126,14 +128,37 @@ public class UserController {
         return R.success();
     }
 
+    @GetMapping("/black/page")
+    @Operation(summary ="黑名单列表")
+    public R<PageBaseResp<BlackPageResp>> blackPage(@Valid BlackPageReq request) {
+        return R.success(userService.blackPage(request));
+    }
+
     @PutMapping("/black")
-    @Operation(summary ="拉黑用户")
-    public R<Void> black(@Valid @RequestBody BlackReq req) {
-        Long uid = ContextUtil.getUid();
-        AssertUtil.isTrue(roleService.hasRole(uid, RoleTypeEnum.ADMIN), "没有权限");
-        userService.black(req);
+    @Operation(summary ="拉黑（支持IP和UID）")
+    public R<Void> black(@Valid @RequestBody BlackAddReq req) {
+        userService.addBlack(req);
         return R.success();
     }
 
-}
+    @PostMapping("/black/edit")
+    @Operation(summary ="编辑黑名单")
+    public R<Void> editBlack(@Valid @RequestBody BlackEditReq req) {
+        userService.editBlack(req);
+        return R.success();
+    }
 
+    @PostMapping("/black/remove")
+    @Operation(summary ="移除黑名单")
+    public R<Void> removeBlack(@Valid @RequestBody BlackRemoveReq req) {
+        userService.removeBlack(req);
+        return R.success();
+    }
+
+    @GetMapping("/search")
+    @Operation(summary ="搜索用户（按昵称模糊查询）")
+    public R<PageBaseResp<UserSearchResp>> searchUser(@Valid UserSearchReq req) {
+        return R.success(userService.searchUser(req));
+    }
+
+}

@@ -12,7 +12,7 @@ import java.time.Duration;
 /**
  * 租户拥有的资源
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/20 6:45 下午
  */
 public class TenantResourceCacheKeyBuilder implements CacheKeyBuilder {

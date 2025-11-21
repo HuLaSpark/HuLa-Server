@@ -20,7 +20,7 @@ import static com.luohuo.flex.common.constant.BizConstant.UTIL_PACKAGE;
  * EnableAspectJAutoProxy(proxyTargetClass=true, exposeProxy=true) 配合 @EnableCaching
  * 才能解决在同一个类中通过 AopContext.currentProxy() 调用时，使缓存生效
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018-01-13 1:34
  */
 @SpringBootApplication

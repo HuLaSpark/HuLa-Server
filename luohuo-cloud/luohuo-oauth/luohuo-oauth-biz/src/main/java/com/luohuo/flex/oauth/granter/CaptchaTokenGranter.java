@@ -26,7 +26,7 @@ import static com.luohuo.flex.oauth.granter.CaptchaTokenGranter.GRANT_TYPE;
 /**
  * 验证码TokenGranter
  *
- * @author zuihou
+ * @author 乾乾
  */
 @Component(GRANT_TYPE)
 @Slf4j

@@ -26,7 +26,7 @@ import java.net.UnknownHostException;
 /**
  * 登录状态DTO
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月18日17:25:44
  */
 @Data

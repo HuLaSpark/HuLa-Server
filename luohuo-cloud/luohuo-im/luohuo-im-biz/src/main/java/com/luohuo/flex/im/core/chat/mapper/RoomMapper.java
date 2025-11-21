@@ -18,4 +18,6 @@ import java.util.List;
 public interface RoomMapper extends BaseMapper<Room> {
 
     List<MemberResp> groupList(Long uid);
+
+    List<MemberResp> getAllGroupList();
 }

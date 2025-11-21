@@ -6,7 +6,7 @@ package com.luohuo.basic.cache.lock;
  * RETRY_TIMES=100，SLEEP_MILLIS=100
  * RETRY_TIMES * SLEEP_MILLIS = 10000 意味着如果一直获取不了锁，最长会等待10秒后抛超时异常
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-08-06 10:43
  */
 public interface DistributedLock {

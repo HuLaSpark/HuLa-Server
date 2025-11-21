@@ -15,7 +15,7 @@ import com.luohuo.flex.file.vo.result.FileResultVO;
 /**
  * 文件接口
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/06/21
  */
 @FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.base-server:luohuo-base-server}")

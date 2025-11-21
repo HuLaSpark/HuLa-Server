@@ -3,7 +3,7 @@ package com.luohuo.basic.cache.properties;
 /**
  * 序列化类型
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021年04月19日08:25:13
  */
 public enum SerializerType {

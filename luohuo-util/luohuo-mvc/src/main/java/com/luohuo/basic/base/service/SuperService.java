@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @param <Id>     ID
  * @param <Entity> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月03日20:49:03
  */
 public interface SuperService<Id extends Serializable, Entity extends SuperEntity<?>> {

@@ -3,7 +3,7 @@ package com.luohuo.flex.common.constant;
 /**
  * 系统默认角色
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月29日21:16:22
  */
 public final class RoleConstant {

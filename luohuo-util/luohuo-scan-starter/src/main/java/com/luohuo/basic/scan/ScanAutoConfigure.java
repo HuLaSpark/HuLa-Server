@@ -14,7 +14,7 @@ import com.luohuo.basic.scan.utils.RequestMappingScanUtils;
 /**
  * 启动配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021年09月19日15:13:33
  */
 @AllArgsConstructor

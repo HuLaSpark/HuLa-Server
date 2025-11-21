@@ -15,7 +15,7 @@ import java.util.Set;
  * 重构{@link LogbackMDCAdapter}类，搭配TransmittableThreadLocal实现父子线程之间的数据传递
  *
  * @author Ceki G&uuml;lc&uuml;
- * @author zuihou
+ * @author 乾乾
  * @date 2020-11-09 21:11
  */
 @SuppressWarnings("ALL")

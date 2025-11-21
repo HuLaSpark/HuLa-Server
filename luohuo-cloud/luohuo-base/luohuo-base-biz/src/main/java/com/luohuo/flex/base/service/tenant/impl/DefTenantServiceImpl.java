@@ -61,7 +61,7 @@ public class DefTenantServiceImpl extends SuperCacheServiceImpl<DefTenantManager
         DefTenantSaveVO defTenantSaveVO = (DefTenantSaveVO) saveVO;
         // 1， 保存租户 (默认库)
         DefTenant tenant = BeanPlusUtil.toBean(defTenantSaveVO, DefTenant.class);
-        tenant.setStatus(DefTenantStatusEnum.WAITING.getCode());
+        tenant.setStatus(DefTenantStatusEnum.WAITING.getCodeInt());
         tenant.setRegisterType(DefTenantRegisterTypeEnum.CREATE);
         return tenant;
     }
@@ -111,7 +111,7 @@ public class DefTenantServiceImpl extends SuperCacheServiceImpl<DefTenantManager
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean updateStatus(Long id, String status, String reviewComments) {
+    public Boolean updateStatus(Long id, Integer status, String reviewComments) {
         ArgumentAssert.notNull(id, "请传递正确的企业ID");
         ArgumentAssert.notNull(status, "请传递正确的状态值");
 

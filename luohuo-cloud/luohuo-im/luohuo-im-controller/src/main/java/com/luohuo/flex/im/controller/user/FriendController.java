@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * 好友相关接口
- * @author nyh
+ * @author 乾乾
  */
 @RestController
 @RequestMapping("/user/friend")
@@ -58,9 +58,11 @@ public class FriendController {
 
     @GetMapping("/page")
     @Operation(summary = "联系人列表")
-    public R<CursorPageBaseResp<FriendResp>> friendList(@Valid CursorPageBaseReq request) {
-        Long uid = ContextUtil.getUid();
-        return R.success(friendService.friendList(uid, request));
+    public R<CursorPageBaseResp<FriendResp>> friendList(@Valid CursorPageBaseReq request, @RequestParam(required = false) Long uid) {
+        // 如果没有传入uid，则使用当前登录用户的uid（普通用户场景）
+        // 如果传入了uid，则查询指定用户的好友列表（管理员场景）
+        Long targetUid = uid != null ? uid : ContextUtil.getUid();
+        return R.success(friendService.friendList(targetUid, request));
     }
 
 	@PostMapping("/updateRemark")

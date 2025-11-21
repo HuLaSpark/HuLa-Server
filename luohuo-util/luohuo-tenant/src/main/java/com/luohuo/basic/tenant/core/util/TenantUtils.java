@@ -10,7 +10,7 @@ import static com.luohuo.basic.context.ContextConstants.HEADER_TENANT_ID;
 /**
  * 多租户 Util
  *
- * @author 芋道源码
+ * @author 乾乾
  */
 public class TenantUtils {
 

@@ -45,6 +45,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -148,6 +150,26 @@ public class AiAutoConfiguration {
                 .build();
         TokenCountEstimator tokenCountEstimator = new JTokkitTokenCountEstimator();
         return new SiliconFlowChatModel(openAiChatModel, tokenCountEstimator);
+    }
+
+    @Bean("videoTaskExecutor")
+    public ThreadPoolTaskExecutor videoTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(4);
+        executor.setMaxPoolSize(8);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("video-exec-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean("videoTaskScheduler")
+    public ThreadPoolTaskScheduler videoTaskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(4);
+        scheduler.setThreadNamePrefix("video-sched-");
+        scheduler.initialize();
+        return scheduler;
     }
 
     @Bean

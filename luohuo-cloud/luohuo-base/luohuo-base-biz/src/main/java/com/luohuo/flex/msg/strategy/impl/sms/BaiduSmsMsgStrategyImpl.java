@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * 仅支持jdk7 和 jdk8，其他版本请使用API调用
  * https://cloud.baidu.com/doc/SMS/s/dkioav2od
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022/7/10 0010 17:40
  */
 @Slf4j

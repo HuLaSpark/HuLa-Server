@@ -16,7 +16,7 @@ import java.io.Serializable;
  *
  * @param <Entity> 实体
  * @param <SaveVO> 保存参数
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月07日22:07:31
  */
 public interface SaveController<Id extends Serializable, Entity extends SuperEntity<Id>, SaveVO>

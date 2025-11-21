@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import com.luohuo.flex.generator.enumeration.SuperClassEnum;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/3/9 21:40
  */
 @Data

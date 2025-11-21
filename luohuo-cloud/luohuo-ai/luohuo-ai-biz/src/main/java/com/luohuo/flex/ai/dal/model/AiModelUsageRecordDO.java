@@ -1,14 +1,19 @@
 package com.luohuo.flex.ai.dal.model;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.luohuo.flex.ai.dal.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.apache.ibatis.type.JdbcType;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * AI 公开模型使用记录 DO
@@ -24,7 +29,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class AiModelUsageRecordDO extends BaseDO {
+public class AiModelUsageRecordDO implements Serializable {
 
 	/**
 	 * 编号
@@ -55,5 +60,17 @@ public class AiModelUsageRecordDO extends BaseDO {
 	 * 剩余次数
 	 */
 	private Integer remainingCount;
+
+	@TableField(fill = FieldFill.INSERT)
+	private LocalDateTime createTime;
+
+	@TableField(fill = FieldFill.INSERT_UPDATE)
+	private LocalDateTime updateTime;
+
+	@TableField(fill = FieldFill.INSERT, jdbcType = JdbcType.VARCHAR)
+	private String creator;
+
+	@TableField(fill = FieldFill.INSERT_UPDATE, jdbcType = JdbcType.VARCHAR)
+	private String updater;
 
 }

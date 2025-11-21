@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * 用户API熔断
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/23
  */
 @Component

@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * glue factory, product class/object by name
  *
- * @author zuihou
+ * @author 乾乾
  */
 public class GlueFactory {
 

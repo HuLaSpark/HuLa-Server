@@ -19,7 +19,7 @@ import java.util.Map;
  * 代码生成
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-03-01
  */
 public interface DefGenTableService extends SuperService<Long, DefGenTable> {

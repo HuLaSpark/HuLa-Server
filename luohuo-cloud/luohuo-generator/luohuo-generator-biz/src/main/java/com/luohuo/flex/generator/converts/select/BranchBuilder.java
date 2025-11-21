@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  * 分支构建者
  *
  * @author hanchunlin
- * @author zuihou
+ * @author 乾乾
  * Created at 2020/6/11 17:22
  */
 public interface BranchBuilder<P, T> {

@@ -21,7 +21,7 @@ import static com.luohuo.basic.utils.ValidatorUtil.REGEX_MOBILE;
  * 用户手机修改VO
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2019-11-04
  */
 @Data

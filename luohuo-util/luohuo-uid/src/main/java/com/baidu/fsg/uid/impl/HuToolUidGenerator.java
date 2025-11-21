@@ -8,7 +8,7 @@ import com.baidu.fsg.uid.exception.UidGenerateException;
 /**
  * 基于Hu tool 工具类实现的雪花id生成器
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/15 4:44 下午
  */
 public class HuToolUidGenerator implements UidGenerator {

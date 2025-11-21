@@ -134,6 +134,27 @@ public interface AiModelService {
     List<AiModelDO> getModelListByStatusAndTypeAndUserId(Integer status, Integer type,
                                                          @Nullable String platform, Long userId);
 
+    /**
+     * 获得所有模型列表（后台管理专用）
+     *
+     * @return 模型列表
+     */
+    List<AiModelDO> getAllModelList();
+
+    /**
+     * 管理员更新模型
+     *
+     * @param updateReqVO 更新信息
+     */
+    void updateModelAdmin(@Valid AiModelSaveReqVO updateReqVO);
+
+    /**
+     * 管理员删除模型
+     *
+     * @param id 编号
+     */
+    void deleteModelAdmin(Long id);
+
     // ========== 与 Spring AI 集成 ==========
 
     /**

@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @param <S>      Service
  * @param <Id>     主键
  * @param <Entity> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月06日11:06:46
  */
 public abstract class SuperWriteController<S extends SuperService<Id, Entity>, Id extends Serializable, Entity extends SuperEntity<Id>, SaveVO, UpdateVO>

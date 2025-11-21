@@ -28,7 +28,7 @@ import static com.luohuo.basic.utils.StrPool.UNDERSCORE;
 /**
  * Wrappers 工具类， 该方法的主要目的是为了 缩短代码长度
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/06/14
  */
 public final class Wraps {
@@ -170,7 +170,7 @@ public final class Wraps {
      * @param extra      extra 扩展参数
      * @param modelClazz modelClazz 条件对象类型
      * @return com.luohuo.basic.database.mybatis.conditions.query.QueryWrap<Entity>
-     * @author zuihou
+     * @author 乾乾
      * @date 2021/8/26 8:47 下午
      * @create [2021/8/26 8:47 下午 ] [tangyh] [初始创建]
      */

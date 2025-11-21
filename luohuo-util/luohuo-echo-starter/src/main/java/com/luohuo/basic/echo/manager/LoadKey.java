@@ -11,7 +11,7 @@ import com.luohuo.basic.annotation.echo.Echo;
  * <p>
  * 必须重写该类的 equals() 和 hashCode() 便于Map操作
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年02月03日18:48:29
  */
 @Data

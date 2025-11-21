@@ -10,7 +10,7 @@ import com.luohuo.flex.file.vo.result.FileResultVO;
 /**
  * 熔断
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/25
  */
 @Component

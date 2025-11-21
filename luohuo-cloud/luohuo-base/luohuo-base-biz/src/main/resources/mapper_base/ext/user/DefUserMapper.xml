@@ -11,8 +11,8 @@
         u
         .
         id
-        ,u.create_by,u.create_time,u.update_by,u.update_time, u.nation, u.education,
-        u.username, u.nick_name, u.email, u.mobile, u.id_card, u.wx_open_id, u.dd_open_id, u.readonly, u.sex, u.state, u.work_describe,
+        ,u.create_by,u.create_time,u.update_by,u.update_time,
+        u.username, u.nick_name, u.email, u.mobile, u.id_card, u.sex, u.state, u.work_describe,
         u.last_login_time
     </sql>
 

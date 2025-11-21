@@ -7,7 +7,7 @@ package com.luohuo.flex.model.constant;
  * <p>
  * 本类中的 @luohuo.generator auto insert 请勿删除
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/26
  */
 public interface EchoDictType {

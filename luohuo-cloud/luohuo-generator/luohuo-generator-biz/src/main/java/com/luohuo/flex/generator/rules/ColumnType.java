@@ -3,7 +3,7 @@ package com.luohuo.flex.generator.rules;
 /**
  * 获取实体类字段属性类信息接口
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022/3/13 23:00
  */
 public interface ColumnType {

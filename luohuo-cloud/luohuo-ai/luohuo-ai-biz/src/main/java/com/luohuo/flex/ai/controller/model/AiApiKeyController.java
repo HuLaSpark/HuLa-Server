@@ -5,7 +5,7 @@ import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyBalanceRespVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeyRespVO;
 import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySaveReqVO;
-import com.luohuo.flex.ai.controller.model.vo.model.AiModelRespVO;
+import com.luohuo.flex.ai.controller.model.vo.apikey.AiApiKeySimpleRespVO;
 import com.luohuo.flex.ai.dal.model.AiApiKeyDO;
 import com.luohuo.flex.ai.service.model.AiApiKeyService;
 import com.luohuo.flex.ai.utils.BeanUtils;
@@ -72,9 +72,50 @@ public class AiApiKeyController {
 
     @GetMapping("/simple-list")
     @Operation(summary = "获得 API 密钥简单列表（包含系统公开密钥和用户私有密钥）")
-    public R<List<AiModelRespVO>> getApiKeySimpleList() {
+    public R<List<AiApiKeySimpleRespVO>> getApiKeySimpleList() {
         List<AiApiKeyDO> list = apiKeyService.getApiKeyList(ContextUtil.getUid());
-        return success(convertList(list, key -> new AiModelRespVO().setId(key.getId()).setName(key.getName()).setPlatform(key.getPlatform())));
+        return success(convertList(list, key -> {
+            AiApiKeySimpleRespVO vo = new AiApiKeySimpleRespVO();
+            vo.setId(key.getId());
+            vo.setName(key.getName());
+            vo.setPlatform(key.getPlatform());
+            return vo;
+        }));
+    }
+
+    @GetMapping("/admin/all-list")
+    @Operation(summary = "获得所有 API 密钥列表（后台管理专用）")
+    public R<List<AiApiKeySimpleRespVO>> getAllApiKeyList() {
+        List<AiApiKeyDO> list = apiKeyService.getAllApiKeyList();
+        return success(convertList(list, key -> {
+            AiApiKeySimpleRespVO vo = new AiApiKeySimpleRespVO();
+            vo.setId(key.getId());
+            vo.setName(key.getName());
+            vo.setPlatform(key.getPlatform());
+            return vo;
+        }));
+    }
+
+    @GetMapping("/admin/page")
+    @Operation(summary = "获得所有 API 密钥分页（后台管理专用）")
+    public R<PageResult<AiApiKeyRespVO>> getAdminApiKeyPage(@Valid AiApiKeyPageReqVO pageReqVO) {
+        PageResult<AiApiKeyDO> pageResult = apiKeyService.getAdminApiKeyPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, AiApiKeyRespVO.class));
+    }
+
+    @PutMapping("/admin/update")
+    @Operation(summary = "管理员更新 API 密钥")
+    public R<Boolean> updateApiKeyAdmin(@Valid @RequestBody AiApiKeySaveReqVO updateReqVO) {
+        apiKeyService.updateApiKeyAdmin(updateReqVO);
+        return success(true);
+    }
+
+    @DeleteMapping("/admin/delete")
+    @Operation(summary = "管理员删除 API 密钥")
+    @Parameter(name = "id", description = "编号", required = true)
+    public R<Boolean> deleteApiKeyAdmin(@RequestParam("id") String id) {
+        apiKeyService.deleteApiKeyAdmin(Long.parseLong(id));
+        return success(true);
     }
 
     @GetMapping("/balance")

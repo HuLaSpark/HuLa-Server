@@ -13,7 +13,7 @@ import java.util.List;
  * 员工
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-27
  */
 public interface DefUserTenantRelService extends SuperCacheService<Long, DefUserTenantRel> {

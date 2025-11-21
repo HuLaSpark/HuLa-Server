@@ -78,10 +78,7 @@ public class DefTenantManagerImpl extends SuperCacheManagerImpl<DefTenantMapper,
                 .collect(Collectors.toList());
 
         // 3. 查询租户信息
-        List<DefTenant> tenantList = baseMapper.selectList(
-                Wrappers.<DefTenant>lambdaQuery()
-                        .in(DefTenant::getId, tenantIds)
-        );
+        List<DefTenant> tenantList = baseMapper.selectByIds(tenantIds);
 
         // 4. 转换为 VO 并填充员工信息
         Map<Long, DefUserTenantRel> relMap = userTenantRelList.stream()

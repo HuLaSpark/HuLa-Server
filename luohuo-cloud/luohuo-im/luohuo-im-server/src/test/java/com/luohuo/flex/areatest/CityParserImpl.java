@@ -26,7 +26,7 @@ import static com.luohuo.flex.common.constant.DefValConstants.TREE_PATH_SPLIT;
 /**
  * 将国家统计局的数据封装成list
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年05月08日15:09:15
  */
 @Component

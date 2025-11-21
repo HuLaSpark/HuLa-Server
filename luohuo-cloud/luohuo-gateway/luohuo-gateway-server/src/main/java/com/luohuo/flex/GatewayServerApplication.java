@@ -14,7 +14,7 @@ import static com.luohuo.flex.common.constant.BizConstant.BUSINESS_PACKAGE;
 import static com.luohuo.flex.common.constant.BizConstant.UTIL_PACKAGE;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2017-12-13 15:02
  */
 @SpringBootApplication(exclude = {

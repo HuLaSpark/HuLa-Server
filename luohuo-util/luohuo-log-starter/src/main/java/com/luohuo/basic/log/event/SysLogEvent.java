@@ -7,7 +7,7 @@ import com.luohuo.basic.model.log.OptLogDTO;
 /**
  * 系统日志事件
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-01 15:13
  */
 public class SysLogEvent extends ApplicationEvent {

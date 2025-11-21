@@ -5,7 +5,7 @@ import com.luohuo.flex.datascope.model.DataFieldProperty;
 import java.util.List;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/1/9 23:28
  */
 public interface DataScopeProvider {

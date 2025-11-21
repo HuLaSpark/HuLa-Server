@@ -38,7 +38,7 @@ import java.util.TimeZone;
 /**
  * 基础配置类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-06-22 22:53
  */
 @AutoConfigureBefore(JacksonAutoConfiguration.class)

@@ -16,7 +16,7 @@ import com.luohuo.flex.base.vo.save.system.DefLoginLogSaveVO;
 /**
  * 登录事件监听，用于记录登录日志
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月18日17:39:59
  */
 @Component

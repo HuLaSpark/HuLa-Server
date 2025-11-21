@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
  * 一般来说都是在nginx统一配置路径转发就好了。本地调试时可能就需要稍微注意下了，要么本地也装个nginx和线上环境保持一致，
  * 要么就做差异化配置，还有种方法，通过WebFilter的方式做一层ContextPath的转发，不过有一定风险，不推荐使用。
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/31
  */
 @Component

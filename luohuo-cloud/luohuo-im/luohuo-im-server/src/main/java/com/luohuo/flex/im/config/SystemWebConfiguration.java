@@ -8,7 +8,7 @@ import com.luohuo.basic.log.event.SysLogListener;
 import com.luohuo.flex.oauth.facade.LogFacade;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2017-12-15 14:42
  */
 @Configuration

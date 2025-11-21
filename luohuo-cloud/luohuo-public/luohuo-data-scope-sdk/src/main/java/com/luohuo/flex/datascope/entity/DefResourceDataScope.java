@@ -20,7 +20,7 @@ import static com.luohuo.flex.model.constant.Condition.LIKE;
  * 数据权限
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2022-01-10
  */
 @Data

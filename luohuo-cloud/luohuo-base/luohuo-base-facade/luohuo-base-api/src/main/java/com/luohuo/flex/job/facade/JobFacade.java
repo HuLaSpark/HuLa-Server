@@ -4,7 +4,7 @@ import com.luohuo.basic.base.R;
 import com.luohuo.flex.job.dto.XxlJobInfoVO;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @since 2024年09月21日00:15:26
  */
 public interface JobFacade {

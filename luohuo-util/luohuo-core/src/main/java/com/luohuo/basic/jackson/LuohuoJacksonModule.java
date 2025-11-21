@@ -23,7 +23,7 @@ import static com.luohuo.basic.utils.DateUtils.DEFAULT_TIME_FORMAT;
 /**
  * jackson 自定义序列化 and 反序列化 规则
  *
- * @author zuihou
+ * @author 乾乾
  */
 public class LuohuoJacksonModule extends SimpleModule {
 

@@ -45,17 +45,18 @@ import com.luohuo.flex.im.domain.vo.req.friend.FriendReq;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendCheckResp;
 import com.luohuo.flex.im.domain.vo.resp.friend.FriendResp;
 import com.luohuo.flex.im.core.user.service.FriendService;
-import com.luohuo.flex.im.core.user.service.adapter.FriendAdapter;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @author nyh
+ * @author 乾乾
  */
 @Slf4j
 @Service
@@ -230,7 +231,32 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 
 		List<Long> friendUids = friendPage.getList().stream().map(UserFriend::getFriendUid).collect(Collectors.toList());
 		Set<Long> onlineList = onlineService.getOnlineUsersList(friendUids);
-		return CursorPageBaseResp.init(friendPage, FriendAdapter.buildFriend(friendPage.getList(), onlineList), 0L);
+
+		// 批量获取好友的用户信息
+		List<User> friendUsers = userDao.listByIds(friendUids);
+		Map<Long, User> userMap = friendUsers.stream().collect(Collectors.toMap(User::getId, Function.identity()));
+
+		// 构建好友响应列表，填充用户信息
+		List<FriendResp> friendRespList = friendPage.getList().stream().map(userFriend -> {
+			FriendResp resp = new FriendResp();
+			resp.setUid(userFriend.getFriendUid());
+			resp.setRemark(userFriend.getRemark());
+			resp.setHideMyPosts(userFriend.getHideMyPosts());
+			resp.setHideTheirPosts(userFriend.getHideTheirPosts());
+			resp.setActiveStatus(onlineList.contains(userFriend.getFriendUid()) ? 1 : 2);
+
+			// 填充用户信息
+			User friendUser = userMap.get(userFriend.getFriendUid());
+			if (friendUser != null) {
+				resp.setName(friendUser.getName());
+				resp.setAccount(friendUser.getAccount());
+				resp.setAvatar(friendUser.getAvatar());
+			}
+
+			return resp;
+		}).collect(Collectors.toList());
+
+		return CursorPageBaseResp.init(friendPage, friendRespList, 0L);
     }
 
 	public void createFriend(Long roomId, Long uid, Long targetUid) {

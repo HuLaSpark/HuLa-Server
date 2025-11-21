@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * RestTemplate 相关的配置
  *
- * @author zuihou
+ * @author 乾乾
  */
 @ConditionalOnClass(okhttp3.OkHttpClient.class)
 @AllArgsConstructor

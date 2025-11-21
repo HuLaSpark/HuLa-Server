@@ -22,7 +22,7 @@ import com.luohuo.basic.log.properties.OptLogProperties;
  * 1，存在web环境
  * 2，配置文件中luohuo.log.enabled=true 或者 配置文件中不存在：luohuo.log.enabled 值
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/2/1
  */
 @EnableAsync

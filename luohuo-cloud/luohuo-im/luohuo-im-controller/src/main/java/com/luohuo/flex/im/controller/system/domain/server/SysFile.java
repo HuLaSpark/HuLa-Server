@@ -3,7 +3,7 @@ package com.luohuo.flex.im.controller.system.domain.server;
 /**
  * 系统文件相关信息
  *
- * @author zuihou
+ * @author 乾乾
  */
 public class SysFile {
     /**

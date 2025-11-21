@@ -16,7 +16,7 @@ import static com.luohuo.flex.common.constant.BizConstant.UTIL_PACKAGE;
 /**
  * 认证服务 启动类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月23日16:24:37
  */
 @SpringBootApplication

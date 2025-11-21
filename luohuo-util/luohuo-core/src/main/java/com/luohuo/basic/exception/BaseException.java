@@ -3,7 +3,7 @@ package com.luohuo.basic.exception;
 /**
  * 异常接口类
  *
- * @author zuihou
+ * @author 乾乾
  * @version 1.0
  */
 public interface BaseException {

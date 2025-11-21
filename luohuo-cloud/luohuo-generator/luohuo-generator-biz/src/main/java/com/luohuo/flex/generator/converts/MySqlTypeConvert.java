@@ -18,7 +18,7 @@ import static com.luohuo.flex.generator.rules.DbColumnType.LONG;
 import static com.luohuo.flex.generator.rules.DbColumnType.STRING;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/3/13 23:02
  */
 public class MySqlTypeConvert implements ITypeConvert {

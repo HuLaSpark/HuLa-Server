@@ -13,7 +13,7 @@ import java.util.List;
  * 员工所在部门
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-18
  */
 public interface BaseEmployeeOrgRelManager extends SuperManager<BaseEmployeeOrgRel> {

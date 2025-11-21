@@ -48,7 +48,7 @@ import static com.luohuo.flex.oauth.granter.PasswordTokenGranter.GRANT_TYPE;
  * 账号密码登录获取token
  *
  * @author Dave Syer
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月31日10:22:55
  */
 @Component(GRANT_TYPE)

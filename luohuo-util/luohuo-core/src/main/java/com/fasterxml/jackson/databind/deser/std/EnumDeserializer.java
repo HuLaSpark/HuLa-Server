@@ -44,7 +44,7 @@ import java.util.Optional;
  * 本类跟jackson-databind包中的EnumDeserializer类同包名，利用类加载机制，会加载此类，不会加载到jackson-databind中的类
  * 参考 BasicDeserializerFactory#1495 行代码
  *
- * @author zuihou
+ * @author 乾乾
  * @version 3.2.1
  */
 @SuppressWarnings("ALL")

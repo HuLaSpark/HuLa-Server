@@ -21,7 +21,7 @@ import static com.luohuo.basic.exception.code.ResponseEnum.SERVICE_MAPPER_ERROR;
  *
  * @param <M> Mapper
  * @param <T> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年02月27日18:15:17
  */
 public class SuperManagerImpl<M extends SuperMapper<T>, T> extends ServiceImpl<M, T> implements SuperManager<T> {

@@ -3,7 +3,7 @@ package com.luohuo.flex.generator.type;
 import com.luohuo.basic.base.entity.TreeEntity;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/3/13 21:46
  */
 public class GenConstants {

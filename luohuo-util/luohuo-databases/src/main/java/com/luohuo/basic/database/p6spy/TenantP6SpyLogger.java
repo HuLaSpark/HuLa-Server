@@ -10,7 +10,7 @@ import com.luohuo.basic.context.ContextUtil;
 /**
  * 用于 p6spy 在输出的sql日志中，打印当前租户、当前用户ID、当前数据源连接url
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/3 3:39 下午
  */
 public class TenantP6SpyLogger implements MessageFormattingStrategy {

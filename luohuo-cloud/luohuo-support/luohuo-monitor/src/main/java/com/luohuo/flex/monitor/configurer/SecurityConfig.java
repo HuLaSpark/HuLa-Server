@@ -10,7 +10,7 @@
 ///**
 // * 配置HTTP BASIC权限验证
 // *
-// * @author zuihou
+// * @author 乾乾
 // * @date 2018-01-04 16:03
 // */
 //@Configuration

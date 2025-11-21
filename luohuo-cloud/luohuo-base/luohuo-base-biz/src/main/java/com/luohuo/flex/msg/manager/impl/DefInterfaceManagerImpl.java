@@ -15,7 +15,7 @@ import com.luohuo.flex.msg.mapper.DefInterfaceMapper;
  * 接口
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-07-04 16:45:45
  * @create [2022-07-04 16:45:45] [zuihou] [代码生成器生成]
  */

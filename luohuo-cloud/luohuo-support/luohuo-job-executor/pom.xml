@@ -6,7 +6,7 @@
     <parent>
         <artifactId>luohuo-support</artifactId>
         <groupId>com.luohuo.flex</groupId>
-        <version>3.0.0</version>
+        <version>3.0.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>luohuo-job-executor</artifactId>

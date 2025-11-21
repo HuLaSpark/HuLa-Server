@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.luohuo.basic.context.ContextUtil;
+import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.video.vo.AiVideoGenerateReqVO;
 import com.luohuo.flex.ai.controller.video.vo.AiVideoPageReqVO;
@@ -26,12 +27,16 @@ import com.luohuo.flex.ai.utils.BeanUtils;
 import com.luohuo.flex.common.constant.DefValConstants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.VIDEO_NOT_EXISTS;
 import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
@@ -51,6 +56,13 @@ public class AiVideoServiceImpl implements AiVideoService {
 
 	@Resource
 	private AiChatMessageService chatMessageService;
+
+    @Resource(name = "videoTaskScheduler")
+    private TaskScheduler videoTaskScheduler;
+
+    private final ConcurrentHashMap<Long, ScheduledFuture<?>> videoPollers = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<Long, AtomicInteger> videoAttempts = new ConcurrentHashMap<>();
 
 	@Override
 	public PageResult<AiVideoDO> getVideoPageMy(Long userId, AiVideoPageReqVO pageReqVO) {
@@ -84,12 +96,11 @@ public class AiVideoServiceImpl implements AiVideoService {
 				.setPublicStatus(false).setStatus(AiVideoStatusEnum.IN_PROGRESS.getStatus());
 		videoMapper.insert(video);
 
-		// 4. 异步生成视频
 		executeGenerateVideo(video, generateReqVO, model);
 		return video.getId();
 	}
 
-	@Async
+	@Async("videoTaskExecutor")
 	public void executeGenerateVideo(AiVideoDO video, AiVideoGenerateReqVO reqVO, AiModelDO model) {
 		try {
 			VideoOptions options = buildVideoOptions(reqVO, model);
@@ -97,34 +108,9 @@ public class AiVideoServiceImpl implements AiVideoService {
 			VideoModel videoModel = modelService.getVideoModel(model.getId());
 
 			String requestId = videoModel.submitVideo(reqVO.getPrompt(), options);
-			log.info("[executeGenerateVideo][video({}) 提交成功，BB5THJNZWU6IJCOZO7IFWLHCYFS2WI19 requestId: {}]", video.getId(), requestId);
-
 			videoMapper.updateById(new AiVideoDO().setId(video.getId()).setTaskId(requestId));
-
-			// 5. 轮询获取视频生成结果
-			// - Gitee AI 支持轮询方式（通过 urls.get 链接查询），也支持回调方式（需要配置回调 URL）
-			// - 硅基流动平台(可能其他平台也有类似问题)
-			//   问题1: 生成过程中 - status=InProgress，获取succeed
-			//   问题2: 刚生成完成 - status=Succeed但videos=null，需要等待一段时间才能获取videos数据
-			String videoUrl = videoModel.pollVideoResult(requestId, 120, 10000);
-			log.info("[executeGenerateVideo][video({}) 生成成功，videoUrl: {}]", video.getId(), videoUrl);
-
-			// 6. 更新视频记录
-			videoMapper.updateById(new AiVideoDO().setId(video.getId())
-					.setStatus(AiVideoStatusEnum.SUCCESS.getStatus())
-					.setVideoUrl(videoUrl)
-					// TODO: 生成视频
-//					.setCoverUrl(generateCoverFromVideo(videoUrl))
-					.setFinishTime(LocalDateTime.now()));
-
-			// 7. 如果有会话，创建对话消息
-			try {
-				createChatMessage(video, videoUrl);
-			} catch (Exception e) {
-				log.error("[executeGenerateVideo] 如果有会话，创建对话消息失败，videoId={}", video.getId(), e);
-			}
-
-			log.info("[executeGenerateVideo][video({}) 生成完成]", video.getId());
+			video.setTaskId(requestId);
+			startPolling(video);
 		} catch (Exception ex) {
 			log.error("[executeGenerateVideo][video({}) 生成失败]", video, ex);
 			videoMapper.updateById(new AiVideoDO().setId(video.getId())
@@ -226,15 +212,15 @@ public class AiVideoServiceImpl implements AiVideoService {
 	}
 
 	@Override
+	@Async
 	public Long recoverIncompleteVideos() {
 		ContextUtil.setTenantId(DefValConstants.DEF_TENANT_ID);
-		List<AiVideoDO> incompleteVideos = videoMapper.selectListByStatusWithTaskId(
-				AiVideoStatusEnum.IN_PROGRESS.getStatus());
+		List<AiVideoDO> incompleteVideos = videoMapper.selectListByStatusWithTaskId(AiVideoStatusEnum.IN_PROGRESS.getStatus());
 
 		// 遍历所有未完成的视频，尝试恢复
 		for (AiVideoDO video : incompleteVideos) {
 			try {
-				recoverVideo(video.getId());
+				SpringUtils.getBean(AiVideoService.class).recoverVideo(video.getId());
 			} catch (Exception ex) {
 			}
 		}
@@ -243,7 +229,7 @@ public class AiVideoServiceImpl implements AiVideoService {
 	}
 
 	@Override
-	@Async
+	@Async("videoTaskExecutor")
 	public void recoverVideo(Long videoId) {
 		try {
 			AiVideoDO video = videoMapper.selectById(videoId);
@@ -251,28 +237,7 @@ public class AiVideoServiceImpl implements AiVideoService {
 				log.warn("[recoverVideo] 视频 {} 不存在或没有 taskId", videoId);
 				return;
 			}
-
-			log.info("[recoverVideo][video({}) 开始恢复，taskId: {}]", videoId, video.getTaskId());
-
-			VideoModel videoModel = modelService.getVideoModel(video.getModelId());
-
-			// 轮询获取结果(最多轮询120次，每次间隔10秒，总共120*10=1200秒=20分钟)
-			String videoUrl = videoModel.pollVideoResult(video.getTaskId(), 120, 10000);
-
-			// 更新视频记录
-			videoMapper.updateById(new AiVideoDO().setId(videoId)
-					.setStatus(AiVideoStatusEnum.SUCCESS.getStatus())
-					.setVideoUrl(videoUrl)
-					.setFinishTime(LocalDateTime.now()));
-
-			// 如果有会话，创建对话消息
-			try {
-				createChatMessage(video, videoUrl);
-			} catch (Exception e) {
-				log.error("[recoverVideo] 创建对话消息失败，videoId={}", videoId, e);
-			}
-
-			log.info("[recoverVideo][video({}) 恢复成功，videoUrl: {}]", videoId, videoUrl);
+			startPolling(video);
 		} catch (Exception ex) {
 			log.error("[recoverVideo][video({}) 恢复失败]", videoId, ex);
 			videoMapper.updateById(new AiVideoDO().setId(videoId)
@@ -280,6 +245,59 @@ public class AiVideoServiceImpl implements AiVideoService {
 					.setErrorMessage(ex.getMessage())
 					.setFinishTime(LocalDateTime.now()));
 		}
+	}
+
+	private void startPolling(AiVideoDO video) {
+		ScheduledFuture<?> future = videoTaskScheduler.scheduleAtFixedRate(() -> {
+			try {
+				AtomicInteger counter = videoAttempts.computeIfAbsent(video.getId(), k -> new AtomicInteger(0));
+				int c = counter.incrementAndGet();
+				VideoModel videoModel = modelService.getVideoModel(video.getModelId());
+				VideoModel.VideoStatusResponse status = videoModel.getVideoStatus(video.getTaskId());
+				List<String> urls = status.getVideoUrls();
+				if (urls != null && !urls.isEmpty()) {
+					String url = urls.get(0);
+					videoMapper.updateById(new AiVideoDO().setId(video.getId())
+							.setStatus(AiVideoStatusEnum.SUCCESS.getStatus())
+							.setVideoUrl(url)
+							.setFinishTime(LocalDateTime.now()));
+					try {
+						createChatMessage(video, url);
+					} catch (Exception ignored) {}
+					ScheduledFuture<?> f = videoPollers.get(video.getId());
+					if (f != null) f.cancel(false);
+					videoPollers.remove(video.getId());
+					videoAttempts.remove(video.getId());
+				} else {
+					String s = status.getStatus();
+					if (s != null) {
+						String sl = s.toLowerCase();
+						if (sl.contains("fail") || sl.contains("error") || sl.contains("cancel")) {
+							videoMapper.updateById(new AiVideoDO().setId(video.getId())
+									.setStatus(AiVideoStatusEnum.FAIL.getStatus())
+									.setErrorMessage(status.getMessage())
+									.setFinishTime(LocalDateTime.now()));
+							ScheduledFuture<?> f = videoPollers.get(video.getId());
+							if (f != null) f.cancel(false);
+							videoPollers.remove(video.getId());
+							videoAttempts.remove(video.getId());
+							return;
+						}
+					}
+					if (c >= 120) {
+						videoMapper.updateById(new AiVideoDO().setId(video.getId())
+								.setStatus(AiVideoStatusEnum.FAIL.getStatus())
+								.setErrorMessage("timeout")
+								.setFinishTime(LocalDateTime.now()));
+						ScheduledFuture<?> f = videoPollers.get(video.getId());
+						if (f != null) f.cancel(false);
+						videoPollers.remove(video.getId());
+						videoAttempts.remove(video.getId());
+					}
+				}
+			} catch (Exception ignored) {}
+		}, 10000);
+		videoPollers.put(video.getId(), future);
 	}
 
 	/**

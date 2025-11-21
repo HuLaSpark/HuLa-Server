@@ -12,7 +12,7 @@ import java.util.List;
  * key定时方式为entity_field
  * value定义方式为： 系统简称-entity-field
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018/12/11
  */
 public final class AppendixType {
@@ -54,7 +54,7 @@ public final class AppendixType {
     /**
      * 权限管理系统中有关的的附件类型定义
      *
-     * @author zuihou
+     * @author 乾乾
      */
 
     public interface Base {

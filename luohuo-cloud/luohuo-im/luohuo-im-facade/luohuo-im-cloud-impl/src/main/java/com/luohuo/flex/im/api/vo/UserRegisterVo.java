@@ -13,7 +13,6 @@ public class UserRegisterVo {
     private String name;
     private String avatar;
     private Integer sex;
-    private String openId;
 
     private Long userStateId;
 	private Long tenantId;

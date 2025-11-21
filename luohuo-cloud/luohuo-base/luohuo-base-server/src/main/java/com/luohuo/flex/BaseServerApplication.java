@@ -18,7 +18,7 @@ import static com.luohuo.flex.common.constant.BizConstant.UTIL_PACKAGE;
 /**
  * 基础服务启动类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-08
  */
 @SpringBootApplication

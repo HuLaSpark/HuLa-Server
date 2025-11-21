@@ -22,7 +22,7 @@ import java.io.Serializable;
  *
  * @param <Entity>    实体
  * @param <PageQuery> 分页参数
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月07日22:06:35
  */
 public interface PageController<Id extends Serializable, Entity extends SuperEntity<Id>, PageQuery, ResultVO>

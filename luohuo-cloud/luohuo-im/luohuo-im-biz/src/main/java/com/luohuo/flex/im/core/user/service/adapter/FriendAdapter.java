@@ -17,7 +17,7 @@ import static com.luohuo.flex.im.domain.enums.NoticeStatusEnum.UNTREATED;
 
 /**
  * 好友适配器
- * @author nyh
+ * @author 乾乾
  */
 public class FriendAdapter {
 

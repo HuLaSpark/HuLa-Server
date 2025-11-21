@@ -7,7 +7,7 @@ import org.apache.ibatis.type.Alias;
 /**
  * 仅仅用于like查询
  *
- * @author zuihou
+ * @author 乾乾
  */
 @Alias("rightLike")
 public class RightLikeTypeHandler extends BaseLikeTypeHandler {

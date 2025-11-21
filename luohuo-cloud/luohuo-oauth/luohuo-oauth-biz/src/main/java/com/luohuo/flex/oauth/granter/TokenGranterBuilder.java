@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * TokenGranterBuilder
  * 采用策略模式，根据不同的登录策略，实现登录
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月31日10:27:24
  */
 @Component

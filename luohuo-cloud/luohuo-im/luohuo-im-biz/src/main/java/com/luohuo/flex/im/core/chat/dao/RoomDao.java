@@ -31,4 +31,8 @@ public class RoomDao extends ServiceImpl<RoomMapper, Room> implements IService<R
     public List<MemberResp> groupList(Long uid) {
        	return baseMapper.groupList(uid);
     }
+
+    public List<MemberResp> getAllGroupList() {
+        return baseMapper.getAllGroupList();
+    }
 }

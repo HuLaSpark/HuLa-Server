@@ -14,7 +14,7 @@ import com.luohuo.basic.cloud.feign.SentinelFeignBuilder;
 /**
  * 使用 Sentinel 时的特殊配置
  *
- * @author zuihou
+ * @author 乾乾
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(SentinelFeignAutoConfiguration.class)

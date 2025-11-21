@@ -9,7 +9,7 @@ import com.luohuo.flex.msg.strategy.domain.BaseProperty;
 /**
  * https://help.aliyun.com/document_detail/419273.htm?spm=a2c4g.11186623.0.0.3437bb6eTMh5Il
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022/7/10 0010 18:56
  */
 @Data

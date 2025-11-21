@@ -24,7 +24,7 @@ import com.luohuo.flex.base.vo.save.system.BaseOperationLogSaveVO;
  * 系统日志
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-22
  */
 @Slf4j

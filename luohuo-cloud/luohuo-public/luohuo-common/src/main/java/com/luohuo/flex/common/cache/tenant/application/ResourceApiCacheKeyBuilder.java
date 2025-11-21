@@ -15,7 +15,7 @@ import java.time.Duration;
  * <p>
  * #def_resource
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/20 6:45 下午
  */
 public class ResourceApiCacheKeyBuilder implements CacheKeyBuilder {

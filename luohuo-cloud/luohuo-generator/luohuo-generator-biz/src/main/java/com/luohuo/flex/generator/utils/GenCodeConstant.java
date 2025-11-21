@@ -7,7 +7,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/3/1 16:59
  */
 public interface GenCodeConstant {

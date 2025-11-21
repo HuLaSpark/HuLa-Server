@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * yyyy/MM/dd HH:mm:ss
  * yyyy年MM月dd日HH时mm分ss秒
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-04-30
  */
 public class String2LocalDateTimeConverter implements Converter<String, LocalDateTime> {

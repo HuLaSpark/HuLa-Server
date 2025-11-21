@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * feign client 拦截器， 实现将 feign 调用方的 请求头封装到 被调用方的请求头
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-25 11:23
  */
 @Slf4j

@@ -8,7 +8,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import com.luohuo.basic.constant.Constants;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2021/1/28 7:57 下午
  */
 

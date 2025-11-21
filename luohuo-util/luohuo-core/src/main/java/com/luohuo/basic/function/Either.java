@@ -10,7 +10,7 @@ import java.util.function.Function;
  * https://mp.weixin.qq.com/s/jBXYj-w0woXtPPUxGhD8Ug
  *
  * @author IT牧场
- * @author zuihou
+ * @author 乾乾
  * @date 2019/05/15
  */
 public final class Either<L, R> {

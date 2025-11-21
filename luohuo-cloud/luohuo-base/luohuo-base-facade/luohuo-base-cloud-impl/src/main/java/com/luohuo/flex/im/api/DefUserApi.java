@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * 用户
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/02
  */
 @FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:luohuo-base-server}", fallback = DefUserApiFallback.class)

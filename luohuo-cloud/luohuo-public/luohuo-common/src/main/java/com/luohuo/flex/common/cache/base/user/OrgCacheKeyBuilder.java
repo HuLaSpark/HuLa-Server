@@ -15,7 +15,7 @@ import java.time.Duration;
  * [服务模块名:]业务类型[:业务字段][:value类型][:组织id] -> obj
  * base:base_org:id:obj:1 -> {}
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/20 6:45 下午
  */
 public class OrgCacheKeyBuilder implements CacheKeyBuilder {

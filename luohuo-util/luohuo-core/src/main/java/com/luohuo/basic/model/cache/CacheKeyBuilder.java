@@ -43,7 +43,7 @@ import java.util.ArrayList;
  * tenant:id:1:obj => {"id:":1, "name:"租户1"}
  * 表示：租户表(tenant)的租户id(id)为 1 的数据，存储(obj)类型的值 (** {"id:":1, "name:"租户1"}**)
  *
- * @author zuihou
+ * @author 乾乾
  */
 @FunctionalInterface
 public interface CacheKeyBuilder {

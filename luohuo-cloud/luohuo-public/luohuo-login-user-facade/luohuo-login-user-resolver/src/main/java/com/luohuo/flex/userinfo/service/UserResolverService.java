@@ -5,7 +5,7 @@ import com.luohuo.flex.model.entity.system.SysUser;
 import com.luohuo.flex.model.vo.result.UserQuery;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2020年02月24日10:41:49
  */
 public interface UserResolverService {

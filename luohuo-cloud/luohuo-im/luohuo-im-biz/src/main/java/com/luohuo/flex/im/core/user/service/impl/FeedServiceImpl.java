@@ -12,7 +12,8 @@ import com.luohuo.flex.common.cache.common.FeedLikeCacheKeyBuilder;
 import com.luohuo.flex.common.cache.common.FeedMediaRelCacheKeyBuilder;
 import com.luohuo.flex.common.cache.common.FeedTargetRelCacheKeyBuilder;
 import com.luohuo.flex.im.domain.entity.FeedLike;
-import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
+import cn.hutool.core.util.StrUtil;
+import com.luohuo.flex.im.domain.vo.req.feed.FeedPageReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
 import com.luohuo.flex.im.core.chat.service.adapter.MemberAdapter;
 import com.luohuo.flex.im.core.user.dao.FeedCommentDao;
@@ -160,52 +161,48 @@ public class FeedServiceImpl implements FeedService {
 		return feedVos;
 	}
 
-	/**
-	 * 游标刷新朋友圈列表
-	 * @param request
-	 * @param uid
-	 */
 	@Override
-	public CursorPageBaseResp<FeedVo> getFeedPage(CursorPageBaseReq request, Long uid) {
-		// 1. 查询当前用户的所有好友ID
+	public CursorPageBaseResp<FeedVo> getFeedPage(FeedPageReq request, Long uid) {
 		List<Long> friendIds = userFriendDao.getAllFriendIdsByUid(uid);
-		friendIds.add(uid); // 添加自己
+		friendIds.add(uid);
 
-		// 2. 查询这些用户的朋友圈列表
 		CursorPageBaseResp<Feed> page = feedDao.getFeedPage(friendIds, request);
 
-		// 3. 根据权限过滤朋友圈
 		List<Feed> filteredFeeds = page.getList().stream().filter(feed -> {
-			// 如果是自己的朋友圈，全部可见
 			if (feed.getUid().equals(uid)) {
 				return true;
 			}
 
-			// 根据权限类型过滤
 			FeedPermissionEnum permission = FeedPermissionEnum.get(feed.getPermission());
 			switch (permission) {
 				case privacy:
-					// 私密：只有发布者自己可见
 					return false;
 				case open:
-					// 公开：所有好友可见
 					return true;
 				case partVisible:
-					// 部分可见：查询是否在可见列表中
 					List<FeedTarget> targets = feedTargetDao.selectFeedTargets(feed.getId());
-					// type=2 表示用户，targetId 就是用户ID
 					return targets.stream().anyMatch(t -> t.getType() == 2 && t.getTargetId().equals(uid));
 				case notAnyone:
-					// 不给谁看：查询是否在不可见列表中
 					List<FeedTarget> excludes = feedTargetDao.selectFeedTargets(feed.getId());
-					// type=2 表示用户，targetId 就是用户ID
 					return excludes.stream().noneMatch(t -> t.getType() == 2 && t.getTargetId().equals(uid));
 				default:
 					return false;
 			}
 		}).collect(Collectors.toList());
 
-		// 4. 合并朋友圈内容
+		if (StrUtil.isNotBlank(request.getUserName())) {
+			String keyword = request.getUserName().trim();
+			Map<Long, SummeryInfoDTO> userInfoMap = userSummaryCache.getBatch(
+				filteredFeeds.stream().map(Feed::getUid).distinct().collect(Collectors.toList())
+			);
+			filteredFeeds = filteredFeeds.stream()
+				.filter(feed -> {
+					SummeryInfoDTO userInfo = userInfoMap.get(feed.getUid());
+					return userInfo != null && StrUtil.contains(userInfo.getName(), keyword);
+				})
+				.collect(Collectors.toList());
+		}
+
 		List<FeedVo> result = buildFeedResp(filteredFeeds, uid);
 		return CursorPageBaseResp.init(page, result, page.getTotal());
 	}

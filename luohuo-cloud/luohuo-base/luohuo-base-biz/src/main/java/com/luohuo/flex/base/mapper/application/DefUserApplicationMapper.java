@@ -11,7 +11,7 @@ import com.luohuo.flex.base.entity.application.DefUserApplication;
  * 用户的默认应用
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-03-06
  */
 @Repository

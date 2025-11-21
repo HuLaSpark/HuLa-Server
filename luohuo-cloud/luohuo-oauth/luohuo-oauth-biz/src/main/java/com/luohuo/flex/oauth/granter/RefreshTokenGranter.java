@@ -46,7 +46,7 @@ import static com.luohuo.basic.context.ContextConstants.*;
  * RefreshTokenGranter
  *
  * @author Dave Syer
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月31日10:23:53
  */
 @Component

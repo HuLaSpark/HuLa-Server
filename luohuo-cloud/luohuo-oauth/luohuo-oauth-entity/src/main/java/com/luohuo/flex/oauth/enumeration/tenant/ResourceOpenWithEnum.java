@@ -10,7 +10,7 @@ import com.luohuo.basic.interfaces.BaseEnum;
  * 资源 打开方式
  * [01-组件 02-内链 03-外链]
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021/3/12 21:20
  */
 @Getter

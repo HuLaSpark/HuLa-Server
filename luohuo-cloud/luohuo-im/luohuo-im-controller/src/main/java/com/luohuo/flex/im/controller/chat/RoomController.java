@@ -3,7 +3,13 @@ package com.luohuo.flex.im.controller.chat;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luohuo.flex.im.domain.vo.req.IdReqVO;
+import com.luohuo.flex.im.domain.vo.req.room.DisbandGroupReq;
+import com.luohuo.flex.im.domain.vo.req.room.GroupMemberPageReq;
+import com.luohuo.flex.im.domain.vo.req.room.GroupPageReq;
+import com.luohuo.flex.im.domain.vo.req.room.UpdateMemberNicknameReq;
 import com.luohuo.flex.im.domain.vo.res.IdRespVO;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
+import com.luohuo.flex.im.domain.vo.resp.room.GroupMemberSimpleResp;
 import com.luohuo.flex.im.domain.vo.response.GroupResp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -192,4 +198,37 @@ public class RoomController {
 		roomService.mergeMessage(ContextUtil.getUid(), req);
 		return R.success();
 	}
+
+	@PostMapping("/group/member/nickname")
+	@Operation(summary ="修改群成员昵称（后台专用）")
+	public R<Void> updateMemberNickname(@Valid @RequestBody UpdateMemberNicknameReq request) {
+		roomService.updateMemberNickname(request);
+		return R.success();
+	}
+
+	@PostMapping("/group/disband")
+	@Operation(summary ="解散群聊（后台专用）")
+	public R<Void> disbandGroup(@Valid @RequestBody DisbandGroupReq request) {
+		roomService.disbandGroup(request);
+		return R.success();
+	}
+
+	@Operation(summary = "所有群聊列表（后台管理专用）")
+	@GetMapping("/group/all")
+	public R<List<MemberResp>> getAllGroupList(){
+		return R.success(roomService.getAllGroupList());
+	}
+
+	@Operation(summary = "分页查询所有群聊列表（管理员专用，支持按群昵称和群成员昵称搜索）")
+	@GetMapping("/group/page")
+	public R<PageBaseResp<MemberResp>> getGroupPage(@Valid GroupPageReq req){
+		return R.success(roomService.getGroupPage(req));
+	}
+
+	@GetMapping("/group/member/page")
+	@Operation(summary ="群成员分页列表（简化版）")
+	public R<PageBaseResp<GroupMemberSimpleResp>> getGroupMemberPage(@Valid GroupMemberPageReq request) {
+		return R.success(roomService.getGroupMemberPage(request));
+	}
+
 }

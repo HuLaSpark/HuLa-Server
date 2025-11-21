@@ -9,7 +9,7 @@ import com.luohuo.basic.interfaces.BaseEnum;
 /**
  * 资源类型
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021/3/12 21:20
  */
 @Getter

@@ -32,7 +32,7 @@ import java.util.function.Function;
  * 角色
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-18
  * @create [2021-10-18] [zuihou] [代码生成器生成]
  */
@@ -72,7 +72,6 @@ public class BaseRoleManagerImpl extends SuperCacheManagerImpl<BaseRoleMapper, B
      */
     @Override
     public List<Long> findResourceIdByEmployeeId(Long applicationId, Long employeeId) {
-
         List<BaseRole> roleList = findRoleByEmployeeId(employeeId);
         List<Long> roleIdList = roleList.stream().map(BaseRole::getId).toList();
         log.debug("roleIdList={}", roleIdList.size());
@@ -81,7 +80,6 @@ public class BaseRoleManagerImpl extends SuperCacheManagerImpl<BaseRoleMapper, B
             return roleIdList;
         }
 
-        // 新方法
         Function<Long, CacheKey> cacheBuilder = roleId -> RoleResourceCacheKeyBuilder.build(applicationId, roleId);
         // 缓存中不存在时，回调函数
         Function<Long, List<Long>> loader = roleId -> baseRoleResourceRelMapper.selectResourceIdByRoleId(applicationId, roleId);
@@ -119,35 +117,12 @@ public class BaseRoleManagerImpl extends SuperCacheManagerImpl<BaseRoleMapper, B
         log.debug("orgIdList={}", orgIdList.size());
 
         // 机构 - 角色
-        // 新旧方法
-        // 旧方法
-//        Set<Long> roleIdSet = new HashSet<>();
-//        for (Long orgId : orgIdList) {
-//            CacheKey orKey = OrgRoleCacheKeyBuilder.build(orgId);
-//            CacheResult<List<Long>> roleIds = cacheOps.get(orKey, k -> baseMapper.selectRoleIdByOrgId(orgId));
-//            roleIdSet.addAll(roleIds.asList());
-//        }
-        // 旧方法end
-
-        // 新方法
-        Function<Long, CacheKey> cacheBuilder = OrgRoleCacheKeyBuilder::build;
-        // 缓存中不存在时，回调函数
-        Function<Long, List<Long>> loader = baseMapper::selectRoleIdByOrgId;
-        Set<Long> roleIdSet = findCollectByIds(orgIdList, cacheBuilder, loader);
-        // 新方法 end
-
+        Set<Long> roleIdSet = findCollectByIds(orgIdList, OrgRoleCacheKeyBuilder::build, baseMapper::selectRoleIdByOrgId);
         return CollHelper.addAllUnique(new ArrayList<>(roleIdSet), roleIdList.asList());
     }
 
     @Override
     public boolean checkRole(Long employeeId, String... codes) {
-        /*ArgumentAssert.notEmpty(codes, "请传递角色编码");
-
-        List<Long> roleIds = findRoleIdByEmployeeId(employeeId);
-        List<BaseRole> roleList = findByIds(roleIds, null);
-        return roleList.stream()
-                .filter(Objects::nonNull)
-                .anyMatch(item -> item.getState() && ArrayUtil.contains(codes, item.getCode()));*/
         List<BaseRole> baseRoles = baseMapper.selectRoleByEmployee(employeeId, codes);
         return !baseRoles.isEmpty();
     }

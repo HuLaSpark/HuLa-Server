@@ -21,7 +21,7 @@ import com.luohuo.basic.cache.repository.impl.CaffeineOpsImpl;
 /**
  * 内存缓存配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/08/07
  */
 @Slf4j

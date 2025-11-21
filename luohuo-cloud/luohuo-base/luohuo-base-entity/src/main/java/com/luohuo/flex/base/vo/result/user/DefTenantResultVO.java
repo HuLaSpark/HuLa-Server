@@ -27,7 +27,7 @@ import java.util.Map;
  * 企业
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021-10-27
  */
 @Data
@@ -142,6 +142,7 @@ public class DefTenantResultVO extends Entity<Long> implements Serializable, Ech
 
     @Echo(api = Echo.ENUM_API)
     private DefTenantRegisterTypeEnum registerType;
+
     /**
      * 数据源链接类型;#TenantConnectTypeEnum{LOCAL:本地;REMOTE:远程}
      */
@@ -149,21 +150,21 @@ public class DefTenantResultVO extends Entity<Long> implements Serializable, Ech
 
     @Echo(api = Echo.ENUM_API)
     private TenantConnectTypeEnum connectType;
+
     /**
      * 状态;0-禁用 1-启用
      */
     @Schema(description = "状态")
-
     private Boolean state;
     /**
-     * 审核状态;[05-正常 10-待初始化 15-已撤回 20-待审核 25-已拒绝 30-已同意]
+     * 审核状态;[0-正常 1-审核中 2-停用 3-待初始化租户]
      *
      * @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.System.TENANT_STATUS)
      */
     @Schema(description = "审核状态")
     @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.System.TENANT_STATUS)
 
-    private String status;
+    private Integer status;
     /**
      * 内置
      */

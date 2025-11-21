@@ -30,7 +30,6 @@ import com.luohuo.flex.base.vo.query.user.BaseEmployeePageQuery;
 import com.luohuo.flex.base.vo.result.user.BaseEmployeeResultVO;
 import com.luohuo.flex.base.vo.save.tenant.DefUserSaveVO;
 import com.luohuo.flex.base.vo.save.user.BaseEmployeeSaveVO;
-import com.luohuo.flex.model.entity.system.SysUser;
 import com.luohuo.flex.model.enumeration.base.ActiveStatusEnum;
 
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.List;
 /**
  * 员工大业务层
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021/10/22 10:37
  */
 @Service
@@ -100,11 +99,6 @@ public class BaseEmployeeBiz {
 
         // 机构信息
         resultVO.setOrgIdList(baseEmployeeOrgRelService.findOrgIdListByEmployeeId(employeeId));
-
-        // 用户信息
-        DefUser defUser = defUserService.getById(employee.getUserId());
-        resultVO.setDefUser(BeanUtil.toBean(defUser, SysUser.class));
-
         return resultVO;
     }
 
@@ -128,18 +122,7 @@ public class BaseEmployeeBiz {
 
             params.getModel().setUserIdList(userIdList);
         }
-        IPage<BaseEmployeeResultVO> pageResultVO = baseEmployeeService.findPageResultVO(params);
-
-        if (CollUtil.isNotEmpty(pageResultVO.getRecords())) {
-            List<Long> userIds = pageResultVO.getRecords().stream().map(BaseEmployeeResultVO::getUserId).toList();
-            List<DefUser> defUsers = defUserService.listByIds(userIds);
-            List<SysUser> userResultVos = BeanUtil.copyToList(defUsers, SysUser.class);
-            ImmutableMap<Long, SysUser> map = CollHelper.uniqueIndex(userResultVos, SysUser::getId, user -> user);
-
-            pageResultVO.getRecords().forEach(item -> item.setDefUser(map.get(item.getUserId())));
-        }
-
-        return pageResultVO;
+		return baseEmployeeService.findPageResultVO(params);
     }
 
 	private List<BaseEmployee> findEmployeeList(DefTenantAdminVO param) {

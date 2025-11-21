@@ -10,7 +10,7 @@ import static com.luohuo.basic.log.properties.OptLogProperties.PREFIX;
 /**
  * 操作日志配置类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月09日15:00:47
  */
 @ConfigurationProperties(prefix = PREFIX)

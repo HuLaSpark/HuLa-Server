@@ -31,7 +31,7 @@ import static com.luohuo.basic.utils.DateUtils.DEFAULT_DATE_TIME_FORMAT;
 /**
  * 对 jack json 进行封装
  *
- * @author zuihou
+ * @author 乾乾
  */
 @Slf4j
 public final class JsonUtil {

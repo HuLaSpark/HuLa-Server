@@ -21,7 +21,7 @@ import java.io.Serializable;
  * 参数配置
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021-10-13
  */
 @Data

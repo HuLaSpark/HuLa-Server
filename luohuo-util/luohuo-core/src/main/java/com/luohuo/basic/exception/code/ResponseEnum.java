@@ -13,7 +13,7 @@ package com.luohuo.basic.exception.code;
  * 业务编码规则：
  * [系统]_[模块]_[功能]： 每段3位数，_只是java或js语言的语法糖，实际上的数字编码并不存在下划线
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2017-12-13 16:22
  */
 public enum ResponseEnum implements BaseExceptionCode {

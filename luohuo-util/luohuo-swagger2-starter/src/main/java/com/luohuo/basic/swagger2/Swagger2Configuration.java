@@ -12,7 +12,7 @@ import static com.luohuo.basic.swagger2.Swagger2Configuration.TRUE;
  * 1，配置文件中： ${SwaggerProperties.PREFIX}.enable=true
  * 2，配置文件中不存在： ${SwaggerProperties.PREFIX}.enable 值
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018/11/18 9:20
  */
 @ConditionalOnProperty(prefix = "knife4j", name = "enable", havingValue = TRUE, matchIfMissing = true)

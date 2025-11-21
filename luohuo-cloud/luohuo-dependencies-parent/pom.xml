@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.luohuo.basic</groupId>
         <artifactId>luohuo-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.5</version>
         <relativePath/>
     </parent>
 
     <groupId>com.luohuo.flex</groupId>
     <artifactId>luohuo-dependencies-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.5</version>
 
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -21,8 +21,8 @@
     <description>luohuo项目业务父pom</description>
     <url>https://gitee.com/HuLaSpark/HuLa-Server</url>
     <properties>
-        <luohuo-util.version>3.0.0</luohuo-util.version>
-        <luohuo-project.version>3.0.0</luohuo-project.version>
+        <luohuo-util.version>3.0.5</luohuo-util.version>
+        <luohuo-project.version>3.0.5</luohuo-project.version>
         <docker.image.prefix>hula</docker.image.prefix>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
     </properties>

@@ -18,7 +18,7 @@ import static com.luohuo.flex.common.constant.BizConstant.UTIL_PACKAGE;
 /**
  * 在线代码生成器模块启动类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-02-28
  */
 @SpringBootApplication

@@ -59,7 +59,7 @@ import java.util.function.Function;
  *
  * @param <M>
  * @param <T>
- * @author zuihou
+ * @author 乾乾
  * @date 2020年02月27日18:15:17
  */
 public abstract class SuperCacheManagerImpl<M extends SuperMapper<T>, T extends SuperEntity> extends SuperManagerImpl<M, T> implements SuperCacheManager<T> {

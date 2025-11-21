@@ -1,9 +1,13 @@
 package com.luohuo.flex.im.core.chat.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.luohuo.flex.im.domain.vo.req.room.DisbandGroupReq;
+import com.luohuo.flex.im.domain.vo.req.room.GroupMemberPageReq;
 import com.luohuo.flex.im.domain.vo.request.admin.AdminSetReq;
 import com.luohuo.flex.im.domain.vo.request.contact.ContactAddReq;
 import com.luohuo.flex.im.domain.vo.request.member.MemberExitReq;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
+import com.luohuo.flex.im.domain.vo.resp.room.GroupMemberSimpleResp;
 import com.luohuo.flex.im.domain.vo.response.GroupResp;
 import jakarta.validation.Valid;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
@@ -25,6 +29,9 @@ import com.luohuo.flex.im.domain.vo.request.member.MemberReq;
 import com.luohuo.flex.im.domain.vo.request.room.AnnouncementsParam;
 import com.luohuo.flex.im.domain.vo.request.room.ReadAnnouncementsParam;
 import com.luohuo.flex.im.domain.vo.request.room.RoomGroupReq;
+import com.luohuo.flex.im.domain.vo.req.room.GroupPageReq;
+import com.luohuo.flex.im.domain.vo.req.room.UpdateMemberNicknameReq;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
 import com.luohuo.flex.im.domain.vo.response.AnnouncementsResp;
 import com.luohuo.flex.im.domain.vo.response.ChatMemberListResp;
 import com.luohuo.flex.im.domain.vo.response.ChatRoomResp;
@@ -95,6 +102,16 @@ public interface RoomAppService {
 	 * 获取群聊列表
 	 */
 	List<MemberResp> groupList(Long uid);
+
+	/**
+	 * 获取所有群聊列表（管理员专用）
+	 */
+	List<MemberResp> getAllGroupList();
+
+	/**
+	 * 分页查询所有群聊列表（管理员专用，支持按群昵称和群成员昵称搜索）
+	 */
+	PageBaseResp<MemberResp> getGroupPage(GroupPageReq req);
 
 	/**
 	 * 同步在线状态
@@ -209,4 +226,19 @@ public interface RoomAppService {
 	 * @param id 当前人员id
 	 */
 	void createSystemFriend(Long defRoomId, Long defGroupId,  Long id);
+
+	/**
+	 * 获取群成员分页列表
+	 */
+	PageBaseResp<GroupMemberSimpleResp> getGroupMemberPage(GroupMemberPageReq request);
+
+	/**
+	 * 管理员修改群成员昵称
+	 */
+	void updateMemberNickname(UpdateMemberNicknameReq request);
+
+	/**
+	 * 解散群聊
+	 */
+	void disbandGroup(DisbandGroupReq request);
 }

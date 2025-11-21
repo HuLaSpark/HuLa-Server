@@ -18,7 +18,7 @@ import java.util.List;
  * 用户联系人表 服务类
  * </p>
  *
- * @author nyh
+ * @author 乾乾
  */
 public interface FriendService {
 

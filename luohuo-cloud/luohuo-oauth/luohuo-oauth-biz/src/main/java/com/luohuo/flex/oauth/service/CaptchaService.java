@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * 验证码
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-10-18 17:22
  */
 public interface CaptchaService {

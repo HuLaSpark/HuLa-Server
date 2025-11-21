@@ -44,12 +44,12 @@ public class DefTenant extends Entity<Long> {
 	private String contactMobile;
 
 	@Schema(description = "租户状态（0正常 1审核中 2停用）")
-	private String status;
+	private Integer status;
 
 	/**
 	 * 状态;false-禁用 true-启用
 	 */
-	@TableField(value = "state (正式租户、非正式租户的停用启用状态)")
+	@Schema(description = "状态（正式租户、非正式租户的停用启用状态）")
 	private Boolean state;
 
 	@Schema(description = "绑定域名")

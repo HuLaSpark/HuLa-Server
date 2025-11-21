@@ -74,6 +74,21 @@ public interface AiApiKeyService {
     List<AiApiKeyDO> getApiKeyList(Long userId);
 
     /**
+     * 获得所有 API 密钥列表（后台管理专用）
+     *
+     * @return API 密钥列表
+     */
+    List<AiApiKeyDO> getAllApiKeyList();
+
+    /**
+     * 获得所有 API 密钥分页（后台管理专用，无权限限制）
+     *
+     * @param pageReqVO 分页查询
+     * @return API 密钥分页
+     */
+    PageResult<AiApiKeyDO> getAdminApiKeyPage(AiApiKeyPageReqVO pageReqVO);
+
+    /**
      * 获得默认的 API 密钥
      *
      * @param platform 平台
@@ -90,5 +105,19 @@ public interface AiApiKeyService {
      * @return 余额信息
      */
     AiApiKeyBalanceRespVO getApiKeyBalance(Long id, Long userId);
+
+    /**
+     * 管理员更新 API 密钥
+     *
+     * @param updateReqVO 更新信息
+     */
+    void updateApiKeyAdmin(@Valid AiApiKeySaveReqVO updateReqVO);
+
+    /**
+     * 管理员删除 API 密钥
+     *
+     * @param id 编号
+     */
+    void deleteApiKeyAdmin(Long id);
 
 }

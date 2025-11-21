@@ -117,7 +117,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 				userRegisterVo.setEmail(register.getEmail());
 				userRegisterVo.setUserId(defUser.getId());
 				userRegisterVo.setName(defUser.getNickName());
-				userRegisterVo.setOpenId(defUser.getWxOpenId());
 				userRegisterVo.setSex(defUser.getSex());
 				userRegisterVo.setAvatar(defUser.getAvatar());
 				userRegisterVo.setTenantId(defUser.getTenantId());

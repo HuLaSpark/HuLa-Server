@@ -23,7 +23,7 @@ import static com.luohuo.basic.utils.ValidatorUtil.REGEX_ID_CARD;
  * 用户
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2020-02-14
  */
 @Data

@@ -3,7 +3,7 @@ package com.luohuo.basic.exception.code;
 /**
  * 异常编码
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2017-12-25 13:46
  */
 public interface BaseExceptionCode {

@@ -32,4 +32,13 @@ public class FriendResp implements Serializable {
 
 	@Schema(description ="不看他（0-允许，1-禁止）")
 	private Boolean hideTheirPosts;
+
+	@Schema(description ="好友用户名")
+	private String name;
+
+	@Schema(description ="好友账号")
+	private String account;
+
+	@Schema(description ="好友头像")
+	private String avatar;
 }

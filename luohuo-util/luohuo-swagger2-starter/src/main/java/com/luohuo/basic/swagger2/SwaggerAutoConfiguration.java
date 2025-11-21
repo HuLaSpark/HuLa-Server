@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * swagger 包扫描配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018/11/18 9:22
  */
 @Import({

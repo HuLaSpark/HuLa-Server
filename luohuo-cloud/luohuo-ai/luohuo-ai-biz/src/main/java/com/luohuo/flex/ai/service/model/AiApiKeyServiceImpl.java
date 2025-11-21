@@ -32,7 +32,7 @@ import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 /**
  * AI API 密钥 Service 实现类
  *
- * @author 芋道源码
+ * @author 乾乾
  */
 @Slf4j
 @Service
@@ -106,6 +106,24 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 		apiKeyMapper.deleteById(id);
 	}
 
+	@Override
+	public void updateApiKeyAdmin(AiApiKeySaveReqVO updateReqVO) {
+		validateApiKeyExists(updateReqVO.getId());
+
+		// 管理员更新，无权限校验
+		AiApiKeyDO updateObj = BeanUtils.toBean(updateReqVO, AiApiKeyDO.class);
+		apiKeyMapper.updateById(updateObj);
+	}
+
+	@Override
+	public void deleteApiKeyAdmin(Long id) {
+		// 校验存在
+		validateApiKeyExists(id);
+
+		// 管理员删除，无权限校验
+		apiKeyMapper.deleteById(id);
+	}
+
 	private AiApiKeyDO validateApiKeyExists(Long id) {
 		AiApiKeyDO apiKey = apiKeyMapper.selectById(id);
 		if (apiKey == null) {
@@ -143,6 +161,18 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 						.eq(AiApiKeyDO::getUserId, userId)
 				)
 				.orderByDesc(AiApiKeyDO::getId));
+	}
+
+	@Override
+	public List<AiApiKeyDO> getAllApiKeyList() {
+		// 返回所有 API 密钥（后台管理专用）
+		return apiKeyMapper.selectList(new LambdaQueryWrapperX<AiApiKeyDO>()
+				.orderByDesc(AiApiKeyDO::getId));
+	}
+
+	@Override
+	public PageResult<AiApiKeyDO> getAdminApiKeyPage(AiApiKeyPageReqVO pageReqVO) {
+		return apiKeyMapper.selectPage(pageReqVO);
 	}
 
 	@Override
@@ -196,6 +226,8 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 					return queryDeepSeekBalance(apiKey);
 				case SILICON_FLOW:
 					return querySiliconFlowBalance(apiKey);
+				case OPENROUTER:
+					return queryOpenRouterBalance(apiKey);
 				default:
 					return AiApiKeyBalanceRespVO.builder()
 							.id(apiKey.getId())
@@ -223,7 +255,7 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 	 */
 	private AiApiKeyBalanceRespVO queryMoonshotBalance(AiApiKeyDO apiKey) {
 		String baseUrl = StrUtil.isNotBlank(apiKey.getUrl()) ? apiKey.getUrl() : "https://api.moonshot.cn";
-		String url = baseUrl + "/v1/user/balance";
+		String url = baseUrl + "/v1/users/me/balance";
 
 		HttpResponse response = HttpRequest.get(url)
 				.header("Authorization", "Bearer " + apiKey.getApiKey())
@@ -362,6 +394,78 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 					.build());
 
 			totalBalance = total;
+		}
+
+		return AiApiKeyBalanceRespVO.builder()
+				.id(apiKey.getId())
+				.platform(apiKey.getPlatform())
+				.supported(true)
+				.success(true)
+				.balanceInfos(balanceInfos)
+				.totalBalance(totalBalance)
+				.build();
+	}
+
+	private AiApiKeyBalanceRespVO queryOpenRouterBalance(AiApiKeyDO apiKey) {
+		String baseUrl = StrUtil.isNotBlank(apiKey.getUrl()) ? apiKey.getUrl() : "https://openrouter.ai/api";
+		String url = baseUrl + "/v1/key";
+
+		HttpResponse response = HttpRequest.get(url)
+				.header("Authorization", "Bearer " + apiKey.getApiKey())
+				.header("Accept", "application/json")
+				.timeout(10000)
+				.execute();
+
+		if (!response.isOk()) {
+			throw new RuntimeException("HTTP请求失败: " + response.getStatus());
+		}
+
+		JSONObject jsonResponse = JSONUtil.parseObj(response.body());
+		JSONObject data = jsonResponse.getJSONObject("data");
+		List<AiApiKeyBalanceRespVO.BalanceInfo> balanceInfos = new ArrayList<>();
+		BigDecimal totalBalance = BigDecimal.ZERO;
+		Boolean freeTier = data == null ? null : data.getBool("is_free_tier");
+		BigDecimal limitRemaining = null;
+		if (data != null && data.get("limit_remaining") != null && !(data.get("limit_remaining") instanceof cn.hutool.json.JSONNull)) {
+			limitRemaining = new BigDecimal(String.valueOf(data.get("limit_remaining")));
+		}
+		if (limitRemaining != null) {
+			balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+					.currency("USD")
+					.totalBalance(limitRemaining)
+					.available(true)
+					.build());
+			totalBalance = limitRemaining;
+		} else {
+			BigDecimal limit = null;
+			BigDecimal usage = null;
+			if (data != null && data.get("limit") != null && !(data.get("limit") instanceof cn.hutool.json.JSONNull)) {
+				limit = new BigDecimal(String.valueOf(data.get("limit")));
+			}
+			if (data != null && data.get("usage") != null && !(data.get("usage") instanceof cn.hutool.json.JSONNull)) {
+				usage = new BigDecimal(String.valueOf(data.get("usage")));
+			}
+			BigDecimal remaining = null;
+			if (limit != null) {
+				remaining = usage != null ? limit.subtract(usage) : limit;
+			}
+			if (remaining != null) {
+				balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+						.currency("USD")
+						.totalBalance(remaining)
+						.available(true)
+						.build());
+				totalBalance = remaining;
+			} else {
+				balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+						.currency("USD")
+						.totalBalance(BigDecimal.ZERO)
+						.grantedBalance(BigDecimal.ZERO)
+						.toppedUpBalance(BigDecimal.ZERO)
+						.available(Boolean.TRUE.equals(freeTier))
+						.build());
+				totalBalance = BigDecimal.ZERO;
+			}
 		}
 
 		return AiApiKeyBalanceRespVO.builder()

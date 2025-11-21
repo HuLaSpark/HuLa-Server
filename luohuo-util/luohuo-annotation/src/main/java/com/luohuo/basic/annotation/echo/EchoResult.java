@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * <p>
  * 注意，该方法不能写在 Mapper 的方法上。
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年01月19日09:08:40
  */
 @Retention(RetentionPolicy.RUNTIME)

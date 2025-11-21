@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 日志埋点工具类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月09日18:16:16
  */
 @Slf4j

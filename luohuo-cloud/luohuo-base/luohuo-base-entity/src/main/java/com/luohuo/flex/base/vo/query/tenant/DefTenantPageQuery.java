@@ -130,10 +130,10 @@ public class DefTenantPageQuery implements Serializable {
     private TenantConnectTypeEnum connectType;
     /**
      * 状态;
-     * #{NORMAL:正常;WAIT_INIT:待初始化;FORBIDDEN:禁用;WAITING:待审核;REFUSE:拒绝;DELETE:已删除}
+     * #{NORMAL:正常;WAITING:审核中;REFUSE:停用;WAIT_INIT_DATASOURCE:待初始化租户}
      */
     @Schema(description = "审核状态")
-    private String status;
+    private Integer status;
     /**
      * 状态;0-禁用 1-启用
      */

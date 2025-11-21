@@ -21,7 +21,7 @@ import static com.luohuo.flex.model.constant.Condition.LIKE;
  * 登录日志
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021-11-12
  */
 @Data

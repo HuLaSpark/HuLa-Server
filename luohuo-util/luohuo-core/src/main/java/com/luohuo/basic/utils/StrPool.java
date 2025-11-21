@@ -5,7 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 /**
  * 常用字符串
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/25
  */
 public interface StrPool {

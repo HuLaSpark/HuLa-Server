@@ -27,7 +27,7 @@ import static com.baomidou.mybatisplus.core.enums.WrapperKeyword.APPLY;
  * 1, 对nested、eq、ne、gt、ge、lt、le、in、*like*、 等方法 进行条件判断，null 或 "" 字段不加入查询
  * 2，对*like*相关方法的参数 %和_ 符号进行转义，便于模糊查询
  *
- * @author zuihou
+ * @author 乾乾
  * @date Created on 2019/5/27 17:15
  */
 public class LbUpdateWrap<T> extends AbstractLambdaWrapper<T, LbUpdateWrap<T>>
@@ -87,7 +87,7 @@ public class LbUpdateWrap<T> extends AbstractLambdaWrapper<T, LbUpdateWrap<T>>
      * 传入空字符串("")时， 视为： 字段名 = ""
      *
      * @param val 参数值
-     * @author zuihou
+     * @author 乾乾
      */
     private static boolean checkCondition(Object val) {
         return val != null;

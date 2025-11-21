@@ -3,7 +3,7 @@ package com.luohuo.flex.common.constant;
 /**
  * 定时任务 常量
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021/1/8 10:16 上午
  */
 public interface JobConstant {

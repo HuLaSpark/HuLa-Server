@@ -10,7 +10,7 @@ import org.springframework.data.redis.serializer.SerializationException;
 /**
  * ProtoStuff 序列化
  *
- * @author zuihou
+ * @author 乾乾
  */
 public class ProtoStuffSerializer implements RedisSerializer<Object> {
     private final Schema<BytesWrapper> schema;

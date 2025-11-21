@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  * <p>
  * 若在luohuo-core中新增了 基类实体，可以在此增加对应的枚举值
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/05/14
  */
 @Getter

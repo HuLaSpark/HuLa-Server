@@ -48,7 +48,7 @@ public class DefTenantAnyoneController extends SuperCacheController<DefTenantSer
     @Operation(summary = "修改租户审核状态", description = "修改租户审核状态")
     @PostMapping("/updateStatus")
     @WebLog("修改租户审核状态")
-    public R<Boolean> updateStatus(@NotNull(message = "请修改正确的企业") @RequestParam Long id, @RequestParam @NotNull(message = "请传递状态值") String status, @RequestParam(required = false) String reviewComments) {
+    public R<Boolean> updateStatus(@NotNull(message = "请修改正确的企业") @RequestParam Long id, @RequestParam @NotNull(message = "请传递状态值") Integer status, @RequestParam(required = false) String reviewComments) {
         return success(superService.updateStatus(id, status, reviewComments));
     }
 

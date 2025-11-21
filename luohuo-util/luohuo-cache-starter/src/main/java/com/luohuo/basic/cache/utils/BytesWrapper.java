@@ -1,7 +1,7 @@
 package com.luohuo.basic.cache.utils;
 
 /**
- * @author zuihou
+ * @author 乾乾
  */
 public class BytesWrapper<T> implements Cloneable {
     private T value;

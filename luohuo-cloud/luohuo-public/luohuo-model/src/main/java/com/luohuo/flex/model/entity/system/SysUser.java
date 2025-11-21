@@ -31,7 +31,7 @@ import static com.luohuo.flex.model.constant.Condition.LIKE;
  * 用户实体
  * 字段基于 def_user 表, 可能还会扩展其他字段
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022年04月13日12:30:28
  */
 @Data

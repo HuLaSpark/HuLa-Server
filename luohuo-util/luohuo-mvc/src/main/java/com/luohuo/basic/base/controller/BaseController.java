@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 基础接口
  *
  * @param <Entity> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月07日21:56:32
  */
 public interface BaseController<Id extends Serializable, Entity extends SuperEntity<Id>> {

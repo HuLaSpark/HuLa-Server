@@ -25,7 +25,7 @@ import static com.luohuo.flex.model.constant.Condition.LIKE;
  * 当systemType = 3时, uid关联system服务中的 user的id [IM系统登录]
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021-10-09
  */
 @Data
@@ -82,39 +82,10 @@ public class DefUser extends TenantEntity<Long> {
     private String idCard;
 
     /**
-     * 微信OpenId
-     */
-    @TableField(value = "wx_open_id", condition = LIKE)
-    private String wxOpenId;
-
-    /**
-     * 钉钉OpenId
-     */
-    @TableField(value = "dd_open_id", condition = LIKE)
-    private String ddOpenId;
-
-    /**
-     * 内置;[0-否 1-是]
-     */
-    @TableField(value = "readonly")
-    private Boolean readonly;
-
-    /**
      * 性别;
      */
     @TableField(value = "sex")
     private Integer sex;
-    /**
-     * 民族;[01-汉族 99-其他]	@Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Global.NATION)
-     */
-    @TableField(value = "nation", condition = LIKE)
-    private String nation;
-
-    /**
-     * 学历;[01-小学 02-中学 03-高中 04-专科 05-本科 06-硕士 07-博士 08-博士后 99-其他]	@Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Global.EDUCATION)
-     */
-    @TableField(value = "education", condition = LIKE)
-    private String education;
 
     /**
      * 状态;[0-禁用 1-启用]
@@ -180,8 +151,7 @@ public class DefUser extends TenantEntity<Long> {
     @Builder
     public DefUser(Long id, Long createdBy, LocalDateTime createdTime, Long updatedBy, LocalDateTime updatedTime,
                    String username, String nickName, String email, String mobile, String idCard,
-                   String wxOpenId, String ddOpenId, Boolean readonly, Integer sex, Boolean state, String workDescribe, String nation,
-                   String education,
+                   Integer sex, Boolean state, String workDescribe,
                    LocalDateTime passwordErrorLastTime, Integer passwordErrorNum, LocalDateTime passwordExpireTime, String password, String salt, LocalDateTime lastLoginTime) {
         this.id = id;
         this.createBy = createdBy;
@@ -193,12 +163,7 @@ public class DefUser extends TenantEntity<Long> {
         this.email = email;
         this.mobile = mobile;
         this.idCard = idCard;
-        this.wxOpenId = wxOpenId;
-        this.ddOpenId = ddOpenId;
-        this.readonly = readonly;
         this.sex = sex;
-        this.nation = nation;
-        this.education = education;
         this.state = state;
         this.workDescribe = workDescribe;
         this.passwordErrorLastTime = passwordErrorLastTime;

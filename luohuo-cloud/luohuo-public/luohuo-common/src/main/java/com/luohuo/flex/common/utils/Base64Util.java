@@ -13,7 +13,7 @@ import static com.luohuo.basic.exception.code.ResponseEnum.JWT_BASIC_INVALID;
 /**
  * 工具类
  *
- * @author zuihou
+ * @author 乾乾
  */
 public class Base64Util {
 

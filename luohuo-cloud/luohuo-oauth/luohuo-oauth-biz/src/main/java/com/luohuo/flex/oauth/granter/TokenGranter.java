@@ -24,7 +24,7 @@ import com.luohuo.flex.oauth.vo.result.LoginResultVO;
  * 授予token接口
  *
  * @author Dave Syer
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月31日10:21:21
  */
 public interface TokenGranter {

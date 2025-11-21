@@ -11,7 +11,7 @@ import java.time.LocalTime;
  * HH:mm:ss
  * HH时mm分ss秒
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-04-30
  */
 public class String2LocalTimeConverter implements Converter<String, LocalTime> {

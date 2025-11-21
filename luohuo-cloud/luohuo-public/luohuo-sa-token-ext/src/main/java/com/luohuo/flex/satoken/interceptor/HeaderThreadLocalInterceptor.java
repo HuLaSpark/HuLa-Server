@@ -24,7 +24,7 @@ import java.util.Map;
  * 单体模式 必须禁用该拦截器，通过 luohuo.webmvc.header = false 禁用
  * <p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/10/31 9:49 下午
  */
 @Slf4j

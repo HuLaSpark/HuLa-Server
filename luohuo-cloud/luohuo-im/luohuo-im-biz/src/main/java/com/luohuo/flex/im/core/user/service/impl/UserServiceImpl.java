@@ -3,6 +3,9 @@ package com.luohuo.flex.im.core.user.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.basic.utils.SpringUtils;
 import com.luohuo.basic.utils.TimeUtils;
@@ -14,6 +17,11 @@ import com.luohuo.flex.im.core.chat.service.RoomAppService;
 import com.luohuo.flex.im.core.user.service.cache.DefUserCache;
 import com.luohuo.flex.im.core.user.service.cache.ItemCache;
 import com.luohuo.flex.im.core.user.service.cache.UserCache;
+import com.luohuo.flex.im.domain.vo.req.PageBaseReq;
+import com.luohuo.flex.im.domain.vo.req.user.*;
+import com.luohuo.flex.im.domain.vo.res.PageBaseResp;
+import com.luohuo.flex.im.domain.vo.resp.user.BlackPageResp;
+import com.luohuo.flex.im.domain.vo.resp.user.UserSearchResp;
 import com.luohuo.flex.model.entity.base.IpInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +48,6 @@ import com.luohuo.flex.im.domain.enums.BlackTypeEnum;
 import com.luohuo.flex.im.domain.enums.ItemEnum;
 import com.luohuo.flex.im.domain.enums.ItemTypeEnum;
 import com.luohuo.flex.model.vo.query.BindEmailReq;
-import com.luohuo.flex.im.domain.vo.req.user.BlackReq;
-import com.luohuo.flex.im.domain.vo.req.user.ItemInfoReq;
-import com.luohuo.flex.im.domain.vo.req.user.ModifyAvatarReq;
-import com.luohuo.flex.im.domain.vo.req.user.ModifyNameReq;
-import com.luohuo.flex.im.domain.vo.req.user.WearingBadgeReq;
 import com.luohuo.flex.im.domain.vo.resp.user.BadgeResp;
 import com.luohuo.flex.im.domain.vo.resp.user.UserInfoResp;
 import com.luohuo.flex.im.core.user.service.UserService;
@@ -52,6 +55,7 @@ import com.luohuo.flex.im.core.user.service.adapter.UserAdapter;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -201,21 +205,52 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void black(BlackReq req) {
-        Long uid = req.getUid();
-        Black user = new Black();
-        user.setTarget(uid.toString());
-        user.setType(BlackTypeEnum.UID.getType());
-		if(ObjectUtil.isNull(req.getDeadline()) || req.getDeadline().equals(0L)){
-			user.setDeadline(MAX_DATE);
-		} else {
-			user.setDeadline(LocalDateTime.now().plusMinutes(req.getDeadline()));
-		}
-        blackDao.save(user);
-        User byId = userDao.getById(uid);
-        blackIp(byId.getIpInfo().getCreateIp());
-        blackIp(byId.getIpInfo().getUpdateIp());
-        SpringUtils.publishEvent(new UserBlackEvent(this, byId));
+    @Transactional(rollbackFor = Exception.class)
+    public void addBlack(BlackAddReq req) {
+        // 去掉前后空格
+        String target = StrUtil.trim(req.getTarget());
+
+        // 先查询是否已经存在该黑名单记录
+        LambdaQueryWrapper<Black> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Black::getType, req.getType())
+               .eq(Black::getTarget, target);
+        Black existingBlack = blackDao.getOne(wrapper);
+
+        LocalDateTime deadline;
+        if (ObjectUtil.isNull(req.getDeadline()) || req.getDeadline().equals(0L)) {
+            deadline = MAX_DATE;
+        } else {
+            deadline = LocalDateTime.now().plusMinutes(req.getDeadline());
+        }
+
+        if (existingBlack != null) {
+            existingBlack.setDeadline(deadline);
+            blackDao.updateById(existingBlack);
+        } else {
+            Black black = new Black();
+            black.setType(req.getType());
+            black.setTarget(target);
+            black.setDeadline(deadline);
+            blackDao.save(black);
+        }
+
+        // 如果是拉黑用户，同时拉黑其IP
+        if (BlackTypeEnum.UID.getType().equals(req.getType())) {
+            try {
+                Long uid = Long.parseLong(target);
+                User user = userDao.getById(uid);
+                if (user != null) {
+                    blackIp(user.getIpInfo().getCreateIp(), deadline);
+                    blackIp(user.getIpInfo().getUpdateIp(), deadline);
+                    SpringUtils.publishEvent(new UserBlackEvent(this, user));
+                }
+            } catch (NumberFormatException e) {
+                // 忽略解析错误
+            }
+        }
+
+        // 清除黑名单缓存
+        userSummaryCache.evictBlackMap();
     }
 
     @Override
@@ -288,17 +323,33 @@ public class UserServiceImpl implements UserService {
 		return save;
 	}
 
-    public void blackIp(String ip) {
+    /**
+     * 拉黑IP
+     * @param ip IP地址
+     * @param deadline 截止时间
+     */
+    public void blackIp(String ip, LocalDateTime deadline) {
         if (StrUtil.isBlank(ip)) {
             return;
         }
-        try {
-            Black user = new Black();
-            user.setTarget(ip);
-            user.setType(BlackTypeEnum.IP.getType());
-            blackDao.save(user);
-        } catch (Exception e) {
-            log.error("duplicate black ip:{}", ip);
+
+        // 先查询是否已经存在该IP黑名单
+        LambdaQueryWrapper<Black> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Black::getType, BlackTypeEnum.IP.getType())
+               .eq(Black::getTarget, ip);
+        Black existingBlack = blackDao.getOne(wrapper);
+
+        if (existingBlack != null) {
+            // 已存在，更新截止时间
+            existingBlack.setDeadline(deadline);
+            blackDao.updateById(existingBlack);
+        } else {
+            // 不存在，新增
+            Black black = new Black();
+            black.setTarget(ip);
+            black.setType(BlackTypeEnum.IP.getType());
+            black.setDeadline(deadline);
+            blackDao.save(black);
         }
     }
 
@@ -328,7 +379,6 @@ public class UserServiceImpl implements UserService {
                 .userType(userRegisterVo.getUserType())
                 .name(userName)
                 .resume("这个人还没有填写个人简介呢")
-                .openId(userRegisterVo.getOpenId())
                 .tenantId(userRegisterVo.getTenantId())
                 .context(false)
                 .build();
@@ -347,5 +397,157 @@ public class UserServiceImpl implements UserService {
         // 发布用户注册消息
         SpringUtils.publishEvent(new UserRegisterEvent(this, newUser));
 		return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void editBlack(BlackEditReq req) {
+        Black black = blackDao.getById(req.getId());
+        AssertUtil.isNotEmpty(black, "黑名单记录不存在");
+
+        black.setType(req.getType());
+        black.setTarget(req.getTarget());
+
+        if (StrUtil.isBlank(req.getDeadline())) {
+            black.setDeadline(MAX_DATE);
+        } else {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                black.setDeadline(LocalDateTime.parse(req.getDeadline(), formatter));
+            } catch (Exception e) {
+                throw new BizException("截止时间格式错误，请使用 yyyy-MM-dd HH:mm:ss 格式");
+            }
+        }
+        blackDao.updateById(black);
+        // 清除黑名单缓存
+        userSummaryCache.evictBlackMap();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBlack(BlackRemoveReq req) {
+        Black black = blackDao.getById(req.getId());
+        AssertUtil.isNotEmpty(black, "黑名单记录不存在");
+        blackDao.removeById(req.getId());
+        // 清除黑名单缓存
+        userSummaryCache.evictBlackMap();
+    }
+
+    @Override
+    public PageBaseResp<BlackPageResp> blackPage(BlackPageReq req) {
+        // 去掉前后空格
+        String searchKeyword = StrUtil.trim(req.getTarget());
+
+        LambdaQueryWrapper<Black> wrapper = new LambdaQueryWrapper<>();
+
+        // 如果提供了搜索关键词，需要按用户昵称或IP模糊查询
+        if (StrUtil.isNotBlank(searchKeyword)) {
+            // 先查询所有黑名单记录
+            wrapper.orderByDesc(Black::getCreateTime);
+            Page<Black> allPage = blackDao.page(req.plusPage(), wrapper);
+
+            // 过滤：IP类型按IP模糊匹配，UID类型按用户昵称模糊匹配
+            List<BlackPageResp> filteredList = allPage.getRecords().stream()
+                    .map(black -> {
+                        BlackPageResp resp = BlackPageResp.builder()
+                                .id(black.getId())
+                                .type(black.getType())
+                                .target(black.getTarget())
+                                .deadline(black.getDeadline())
+                                .createTime(black.getCreateTime())
+                                .build();
+
+                        // 如果是UID类型，查询用户昵称
+                        if (BlackTypeEnum.UID.getType().equals(black.getType())) {
+                            try {
+                                Long uid = Long.parseLong(black.getTarget());
+                                User user = userDao.getById(uid);
+                                if (user != null) {
+                                    resp.setUserName(user.getName());
+                                }
+                            } catch (NumberFormatException e) {
+                                // 忽略解析错误
+                            }
+                        }
+
+                        return resp;
+                    })
+                    .filter(resp -> {
+                        // IP类型：按IP模糊匹配
+                        if (BlackTypeEnum.IP.getType().equals(resp.getType())) {
+                            return StrUtil.contains(resp.getTarget(), searchKeyword);
+                        }
+                        // UID类型：按用户昵称模糊匹配
+                        else if (BlackTypeEnum.UID.getType().equals(resp.getType())) {
+                            return StrUtil.isNotBlank(resp.getUserName()) &&
+                                   StrUtil.contains(resp.getUserName(), searchKeyword);
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+
+            return PageBaseResp.init((int) allPage.getCurrent(), (int) allPage.getSize(), (long) filteredList.size(), filteredList);
+        } else {
+            // 没有搜索关键词，查询所有记录
+            wrapper.orderByDesc(Black::getCreateTime);
+            Page<Black> page = blackDao.page(req.plusPage(), wrapper);
+
+            List<BlackPageResp> list = page.getRecords().stream()
+                    .map(black -> {
+                        BlackPageResp resp = BlackPageResp.builder()
+                                .id(black.getId())
+                                .type(black.getType())
+                                .target(black.getTarget())
+                                .deadline(black.getDeadline())
+                                .createTime(black.getCreateTime())
+                                .build();
+
+                        // 如果是UID类型，查询用户昵称
+                        if (BlackTypeEnum.UID.getType().equals(black.getType())) {
+                            try {
+                                Long uid = Long.parseLong(black.getTarget());
+                                User user = userDao.getById(uid);
+                                if (user != null) {
+                                    resp.setUserName(user.getName());
+                                }
+                            } catch (NumberFormatException e) {
+                                // 忽略解析错误
+                            }
+                        }
+
+                        return resp;
+                    })
+                    .collect(Collectors.toList());
+
+            return PageBaseResp.init((int) page.getCurrent(), (int) page.getSize(), page.getTotal(), list);
+        }
+    }
+
+    @Override
+    public PageBaseResp<UserSearchResp> searchUser(UserSearchReq req) {
+        Page<User> page = new Page<>(req.getPageNo(), req.getPageSize());
+
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+
+        // 如果提供了id，优先按id精确查询（用于回显）
+        if (ObjectUtil.isNotNull(req.getId())) {
+			wrapper.eq(User::getId, req.getId());
+        } else if (StrUtil.isNotBlank(req.getKeyword())) {
+            wrapper.like(User::getName, req.getKeyword());
+        }
+
+        wrapper.orderByDesc(User::getLastOptTime);
+
+        IPage<User> userPage = userDao.page(page, wrapper);
+        List<UserSearchResp> list = userPage.getRecords().stream()
+                .map(user -> UserSearchResp.builder()
+                        .uid(String.valueOf(user.getId()))
+                        .name(user.getName())
+                        .avatar(user.getAvatar())
+                        .account(user.getAccount())
+                        .build())
+                .collect(Collectors.toList());
+
+        return PageBaseResp.init((int) userPage.getCurrent(), (int) userPage.getSize(), userPage.getTotal(), list);
     }
 }

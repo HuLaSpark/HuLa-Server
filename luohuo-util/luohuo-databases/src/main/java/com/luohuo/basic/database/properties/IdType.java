@@ -1,7 +1,7 @@
 package com.luohuo.basic.database.properties;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/15 3:44 下午
  */
 public enum IdType {

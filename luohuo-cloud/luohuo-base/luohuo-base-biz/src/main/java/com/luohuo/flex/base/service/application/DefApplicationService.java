@@ -13,7 +13,7 @@ import java.util.List;
  * 应用
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-09-15
  */
 public interface DefApplicationService extends SuperCacheService<Long, DefApplication> {

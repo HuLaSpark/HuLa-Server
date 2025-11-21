@@ -10,7 +10,7 @@ import com.luohuo.flex.oauth.facade.LogFacade;
 /**
  * 在线代码生成器模块-Web配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-02-28
  */
 @Configuration

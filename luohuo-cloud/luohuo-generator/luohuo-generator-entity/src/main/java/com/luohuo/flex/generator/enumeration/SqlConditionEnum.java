@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * SQL 比较条件常量定义类
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-11-08
  */
 @Getter

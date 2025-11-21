@@ -17,7 +17,7 @@ import java.io.Serializable;
  * 用户头像
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2019-11-04
  */
 @Data

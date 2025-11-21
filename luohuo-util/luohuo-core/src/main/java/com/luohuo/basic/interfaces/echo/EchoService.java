@@ -1,7 +1,7 @@
 package com.luohuo.basic.interfaces.echo;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2021/9/12 12:03
  */
 public interface EchoService {

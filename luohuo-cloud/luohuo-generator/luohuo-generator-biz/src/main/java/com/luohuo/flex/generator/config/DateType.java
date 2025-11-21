@@ -3,7 +3,7 @@ package com.luohuo.flex.generator.config;
 /**
  * 数据库时间类型 到 实体类时间类型 对应策略
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022/3/13 23:11
  */
 public enum DateType {

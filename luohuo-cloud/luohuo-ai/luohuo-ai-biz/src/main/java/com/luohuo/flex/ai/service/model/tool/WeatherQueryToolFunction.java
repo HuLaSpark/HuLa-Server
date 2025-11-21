@@ -19,7 +19,7 @@ import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 /**
  * 工具：查询指定城市的天气信息
  *
- * @author 芋道源码
+ * @author 乾乾
  */
 @Component("weather_query")
 public class WeatherQueryToolFunction

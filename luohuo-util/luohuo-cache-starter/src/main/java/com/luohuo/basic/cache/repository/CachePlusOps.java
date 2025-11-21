@@ -19,7 +19,7 @@ import java.util.function.Function;
  * <p>
  * 使用本类接口时， 请切记，生产环境一定要配置成 REDIS ！！！
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020/9/30 5:16 下午
  */
 public interface CachePlusOps extends CacheOps {

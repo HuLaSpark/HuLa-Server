@@ -175,6 +175,7 @@ public class MessageAdapter {
 	public static ChatMessageReq buildAnnouncementsMsg(Long roomId, Announcements announcements) {
 		ChatMessageReq chatMessageReq = new ChatMessageReq();
 		chatMessageReq.setRoomId(roomId);
+		chatMessageReq.setSkip(true);
 		chatMessageReq.setMsgType(MessageTypeEnum.NOTICE.getType());
 		NoticeMsgDTO noticeMsgDTO = new NoticeMsgDTO();
 		noticeMsgDTO.setId(announcements.getId());

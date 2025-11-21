@@ -10,7 +10,7 @@ import com.luohuo.flex.satoken.interceptor.NotAllowWriteInterceptor;
 /**
  * 公共配置类, 一些公共工具配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018/8/25
  */
 @RequiredArgsConstructor

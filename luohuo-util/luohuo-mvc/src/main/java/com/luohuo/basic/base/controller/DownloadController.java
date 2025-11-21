@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @param <Entity> 实体
  * @param <Id>     主键
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月07日22:02:16
  */
 public interface DownloadController<Id extends Serializable, Entity extends SuperEntity<Id>>

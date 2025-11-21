@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.im.domain.entity.Contact;
 import com.luohuo.flex.im.domain.vo.req.CursorPageBaseReq;
 import com.luohuo.flex.im.domain.vo.res.CursorPageBaseResp;
@@ -14,11 +13,12 @@ import com.luohuo.flex.im.domain.enums.MessageStatusEnum;
 import com.luohuo.flex.im.core.chat.mapper.MessageMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -82,7 +82,17 @@ public class MessageDao extends ServiceImpl<MessageMapper, Message> {
 		return this.update(wrapper);
     }
 
-	public Map<Long, Integer> batchGetUnReadCount(Collection<Contact> contactList) {
-		return baseMapper.batchGetUnReadCount(contactList);
+	public Map<Long, Integer> batchGetUnReadCount(Long uid, Collection<Contact> contactList) {
+		List<Map<String, Object>> rows = baseMapper.batchGetUnReadCount(uid, contactList);
+		if (CollectionUtil.isEmpty(rows)) {
+			return new HashMap<>();
+		}
+		return rows.stream().collect(Collectors.toMap(
+				m -> ((Number) m.get("room_id")).longValue(),
+				m -> {
+					Object v = m.get("unread_count");
+					return v == null ? 0 : ((Number) v).intValue();
+				}
+		));
 	}
 }

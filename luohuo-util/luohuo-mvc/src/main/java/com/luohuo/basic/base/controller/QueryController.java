@@ -30,7 +30,7 @@ import java.util.List;
  * @param <Id>        主键
  * @param <PageQuery> 分页参数
  * @param <ResultVO>  实体返回VO
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月07日22:06:35
  */
 public interface QueryController<Id extends Serializable, Entity extends SuperEntity<Id>, PageQuery, ResultVO>

@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * <p>
  * 缺点1： 不能用于 BaseController 类中的方法
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018/7/24 16:44
  */
 @Target({ElementType.PARAMETER})

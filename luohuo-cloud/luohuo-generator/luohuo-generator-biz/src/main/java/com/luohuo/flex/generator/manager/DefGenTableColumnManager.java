@@ -11,7 +11,7 @@ import java.util.Collection;
  * 代码生成字段
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2022-03-01
  */
 public interface DefGenTableColumnManager extends SuperManager<DefGenTableColumn> {

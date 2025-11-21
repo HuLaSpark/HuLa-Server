@@ -23,7 +23,7 @@ import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 /**
  * AI 工具 Service 实现类
  *
- * @author 芋道源码
+ * @author 乾乾
  */
 @Service
 @Validated

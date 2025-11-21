@@ -20,7 +20,7 @@ import static com.luohuo.basic.xss.filter.XssFilter.IGNORE_PATH;
 /**
  * XSS 跨站攻击自动配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/25
  */
 @AllArgsConstructor

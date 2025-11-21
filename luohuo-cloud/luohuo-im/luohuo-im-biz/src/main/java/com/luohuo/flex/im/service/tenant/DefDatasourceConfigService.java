@@ -9,7 +9,7 @@ import com.luohuo.flex.im.entity.tenant.DefDatasourceConfig;
  * 数据源
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-09-13
  */
 public interface DefDatasourceConfigService extends SuperService<Long, DefDatasourceConfig> {

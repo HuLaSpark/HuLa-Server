@@ -43,7 +43,7 @@ import com.luohuo.flex.oauth.vo.result.LoginResultVO;
 /**
  * 登录页 Controller
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月31日10:10:36
  */
 @Slf4j

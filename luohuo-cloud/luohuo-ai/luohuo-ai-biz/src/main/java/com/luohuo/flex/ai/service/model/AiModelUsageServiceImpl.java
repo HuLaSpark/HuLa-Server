@@ -48,6 +48,8 @@ public class AiModelUsageServiceImpl implements AiModelUsageService {
 					.usageCount(1)
 					.remainingCount(PUBLIC_MODEL_USAGE_LIMIT - 1)
 					.build();
+			record.setCreator(userId+"");
+			record.setUpdater(userId+"");
 			usageRecordMapper.insert(record);
 			log.info("[checkAndDeductUsage] 首次使用公开模型，modelId={}, userId={}, remainingCount={}", model.getId(), userId, record.getRemainingCount());
 		} else {

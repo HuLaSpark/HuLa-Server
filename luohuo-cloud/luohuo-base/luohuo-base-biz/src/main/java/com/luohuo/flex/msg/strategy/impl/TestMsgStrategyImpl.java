@@ -10,7 +10,7 @@ import com.luohuo.flex.msg.strategy.domain.MsgParam;
 import com.luohuo.flex.msg.strategy.domain.MsgResult;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/7/11 0011 10:29
  */
 public class TestMsgStrategyImpl implements MsgStrategy {

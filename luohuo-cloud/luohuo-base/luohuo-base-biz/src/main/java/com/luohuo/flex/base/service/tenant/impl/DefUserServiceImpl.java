@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  * 用户
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-09
  */
 @Slf4j
@@ -131,8 +131,6 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         }
         defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));
         defUser.setPasswordErrorNum(0);
-        defUser.setReadonly(false);
-        defUser.setState(true);
         return defUser;
     }
 
@@ -167,14 +165,13 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         defUser.setSalt(RandomUtil.randomString(20));
         defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));
         defUser.setPasswordErrorNum(0);
-        defUser.setReadonly(false);
         defUser.setState(true);
         defUser.setUsername("temp_" + System.currentTimeMillis());  // 临时用户名
         superManager.save(defUser);
 
         String account = accountGenerator.generateAccountByUserId(defUser.getId());
         if (StrUtil.isEmpty(defUser.getNickName())) {
-            defUser.setNickName("hula用户_" + account.substring(account.length() - 6));
+            defUser.setNickName("HuLa用户_" + account.substring(account.length() - 6));
         }
 
         defUser.setUsername(account);
@@ -189,7 +186,6 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         defUser.setSalt(RandomUtil.randomString(20));
         defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));
         defUser.setPasswordErrorNum(0);
-        defUser.setReadonly(false);
         defUser.setState(true);
 
         // 如果已经有ID，生成账号；否则使用临时账号

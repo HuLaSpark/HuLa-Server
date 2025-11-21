@@ -21,7 +21,7 @@ import org.springframework.cloud.openfeign.FeignLoggerFactory;
 
 /**
  * @author Venil Noronha
- * @author zuihou
+ * @author 乾乾
  * @date 2020/8/9 上午10:03
  * @see org.springframework.cloud.openfeign.DefaultFeignLoggerFactory
  */

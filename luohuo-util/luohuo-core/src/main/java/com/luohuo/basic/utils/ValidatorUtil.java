@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * 校验器：利用正则表达式校验邮箱、手机号等
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-31 10:17
  */
 public final class ValidatorUtil {

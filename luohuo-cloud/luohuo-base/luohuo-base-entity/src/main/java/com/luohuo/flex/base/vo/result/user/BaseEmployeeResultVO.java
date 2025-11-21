@@ -1,6 +1,5 @@
 package com.luohuo.flex.base.vo.result.user;
 
-
 import cn.hutool.core.map.MapUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,6 @@ import com.luohuo.basic.base.entity.Entity;
 import com.luohuo.basic.interfaces.echo.EchoVO;
 import com.luohuo.flex.model.constant.EchoApi;
 import com.luohuo.flex.model.constant.EchoDictType;
-import com.luohuo.flex.model.entity.system.SysUser;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,7 +25,7 @@ import java.util.Map;
  * 员工
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021-10-18
  */
 @Data
@@ -51,21 +49,15 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      * 是否默认员工;[0-否 1-是]
      */
     @Schema(description = "是否默认员工")
-    
     private Boolean isDefault;
-    /**
-     * 用户id
-     */
+
     @Schema(description = "用户id")
-    
     private Long userId;
-    /**
-     * 岗位Id
-     */
+
     @Schema(description = "岗位Id")
-    
     @Echo(api = EchoApi.POSITION_ID_CLASS)
     private Long positionId;
+
     /**
      * 组织Id
      */
@@ -85,7 +77,6 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      * 真实姓名
      */
     @Schema(description = "真实姓名")
-    
     private String realName;
 
     /**
@@ -99,7 +90,6 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      * 状态;[0-禁用 1-启用]
      */
     @Schema(description = "状态")
-    
     private Boolean state;
 
     /**
@@ -107,12 +97,4 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      */
     @Schema(description = "激活状态")
     private String activeStatus;
-
-    /**
-     * 创建机构Id
-     */
-    private Long createdOrgId;
-
-    @Schema(description = "用户信息")
-    private SysUser defUser;
 }

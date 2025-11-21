@@ -24,7 +24,7 @@ import java.io.Serializable;
  * @param <Entity>    实体
  * @param <PageQuery> 分页参数
  * @param <ResultVO>  实体返回VO
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月06日11:06:46
  */
 public abstract class SuperReadController<S extends SuperService<Id, Entity>, Id extends Serializable, Entity extends SuperEntity<Id>, PageQuery, ResultVO>

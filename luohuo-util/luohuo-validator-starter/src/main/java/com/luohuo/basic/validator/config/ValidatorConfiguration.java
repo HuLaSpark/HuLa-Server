@@ -16,7 +16,7 @@ import com.luohuo.basic.validator.utils.AssertUtil;
 /**
  * 验证器配置
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/14
  */
 @ComponentScan(basePackageClasses = FormValidatorController.class)

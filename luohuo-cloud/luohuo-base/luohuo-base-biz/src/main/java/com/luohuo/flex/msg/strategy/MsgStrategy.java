@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2022/7/10 0010 14:18
  */
 public interface MsgStrategy {

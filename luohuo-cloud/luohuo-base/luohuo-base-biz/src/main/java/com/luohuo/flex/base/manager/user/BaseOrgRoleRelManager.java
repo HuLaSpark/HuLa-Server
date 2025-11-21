@@ -11,7 +11,7 @@ import java.util.Collection;
  * 组织的角色
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-18
  */
 public interface BaseOrgRoleRelManager extends SuperManager<BaseOrgRoleRel> {

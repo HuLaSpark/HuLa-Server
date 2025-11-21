@@ -19,7 +19,7 @@ import java.util.function.Function;
  * 5、clearCache 淘汰缓存
  *
  * @param <T> 实体
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月03日20:49:03
  */
 public interface SuperCacheManager<T> extends SuperManager<T> {

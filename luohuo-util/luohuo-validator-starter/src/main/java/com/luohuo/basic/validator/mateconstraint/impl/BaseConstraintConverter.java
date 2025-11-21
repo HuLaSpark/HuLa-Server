@@ -15,7 +15,7 @@ import static cn.hutool.core.lang.RegexPool.EMAIL_WITH_CHINESE;
 /**
  * 约束提取基础类
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-14 12:13
  */
 public abstract class BaseConstraintConverter implements IConstraintConverter {

@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * 认证Controller
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年03月31日10:10:36
  */
 @Slf4j
@@ -48,12 +48,9 @@ public class UserInfoController {
     private final CaptchaService captchaService;
 
     @Operation(summary = "获取当前登录的用户信息", description = "获取当前登录的用户信息：登录后，查询用户信息")
-    @GetMapping(value = "/getUserInfoById")
-    public R<DefUserInfoResultVO> getUserInfoById(@RequestParam(required = false) Long userId) throws BizException {
-        if (userId == null) {
-            userId = ContextUtil.getUid();
-        }
-        return R.success(oauthUserBiz.getUserById(userId));
+    @GetMapping(value = "/getUserInfo")
+    public R<DefUserInfoResultVO> getUserInfo() throws BizException {
+        return R.success(oauthUserBiz.getUserById(ContextUtil.getUserId()));
     }
 
     @Operation(summary = "修改头像", description = "修改头像")

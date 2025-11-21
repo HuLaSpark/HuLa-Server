@@ -12,7 +12,7 @@ import com.luohuo.flex.base.vo.save.system.BaseOperationLogSaveVO;
 import com.luohuo.flex.common.properties.SystemProperties;
 
 /**
- * @author zuihou
+ * @author 乾乾
  * @date 2017-12-15 14:42
  */
 @Configuration

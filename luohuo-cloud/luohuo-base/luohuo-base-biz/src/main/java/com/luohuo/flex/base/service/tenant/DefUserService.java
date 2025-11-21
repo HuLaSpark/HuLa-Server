@@ -25,7 +25,7 @@ import java.util.Set;
  * 用户
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-09
  */
 public interface DefUserService extends SuperCacheService<Long, DefUser> {

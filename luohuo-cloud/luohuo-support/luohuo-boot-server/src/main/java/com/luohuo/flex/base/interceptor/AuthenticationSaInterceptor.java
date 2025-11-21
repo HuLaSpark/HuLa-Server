@@ -34,7 +34,7 @@ import static com.luohuo.basic.context.ContextConstants.JWT_KEY_TOP_COMPANY_ID;
 /**
  * 配合sa-token，实现 登录校验、uri校验
  *
- * @author zuihou
+ * @author 乾乾
  * @since 2021/12/7 22:10
  */
 @Slf4j

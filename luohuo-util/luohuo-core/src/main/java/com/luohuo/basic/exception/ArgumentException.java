@@ -7,7 +7,7 @@ import com.luohuo.basic.exception.code.ResponseEnum;
  * 业务参数异常
  * 用于在业务中，检测到非法参数时，进行抛出的异常。
  *
- * @author zuihou
+ * @author 乾乾
  * @version 3.5.0
  */
 public class ArgumentException extends BaseUncheckedException {

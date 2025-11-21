@@ -13,7 +13,7 @@ import java.util.Set;
  * 岗位
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-10-18
  */
 public interface BasePositionService extends SuperService<Long, BasePosition> {

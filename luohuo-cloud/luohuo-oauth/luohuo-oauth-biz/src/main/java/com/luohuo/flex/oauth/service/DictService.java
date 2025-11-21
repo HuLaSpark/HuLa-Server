@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 字典查询服务
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021/10/7 13:27
  */
 public interface DictService extends LoadService {

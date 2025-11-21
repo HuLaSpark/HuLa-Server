@@ -18,7 +18,7 @@ import static com.luohuo.basic.utils.collection.CollectionUtils.convertList;
 /**
  * 字典工具类
  *
- * @author 芋道源码
+ * @author 乾乾
  */
 @Slf4j
 public class DictFrameworkUtils {

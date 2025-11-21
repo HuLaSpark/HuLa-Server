@@ -3,6 +3,7 @@ package com.luohuo.flex.im.controller.user;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedCommentPageReq;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedCommentReq;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedLikeReq;
+import com.luohuo.flex.im.domain.vo.req.feed.FeedPageReq;
 import com.luohuo.flex.im.domain.vo.req.feed.FeedReq;
 import com.luohuo.flex.im.domain.vo.resp.feed.FeedCommentVo;
 import com.luohuo.flex.im.domain.vo.resp.feed.FeedLikeVo;
@@ -53,7 +54,7 @@ public class FeedController {
 
 	@PostMapping("list")
 	@Operation(summary = "朋友圈列表")
-	public R<CursorPageBaseResp<FeedVo>> list(@Valid @RequestBody CursorPageBaseReq request) {
+	public R<CursorPageBaseResp<FeedVo>> list(@Valid @RequestBody FeedPageReq request) {
 		return R.success(feedService.getFeedPage(request, ContextUtil.getUid()));
 	}
 

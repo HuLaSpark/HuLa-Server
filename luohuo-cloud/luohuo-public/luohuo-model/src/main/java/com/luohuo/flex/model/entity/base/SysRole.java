@@ -29,7 +29,7 @@ import static com.luohuo.flex.model.constant.Condition.LIKE;
 /**
  * 角色
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/07/10
  */
 @Data

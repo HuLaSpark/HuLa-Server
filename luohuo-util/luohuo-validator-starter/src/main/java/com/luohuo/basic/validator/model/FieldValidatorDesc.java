@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 字段校验规则信息
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019-07-12 14:28
  */
 @Data

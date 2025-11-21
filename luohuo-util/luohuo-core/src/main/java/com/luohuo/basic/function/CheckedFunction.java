@@ -3,7 +3,7 @@ package com.luohuo.basic.function;
 /**
  * 处理异常的 函数
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2019/05/15
  */
 @FunctionalInterface

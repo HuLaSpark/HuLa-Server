@@ -6,6 +6,7 @@ import com.luohuo.flex.ai.controller.model.vo.model.AiModelPageReqVO;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelRespVO;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveMyReqVO;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelSaveReqVO;
+import com.luohuo.flex.ai.controller.model.vo.model.AiModelSimpleRespVO;
 import com.luohuo.flex.ai.dal.model.AiModelDO;
 import com.luohuo.flex.ai.enums.CommonStatusEnum;
 import com.luohuo.flex.ai.service.model.AiModelService;
@@ -65,8 +66,9 @@ public class AiModelController {
 	@DeleteMapping("/delete")
 	@Operation(summary = "删除模型")
 	@Parameter(name = "id", description = "编号", required = true)
-	public R<Boolean> deleteModel(@RequestParam("id") Long id) {
-		AiModelDO model = modelService.getModel(id);
+	public R<Boolean> deleteModel(@RequestParam("id") String id) {
+		Long modelId = Long.parseLong(id);
+		AiModelDO model = modelService.getModel(modelId);
 		if (model == null) {
 			return success(false);
 		}
@@ -76,7 +78,7 @@ public class AiModelController {
 			return success(false);
 		}
 
-		modelService.deleteModelMy(id, uid);
+		modelService.deleteModelMy(modelId, uid);
 		return success(true);
 	}
 
@@ -103,6 +105,42 @@ public class AiModelController {
 		List<AiModelDO> list = modelService.getModelListByStatusAndTypeAndUserId(CommonStatusEnum.ENABLE.getStatus(), type, platform, ContextUtil.getUid());
 		return success(convertList(list, model -> new AiModelRespVO().setId(model.getId())
 				.setName(model.getName()).setModel(model.getModel()).setUserId(model.getUserId()).setPlatform(model.getPlatform())));
+	}
+
+	@GetMapping("/admin/all-list")
+	@Operation(summary = "获得所有模型列表（后台管理专用）")
+	public R<List<AiModelSimpleRespVO>> getAllModelList() {
+		List<AiModelDO> list = modelService.getAllModelList();
+		return success(convertList(list, model -> {
+			AiModelSimpleRespVO vo = new AiModelSimpleRespVO();
+			vo.setId(model.getId());
+			vo.setName(model.getName());
+			vo.setModel(model.getModel());
+			vo.setPlatform(model.getPlatform());
+			return vo;
+		}));
+	}
+
+	@GetMapping("/admin/page")
+	@Operation(summary = "获得所有模型分页（后台管理专用）")
+	public R<PageResult<AiModelRespVO>> getAdminModelPage(@Valid AiModelPageReqVO pageReqVO) {
+		PageResult<AiModelDO> pageResult = modelService.getModelPage(pageReqVO);
+		return success(BeanUtils.toBean(pageResult, AiModelRespVO.class));
+	}
+
+	@PutMapping("/admin/update")
+	@Operation(summary = "管理员更新模型")
+	public R<Boolean> updateModelAdmin(@Valid @RequestBody AiModelSaveReqVO updateReqVO) {
+		modelService.updateModelAdmin(updateReqVO);
+		return success(true);
+	}
+
+	@DeleteMapping("/admin/delete")
+	@Operation(summary = "管理员删除模型")
+	@Parameter(name = "id", description = "编号", required = true)
+	public R<Boolean> deleteModelAdmin(@RequestParam("id") Long id) {
+		modelService.deleteModelAdmin(id);
+		return success(true);
 	}
 
 }

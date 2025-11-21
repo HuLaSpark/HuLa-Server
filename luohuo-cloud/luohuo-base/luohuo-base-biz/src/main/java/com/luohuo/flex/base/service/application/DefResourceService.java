@@ -18,7 +18,7 @@ import java.util.Map;
  * 资源
  * </p>
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2021-09-13
  */
 public interface DefResourceService extends SuperCacheService<Long, DefResource> {

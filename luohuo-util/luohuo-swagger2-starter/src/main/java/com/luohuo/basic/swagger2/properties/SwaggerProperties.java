@@ -16,7 +16,7 @@ import static com.luohuo.basic.swagger2.properties.SwaggerProperties.PREFIX;
  * swagger2 属性配置
  * 必须配置 prefix ，才能有提示
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2018/11/18 9:17
  */
 @Data

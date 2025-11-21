@@ -17,6 +17,7 @@ import com.luohuo.flex.ai.dal.model.AiApiKeyDO;
 import com.luohuo.flex.ai.dal.model.AiModelDO;
 import com.luohuo.flex.ai.enums.AiPlatformEnum;
 import com.luohuo.flex.ai.enums.CommonStatusEnum;
+import com.luohuo.flex.ai.mapper.LambdaQueryWrapperX;
 import com.luohuo.flex.ai.mapper.model.AiChatMapper;
 import com.luohuo.flex.ai.utils.BeanUtils;
 import dev.tinyflow.core.Tinyflow;
@@ -121,6 +122,29 @@ public class AiModelServiceImpl implements AiModelService {
 		modelMapper.deleteById(id);
 	}
 
+	@Override
+	public void updateModelAdmin(AiModelSaveReqVO updateReqVO) {
+		// 校验存在
+		validateModelExists(updateReqVO.getId());
+
+		// 校验平台和密钥
+		AiPlatformEnum.validatePlatform(updateReqVO.getPlatform());
+		apiKeyService.validateApiKey(updateReqVO.getKeyId());
+
+		// 管理员更新，无权限校验
+		AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
+		modelMapper.updateById(updateObj);
+	}
+
+	@Override
+	public void deleteModelAdmin(Long id) {
+		// 校验存在
+		validateModelExists(id);
+
+		// 管理员删除，无权限校验
+		modelMapper.deleteById(id);
+	}
+
 	private AiModelDO validateModelExists(Long id) {
 		AiModelDO model = modelMapper.selectById(id);
 		if (model == null) {
@@ -170,6 +194,12 @@ public class AiModelServiceImpl implements AiModelService {
 	@Override
 	public List<AiModelDO> getModelListByStatusAndTypeAndUserId(Integer status, Integer type, String platform, Long userId) {
 		return modelMapper.selectListByStatusAndTypeAndUserId(status, type, platform, userId);
+	}
+
+	@Override
+	public List<AiModelDO> getAllModelList() {
+		return modelMapper.selectList(new LambdaQueryWrapperX<AiModelDO>()
+				.orderByDesc(AiModelDO::getId));
 	}
 
 	// ========== 与 Spring AI 集成 ==========

@@ -16,7 +16,7 @@ import com.luohuo.flex.oauth.enumeration.GrantType;
 /**
  * 登录参数
  *
- * @author zuihou
+ * @author 乾乾
  * @date 2020年01月05日22:18:12
  */
 @Data
