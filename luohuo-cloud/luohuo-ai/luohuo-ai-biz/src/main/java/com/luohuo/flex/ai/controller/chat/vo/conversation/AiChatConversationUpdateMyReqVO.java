@@ -33,10 +33,7 @@ public class AiChatConversationUpdateMyReqVO {
     @Schema(description = "温度参数", example = "0.8")
     private Double temperature;
 
-    @Schema(description = "单条回复的最大 Token 数量", example = "4096")
-    private Integer maxTokens;
-
-    @Schema(description = "上下文的最大 Message 数量", example = "10")
-    private Integer maxContexts;
+    @Schema(description = "会话累计 Token 用量", example = "12345")
+    private Integer tokenUsage;
 
 }

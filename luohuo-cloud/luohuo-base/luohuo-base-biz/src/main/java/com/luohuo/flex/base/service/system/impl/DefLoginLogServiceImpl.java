@@ -17,9 +17,12 @@ import com.luohuo.flex.base.entity.tenant.DefUser;
 import com.luohuo.flex.base.manager.system.DefLoginLogManager;
 import com.luohuo.flex.base.manager.tenant.DefUserManager;
 import com.luohuo.flex.base.service.system.DefLoginLogService;
+import com.luohuo.flex.base.service.system.dto.LoginCountDTO;
+import com.luohuo.flex.base.mapper.system.DefLoginLogMapper;
 import com.luohuo.flex.base.vo.save.system.DefLoginLogSaveVO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -45,6 +48,7 @@ public class DefLoginLogServiceImpl extends SuperServiceImpl<DefLoginLogManager,
             "Android", "Linux", "Mac OS X", "Ubuntu", "Windows 10", "Windows 8", "Windows 7", "Windows XP", "Windows Vista"
     );
     private final DefUserManager defUserManager;
+    private final DefLoginLogMapper defLoginLogMapper;
 
     private static String simplifyOperatingSystem(String operatingSystem) {
         return OPERATING_SYSTEM.get().parallel().filter(b -> StrUtil.containsIgnoreCase(operatingSystem, b)).findAny().orElse(operatingSystem);
@@ -94,5 +98,15 @@ public class DefLoginLogServiceImpl extends SuperServiceImpl<DefLoginLogManager,
     @Transactional(rollbackFor = Exception.class)
     public boolean clearLog(LocalDateTime clearBeforeTime, Integer clearBeforeNum) {
         return superManager.clearLog(clearBeforeTime, clearBeforeNum) > 0;
+    }
+
+    @Override
+    public List<LoginCountDTO> getLoginRank(LocalDateTime start, LocalDateTime end, Integer limit) {
+        return defLoginLogMapper.selectLoginCountBetween(start, end, limit);
+    }
+
+    @Override
+    public Long countUsersWithMinLogins(LocalDateTime start, LocalDateTime end, Integer minTimes) {
+        return defLoginLogMapper.selectUserCountWithMinLogins(start, end, minTimes);
     }
 }

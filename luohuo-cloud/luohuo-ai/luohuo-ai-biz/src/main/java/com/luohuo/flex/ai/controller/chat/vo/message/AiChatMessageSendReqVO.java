@@ -20,4 +20,6 @@ public class AiChatMessageSendReqVO {
     @Schema(description = "是否携带上下文", example = "true")
     private Boolean useContext;
 
+    @Schema(description = "是否开启深度思考模式", example = "false")
+    private Boolean reasoningEnabled = false;
 }

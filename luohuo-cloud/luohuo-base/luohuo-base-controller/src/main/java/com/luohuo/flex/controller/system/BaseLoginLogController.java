@@ -1,6 +1,7 @@
 package com.luohuo.flex.controller.system;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.luohuo.flex.base.service.system.dto.LoginCountDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,7 @@ import com.luohuo.flex.base.vo.save.system.DefLoginLogSaveVO;
 import com.luohuo.flex.base.vo.update.system.DefLoginLogUpdateVO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -87,5 +90,41 @@ public class BaseLoginLogController extends SuperController<DefLoginLogService, 
         }
 
         return success(superService.clearLog(clearBeforeTime, clearBeforeNum));
+    }
+
+    @GetMapping("/stats/login-rank")
+    @Operation(summary = "登录次数排行榜（status=01）")
+    public R<List<LoginCountDTO>> getLoginRank(
+            @RequestParam(value = "start", required = false) LocalDateTime start,
+            @RequestParam(value = "end", required = false) LocalDateTime end,
+            @RequestParam(value = "rangeDays", required = false) Integer rangeDays,
+            @RequestParam(value = "limit", required = false) Integer limit
+    ) {
+        LocalDateTime now = LocalDateTime.now();
+        if (start == null || end == null) {
+            int days = rangeDays != null ? rangeDays : 30;
+            start = now.minusDays(days);
+            end = now;
+        }
+        if (limit == null) limit = 50;
+        return success(superService.getLoginRank(start, end, limit));
+    }
+
+    @GetMapping("/stats/user-count")
+    @Operation(summary = "登录次数达到阈值的用户数量（status=01）")
+    public R<Long> countUsersWithMinLogins(
+            @RequestParam(value = "start", required = false) LocalDateTime start,
+            @RequestParam(value = "end", required = false) LocalDateTime end,
+            @RequestParam(value = "rangeDays", required = false) Integer rangeDays,
+            @RequestParam(value = "minTimes", required = false) Integer minTimes
+    ) {
+        LocalDateTime now = LocalDateTime.now();
+        if (start == null || end == null) {
+            int days = rangeDays != null ? rangeDays : 30;
+            start = now.minusDays(days);
+            end = now;
+        }
+        if (minTimes == null) minTimes = 3;
+        return success(superService.countUsersWithMinLogins(start, end, minTimes));
     }
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.luohuo.basic.database.mybatis.conditions.Wraps;
 import com.luohuo.basic.jackson.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luohuo.basic.utils.BeanPlusUtil;
 import com.luohuo.basic.utils.CollHelper;
 import com.luohuo.basic.utils.StrPool;
@@ -41,6 +42,7 @@ public class ResourceBiz {
     private final DefResourceService defResourceService;
     private final DefApplicationService defApplicationService;
     private final BaseRoleService baseRoleService;
+    private final ObjectMapper objectMapper;
 
     /**
      * 是否所有的子都是视图
@@ -205,7 +207,11 @@ public class ResourceBiz {
             log.debug("level={}, label={}", level, item.getName());
             RouterMeta meta = null;
             if (StrUtil.isNotEmpty(item.getMetaJson()) && !StrPool.BRACE.equals(item.getMetaJson())) {
-                meta = JsonUtil.parse(item.getMetaJson(), RouterMeta.class);
+                try {
+                    meta = JsonUtil.parse(item.getMetaJson(), RouterMeta.class);
+                } catch (Exception ignored) {
+                    try { meta = objectMapper.readValue(item.getMetaJson(), RouterMeta.class); } catch (Exception ignored2) {}
+                }
             }
             if (meta == null && item.getMeta() != null) {
                 meta = item.getMeta();
@@ -255,7 +261,11 @@ public class ResourceBiz {
             log.debug("level={}, label={}", level, item.getName());
             RouterMeta meta = null;
             if (StrUtil.isNotEmpty(item.getMetaJson()) && !StrPool.BRACE.equals(item.getMetaJson())) {
-                meta = JsonUtil.parse(item.getMetaJson(), RouterMeta.class);
+                try {
+                    meta = JsonUtil.parse(item.getMetaJson(), RouterMeta.class);
+                } catch (Exception ignored) {
+                    try { meta = objectMapper.readValue(item.getMetaJson(), RouterMeta.class); } catch (Exception ignored2) {}
+                }
             }
             if (meta == null && item.getMeta() != null) {
                 meta = item.getMeta();
@@ -336,7 +346,11 @@ public class ResourceBiz {
             RouterMeta meta = null;
             if (item.getMeta() == null) {
                 if (StrUtil.isNotEmpty(item.getMetaJson()) && !StrPool.BRACE.equals(item.getMetaJson())) {
-                    meta = JsonUtil.parse(item.getMetaJson(), RouterMeta.class);
+                    try {
+                        meta = JsonUtil.parse(item.getMetaJson(), RouterMeta.class);
+                    } catch (Exception ignored) {
+                        try { meta = objectMapper.readValue(item.getMetaJson(), RouterMeta.class); } catch (Exception ignored2) {}
+                    }
                 }
                 if (meta == null && item.getMeta() != null) {
                     meta = item.getMeta();

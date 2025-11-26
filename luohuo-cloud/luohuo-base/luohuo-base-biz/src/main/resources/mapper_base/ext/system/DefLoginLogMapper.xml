@@ -17,4 +17,41 @@
         </trim>
     </delete>
 
+    <select id="selectUserCountWithMinLogins" resultType="long">
+        SELECT COUNT(*) FROM (
+        SELECT employee_id AS uid, COUNT(*) AS total
+        FROM def_login_log
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            AND status = '01'
+            <if test="start != null">
+                AND login_date <![CDATA[ >= ]]> #{start}
+            </if>
+            <if test="end != null">
+                AND login_date <![CDATA[ <= ]]> #{end}
+            </if>
+        </trim>
+        GROUP BY employee_id
+        HAVING COUNT(*) <![CDATA[ >= ]]> #{minTimes}
+        ) t
+    </select>
+
+    <select id="selectLoginCountBetween" resultType="com.luohuo.flex.base.service.system.dto.LoginCountDTO">
+        SELECT employee_id AS uid, COUNT(*) AS total
+        FROM def_login_log
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            AND status = '01'
+            <if test="start != null">
+                AND login_date <![CDATA[ >= ]]> #{start}
+            </if>
+            <if test="end != null">
+                AND login_date <![CDATA[ <= ]]> #{end}
+            </if>
+        </trim>
+        GROUP BY employee_id
+        ORDER BY total DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
 </mapper>

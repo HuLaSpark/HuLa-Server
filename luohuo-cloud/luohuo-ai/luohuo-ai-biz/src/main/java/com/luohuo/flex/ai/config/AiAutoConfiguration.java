@@ -18,6 +18,10 @@ import com.luohuo.flex.ai.core.model.HunYuanChatModel;
 import com.luohuo.flex.ai.core.model.MidjourneyApi;
 import com.luohuo.flex.ai.core.model.SunoApi;
 import com.luohuo.flex.ai.core.model.XingHuoChatModel;
+import com.luohuo.flex.ai.core.model.google.GeminiChatModel;
+import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.openai.api.OpenAiApi;
 import com.luohuo.flex.ai.core.model.openrouter.OpenRouterApiConstants;
 import com.luohuo.flex.ai.core.model.openrouter.OpenRouterChatModel;
 import com.luohuo.flex.ai.core.model.silicon.SiliconFlowApiConstants;
@@ -303,6 +307,24 @@ public class AiAutoConfiguration {
     @ConditionalOnProperty(value = "luohuo.ai.suno.enable", havingValue = "true")
     public SunoApi sunoApi(HulaAiProperties hulaAiProperties) {
         return new SunoApi(hulaAiProperties.getSuno().getBaseUrl());
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "luohuo.ai.gemini.enable", havingValue = "true")
+    public GeminiChatModel geminiChatClient(HulaAiProperties hulaAiProperties) {
+        HulaAiProperties.GeminiProperties properties = hulaAiProperties.getGemini();
+        String baseUrl = StrUtil.isNotEmpty(properties.getBaseUrl()) ? properties.getBaseUrl() : "https://generativelanguage.googleapis.com/v1beta/openai";
+        OpenAiChatModel openAiChatModel = OpenAiChatModel.builder()
+                .openAiApi(OpenAiApi.builder().baseUrl(baseUrl).apiKey(properties.getApiKey()).build())
+                .defaultOptions(OpenAiChatOptions.builder()
+                        .model(properties.getModel())
+                        .temperature(properties.getTemperature())
+                        .maxTokens(properties.getMaxTokens())
+                        .topP(properties.getTopP())
+                        .build())
+                .toolCallingManager(getToolCallingManager())
+                .build();
+        return new GeminiChatModel(openAiChatModel);
     }
 
     // ========== RAG 相关 ==========

@@ -71,7 +71,8 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
         // 2. 创建 AiChatConversationDO 聊天对话
         AiChatConversationDO conversation = new AiChatConversationDO().setUserId(userId).setPinned(false)
                 .setModelId(model.getId()).setModel(model.getModel())
-                .setTemperature(model.getTemperature()).setMaxTokens(model.getMaxTokens()).setMaxContexts(model.getMaxContexts());
+                .setTemperature(model.getTemperature()).setMaxTokens(model.getMaxTokens()).setMaxContexts(model.getMaxContexts())
+                .setTokenUsage(0);
         if (role != null) {
             conversation.setTitle(role.getName()).setRoleId(role.getId()).setSystemMessage(role.getSystemMessage());
         } else {
@@ -108,6 +109,9 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
 
         // 2. 更新对话信息
         AiChatConversationDO updateObj = BeanUtils.toBean(updateReqVO, AiChatConversationDO.class);
+        // 禁止会话层直接修改 maxTokens / maxContexts，统一由模型驱动
+        updateObj.setMaxTokens(null);
+        updateObj.setMaxContexts(null);
         if (Boolean.TRUE.equals(updateReqVO.getPinned())) {
             updateObj.setPinnedTime(LocalDateTime.now());
         }
@@ -117,8 +121,10 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
             updateObj.setSystemMessage(role.getSystemMessage());
         }
         if (model != null) {
-			updateObj.setModelId(model.getId());
+            updateObj.setModelId(model.getId());
             updateObj.setModel(model.getModel());
+            updateObj.setMaxTokens(model.getMaxTokens());
+            updateObj.setMaxContexts(model.getMaxContexts());
         }
         chatConversationMapper.updateById(updateObj);
     }

@@ -107,4 +107,9 @@ public class AiModelDO extends BaseDO {
      */
     private Integer maxContexts;
 
+    /**
+     * 是否支持深度思考模式
+     */
+    private Boolean supportsReasoning;
+
 }

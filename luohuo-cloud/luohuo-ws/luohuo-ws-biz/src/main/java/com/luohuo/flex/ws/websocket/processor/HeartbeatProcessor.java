@@ -21,6 +21,6 @@ public class HeartbeatProcessor implements MessageProcessor {
 
     @Override
     public void process(WebSocketSession session, Long uid, WSBaseReq req) {
-        log.info("收到用户 {} 的心跳", uid);
+//        log.info("收到用户 {} 的心跳", uid);
     }
 }

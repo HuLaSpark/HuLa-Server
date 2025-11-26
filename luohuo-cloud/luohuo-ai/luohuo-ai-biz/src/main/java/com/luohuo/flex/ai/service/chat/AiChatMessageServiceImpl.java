@@ -4,9 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.luohuo.basic.context.ContextUtil;
-import com.luohuo.basic.tenant.core.aop.TenantIgnore;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.chat.vo.conversation.AiDelReqVO;
+import com.luohuo.flex.ai.controller.chat.vo.conversation.AiChatConversationUpdateMyReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessagePageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageRespVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendReqVO;
@@ -61,6 +61,7 @@ import static com.luohuo.flex.ai.common.pojo.CommonResult.error;
 import static com.luohuo.basic.base.R.success;
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.CHAT_CONVERSATION_NOT_EXISTS;
 import static com.luohuo.flex.ai.enums.ErrorCodeConstants.CHAT_MESSAGE_NOT_EXIST;
+import static com.luohuo.flex.ai.enums.ErrorCodeConstants.CHAT_PROMPT_TOO_LONG;
 import static com.luohuo.flex.ai.utils.ServiceExceptionUtil.exception;
 import static com.luohuo.basic.utils.collection.CollectionUtils.convertList;
 
@@ -110,6 +111,12 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		// 1.2 校验模型
 		AiModelDO model = modalService.validateModel(conversation.getModelId());
 
+		// 1.2.1 会话 Token 预算校验：累计 tokenUsage 超过模型 maxTokens 则拒绝
+		if (model.getMaxTokens() != null && conversation.getTokenUsage() != null
+				&& conversation.getTokenUsage() >= model.getMaxTokens()) {
+			throw exception(ErrorCodeConstants.CHAT_TOKEN_BUDGET_EXCEEDED);
+		}
+
 		// 1.3 检查并扣减模型使用次数
 		modelUsageService.checkAndDeductUsage(userId, model);
 
@@ -135,6 +142,14 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		// 3.3 更新响应内容
 		String newContent = chatResponse.getResult().getOutput().getText();
 		chatMessageMapper.updateById(new AiChatMessageDO().setId(assistantMessage.getId()).setContent(newContent));
+		// 用量统计：prompt + completion
+        int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
+        int completionTokens = estimateTokens(newContent);
+		int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
+        AiChatConversationUpdateMyReqVO updateReq = new AiChatConversationUpdateMyReqVO();
+        updateReq.setId(conversation.getId());
+        updateReq.setTokenUsage(newTotal);
+        chatConversationService.updateChatConversationMy(updateReq, userId);
 		// 3.4 响应结果
 		Map<Long, AiKnowledgeDocumentDO> documentMap = knowledgeDocumentService.getKnowledgeDocumentMap(
 				convertSet(knowledgeSegments, AiKnowledgeSegmentSearchRespBO::getDocumentId));
@@ -167,6 +182,12 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		modelUsageService.checkAndDeductUsage(userId, model);
 
 		StreamingChatModel chatModel = modalService.getChatModel(model.getId());
+
+		// 1.2.1 会话 Token 预算校验：累计 tokenUsage 超过模型 maxTokens 则拒绝
+		if (model.getMaxTokens() != null && conversation.getTokenUsage() != null
+				&& conversation.getTokenUsage() >= model.getMaxTokens()) {
+			return Flux.just(error(ErrorCodeConstants.CHAT_TOKEN_BUDGET_EXCEEDED));
+		}
 
 		// 2. 知识库找回
 		List<AiKnowledgeSegmentSearchRespBO> knowledgeSegments = recallKnowledgeSegment(sendReqVO.getContent(),
@@ -204,33 +225,48 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 			// 响应结果
 			String newContent = chunk.getResult() != null ? chunk.getResult().getOutput().getText() : null;
 			newContent = StrUtil.nullToDefault(newContent, "");
-			contentBuffer.append(newContent);
+			String answerChunk = stripReasoningTags(newContent);
+			contentBuffer.append(answerChunk);
 
 			// 提取推理内容
 			String newReasoningContent = null;
 			if (chunk.getMetadata() != null && chunk.getMetadata().containsKey("reasoning_content")) {
 				newReasoningContent = String.valueOf(chunk.getMetadata().get("reasoning_content"));
 				reasoningBuffer.append(newReasoningContent);
+			} else {
+				String extracted = extractReasoningFromText(newContent);
+				if (StrUtil.isNotEmpty(extracted)) {
+					newReasoningContent = extracted;
+					reasoningBuffer.append(extracted);
+				}
 			}
 
 			return success(new AiChatMessageSendRespVO()
 					.setSend(BeanUtils.toBean(userMessage, AiChatMessageSendRespVO.Message.class))
 					.setReceive(BeanUtils.toBean(assistantMessage, AiChatMessageSendRespVO.Message.class)
-							.setContent(newContent)
-							.setReasoningContent(newReasoningContent)
-							.setSegments(segments)));
+					.setContent(answerChunk)
+						.setReasoningContent(newReasoningContent)
+						.setSegments(segments)));
 		}).doOnComplete(() -> {
 			// 手动设置租户信息（因为 Flux 异步会切换线程，导致 ThreadLocal 丢失）
 			try {
 				ContextUtil.setIgnore(true);
 
-				String content = contentBuffer.toString();
+				String content = stripReasoningTags(contentBuffer.toString());
 				String reasoningContent = reasoningBuffer.toString();
 				AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content);
 				if (StrUtil.isNotEmpty(reasoningContent)) {
 					updateMessage.setReasoningContent(reasoningContent);
 				}
 				chatMessageMapper.updateById(updateMessage);
+				// 用量统计：prompt + completion（流式完成时）
+                int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
+                int completionTokens = estimateTokens(content);
+				int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
+                AiChatConversationUpdateMyReqVO streamUpdateReq = new AiChatConversationUpdateMyReqVO();
+                streamUpdateReq.setId(conversation.getId());
+                streamUpdateReq.setTokenUsage(newTotal);
+                chatConversationService.updateChatConversationMy(streamUpdateReq, conversation.getUserId());
 			} finally {
 				ContextUtil.setIgnore(false);
 			}
@@ -261,10 +297,26 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 	private Prompt buildPrompt(AiChatConversationDO conversation, List<AiChatMessageDO> messages,
 							   List<AiKnowledgeSegmentSearchRespBO> knowledgeSegments,
 							   AiModelDO model, AiChatMessageSendReqVO sendReqVO) {
+		// 上下文条数限制：携带上下文时，历史问答对已达上限则阻止继续对话
+		if (Boolean.TRUE.equals(sendReqVO.getUseContext())) {
+			int pairs = countContextPairs(messages);
+			if (conversation.getMaxContexts() != null && pairs >= conversation.getMaxContexts()) {
+				throw exception(CHAT_PROMPT_TOO_LONG);
+			}
+		}
 		List<Message> chatMessages = new ArrayList<>();
 		// 1.1 System Context 角色设定
 		if (StrUtil.isNotBlank(conversation.getSystemMessage())) {
 			chatMessages.add(new SystemMessage(conversation.getSystemMessage()));
+		}
+		// 1.1.1 深度思考系统提示（仅对支持的模型生效）
+		if (sendReqVO.getReasoningEnabled() && isReasoningSupported(model)) {
+			int thinkingBudget = 1024;
+			chatMessages.add(new SystemMessage(
+				"你是深度思考助手。先在‘思考过程’中进行详细推理，再给出最终答案。请保持推理与答案清晰分离。" +
+				"将推理内容使用 <thinking> 与 </thinking> 包裹，将最终答案使用 <answer> 与 </answer> 包裹。" +
+				StrUtil.format("思考阶段最多使用 {} token。", thinkingBudget)
+			));
 		}
 
 		// 1.2 历史 history message 历史消息
@@ -298,6 +350,94 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		ChatOptions chatOptions = AiUtils.buildChatOptions(platform, model.getModel(),
 				conversation.getTemperature(), conversation.getMaxTokens(), toolNames, toolContext);
 		return new Prompt(chatMessages, chatOptions);
+	}
+
+    private boolean isReasoningSupported(AiModelDO model) {
+        return Boolean.TRUE.equals(model.getSupportsReasoning());
+    }
+
+	private int estimateContextTokens(AiChatConversationDO conversation, List<AiChatMessageDO> allMessages, String currentContent) {
+		int total = 0;
+		AiChatMessageSendReqVO ctxReq = new AiChatMessageSendReqVO();
+		ctxReq.setUseContext(true);
+		List<AiChatMessageDO> contextMessages = filterContextMessages(allMessages, conversation, ctxReq);
+		for (AiChatMessageDO m : contextMessages) {
+			total += estimateTokens(m.getContent());
+			if (StrUtil.isNotEmpty(m.getReasoningContent())) {
+				total += estimateTokens(m.getReasoningContent());
+			}
+		}
+		if (StrUtil.isNotEmpty(currentContent)) {
+			total += estimateTokens(currentContent);
+		}
+		return total;
+	}
+
+	private int countContextPairs(List<AiChatMessageDO> messages) {
+		int pairs = 0;
+		for (int i = messages.size() - 1; i >= 0; i--) {
+			AiChatMessageDO assistantMessage = CollUtil.get(messages, i);
+			if (assistantMessage == null || assistantMessage.getReplyId() == null) {
+				continue;
+			}
+			AiChatMessageDO userMessage = CollUtil.get(messages, i - 1);
+			if (userMessage == null
+					|| ObjUtil.notEqual(assistantMessage.getReplyId(), userMessage.getId())
+					|| StrUtil.isEmpty(assistantMessage.getContent())) {
+				continue;
+			}
+			pairs++;
+			i--; // 跳过已配对的 user
+		}
+		return pairs;
+	}
+
+	private int estimateTokens(String text) {
+		if (StrUtil.isEmpty(text)) return 0;
+		String ascii = text.replaceAll("[^\\x00-\\x7F]", "");
+		int nonAsciiCount = text.length() - ascii.length();
+		String[] words = ascii.trim().split("\\s+");
+		int asciiTokens = 0;
+		for (String w : words) {
+			if (StrUtil.isEmpty(w)) continue;
+			asciiTokens += (int) Math.ceil(w.length() / 4.0);
+		}
+		return asciiTokens + nonAsciiCount;
+	}
+
+	private String extractReasoningFromText(String text) {
+		if (StrUtil.isEmpty(text)) return null;
+		StringBuilder sb = new StringBuilder();
+		int start = 0;
+		while (true) {
+			int s = text.indexOf("<thinking>", start);
+			if (s < 0) break;
+			int e = text.indexOf("</thinking>", s + 10);
+			if (e < 0) break;
+			sb.append(text, s + 10, e);
+			start = e + 11;
+		}
+		if (sb.length() > 0) return sb.toString();
+		start = 0;
+		while (true) {
+			int s = text.indexOf("<reasoning>", start);
+			if (s < 0) break;
+			int e = text.indexOf("</reasoning>", s + 11);
+			if (e < 0) break;
+			sb.append(text, s + 11, e);
+			start = e + 12;
+		}
+		return sb.length() > 0 ? sb.toString() : null;
+	}
+
+	private String stripReasoningTags(String text) {
+		if (StrUtil.isEmpty(text)) return text;
+		String t = text;
+		t = t.replaceAll("<thinking>[\\s\\S]*?</thinking>", "");
+		t = t.replaceAll("<reasoning>[\\s\\S]*?</reasoning>", "");
+		t = t.replaceAll("<answer>", "");
+		t = t.replaceAll("</answer>", "");
+		return t;
 	}
 
 	/**

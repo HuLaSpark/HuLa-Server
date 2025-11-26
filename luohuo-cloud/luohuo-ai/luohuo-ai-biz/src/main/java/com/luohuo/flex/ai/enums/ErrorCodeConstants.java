@@ -77,4 +77,7 @@ public interface ErrorCodeConstants {
     // ========== AI 使用限制 1-040-012-000 ==========
     ErrorCode AI_USAGE_LIMIT_EXCEEDED = new ErrorCode(1_040_012_000, "AI使用次数已用完");
 
+    // ========== 会话 Token 限制 1-040-013-000 ==========
+    ErrorCode CHAT_TOKEN_BUDGET_EXCEEDED = new ErrorCode(1_040_013_000, "本会话的 Token 预算已用完，请新建会话或更换模型");
+
 }

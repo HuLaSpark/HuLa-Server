@@ -150,6 +150,7 @@ public class AiModelFactoryImpl implements AiModelFactory {
             case OPENAI -> buildOpenAiChatModel(apiKey, url);
             case AZURE_OPENAI -> buildAzureOpenAiChatModel(apiKey, url);
             case OLLAMA -> buildOllamaChatModel(url);
+            case GEMINI -> buildGeminiChatModel(apiKey, url);
             default -> throw new IllegalArgumentException(StrUtil.format("未知平台({})", platform));
         };
     }
@@ -188,6 +189,8 @@ public class AiModelFactoryImpl implements AiModelFactory {
                 return SpringUtil.getBean(AzureOpenAiChatModel.class);
             case OLLAMA:
                 return SpringUtil.getBean(OllamaChatModel.class);
+            case GEMINI:
+                return SpringUtil.getBean(com.luohuo.flex.ai.core.model.google.GeminiChatModel.class);
             default:
                 throw new IllegalArgumentException(StrUtil.format("未知平台({})", platform));
         }
@@ -465,6 +468,12 @@ public class AiModelFactoryImpl implements AiModelFactory {
     private static OpenAiChatModel buildGiteeAiChatModel(String apiKey) {
         // OpenAI 客户端会自动添加 /v1，所以这里只用 https://ai.gitee.com
         String baseUrl = "https://ai.gitee.com";
+        OpenAiApi openAiApi = OpenAiApi.builder().baseUrl(baseUrl).apiKey(apiKey).build();
+        return OpenAiChatModel.builder().openAiApi(openAiApi).toolCallingManager(getToolCallingManager()).build();
+    }
+
+    private ChatModel buildGeminiChatModel(String apiKey, String url) {
+        String baseUrl = StrUtil.blankToDefault(url, "https://generativelanguage.googleapis.com/v1beta/openai");
         OpenAiApi openAiApi = OpenAiApi.builder().baseUrl(baseUrl).apiKey(apiKey).build();
         return OpenAiChatModel.builder().openAiApi(openAiApi).toolCallingManager(getToolCallingManager()).build();
     }

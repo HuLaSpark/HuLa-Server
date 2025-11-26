@@ -50,6 +50,9 @@ public class AiModelRespVO {
     @Schema(description = "上下文的最大 Message 数量", example = "8192")
     private Integer maxContexts;
 
+    @Schema(description = "是否支持深度思考模式", example = "true")
+    private Boolean supportsReasoning;
+
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 

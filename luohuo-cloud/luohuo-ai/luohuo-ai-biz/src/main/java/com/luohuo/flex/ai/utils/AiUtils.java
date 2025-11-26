@@ -64,6 +64,9 @@ public class AiUtils {
             case GITEE_AI: // 复用 OpenAI 客户端
                 return OpenAiChatOptions.builder().model(model).temperature(temperature).maxTokens(maxTokens)
                         .toolNames(toolNames).toolContext(toolContext).build();
+            case GEMINI:
+                return OpenAiChatOptions.builder().model(model).temperature(temperature).maxTokens(maxTokens)
+                        .toolNames(toolNames).toolContext(toolContext).build();
             case AZURE_OPENAI:
                 return AzureOpenAiChatOptions.builder().deploymentName(model).temperature(temperature).maxTokens(maxTokens)
                         .toolNames(toolNames).toolContext(toolContext).build();

@@ -53,6 +53,8 @@ public enum AiPlatformEnum {
 
     SUNO("Suno","Suno"), // Suno AI
 
+    GEMINI("Gemini","Gemini"),
+
     ;
 
     /**

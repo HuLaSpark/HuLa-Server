@@ -442,30 +442,32 @@ public class AiApiKeyServiceImpl implements AiApiKeyService {
 			if (data != null && data.get("limit") != null && !(data.get("limit") instanceof cn.hutool.json.JSONNull)) {
 				limit = new BigDecimal(String.valueOf(data.get("limit")));
 			}
-			if (data != null && data.get("usage") != null && !(data.get("usage") instanceof cn.hutool.json.JSONNull)) {
-				usage = new BigDecimal(String.valueOf(data.get("usage")));
-			}
+            if (data != null && data.get("usage") != null && !(data.get("usage") instanceof cn.hutool.json.JSONNull)) {
+                usage = new BigDecimal(String.valueOf(data.get("usage")));
+            }
 			BigDecimal remaining = null;
 			if (limit != null) {
 				remaining = usage != null ? limit.subtract(usage) : limit;
 			}
-			if (remaining != null) {
-				balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
-						.currency("USD")
-						.totalBalance(remaining)
-						.available(true)
-						.build());
-				totalBalance = remaining;
-			} else {
-				balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
-						.currency("USD")
-						.totalBalance(BigDecimal.ZERO)
-						.grantedBalance(BigDecimal.ZERO)
-						.toppedUpBalance(BigDecimal.ZERO)
-						.available(Boolean.TRUE.equals(freeTier))
-						.build());
-				totalBalance = BigDecimal.ZERO;
-			}
+            if (remaining != null) {
+                balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+                        .currency("USD")
+                        .totalBalance(remaining)
+                        .usageTotal(usage)
+                        .available(true)
+                        .build());
+                totalBalance = remaining;
+            } else {
+                balanceInfos.add(AiApiKeyBalanceRespVO.BalanceInfo.builder()
+                        .currency("USD")
+                        .totalBalance(BigDecimal.ZERO)
+                        .grantedBalance(BigDecimal.ZERO)
+                        .toppedUpBalance(BigDecimal.ZERO)
+                        .usageTotal(BigDecimal.ZERO)
+                        .available(Boolean.TRUE.equals(freeTier))
+                        .build());
+                totalBalance = BigDecimal.ZERO;
+            }
 		}
 
 		return AiApiKeyBalanceRespVO.builder()

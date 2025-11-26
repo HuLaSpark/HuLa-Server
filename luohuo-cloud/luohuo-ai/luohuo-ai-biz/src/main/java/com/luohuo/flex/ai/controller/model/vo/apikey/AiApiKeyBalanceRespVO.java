@@ -58,6 +58,9 @@ public class AiApiKeyBalanceRespVO {
 		@Schema(description = "总余额", example = "110.00")
 		private BigDecimal totalBalance;
 
+		@Schema(description = "使用总量（按平台返回的单位，可能为金额或额度）", example = "12.34")
+		private BigDecimal usageTotal;
+
 		@Schema(description = "赠送余额", example = "10.00")
 		private BigDecimal grantedBalance;
 

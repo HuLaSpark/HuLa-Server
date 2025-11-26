@@ -35,6 +35,9 @@ public class AdminStatsResp {
     @Schema(description = "AI 统计")
     private AiStats aiStats;
 
+    @Schema(description = "最近一个月登录≥3次的用户总数")
+    private Integer monthlyLogin3PlusUserCount;
+
     @Data
     @Builder
     @AllArgsConstructor

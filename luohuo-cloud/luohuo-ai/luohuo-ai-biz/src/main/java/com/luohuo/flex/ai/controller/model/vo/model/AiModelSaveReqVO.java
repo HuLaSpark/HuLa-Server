@@ -53,6 +53,9 @@ public class AiModelSaveReqVO {
     @Schema(description = "上下文的最大 Message 数量", example = "8192")
     private Integer maxContexts;
 
+    @Schema(description = "是否支持深度思考模式", example = "false")
+    private Boolean supportsReasoning;
+
     @Schema(description = "是否公开：0-公开，1-私有", example = "0")
     private Integer publicStatus;
 

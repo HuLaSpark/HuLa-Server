@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 21/11/2025 14:56:07
+ Date: 26/11/2025 08:05:50
 */
 
 SET NAMES utf8mb4;
@@ -37,7 +37,7 @@ CREATE TABLE `ai_api_key`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 94780244072449 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 98364012618753 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI API 密钥表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_api_key
@@ -94,10 +94,11 @@ CREATE TABLE `ai_chat_conversation`  (
   `model` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '模型标识',
   `pinned` bit(1) NOT NULL COMMENT '是否置顶',
   `pinned_time` datetime NULL DEFAULT NULL COMMENT '置顶时间',
+  `token_usage` bigint NOT NULL DEFAULT 0 COMMENT '总使用量',
   `system_message` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '角色设定',
   `temperature` double NOT NULL COMMENT '温度参数',
   `max_tokens` int NOT NULL COMMENT '单条回复的最大 Token 数量',
-  `max_contexts` int NOT NULL COMMENT '上下文的最大 Message 数量',
+  `max_contexts` int NOT NULL DEFAULT 50 COMMENT '上下文的最大 Message 数量',
   `creator` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '创建人',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `updater` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '更新人',
@@ -105,7 +106,7 @@ CREATE TABLE `ai_chat_conversation`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NULL DEFAULT NULL COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 98061603300353 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 99658689418753 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_conversation
@@ -137,7 +138,7 @@ CREATE TABLE `ai_chat_message`  (
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_msg_type`(`msg_type` ASC) USING BTREE COMMENT '消息内容类型索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 97988513358850 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 99659553445378 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_message
@@ -168,7 +169,7 @@ CREATE TABLE `ai_chat_role`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 93210018275841 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 98376230626305 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_role
@@ -204,7 +205,7 @@ CREATE TABLE `ai_image`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 97776948470785 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 绘画表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 99652444100098 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 绘画表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_image
@@ -335,6 +336,7 @@ CREATE TABLE `ai_model`  (
   `status` tinyint NOT NULL COMMENT '状态',
   `public_status` bit(1) NOT NULL DEFAULT b'1' COMMENT '公开、私有',
   `temperature` double NULL DEFAULT NULL COMMENT '温度参数',
+  `supports_reasoning` tinyint NOT NULL DEFAULT 0 COMMENT '是否支持上下文',
   `max_tokens` int NULL DEFAULT NULL COMMENT '单条回复的最大 Token 数量',
   `max_contexts` int NULL DEFAULT NULL COMMENT '上下文的最大 Message 数量',
   `creator` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '创建者',
@@ -347,7 +349,7 @@ CREATE TABLE `ai_model`  (
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
   INDEX `idx_public_status`(`public_status` ASC) USING BTREE,
   INDEX `idx_user_public`(`user_id` ASC, `public_status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 93210576118273 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 模型表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 98365405127681 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 模型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_model
@@ -370,7 +372,7 @@ CREATE TABLE `ai_model_usage_record`  (
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_user_model`(`user_id` ASC, `model_id` ASC) USING BTREE COMMENT '用户-模型唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 98017718297601 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 公开模型使用记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 99658790082049 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 公开模型使用记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_model_usage_record
@@ -436,13 +438,13 @@ CREATE TABLE `ai_platform`  (
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_platform`(`platform` ASC, `deleted` ASC) USING BTREE COMMENT '平台代码唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 平台配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 平台配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_platform
 -- ----------------------------
 INSERT INTO `ai_platform` VALUES (1, 'Moonshot', '月之暗灭', 'Moonshot (KIMI)', 'moonshot-v1-8k, moonshot-v1-32k, moonshot-v1-128k', 'https://platform.moonshot.cn/docs', '请前往 Moonshot 官网查看可用模型列表', 1, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
-INSERT INTO `ai_platform` VALUES (2, 'DeepSeek', 'DeepSeek', 'DeepSeek', 'deepseek-chat, deepseek-coder, deepseek-reasoner', 'https://api-docs.deepseek.com/zh-cn/guides/reasoning_model', '请前往 DeepSeek 官网查看可用模型列表', 2, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 03:05:33', b'0', 1);
+INSERT INTO `ai_platform` VALUES (2, 'DeepSeek', 'DeepSeek', 'DeepSeek', 'deepseek-chat, deepseek-coder, deepseek-reasoner, deepskke, d, deep, deep-s, deepseek-, deepseek-re', 'https://api-docs.deepseek.com/zh-cn/guides/reasoning_model', '请前往 DeepSeek 官网查看可用模型列表', 2, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 03:05:33', b'0', 1);
 INSERT INTO `ai_platform` VALUES (3, 'YiYan', '文心一言', 'Baidu (文心一言)', 'ernie-bot-4, ernie-bot-turbo, ernie-bot', 'https://cloud.baidu.com/doc/WENXINWORKSHOP/index.html', '请前往百度智能云官网查看可用模型列表', 13, 0, '', '2025-11-11 01:19:48', '', '2025-11-12 11:15:21', b'0', 1);
 INSERT INTO `ai_platform` VALUES (4, 'TongYi', '通义千问', 'Alibaba (通义千问)', 'qwen-turbo, qwen-plus, qwen-max, qwen-long', 'https://help.aliyun.com/zh/dashscope/developer-reference/model-square', '请前往阿里云官网查看可用模型列表', 4, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
 INSERT INTO `ai_platform` VALUES (5, 'HunYuan', '混元', 'Tencent (混元)', 'hunyuan-lite, hunyuan-standard, hunyuan-pro', 'https://cloud.tencent.com/document/product/1729', '请前往腾讯云官网查看可用模型列表', 5, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
@@ -459,6 +461,7 @@ INSERT INTO `ai_platform` VALUES (15, 'Anthropic', 'Anthropic', 'Anthropic', 'cl
 INSERT INTO `ai_platform` VALUES (16, 'Google', 'Google', 'Google', 'gemini-pro, gemini-pro-vision, gemini-1.5-pro', 'https://ai.google.dev/models', '请前往 Google AI 官网查看可用模型列表', 16, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
 INSERT INTO `ai_platform` VALUES (17, 'Ollama', 'Ollama', 'Ollama', 'llama2, mistral, neural-chat, dolphin-mixtral', 'https://ollama.ai/library', '请前往 Ollama 官网查看可用模型列表', 17, 0, '', '2025-11-11 01:19:48', '', '2025-11-11 02:33:25', b'0', 1);
 INSERT INTO `ai_platform` VALUES (18, 'OpenRouter', 'OpenRouter', 'OpenRouter', 'openai/gpt-3.5-turbo, openai/gpt-4, anthropic/claude-3-opus', 'https://openrouter.ai/docs', '请前往 OpenRouter 官网查看可用模型列表', 3, 0, '', '2025-11-12 04:16:46', '', '2025-11-12 11:15:13', b'0', 1);
+INSERT INTO `ai_platform` VALUES (19, 'Gemini', 'Gemini', 'Google (Gemini)', 'gemini-1.5-pro, gemini-1.5-flash', 'https://developers.google.cn/ai/build', '请前往 Google AI Build 查看可用模型列表', 10, 0, '', '2025-11-21 00:00:00', '', '2025-11-21 00:00:00', b'0', 1);
 
 -- ----------------------------
 -- Table structure for ai_tool
@@ -518,7 +521,7 @@ CREATE TABLE `ai_video`  (
   INDEX `idx_status`(`status` ASC) USING BTREE,
   INDEX `idx_task_id`(`task_id` ASC) USING BTREE,
   INDEX `idx_create_time`(`create_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 98017718297602 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 视频生成表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 99652406351361 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 视频生成表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_video
@@ -681,7 +684,7 @@ CREATE TABLE `base_employee`  (
 -- ----------------------------
 -- Records of base_employee
 -- ----------------------------
-INSERT INTO `base_employee` VALUES (1, 0, b'1', 1458051094994223104, 61170828529941, 1451532773234835456, NULL, '2439646234', 0, '', '20', '10', b'1', 1451549146992345088, '2021-11-09 10:54:44', 2, '2024-10-08 15:31:36', 0, 0, 1);
+INSERT INTO `base_employee` VALUES (1, 0, b'1', 1458051094994223104, 61170828529941, NULL, NULL, '2439646234', 0, '', '20', '10', b'1', 1451549146992345088, '2021-11-09 10:54:44', 2, '2024-10-08 15:31:36', 0, 0, 1);
 
 -- ----------------------------
 -- Table structure for base_employee_org_rel
@@ -1636,7 +1639,7 @@ INSERT INTO `def_interface_property` VALUES (250660012290998281, 250025856074776
 DROP TABLE IF EXISTS `def_login_log`;
 CREATE TABLE `def_login_log`  (
   `id` bigint NOT NULL COMMENT '主键',
-  `tenant_id` bigint NULL DEFAULT NULL COMMENT '所属企业',
+  `tenant_id` bigint NULL DEFAULT 1 COMMENT '所属企业',
   `employee_id` bigint NULL DEFAULT NULL COMMENT '登录员工',
   `user_id` bigint NULL DEFAULT NULL COMMENT '登录用户',
   `request_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '登录IP',
@@ -1784,6 +1787,7 @@ INSERT INTO `def_resource` VALUES (5, 1, 'im:moment', '朋友圈管理', '20', 1
 INSERT INTO `def_resource` VALUES (6, 1, 'im:contact', '联系人 / 好友管理', '20', 1, '01', '联系人、好友关系、申请记录等', '/im/contact', 'page/ImContact', '', 'AddressBook', b'0', b'0', b'1', 60, '', b'0', b'1', NULL, NULL, NULL, '/1/', 1, '{}', 1, '2021-12-12 12:12:12', 1, '2021-12-12 12:12:12', 0);
 INSERT INTO `def_resource` VALUES (7, 1, 'im:config', 'IM 配置', '20', 1, '01', 'im_config 配置、系统参数与高级设置', '/im/config', 'page/ImConfig', '', 'Settings', b'0', b'0', b'1', 70, '', b'0', b'1', NULL, NULL, NULL, '/1/', 1, '{}', 1, '2021-12-12 12:12:12', 1, '2021-12-12 12:12:12', 0);
 INSERT INTO `def_resource` VALUES (8, 1, 'ai:model', 'AI 能力中心', '20', 1, '01', '配置 AI 平台与模型，查看调用情况', '/ai/model', 'page/AiModel', '', 'Robot', b'0', b'0', b'1', 80, '', b'0', b'1', NULL, NULL, NULL, '/1/', 1, '{}', 1, '2021-12-12 12:12:12', 1, '2021-12-12 12:12:12', 0);
+INSERT INTO `def_resource` VALUES (9, 1, 'im:active', '活跃用户', '20', 1, '01', '按时间范围查看活跃用户列表', '/im/active', 'page/ActiveUsers', '', 'Users', b'0', b'0', b'1', 20, '', b'0', b'1', NULL, NULL, NULL, '/1/', 1, '{}', 1, '2021-12-12 12:12:12', 1, '2021-12-12 12:12:12', 0);
 INSERT INTO `def_resource` VALUES (138191972908138500, 3, 'demo:multiple:view3', '多级-隐藏菜单3', '20', 138191972908138497, '01', '', '/multiple/view3', 'demo/test/index', NULL, '', b'1', b'0', b'1', 30, '', b'0', b'1', NULL, NULL, NULL, '/138191972908138497/', 1, '{}', 2, '2021-12-12 12:12:12', 2, '2024-03-05 22:45:51', 0);
 INSERT INTO `def_resource` VALUES (138191972908138501, 3, 'demo:multiple:menu4', '下级是隐藏菜单', '20', 138191972908138497, '01', '', '/multiple/menu4', 'demo/test/index', NULL, '', b'0', b'0', b'1', 40, '', b'0', b'1', NULL, NULL, NULL, '/138191972908138497/', 1, '{}', 2, '2021-12-12 12:12:12', 2, '2024-03-05 22:47:07', 0);
 INSERT INTO `def_resource` VALUES (138191972908138502, 3, 'demo:multiple:menu4:view1', '多级-隐藏菜单-视图1', '20', 138191972908138501, '01', '', '/multiple/menu4/view1', 'demo/test/index', NULL, '', b'1', b'0', b'1', 1, '', b'0', b'1', NULL, NULL, NULL, '/138191972908138497/138191972908138501/', 2, '{\"currentActiveMenu\":\"/multiple/menu4\"}', 2, '2021-12-12 12:12:12', 2, '2024-05-15 23:08:31', 0);
@@ -2281,8 +2285,8 @@ CREATE TABLE `def_user`  (
 -- ----------------------------
 -- Records of def_user
 -- ----------------------------
-INSERT INTO `def_user` VALUES (61170828519936, 2, '15147891644', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-11-17 09:42:12', 4, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
-INSERT INTO `def_user` VALUES (61170828519937, 2, '13275346112', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"121.35.47.142\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"121.35.47.142\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-11-20 19:26:45', 1, '2025-03-27 04:23:08', NULL, '2025-11-20 23:47:36', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519936, 2, '15147891644', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-11-25 12:09:10', 5, NULL, 'b6351c5c1e5c172aca2ba36c00598a4b77db41f2240f38a9ed5f6b0ed98e4251', 'HuLa小管家', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519937, 2, '13275346112', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"116.24.67.61\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"116.24.67.61\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"100017\", \"region\": \"广东\", \"city_id\": \"440300\", \"country\": \"中国\", \"region_id\": \"440000\", \"country_id\": \"CN\"}}', NULL, 0, NULL, 'ab6ec4358efb64760e5f248c1f9130d03aaa1856f9c03e4dc5fa63fb38a796b6', 'Dawn', '2025-11-26 05:10:02', 1, '2025-03-27 04:23:08', NULL, '2025-11-26 07:32:15', 0, 1);
 
 -- ----------------------------
 -- Table structure for def_user_application
@@ -2358,7 +2362,7 @@ CREATE TABLE `extend_interface_log`  (
 -- Records of extend_interface_log
 -- ----------------------------
 INSERT INTO `extend_interface_log` VALUES (66567882983426, 244439130119864323, '阿里短信', 0, 1, '2025-08-26 16:37:01', '2025-08-26 16:37:00', NULL, '2025-08-26 16:37:00', NULL, 0, 0);
-INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 1163, 62, '2025-11-21 14:50:31', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
+INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 1334, 62, '2025-11-26 04:10:51', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
 
 -- ----------------------------
 -- Table structure for extend_interface_logging
@@ -2572,7 +2576,7 @@ CREATE TABLE `worker_node`  (
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1011 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1036 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of worker_node

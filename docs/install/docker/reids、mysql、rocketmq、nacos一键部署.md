@@ -18,4 +18,4 @@ chmod 777 /home/docker/rocketmq/timerwheel/
 - **打开目录**: 当前文件夹下输入 cmd 回车
 - **执行命令**: docker-compose up -d
 - **导入nacos数据库**: [mysql-schema.sql](../mysql-schema.sql)
-- **导入nacos命名空间数据**: [nacos_config_export_20251019194635.zip](../nacos/nacos_config_export_20251019194635.zip)
+- **导入nacos命名空间数据**: [nacos_config_export_20251126080946.zip](../nacos/nacos_config_export_20251126080946.zip)

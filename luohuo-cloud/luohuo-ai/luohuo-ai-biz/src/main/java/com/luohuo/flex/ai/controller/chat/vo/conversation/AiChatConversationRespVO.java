@@ -52,6 +52,9 @@ public class AiChatConversationRespVO implements VO {
     @Schema(description = "上下文的最大 Message 数量", requiredMode = Schema.RequiredMode.REQUIRED, example = "10")
     private Integer maxContexts;
 
+    @Schema(description = "会话累计 Token 用量", example = "12345")
+    private Integer tokenUsage;
+
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime createTime;
 

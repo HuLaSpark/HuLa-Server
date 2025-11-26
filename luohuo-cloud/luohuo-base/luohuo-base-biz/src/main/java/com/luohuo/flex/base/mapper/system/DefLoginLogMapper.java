@@ -1,6 +1,7 @@
 package com.luohuo.flex.base.mapper.system;
 
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
+import com.luohuo.flex.base.service.system.dto.LoginCountDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import com.luohuo.basic.base.mapper.SuperMapper;
@@ -29,4 +30,8 @@ public interface DefLoginLogMapper extends SuperMapper<DefLoginLog> {
      * @return 是否成功
      */
     Long clearLog(@Param("clearBeforeTime") LocalDateTime clearBeforeTime, @Param("idList") List<Long> idList);
+
+    Long selectUserCountWithMinLogins(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("minTimes") Integer minTimes);
+
+    List<LoginCountDTO> selectLoginCountBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("limit") Integer limit);
 }
