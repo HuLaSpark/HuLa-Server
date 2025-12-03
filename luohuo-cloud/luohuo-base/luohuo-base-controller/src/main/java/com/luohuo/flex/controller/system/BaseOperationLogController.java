@@ -16,6 +16,7 @@ import com.luohuo.basic.interfaces.echo.EchoService;
 import com.luohuo.flex.base.entity.system.BaseOperationLog;
 import com.luohuo.flex.base.service.system.BaseOperationLogService;
 import com.luohuo.flex.base.vo.query.system.BaseOperationLogPageQuery;
+import com.luohuo.basic.base.request.PageParams;
 import com.luohuo.flex.base.vo.result.system.BaseOperationLogResultVO;
 import com.luohuo.flex.base.vo.save.system.BaseOperationLogSaveVO;
 import com.luohuo.flex.base.vo.update.system.BaseOperationLogUpdateVO;
@@ -80,5 +81,11 @@ public class BaseOperationLogController extends SuperController<BaseOperationLog
             clearBeforeNum = 100000;
         }
         return success(superService.clearLog(clearBeforeTime, clearBeforeNum));
+    }
+
+    @Override
+    public void handlerQueryParams(PageParams<BaseOperationLogPageQuery> params) {
+		params.setSort("createTime");
+		params.setOrder("descending");
     }
 }

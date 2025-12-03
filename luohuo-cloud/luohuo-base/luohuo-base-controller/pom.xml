@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-base</artifactId>
         <groupId>com.luohuo.flex</groupId>
-        <version>3.0.5</version>
+        <version>3.0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

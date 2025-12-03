@@ -148,9 +148,8 @@ public class LoginStatusDTO implements Serializable {
     private boolean isLocalHostIp(String ipAddress) {
         try {
             InetAddress inetAddress = InetAddress.getByName(ipAddress);
-            return inetAddress.isLoopbackAddress();
+            return inetAddress.isLoopbackAddress() || inetAddress.isLinkLocalAddress() || inetAddress.isSiteLocalAddress();
         } catch (UnknownHostException e) {
-            // 处理异常情况，如果无法解析IP地址，则不视为本地地址
             return false;
         }
     }

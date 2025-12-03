@@ -62,7 +62,6 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      * 组织Id
      */
     @Schema(description = "组织Id")
-    
     @Echo(api = EchoApi.ORG_ID_CLASS)
     private List<Long> orgIdList;
 
@@ -77,15 +76,15 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      * 真实姓名
      */
     @Schema(description = "真实姓名")
-    private String realName;
+    private String name;
 
     /**
      * 职位状态;[10-在职 20-离职]@Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Base.POSITION_STATUS)
      */
     @Schema(description = "职位状态")
     @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Base.POSITION_STATUS)
-    
     private String positionStatus;
+
     /**
      * 状态;[0-禁用 1-启用]
      */
@@ -97,4 +96,7 @@ public class BaseEmployeeResultVO extends Entity<Long> implements Serializable, 
      */
     @Schema(description = "激活状态")
     private String activeStatus;
+
+	@Schema(description = "创建部门")
+	private Long createdOrgId;
 }

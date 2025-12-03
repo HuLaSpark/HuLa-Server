@@ -44,7 +44,7 @@ public interface FriendService {
 	 * @param type 申请类型
 	 * @return
 	 */
-	Long createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type);
+	Long createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type, Integer channel);
 
 	/**
 	 * 与系统用户创建好友关系

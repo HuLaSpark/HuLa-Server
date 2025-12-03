@@ -37,11 +37,11 @@ public class GroupInviteMemberListener {
     @Async(LUOHUO_EXECUTOR)
     @TransactionalEventListener(classes = GroupInviteMemberEvent.class, fallbackExecution = true, phase = TransactionPhase.AFTER_COMMIT)
     public void sendAddMsg(GroupInviteMemberEvent event) {
-		List<Long> uidList = event.getMemberList();
-		Long roomId = event.getRoomId();
-		User user = userCache.get(event.getUid());
-		ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(event.getApplyFor(), roomId, user, userCache.getBatch(uidList));
-		chatService.sendMsg(chatMessageReq, user.getId());
+        List<Long> uidList = event.getMemberList();
+        Long roomId = event.getRoomId();
+        User user = userCache.get(event.getUid());
+        ChatMessageReq chatMessageReq = RoomAdapter.buildGroupAddMessage(event.getApplyFor(), event.getChannel(), roomId, user, userCache.getBatch(uidList));
+        chatService.sendMsg(chatMessageReq, user.getId());
     }
 
 }

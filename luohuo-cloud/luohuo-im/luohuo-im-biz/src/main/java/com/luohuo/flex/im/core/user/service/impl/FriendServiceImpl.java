@@ -131,7 +131,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
     }
 
 	@Override
-	public Long createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type) {
+	public Long createUserApply(Long uid, Long roomId, Long targetId, String msg, Integer type, Integer channel) {
 		UserApply userApply = new UserApply();
 		userApply.setMsg(msg);
 		userApply.setUid(uid);
@@ -141,6 +141,7 @@ public class FriendServiceImpl implements FriendService, InitializingBean {
 		userApply.setStatus(NoticeStatusEnum.UNTREATED.getStatus());
 		userApply.setReadStatus(ApplyReadStatusEnum.UNREAD.getCode());
 		userApply.setApplyFor(true);
+		userApply.setJoinChannel(channel);
 		userApplyDao.save(userApply);
 		return userApply.getId();
 	}

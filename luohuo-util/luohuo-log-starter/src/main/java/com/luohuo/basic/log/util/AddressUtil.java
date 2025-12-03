@@ -24,25 +24,39 @@ public final class AddressUtil {
 
     static {
         try {
-            URL resource = AddressUtil.class.getResource("/ip2region/ip2region.xdb");
+            URL resource = AddressUtil.class.getResource("/ip2region/ip2region_v4.xdb");
+            String dbPath = null;
             if (resource != null) {
-                String dbPath = resource.getPath();
+                dbPath = resource.getPath();
+            } else {
+                String[] candidates = new String[] {
+                        "install" + File.separator + "ip2region_v4.xdb",
+                        ".." + File.separator + "install" + File.separator + "ip2region_v4.xdb",
+                        ".." + File.separator + ".." + File.separator + "install" + File.separator + "ip2region_v4.xdb"
+                };
+                for (String c : candidates) {
+                    File f = new File(c);
+                    if (f.exists()) {
+                        dbPath = f.getAbsolutePath();
+                        break;
+                    }
+                }
+            }
+            if (dbPath != null) {
                 File file = new File(dbPath);
                 if (!file.exists()) {
                     String tmpDir = System.getProperties().getProperty(StrPool.JAVA_TEMP_DIR);
-                    dbPath = tmpDir + "ip2region.xdb";
+                    dbPath = tmpDir + "ip2region_v4.xdb";
                     file = new File(dbPath);
-                    String classPath = "classpath:ip2region/ip2region.xdb";
+                    String classPath = "classpath:ip2region/ip2region_v4.xdb";
                     InputStream resourceAsStream = ResourceUtil.getStreamSafe(classPath);
                     if (resourceAsStream != null) {
                         FileUtils.copyInputStreamToFile(resourceAsStream, file);
                     }
                 }
-                // 1、从 dbPath 加载整个 xdb 到内存。
                 byte[] cBuff = Searcher.loadContentFromFile(dbPath);
                 searcher = Searcher.newWithBuffer(cBuff);
-
-                log.info("bean [{}]", searcher);
+                log.info("IP地址数据加载完毕 [{}]", searcher);
             }
         } catch (Exception e) {
             log.error("init ip region error", e);
@@ -60,23 +74,13 @@ public final class AddressUtil {
      */
     public static String getRegion(String ip) {
         try {
-            //db
             if (searcher == null || StrUtil.isEmpty(ip)) {
-                log.error("DbSearcher is null");
                 return StrUtil.EMPTY;
             }
-            long startTime = System.currentTimeMillis();
-
-            String result = searcher.search(ip);
-            long endTime = System.currentTimeMillis();
-            log.debug("region use time[{}] result[{}]", endTime - startTime, result);
-            return result;
-
+			return searcher.search(ip);
         } catch (Exception e) {
-            log.error("根据ip查询地区失败:", e);
+            return StrUtil.EMPTY;
         }
-        return StrUtil.EMPTY;
     }
-
 
 }

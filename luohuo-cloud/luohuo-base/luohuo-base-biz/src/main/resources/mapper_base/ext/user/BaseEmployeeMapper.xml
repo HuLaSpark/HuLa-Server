@@ -6,6 +6,7 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="create_by" jdbcType="BIGINT" property="createBy"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="name" jdbcType="CHAR" property="name"/>
         <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
@@ -20,9 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        , create_by, create_time, update_by, update_time,  active_status, last_company_id, last_dept_id,
-        is_default, user_id, position_id, real_name, position_status, state, created_org_id
+        id, create_by, create_time, update_by, update_time,  active_status, last_company_id, last_dept_id, user_id, position_id, name, position_status, state, created_org_id
     </sql>
 
     <!-- 通用查询映射结果 -->
@@ -72,8 +71,7 @@
         utr
         .
         id
-        , utr.create_by, utr.create_time, utr.update_by, utr.update_time,
-        utr.is_default, utr.user_id, utr.state
+        , utr.create_by, utr.create_time, utr.update_by, utr.update_time, utr.user_id, utr.state
     </sql>
 
     <select id="listEmployeeByUserId" resultMap="ResultVOResultMap">
@@ -81,6 +79,6 @@
         <include refid="Uar_Column_List"/>
         FROM base_employee utr
         where utr.user_id = ${userId}
-        order by utr.state desc, utr.is_default desc
+        order by utr.state desc
     </select>
 </mapper>

@@ -82,4 +82,10 @@ public class UserApply extends Entity<Long> {
 	 */
 	@TableField("apply_for")
 	private Boolean applyFor;
+
+	/**
+	 * 进群渠道 1-邀请 2-扫码 3-搜索
+	 */
+	@TableField("join_channel")
+	private Integer joinChannel;
 }

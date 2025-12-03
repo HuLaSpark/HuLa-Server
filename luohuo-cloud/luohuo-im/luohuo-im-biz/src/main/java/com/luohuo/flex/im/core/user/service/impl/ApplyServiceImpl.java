@@ -162,11 +162,17 @@ public class ApplyServiceImpl implements ApplyService {
 
 		// 获取到这个群的管理员的人的信息
 		List<Long> groupAdminIds = roomService.getGroupUsers(roomGroup.getId(), true);
-		SummeryInfoDTO userInfo = userSummaryCache.get(uid);
-		String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
+        SummeryInfoDTO userInfo = userSummaryCache.get(uid);
+        String msg = StrUtil.format("用户{}申请加入群聊{}", userInfo.getName(), roomGroup.getName());
+        if (req.getType().equals(2) && StrUtil.isBlank(req.getMsg())) {
+            req.setMsg("扫码加入群聊");
+        } else if (StrUtil.isBlank(req.getMsg())) {
+            req.setMsg("申请加入群聊");
+        }
 
 		// 申请进入群聊
-		Long applyId = friendService.createUserApply(uid, roomGroup.getRoomId(), uid, msg, RoomTypeEnum.GROUP.getType());
+		Integer channel = req.getType().equals(2) ? 2 : 3;
+		Long applyId = friendService.createUserApply(uid, roomGroup.getRoomId(), uid, msg, RoomTypeEnum.GROUP.getType(), channel);
 		noticeService.createNotice(
 				RoomTypeEnum.GROUP,
 				NoticeTypeEnum.GROUP_APPLY,
@@ -175,8 +181,8 @@ public class ApplyServiceImpl implements ApplyService {
 				applyId,
 				uid,
 				roomGroup.getRoomId(),
-				req.getMsg()
-		);
+                req.getMsg()
+        );
 
 		for (Long groupAdminId : groupAdminIds) {
 			noticeService.createNotice(
@@ -187,8 +193,8 @@ public class ApplyServiceImpl implements ApplyService {
 				applyId,
 				uid,
 				roomGroup.getRoomId(),
-				req.getMsg()
-			);
+                req.getMsg()
+            );
 		}
 		return true;
 	}
@@ -314,8 +320,8 @@ public class ApplyServiceImpl implements ApplyService {
 					cachePlusOps.sAdd(gKey, infoUid);
 					roomAppService.asyncOnline(Arrays.asList(infoUid), room.getId(), true);
 
-					SpringUtils.publishEvent(new GroupInviteMemberEvent(this, room.getId(), Arrays.asList(infoUid), invite.getUid(), invite.getApplyFor()));
-					SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(infoUid), uid));
+					SpringUtils.publishEvent(new GroupInviteMemberEvent(this, room.getId(), Arrays.asList(infoUid), invite.getUid(), invite.getApplyFor(), invite.getJoinChannel()));
+                    SpringUtils.publishEvent(new GroupMemberAddEvent(this, room.getId(), Math.toIntExact(cachePlusOps.sCard(gKey)), Math.toIntExact(cachePlusOps.sCard(onlineGroupMembersKey)), Arrays.asList(infoUid), uid));
 				}
 			}
 			case IGNORE -> {

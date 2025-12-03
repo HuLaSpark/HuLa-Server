@@ -13,4 +13,6 @@ public interface Constants {
      * 项目前缀
      */
     String PROJECT_PREFIX = "luohuo";
+
+	String BOT_AVATAR = "https://cdn.hulaspark.com/ai/bot.jpeg";
 }

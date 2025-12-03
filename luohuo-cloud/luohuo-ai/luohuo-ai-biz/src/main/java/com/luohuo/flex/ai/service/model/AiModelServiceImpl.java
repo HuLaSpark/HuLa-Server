@@ -5,6 +5,7 @@ import com.agentsflex.llm.ollama.OllamaLlmConfig;
 import com.agentsflex.llm.qwen.QwenLlm;
 import com.agentsflex.llm.qwen.QwenLlmConfig;
 import cn.hutool.core.util.ObjectUtil;
+import com.luohuo.basic.constant.Constants;
 import com.luohuo.basic.context.ContextUtil;
 import com.luohuo.flex.ai.common.pojo.PageResult;
 import com.luohuo.flex.ai.controller.model.vo.model.AiModelPageReqVO;
@@ -62,6 +63,9 @@ public class AiModelServiceImpl implements AiModelService {
 
 		// 2. 插入
 		AiModelDO model = BeanUtils.toBean(createReqVO, AiModelDO.class);
+		if (Integer.valueOf(0).equals(createReqVO.getPublicStatus())) {
+			model.setAvatar(Constants.BOT_AVATAR);
+		}
 		// 如果是私有模型且没有设置 userId，则抛出异常
 		if (Integer.valueOf(1).equals(createReqVO.getPublicStatus()) && model.getUserId() == null) {
 			throw exception(MODEL_NOT_EXISTS); // 使用适当的错误码
@@ -99,6 +103,9 @@ public class AiModelServiceImpl implements AiModelService {
 
 		// 3. 更新
 		AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
+		if (Integer.valueOf(0).equals(updateReqVO.getPublicStatus())) {
+			updateObj.setAvatar(Constants.BOT_AVATAR);
+		}
 		updateObj.setUserId(userId);
 		modelMapper.updateById(updateObj);
 	}
@@ -133,6 +140,9 @@ public class AiModelServiceImpl implements AiModelService {
 
 		// 管理员更新，无权限校验
 		AiModelDO updateObj = BeanUtils.toBean(updateReqVO, AiModelDO.class);
+		if (Integer.valueOf(0).equals(updateReqVO.getPublicStatus())) {
+			updateObj.setAvatar(Constants.BOT_AVATAR);
+		}
 		modelMapper.updateById(updateObj);
 	}
 

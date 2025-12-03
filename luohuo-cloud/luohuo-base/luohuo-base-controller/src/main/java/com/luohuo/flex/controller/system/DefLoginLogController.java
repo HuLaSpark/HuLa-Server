@@ -19,6 +19,7 @@ import com.luohuo.flex.base.vo.result.system.DefLoginLogResultVO;
 import com.luohuo.flex.base.vo.save.system.DefLoginLogSaveVO;
 import com.luohuo.flex.base.vo.update.system.DefLoginLogUpdateVO;
 import com.luohuo.flex.base.vo.query.system.DefLoginLogPageQuery;
+import com.luohuo.basic.base.request.PageParams;
 
 import java.time.LocalDateTime;
 
@@ -77,5 +78,11 @@ public class DefLoginLogController extends SuperController<DefLoginLogService, L
             clearBeforeNum = 100000;
         }
         return success(superService.clearLog(clearBeforeTime, clearBeforeNum));
+    }
+
+    @Override
+    public void handlerQueryParams(PageParams<DefLoginLogPageQuery> params) {
+		params.setSort("createTime");
+		params.setOrder("descending");
     }
 }

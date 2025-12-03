@@ -8,6 +8,7 @@ import com.luohuo.flex.common.cache.common.WxMsgKeyBuilder;
 import com.luohuo.flex.common.constant.MqConstant;
 import com.luohuo.flex.im.common.constant.RedisKey;
 import com.luohuo.flex.im.core.user.dao.UserDao;
+import com.luohuo.flex.im.enums.UserTypeEnum;
 import com.luohuo.flex.model.entity.dto.LoginMessageDTO;
 import com.luohuo.flex.model.entity.dto.ScanSuccessMessageDTO;
 import com.luohuo.flex.im.domain.entity.User;
@@ -70,6 +71,9 @@ public class WxMsgService {
         User user = userDao.getByOpenId(openid);
         // 如果已经注册,直接登录成功
         if (Objects.nonNull(user) && StringUtils.isNotEmpty(user.getAvatar())) {
+            if (Objects.equals(user.getUserType(), UserTypeEnum.BOT.getValue())) {
+                return new TextBuilder().build("机器人账号不允许登录", wxMpXmlMessage, wxMpService);
+            }
             mqProducer.sendMsg(MqConstant.LOGIN_MSG_TOPIC, new LoginMessageDTO(user.getId(), loginCode));
             return null;
         }
@@ -101,6 +105,9 @@ public class WxMsgService {
      */
     public void authorize(WxOAuth2UserInfo userInfo) {
         User user = userDao.getByOpenId(userInfo.getOpenid());
+        if (Objects.nonNull(user) && Objects.equals(user.getUserType(), UserTypeEnum.BOT.getValue())) {
+            return;
+        }
         // 更新用户信息
         if (StringUtils.isEmpty(user.getName())) {
             fillUserInfo(user.getId(), userInfo);
