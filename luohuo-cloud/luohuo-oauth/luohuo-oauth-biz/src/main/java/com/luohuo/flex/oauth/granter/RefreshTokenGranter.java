@@ -75,9 +75,10 @@ public class RefreshTokenGranter {
 		Long tenantId = obj.getLong(HEADER_TENANT_ID);
 		String systemType = obj.getStr(JWT_KEY_SYSTEM_TYPE);
 		String device = obj.getStr(JWT_KEY_DEVICE);
+        String clientId = obj.getStr(CLIENT_ID);
 
         // 2、处理挤下线逻辑
-        String combinedDeviceType = kickout(uid, userId, systemType, device);
+        String combinedDeviceType = kickout(uid, userId, systemType, device, clientId);
 
         // 3、为其生成新的短 token
         StpUtil.login(userId, new SaLoginModel().setDevice(combinedDeviceType));
@@ -85,6 +86,7 @@ public class RefreshTokenGranter {
         tokenSession.setLoginId(userId);
 		tokenSession.set(JWT_KEY_SYSTEM_TYPE, systemType);
 		tokenSession.set(JWT_KEY_DEVICE, device);
+        tokenSession.set(CLIENT_ID, clientId);
 
         if (topCompanyId != null) {
             tokenSession.set(JWT_KEY_TOP_COMPANY_ID, topCompanyId);
@@ -129,7 +131,7 @@ public class RefreshTokenGranter {
      * @param deviceType 登录设备
      * @return 组合后的设备类型
      */
-    private String kickout(Long uid, Long userId, String systemType, String deviceType) {
+    private String kickout(Long uid, Long userId, String systemType, String deviceType, String currentClientId) {
         // 1. 组合完整的设备类型标识
         String combinedDeviceType = ToolsUtil.combineStrings(systemType, deviceType);
 
@@ -155,10 +157,13 @@ public class RefreshTokenGranter {
             for (String token : sameDeviceTokens) {
                 try {
                     String clientId = StpUtil.getTokenSessionByToken(token).getString(CLIENT_ID);
-                    StpUtil.kickout(token);
-                    log.info("刷新token时已踢出旧会话: token={}", token);
-
-                    SpringUtils.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, deviceType, clientId, ContextUtil.getIP(), token)));
+                    if (currentClientId == null || !currentClientId.equals(clientId)) {
+                        StpUtil.kickout(token);
+                        log.info("刷新token时已踢出旧会话: token={}", token);
+                        SpringUtils.publishEvent(new TokenExpireEvent(this, new OffLineResp(uid, deviceType, clientId, ContextUtil.getIP(), token)));
+                    } else {
+                        log.info("刷新token时跳过当前客户端会话: token={}, clientId={}", token, clientId);
+                    }
                 } catch (Exception e) {
                     log.error("刷新token时踢出旧会话失败: token={}", token, e);
                 }

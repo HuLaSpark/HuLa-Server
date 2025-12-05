@@ -39,10 +39,19 @@ public class IndexController {
 		return R.success(sysConfigService.getSystemInit());
 	}
 
-	@Operation(summary = "获取七牛云上传token")
-	@GetMapping("/ossToken")
-	public R<JSONObject> token() {
-		return R.success(storageDriver.getToken());
+    @Operation(summary = "获取统一直传凭证（根据引擎返回 七牛token 或 MinIO预签名）")
+    @GetMapping("/ossToken")
+    public R<JSONObject> token(@RequestParam(required = false, defaultValue = "chat") String scene, @RequestParam(required = false) String fileName) {
+        return R.success(storageDriver.getToken(scene, fileName));
+    }
+
+	@GetMapping("/storage/provider")
+	@Operation(summary = "获取默认存储提供者")
+	public R<JSONObject> storageProvider() {
+		var provider = sysConfigService.get("storageDefault");
+		var json = new JSONObject();
+		json.put("provider", provider);
+		return R.success(json);
 	}
 
 	@GetMapping("/config/list")

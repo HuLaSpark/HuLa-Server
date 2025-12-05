@@ -11,6 +11,11 @@ import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessagePageReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageRespVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendReqVO;
 import com.luohuo.flex.ai.controller.chat.vo.message.AiChatMessageSendRespVO;
+
+import com.luohuo.flex.ai.core.model.strategy.chat.ChatCallStrategy;
+import com.luohuo.flex.ai.core.model.strategy.chat.ChatStrategyFactory;
+import com.luohuo.flex.ai.core.model.strategy.chat.ChatStreamingStrategy;
+import com.luohuo.flex.ai.core.model.strategy.chat.ReasoningChunk;
 import com.luohuo.flex.ai.dal.chat.AiChatConversationDO;
 import com.luohuo.flex.ai.dal.chat.AiChatMessageDO;
 import com.luohuo.flex.ai.dal.knowledge.AiKnowledgeDocumentDO;
@@ -28,6 +33,11 @@ import com.luohuo.flex.ai.service.knowledge.bo.AiKnowledgeSegmentSearchRespBO;
 import com.luohuo.flex.ai.service.model.AiChatRoleService;
 import com.luohuo.flex.ai.service.model.AiModelService;
 import com.luohuo.flex.ai.service.model.AiModelUsageService;
+import com.luohuo.flex.ai.service.model.AiApiKeyService;
+import com.luohuo.flex.ai.dal.model.AiApiKeyDO;
+
+import com.luohuo.flex.ai.core.model.openrouter.OpenRouterApiConstants;
+import com.luohuo.flex.ai.core.model.silicon.SiliconFlowApiConstants;
 import com.luohuo.flex.ai.service.model.AiToolService;
 import com.luohuo.flex.ai.utils.AiUtils;
 import com.luohuo.flex.ai.utils.BeanUtils;
@@ -38,6 +48,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.StreamingChatModel;
@@ -98,6 +109,8 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 	private AiToolService toolService;
 	@Resource
 	private AiModelUsageService modelUsageService;
+	@Resource
+	private AiApiKeyService apiKeyService;
 
 	@Transactional(rollbackFor = Exception.class)
 	public AiChatMessageSendRespVO sendMessage(AiChatMessageSendReqVO sendReqVO, Long userId) {
@@ -137,19 +150,51 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 
 		// 3.2 创建 chat 需要的 Prompt
 		Prompt prompt = buildPrompt(conversation, historyMessages, knowledgeSegments, model, sendReqVO);
-		ChatResponse chatResponse = chatModel.call(prompt);
-
-		// 3.3 更新响应内容
-		String newContent = chatResponse.getResult().getOutput().getText();
-		chatMessageMapper.updateById(new AiChatMessageDO().setId(assistantMessage.getId()).setContent(newContent));
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(model.getPlatform());
+		String answerContent;
+		String reasoningContent;
+		ChatCallStrategy callStrategy = ChatStrategyFactory.getCallStrategy(platform);
+		if (callStrategy != null) {
+			AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+			String baseUrl = ChatStrategyFactory.resolveBaseUrl(platform, apiKey.getUrl());
+			String effectiveModel = ChatStrategyFactory.normalizeModel(platform, model.getModel(), sendReqVO.getReasoningEnabled());
+			List<Message> instructions = prompt.getInstructions();
+			List<Map<String, String>> messages = new ArrayList<>();
+			for (Message m : instructions) {
+				String role;
+				if (m instanceof SystemMessage) role = "system"; else if (m instanceof UserMessage) role = "user"; else role = "assistant";
+				Map<String, String> item = Map.of("role", role, "content", m.getText());
+				messages.add(item);
+			}
+			try {
+				ChatCallStrategy.Result result = callStrategy.call(baseUrl, apiKey.getApiKey(), effectiveModel, messages, conversation.getMaxTokens(), conversation.getTemperature());
+				answerContent = stripReasoningTags(StrUtil.nullToDefault(result.content, ""));
+				reasoningContent = Boolean.TRUE.equals(sendReqVO.getReasoningEnabled()) ? StrUtil.nullToDefault(result.reasoning, "") : "";
+			} catch (Exception e) {
+				ChatResponse chatResponse = chatModel.call(prompt);
+				String rawContentFallback = chatResponse.getResult().getOutput().getText();
+				answerContent = stripReasoningTags(StrUtil.nullToDefault(rawContentFallback, ""));
+				reasoningContent = Boolean.TRUE.equals(sendReqVO.getReasoningEnabled()) ? extractReasoningFromText(rawContentFallback) : null;
+			}
+		} else {
+			ChatResponse chatResponse = chatModel.call(prompt);
+			String rawContent = chatResponse.getResult().getOutput().getText();
+			answerContent = stripReasoningTags(StrUtil.nullToDefault(rawContent, ""));
+			reasoningContent = Boolean.TRUE.equals(sendReqVO.getReasoningEnabled()) ? extractReasoningFromText(rawContent) : null;
+		}
+		AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(answerContent);
+		if (Boolean.TRUE.equals(sendReqVO.getReasoningEnabled()) && StrUtil.isNotEmpty(reasoningContent)) {
+			updateMessage.setReasoningContent(reasoningContent);
+		}
+		chatMessageMapper.updateById(updateMessage);
 		// 用量统计：prompt + completion
-        int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
-        int completionTokens = estimateTokens(newContent);
+		int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
+		int completionTokens = estimateTokens(answerContent);
 		int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
-        AiChatConversationUpdateMyReqVO updateReq = new AiChatConversationUpdateMyReqVO();
-        updateReq.setId(conversation.getId());
-        updateReq.setTokenUsage(newTotal);
-        chatConversationService.updateChatConversationMy(updateReq, userId);
+		AiChatConversationUpdateMyReqVO updateReq = new AiChatConversationUpdateMyReqVO();
+		updateReq.setId(conversation.getId());
+		updateReq.setTokenUsage(newTotal);
+		chatConversationService.updateChatConversationMy(updateReq, userId);
 		// 3.4 响应结果
 		Map<Long, AiKnowledgeDocumentDO> documentMap = knowledgeDocumentService.getKnowledgeDocumentMap(
 				convertSet(knowledgeSegments, AiKnowledgeSegmentSearchRespBO::getDocumentId));
@@ -161,7 +206,9 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		return new AiChatMessageSendRespVO()
 				.setSend(BeanUtils.toBean(userMessage, AiChatMessageSendRespVO.Message.class))
 				.setReceive(BeanUtils.toBean(assistantMessage, AiChatMessageSendRespVO.Message.class)
-						.setContent(newContent).setSegments(segments));
+						.setContent(answerContent)
+						.setReasoningContent(reasoningContent)
+						.setSegments(segments));
 	}
 
 	@Override
@@ -205,73 +252,230 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 
 		// 4.2 构建 Prompt，并进行调用
 		Prompt prompt = buildPrompt(conversation, historyMessages, knowledgeSegments, model, sendReqVO);
+
+		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(model.getPlatform());
+		ChatStreamingStrategy streamingStrategy = ChatStrategyFactory.getStreamingStrategy(platform);
+		if (streamingStrategy != null) {
+			StringBuffer contentBuffer = new StringBuffer();
+			StringBuffer reasoningBuffer = new StringBuffer();
+			AiApiKeyDO apiKey = apiKeyService.validateApiKey(model.getKeyId());
+			String baseUrl = ChatStrategyFactory.resolveBaseUrl(platform, apiKey.getUrl());
+			String effectiveModel = ChatStrategyFactory.normalizeModel(platform, model.getModel(), sendReqVO.getReasoningEnabled());
+			List<Message> instructions = prompt.getInstructions();
+			List<Map<String, String>> messages = new ArrayList<>();
+			for (Message m : instructions) {
+				String role;
+				if (m instanceof SystemMessage) role = "system"; else if (m instanceof UserMessage) role = "user"; else role = "assistant";
+				Map<String, String> item = Map.of("role", role, "content", m.getText());
+				messages.add(item);
+			}
+			Flux<ReasoningChunk> flux = streamingStrategy.stream(baseUrl, apiKey.getApiKey(), effectiveModel, messages, conversation.getMaxTokens(), conversation.getTemperature());
+			final boolean reasoningOn = sendReqVO.getReasoningEnabled();
+			return flux.map(obj -> {
+						String incremental = StrUtil.nullToDefault(obj.content, "");
+						String reasoningInc = reasoningOn ? StrUtil.nullToDefault(obj.reasoning, "") : "";
+						List<AiChatMessageRespVO.KnowledgeSegment> segments = null;
+						if (StrUtil.isEmpty(contentBuffer)) {
+							Map<Long, AiKnowledgeDocumentDO> documentMap = knowledgeDocumentService.getKnowledgeDocumentMap(
+									convertSet(knowledgeSegments, AiKnowledgeSegmentSearchRespBO::getDocumentId));
+							segments = BeanUtils.toBean(knowledgeSegments, AiChatMessageRespVO.KnowledgeSegment.class, segment -> {
+								AiKnowledgeDocumentDO document = documentMap.get(segment.getDocumentId());
+								segment.setDocumentName(document != null ? document.getName() : null);
+							});
+						}
+						String answerChunk = stripReasoningTags(incremental);
+						contentBuffer.append(answerChunk);
+						String newReasoningContent = reasoningInc;
+						if (reasoningOn && StrUtil.isNotEmpty(newReasoningContent)) reasoningBuffer.append(newReasoningContent);
+						return success(new AiChatMessageSendRespVO()
+								.setSend(BeanUtils.toBean(userMessage, AiChatMessageSendRespVO.Message.class))
+								.setReceive(BeanUtils.toBean(assistantMessage, AiChatMessageSendRespVO.Message.class)
+										.setContent(answerChunk)
+										.setReasoningContent(reasoningOn && StrUtil.isNotEmpty(newReasoningContent) ? newReasoningContent : null)
+										.setSegments(segments)));
+					}).doOnComplete(() -> {
+						try {
+							ContextUtil.setIgnore(true);
+							String content = stripReasoningTags(contentBuffer.toString());
+							String reasoningContent = reasoningBuffer.toString();
+							AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content);
+							if (reasoningOn && StrUtil.isNotEmpty(reasoningContent)) {
+								updateMessage.setReasoningContent(reasoningContent);
+							}
+							chatMessageMapper.updateById(updateMessage);
+							int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
+							int completionTokens = estimateTokens(content);
+							int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
+							AiChatConversationUpdateMyReqVO streamUpdateReq = new AiChatConversationUpdateMyReqVO();
+							streamUpdateReq.setId(conversation.getId());
+							streamUpdateReq.setTokenUsage(newTotal);
+							chatConversationService.updateChatConversationMy(streamUpdateReq, conversation.getUserId());
+						} finally {
+							ContextUtil.setIgnore(false);
+						}
+					}).doOnError(throwable -> log.error("[sendChatMessageStream][userId({}) sendReqVO({}) 发生异常]", userId, sendReqVO, throwable))
+					.onErrorResume(error -> {
+						Flux<ChatResponse> streamResponse = chatModel.stream(prompt);
+						StringBuffer fbContentBuffer = new StringBuffer();
+						StringBuffer fbReasoningBuffer = new StringBuffer();
+						return streamResponse.map(chunk -> {
+							List<AiChatMessageRespVO.KnowledgeSegment> segments = null;
+							if (StrUtil.isEmpty(fbContentBuffer)) {
+								Map<Long, AiKnowledgeDocumentDO> documentMap = knowledgeDocumentService.getKnowledgeDocumentMap(
+										convertSet(knowledgeSegments, AiKnowledgeSegmentSearchRespBO::getDocumentId));
+								segments = BeanUtils.toBean(knowledgeSegments, AiChatMessageRespVO.KnowledgeSegment.class, segment -> {
+									AiKnowledgeDocumentDO document = documentMap.get(segment.getDocumentId());
+									segment.setDocumentName(document != null ? document.getName() : null);
+								});
+							}
+							String newContent = chunk.getResult() != null ? chunk.getResult().getOutput().getText() : null;
+							newContent = StrUtil.nullToDefault(newContent, "");
+							String answerChunk = stripReasoningTags(newContent);
+							fbContentBuffer.append(answerChunk);
+							String newReasoningContent = null;
+							if (reasoningOn && chunk.getMetadata() != null) {
+								String metaReason = extractReasoningFromMetadata(chunk.getMetadata());
+								if (StrUtil.isNotEmpty(metaReason)) {
+									newReasoningContent = metaReason;
+									fbReasoningBuffer.append(metaReason);
+								} else {
+									String extracted = extractReasoningFromText(newContent);
+									if (StrUtil.isNotEmpty(extracted)) {
+										newReasoningContent = extracted;
+										fbReasoningBuffer.append(extracted);
+									}
+								}
+							} else if (reasoningOn) {
+								String extracted = extractReasoningFromText(newContent);
+								if (StrUtil.isNotEmpty(extracted)) {
+									newReasoningContent = extracted;
+									fbReasoningBuffer.append(extracted);
+								}
+							}
+							return success(new AiChatMessageSendRespVO()
+									.setSend(BeanUtils.toBean(userMessage, AiChatMessageSendRespVO.Message.class))
+									.setReceive(BeanUtils.toBean(assistantMessage, AiChatMessageSendRespVO.Message.class)
+											.setContent(answerChunk)
+											.setReasoningContent(reasoningOn ? newReasoningContent : null)
+											.setSegments(segments)));
+						}).doOnComplete(() -> {
+							try {
+								ContextUtil.setIgnore(true);
+								String content = stripReasoningTags(fbContentBuffer.toString());
+								String reasoningContent = fbReasoningBuffer.toString();
+								AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content);
+								if (reasoningOn && StrUtil.isNotEmpty(reasoningContent)) {
+									updateMessage.setReasoningContent(reasoningContent);
+								}
+								chatMessageMapper.updateById(updateMessage);
+								int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
+								int completionTokens = estimateTokens(content);
+								int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
+								AiChatConversationUpdateMyReqVO streamUpdateReq = new AiChatConversationUpdateMyReqVO();
+								streamUpdateReq.setId(conversation.getId());
+								streamUpdateReq.setTokenUsage(newTotal);
+								chatConversationService.updateChatConversationMy(streamUpdateReq, conversation.getUserId());
+							} finally {
+								ContextUtil.setIgnore(false);
+							}
+						});
+					});
+		}
+
 		Flux<ChatResponse> streamResponse = chatModel.stream(prompt);
 
-		// 4.3 流式返回
 		StringBuffer contentBuffer = new StringBuffer();
-		StringBuffer reasoningBuffer = new StringBuffer(); // 用于累积推理内容
+		StringBuffer reasoningBuffer = new StringBuffer();
 		return streamResponse.map(chunk -> {
-			// 处理知识库的返回，只有首次才有
-			List<AiChatMessageRespVO.KnowledgeSegment> segments = null;
-			if (StrUtil.isEmpty(contentBuffer)) {
-				Map<Long, AiKnowledgeDocumentDO> documentMap = knowledgeDocumentService.getKnowledgeDocumentMap(
-						convertSet(knowledgeSegments, AiKnowledgeSegmentSearchRespBO::getDocumentId));
-				segments = BeanUtils.toBean(knowledgeSegments, AiChatMessageRespVO.KnowledgeSegment.class, segment -> {
-					AiKnowledgeDocumentDO document = documentMap.get(segment.getDocumentId());
-					segment.setDocumentName(document != null ? document.getName() : null);
-				});
+					// 处理知识库的返回，只有首次才有
+					List<AiChatMessageRespVO.KnowledgeSegment> segments = null;
+					if (StrUtil.isEmpty(contentBuffer)) {
+						Map<Long, AiKnowledgeDocumentDO> documentMap = knowledgeDocumentService.getKnowledgeDocumentMap(
+								convertSet(knowledgeSegments, AiKnowledgeSegmentSearchRespBO::getDocumentId));
+						segments = BeanUtils.toBean(knowledgeSegments, AiChatMessageRespVO.KnowledgeSegment.class, segment -> {
+							AiKnowledgeDocumentDO document = documentMap.get(segment.getDocumentId());
+							segment.setDocumentName(document != null ? document.getName() : null);
+						});
+					}
+
+					// 响应结果
+					String newContent = chunk.getResult() != null ? chunk.getResult().getOutput().getText() : null;
+					newContent = StrUtil.nullToDefault(newContent, "");
+					String answerChunk = stripReasoningTags(newContent);
+					contentBuffer.append(answerChunk);
+
+					// 提取推理内容
+					String newReasoningContent = null;
+					if (chunk.getMetadata() != null) {
+						String metaReason = extractReasoningFromMetadata(chunk.getMetadata());
+						if (StrUtil.isNotEmpty(metaReason)) {
+							newReasoningContent = metaReason;
+							reasoningBuffer.append(metaReason);
+						} else {
+							String extracted = extractReasoningFromText(newContent);
+							if (StrUtil.isNotEmpty(extracted)) {
+								newReasoningContent = extracted;
+								reasoningBuffer.append(extracted);
+							}
+						}
+					} else {
+						String extracted = extractReasoningFromText(newContent);
+						if (StrUtil.isNotEmpty(extracted)) {
+							newReasoningContent = extracted;
+							reasoningBuffer.append(extracted);
+						}
+					}
+
+					return success(new AiChatMessageSendRespVO()
+							.setSend(BeanUtils.toBean(userMessage, AiChatMessageSendRespVO.Message.class))
+							.setReceive(BeanUtils.toBean(assistantMessage, AiChatMessageSendRespVO.Message.class)
+									.setContent(answerChunk)
+									.setReasoningContent(newReasoningContent)
+									.setSegments(segments)));
+				}).doOnComplete(() -> {
+					// 手动设置租户信息（因为 Flux 异步会切换线程，导致 ThreadLocal 丢失）
+					try {
+						ContextUtil.setIgnore(true);
+
+						String content = stripReasoningTags(contentBuffer.toString());
+						String reasoningContent = reasoningBuffer.toString();
+						AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content);
+						if (StrUtil.isNotEmpty(reasoningContent)) {
+							updateMessage.setReasoningContent(reasoningContent);
+						}
+						chatMessageMapper.updateById(updateMessage);
+						// 用量统计：prompt + completion（流式完成时）
+						int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
+						int completionTokens = estimateTokens(content);
+						int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
+						AiChatConversationUpdateMyReqVO streamUpdateReq = new AiChatConversationUpdateMyReqVO();
+						streamUpdateReq.setId(conversation.getId());
+						streamUpdateReq.setTokenUsage(newTotal);
+						chatConversationService.updateChatConversationMy(streamUpdateReq, conversation.getUserId());
+					} finally {
+						ContextUtil.setIgnore(false);
+					}
+				}).doOnError(throwable -> log.error("[sendChatMessageStream][userId({}) sendReqVO({}) 发生异常]", userId, sendReqVO, throwable))
+				.onErrorResume(error -> Flux.just(error(ErrorCodeConstants.CHAT_STREAM_ERROR)));
+	}
+
+	private String extractReasoningFromMetadata(ChatResponseMetadata metadata) {
+		if (metadata == null) return null;
+		String[] keys = new String[]{
+				"reasoning_content",
+				"reasoning",
+				"thinking",
+				"deliberate_output",
+				"thoughts"
+		};
+		for (String k : keys) {
+			Object v = metadata.get(k);
+			if (v != null) {
+				String s = String.valueOf(v);
+				if (StrUtil.isNotEmpty(s)) return s;
 			}
-
-			// 响应结果
-			String newContent = chunk.getResult() != null ? chunk.getResult().getOutput().getText() : null;
-			newContent = StrUtil.nullToDefault(newContent, "");
-			String answerChunk = stripReasoningTags(newContent);
-			contentBuffer.append(answerChunk);
-
-			// 提取推理内容
-			String newReasoningContent = null;
-			if (chunk.getMetadata() != null && chunk.getMetadata().containsKey("reasoning_content")) {
-				newReasoningContent = String.valueOf(chunk.getMetadata().get("reasoning_content"));
-				reasoningBuffer.append(newReasoningContent);
-			} else {
-				String extracted = extractReasoningFromText(newContent);
-				if (StrUtil.isNotEmpty(extracted)) {
-					newReasoningContent = extracted;
-					reasoningBuffer.append(extracted);
-				}
-			}
-
-			return success(new AiChatMessageSendRespVO()
-					.setSend(BeanUtils.toBean(userMessage, AiChatMessageSendRespVO.Message.class))
-					.setReceive(BeanUtils.toBean(assistantMessage, AiChatMessageSendRespVO.Message.class)
-					.setContent(answerChunk)
-						.setReasoningContent(newReasoningContent)
-						.setSegments(segments)));
-		}).doOnComplete(() -> {
-			// 手动设置租户信息（因为 Flux 异步会切换线程，导致 ThreadLocal 丢失）
-			try {
-				ContextUtil.setIgnore(true);
-
-				String content = stripReasoningTags(contentBuffer.toString());
-				String reasoningContent = reasoningBuffer.toString();
-				AiChatMessageDO updateMessage = new AiChatMessageDO().setId(assistantMessage.getId()).setContent(content);
-				if (StrUtil.isNotEmpty(reasoningContent)) {
-					updateMessage.setReasoningContent(reasoningContent);
-				}
-				chatMessageMapper.updateById(updateMessage);
-				// 用量统计：prompt + completion（流式完成时）
-                int promptTokens = estimateContextTokens(conversation, historyMessages, sendReqVO.getContent());
-                int completionTokens = estimateTokens(content);
-				int newTotal = (conversation.getTokenUsage() == null ? 0 : conversation.getTokenUsage()) + promptTokens + completionTokens;
-                AiChatConversationUpdateMyReqVO streamUpdateReq = new AiChatConversationUpdateMyReqVO();
-                streamUpdateReq.setId(conversation.getId());
-                streamUpdateReq.setTokenUsage(newTotal);
-                chatConversationService.updateChatConversationMy(streamUpdateReq, conversation.getUserId());
-			} finally {
-				ContextUtil.setIgnore(false);
-			}
-		}).doOnError(throwable -> log.error("[sendChatMessageStream][userId({}) sendReqVO({}) 发生异常]", userId, sendReqVO, throwable))
-		.onErrorResume(error -> Flux.just(error(ErrorCodeConstants.CHAT_STREAM_ERROR)));
+		}
+		return null;
 	}
 
 	private List<AiKnowledgeSegmentSearchRespBO> recallKnowledgeSegment(String content,
@@ -309,15 +513,6 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		if (StrUtil.isNotBlank(conversation.getSystemMessage())) {
 			chatMessages.add(new SystemMessage(conversation.getSystemMessage()));
 		}
-		// 1.1.1 深度思考系统提示（仅对支持的模型生效）
-		if (sendReqVO.getReasoningEnabled() && isReasoningSupported(model)) {
-			int thinkingBudget = 1024;
-			chatMessages.add(new SystemMessage(
-				"你是深度思考助手。先在‘思考过程’中进行详细推理，再给出最终答案。请保持推理与答案清晰分离。" +
-				"将推理内容使用 <thinking> 与 </thinking> 包裹，将最终答案使用 <answer> 与 </answer> 包裹。" +
-				StrUtil.format("思考阶段最多使用 {} token。", thinkingBudget)
-			));
-		}
 
 		// 1.2 历史 history message 历史消息
 		List<AiChatMessageDO> contextMessages = filterContextMessages(messages, conversation, sendReqVO);
@@ -347,14 +542,14 @@ public class AiChatMessageServiceImpl implements AiChatMessageService {
 		}
 		// 2.2 构建 ChatOptions 对象
 		AiPlatformEnum platform = AiPlatformEnum.validatePlatform(model.getPlatform());
-		ChatOptions chatOptions = AiUtils.buildChatOptions(platform, model.getModel(),
+		String effectiveModel = model.getModel();
+		if (sendReqVO.getReasoningEnabled() && (platform == AiPlatformEnum.DEEP_SEEK || (platform == AiPlatformEnum.HUN_YUAN && StrUtil.startWithIgnoreCase(effectiveModel, "deepseek")))) {
+			effectiveModel = "deepseek-reasoner";
+		}
+		ChatOptions chatOptions = AiUtils.buildChatOptions(platform, effectiveModel,
 				conversation.getTemperature(), conversation.getMaxTokens(), toolNames, toolContext);
 		return new Prompt(chatMessages, chatOptions);
 	}
-
-    private boolean isReasoningSupported(AiModelDO model) {
-        return Boolean.TRUE.equals(model.getSupportsReasoning());
-    }
 
 	private int estimateContextTokens(AiChatConversationDO conversation, List<AiChatMessageDO> allMessages, String currentContent) {
 		int total = 0;

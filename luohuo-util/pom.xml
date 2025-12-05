@@ -6,12 +6,12 @@
     <parent>
         <groupId>com.luohuo.basic</groupId>
         <artifactId>luohuo-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.0.6</version>
         <relativePath>luohuo-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>luohuo-util</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
 
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>

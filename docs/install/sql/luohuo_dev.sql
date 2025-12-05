@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 03/12/2025 15:16:20
+ Date: 05/12/2025 13:33:00
 */
 
 SET NAMES utf8mb4;
@@ -106,7 +106,7 @@ CREATE TABLE `ai_chat_conversation`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NULL DEFAULT NULL COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 102357606609921 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 103094306752513 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天对话表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_conversation
@@ -138,7 +138,7 @@ CREATE TABLE `ai_chat_message`  (
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_msg_type`(`msg_type` ASC) USING BTREE COMMENT '消息内容类型索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 102357791159299 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 103085163169795 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天消息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_message
@@ -169,7 +169,7 @@ CREATE TABLE `ai_chat_role`  (
   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 98376230626305 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 102454855742465 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 聊天角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_chat_role
@@ -372,7 +372,7 @@ CREATE TABLE `ai_model_usage_record`  (
   `tenant_id` bigint NOT NULL DEFAULT 1 COMMENT '租户编号',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_user_model`(`user_id` ASC, `model_id` ASC) USING BTREE COMMENT '用户-模型唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 102357791159297 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 公开模型使用记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 103085163169793 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 公开模型使用记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ai_model_usage_record
@@ -628,7 +628,7 @@ CREATE TABLE `base_config`  (
   `tenant_id` bigint NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `key`(`config_key` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '参数配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 115 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '参数配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of base_config
@@ -636,8 +636,8 @@ CREATE TABLE `base_config`  (
 INSERT INTO `base_config` VALUES (1, 'system', '{\"title\":\"系统名称\",\"componentType\":\"text\",\"value\":\"Hula-IM\",\"configKey\":\"systemName\",\"type\":\"system\"}', 'systemName', 'HuLa', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (2, 'system', '{\"title\":\"系统Logo\",\"componentType\":\"text\",\"value\":\"/static/img/Iogo.png\",\"configKey\":\"logo\",\"type\":\"system\"}', 'logo', '/static/img/Iogo.png', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (3, 'qiniu_up_config', '{\"title\":\"空间域名 Domain\",\"componentType\":\"text\",\"value\":\"https://upload-z2.qiniup.com\",\"configKey\":\"qnUploadUrl\",\"type\":\"qiniu_up_config\"}', 'qnUploadUrl', 'https://up-z2.qiniup.com', 0, '2025-06-26 07:42:06.404', '2025-08-18 04:29:56.616', 3, NULL, 0);
-INSERT INTO `base_config` VALUES (4, 'qiniu_up_config', '{\"title\":\"accessKey\",\"componentType\":\"text\",\"value\":\"231YmL0vGAYFTW-rHl4LgA5_\",\"configKey\":\"qnAccessKey\",\"type\":\"qiniu_up_config\"}', 'qnAccessKey', 'LXrRo6YhT22hy5yScLzQJAQaUGUJ', 0, '2025-06-26 07:42:06.404', '2025-10-11 03:43:10.679', 3, NULL, 0);
-INSERT INTO `base_config` VALUES (5, 'qiniu_up_config', '{\"title\":\"SecretKey\",\"componentType\":\"text\",\"value\":\"2daTXFDEG9PuAy4TnvfR1o2\",\"configKey\":\"qnSecretKey\",\"type\":\"qiniu_up_config\"}', 'qnSecretKey', 'BYKKz6n222111VS-llemF2Hg', 0, '2025-06-26 07:42:06.404', '2025-10-11 03:43:05.090', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (4, 'qiniu_up_config', '{\"title\":\"accessKey\",\"componentType\":\"text\",\"value\":\"231YmL0vGAYFTW-rHl4LgA5_\",\"configKey\":\"qnAccessKey\",\"type\":\"qiniu_up_config\"}', 'qnAccessKey', 'LXrRo6YhT22hy5yScLzQJA1QaUGUJ', 0, '2025-06-26 07:42:06.404', '2025-12-05 05:29:36.118', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (5, 'qiniu_up_config', '{\"title\":\"SecretKey\",\"componentType\":\"text\",\"value\":\"2daTXFDEG9PuAy4TnvfR1o2\",\"configKey\":\"qnSecretKey\",\"type\":\"qiniu_up_config\"}', 'qnSecretKey', 'BYKKz622111VS-llemF2Hg', 0, '2025-06-26 07:42:06.404', '2025-12-05 05:29:38.346', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (6, 'qiniu_up_config', '{\"title\":\"存储空间名称\",\"componentType\":\"text\",\"value\":\"hula\",\"configKey\":\"qnStorageName\",\"type\":\"qiniu_up_config\"}', 'qnStorageName', 'hula-spark', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (7, 'qiniu_up_config', '{\"title\":\"七牛云CDN（访问图片用的）\",\"componentType\":\"text\",\"value\":\"https://file.hula.com/\",\"configKey\":\"qnStorageCDN\",\"type\":\"qiniu_up_config\"}', 'qnStorageCDN', 'https://cdn.hulaspark.com', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (8, 'system', '{\"title\":\"大群ID\",\"componentType\":\"text\",\"value\":\"1\",\"configKey\":\"roomGroupId\",\"type\":\"system\"}', 'roomGroupId', '1', 0, '2025-06-26 07:42:06.404', '2025-06-26 07:42:06.494', 3, NULL, 0);
@@ -649,6 +649,20 @@ INSERT INTO `base_config` VALUES (13, 'system', '{\"title\":\"AI基础信息\",\
 INSERT INTO `base_config` VALUES (14, 'system', '{\"title\":\"AI 扩展配置\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"extraInfo\",\"type\":\"site_config\"}', 'extraInfo', '{\"ossType\":1,\"smsType\":0}', 0, '2025-06-26 07:42:06.404', '2025-07-16 19:58:23.711', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (15, 'system', '{\"title\":\"AI AppInfo\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"appInfo\",\"type\":\"site_config\"}', 'appInfo', '{\"h5Url\":\"https://gpt.panday94.xyz/h5\",\"isSms\":1,\"homeNotice\":\"确保合法合规使用，在运营过程中产生的一切问题后果自负，与作者无关。!\",\"isGptLimit\":0,\"isShare\":1,\"shareRewardNum\":\"20\",\"freeNum\":\"5\",\"isRedemption\":1}', 0, '2025-06-26 07:42:06.404', '2025-07-16 19:58:24.711', 3, NULL, 0);
 INSERT INTO `base_config` VALUES (16, 'system', '{\"title\":\"AI 微信配置\",\"componentType\":\"text\",\"value\":\"system/material/20250305/aX3YYCCpDf.png\",\"configKey\":\"wxInfo\",\"type\":\"site_config\"}', 'wxInfo', '{\"mpLogin\":0,\"mpPay\":0,\"maAppId\":\"xx\",\"maSecret\":\"xx\",\"mpAppId\":\"xx\",\"mpSecret\":\"xx\",\"mchNo\":\"xx\",\"v3Secret\":\"xx\"}', 0, '2025-06-26 07:42:06.404', '2025-07-16 19:58:26.063', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (101, 'minio_up_config', '{\"title\":\"MinIO Endpoint\",\"componentType\":\"text\",\"value\":\"http://127.0.0.1:9000/\",\"configKey\":\"minioEndpoint\",\"type\":\"minio_up_config\"}', 'minioEndpoint', 'https://xxx.hulaspark.com/', 0, '2025-12-04 06:43:49.000', '2025-12-05 05:29:12.656', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (102, 'minio_up_config', '{\"title\":\"AccessKey\",\"componentType\":\"text\",\"value\":\"luohuo\",\"configKey\":\"minioAccessKey\",\"type\":\"minio_up_config\"}', 'minioAccessKey', 'mini', 0, '2025-12-04 06:43:49.000', '2025-12-05 05:29:22.288', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (103, 'minio_up_config', '{\"title\":\"SecretKey\",\"componentType\":\"text\",\"value\":\"mini.luo123\",\"configKey\":\"minioSecretKey\",\"type\":\"minio_up_config\"}', 'minioSecretKey', 'mini.huo123', 0, '2025-12-04 06:43:49.000', '2025-12-05 05:29:18.384', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (104, 'minio_up_config', '{\"title\":\"Bucket\",\"componentType\":\"text\",\"value\":\"dev\",\"configKey\":\"minioBucket\",\"type\":\"minio_up_config\"}', 'minioBucket', 'dev', 0, '2025-12-04 06:43:49.000', '2025-12-04 06:43:49.000', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (105, 'minio_up_config', '{\"title\":\"下载前缀(外网可访问)\",\"componentType\":\"text\",\"value\":\"http://127.0.0.1:9000/dev\",\"configKey\":\"minioUrlPrefix\",\"type\":\"minio_up_config\"}', 'minioUrlPrefix', 'https://xxx.hulaspark.com/dev', 0, '2025-12-04 06:43:49.000', '2025-12-05 05:29:06.334', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (106, 'youdao_config', '{\"title\":\"有道AppKey\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"youdaoAppKey\",\"type\":\"youdao_config\"}', 'youdaoAppKey', '0c41043c0ec229ba3a', 0, '2025-12-04 07:23:36.000', '2025-12-05 05:28:59.556', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (107, 'youdao_config', '{\"title\":\"有道AppSecret\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"youdaoAppSecret\",\"type\":\"youdao_config\"}', 'youdaoAppSecret', 'CD1Ul6111YF4Z0n4FzsOBPFBSxJ8yD', 0, '2025-12-04 07:23:36.000', '2025-12-05 05:28:42.310', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (108, 'tencent_config', '{\"title\":\"腾讯ApiKey\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"tencentApiKey\",\"type\":\"tencent_config\"}', 'tencentApiKey', '50i2McgXHpY8e6T3qXMKEzsk1w45zoa', 0, '2025-12-04 07:23:36.000', '2025-12-05 05:28:56.749', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (109, 'tencent_config', '{\"title\":\"腾讯SecretId\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"tencentSecretId\",\"type\":\"tencent_config\"}', 'tencentSecretId', 'AKI2z0EVlw1zsfHnS2H4nQs8KU2yX0JVV', 0, '2025-12-04 07:23:36.000', '2025-12-05 05:28:54.258', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (110, 'tencent_config', '{\"title\":\"腾讯MapKey\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"tencentMapKey\",\"type\":\"tencent_config\"}', 'tencentMapKey', 'PF1-34XCC-J6N2D-A3Q3-5K4F4G', 0, '2025-12-04 07:23:36.000', '2025-12-05 05:28:51.944', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (111, 'ice_server_config', '{\"title\":\"ICE Server URLs(JSON数组或逗号分隔)\",\"componentType\":\"text\",\"value\":\"[]\",\"configKey\":\"iceServerUrls\",\"type\":\"ice_server_config\"}', 'iceServerUrls', '[]', 0, '2025-12-04 07:23:36.000', '2025-12-04 07:23:36.000', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (112, 'ice_server_config', '{\"title\":\"ICE Server Username\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"iceServerUsername\",\"type\":\"ice_server_config\"}', 'iceServerUsername', '', 0, '2025-12-04 07:23:36.000', '2025-12-04 07:23:36.000', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (113, 'ice_server_config', '{\"title\":\"ICE Server Credential\",\"componentType\":\"text\",\"value\":\"\",\"configKey\":\"iceServerCredential\",\"type\":\"ice_server_config\"}', 'iceServerCredential', '', 0, '2025-12-04 07:23:36.000', '2025-12-04 07:23:36.000', 3, NULL, 0);
+INSERT INTO `base_config` VALUES (114, 'translate_config', '{\"title\":\"翻译引擎\",\"componentType\":\"text\",\"value\":\"youdao\",\"configKey\":\"translateDefault\",\"type\":\"translate_config\"}', 'translateDefault', 'youdao', 0, '2025-12-04 10:42:44.000', '2025-12-04 10:42:44.000', 3, NULL, 0);
 
 -- ----------------------------
 -- Table structure for base_employee
@@ -2282,8 +2296,8 @@ CREATE TABLE `def_user`  (
 -- Records of def_user
 -- ----------------------------
 INSERT INTO `def_user` VALUES (61170828519936, 2, '15147891644', 'HuLa小管家', '', '022', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.139', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"120.231.232.41\", \"createIpDetail\": null, \"updateIpDetail\": null}', '2025-12-01 20:30:50', 6, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-07-07 15:27:02', 1, '2025-03-27 04:23:08', NULL, '2025-07-16 12:26:15', 0, 1);
-INSERT INTO `def_user` VALUES (61170828519937, 2, '13275346112', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"116.24.64.57\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"116.24.64.57\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"\", \"region\": \"广东省\", \"city_id\": \"\", \"country\": \"中国\", \"region_id\": \"\", \"country_id\": \"\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-12-03 14:44:57', 1, '2025-03-27 04:23:08', NULL, '2025-12-03 14:59:18', 0, 1);
-INSERT INTO `def_user` VALUES (61170828529941, 1, '24396462341', 'Dawn', '24396462341@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"116.24.64.57\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"116.24.64.57\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"\", \"region\": \"广东省\", \"city_id\": \"\", \"country\": \"中国\", \"region_id\": \"\", \"country_id\": \"\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-11-27 12:02:05', 1, '2025-03-27 04:23:08', NULL, '2025-12-02 11:41:54', 0, 1);
+INSERT INTO `def_user` VALUES (61170828519937, 2, '13275346112', 'Dawn', '2439646234@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"116.24.64.57\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"116.24.64.57\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"\", \"region\": \"广东省\", \"city_id\": \"\", \"country\": \"中国\", \"region_id\": \"\", \"country_id\": \"\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-12-05 00:04:51', 1, '2025-03-27 04:23:08', NULL, '2025-12-05 01:04:45', 0, 1);
+INSERT INTO `def_user` VALUES (61170828529941, 1, '24396462341', 'Dawn', '24396462341@qq.com', 'https://cdn.hulaspark.com/avatar/2439646234/6ec99d37b8ba1296c325d2d36b46a14d.webp', NULL, NULL, '', NULL, b'0', '', '', '1', b'1', '', '2025-08-11 11:11:03.189', '{\"createIp\": \"206.237.119.215\", \"updateIp\": \"116.24.64.57\", \"createIpDetail\": null, \"updateIpDetail\": {\"ip\": \"116.24.64.57\", \"isp\": \"电信\", \"area\": \"\", \"city\": \"深圳\", \"isp_id\": \"\", \"region\": \"广东省\", \"city_id\": \"\", \"country\": \"中国\", \"region_id\": \"\", \"country_id\": \"\"}}', NULL, 0, NULL, 'a4d5c225e6709ba025272a31c7e90e0121d5e5ba16695afe0b61370bedb677d0', 'Dawn', '2025-12-04 16:17:54', 1, '2025-03-27 04:23:08', NULL, '2025-12-04 17:19:56', 0, 1);
 
 -- ----------------------------
 -- Table structure for def_user_application
@@ -2359,7 +2373,7 @@ CREATE TABLE `extend_interface_log`  (
 -- Records of extend_interface_log
 -- ----------------------------
 INSERT INTO `extend_interface_log` VALUES (66567882983426, 244439130119864323, '阿里短信', 0, 1, '2025-08-26 16:37:01', '2025-08-26 16:37:00', NULL, '2025-08-26 16:37:00', NULL, 0, 0);
-INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 1619, 65, '2025-12-03 13:38:12', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
+INSERT INTO `extend_interface_log` VALUES (655249535051914248, 244881451621810192, '腾讯邮件', 1667, 65, '2025-12-05 13:14:22', '2025-07-16 18:41:01', NULL, '2025-07-16 18:41:01', NULL, 0, 0);
 
 -- ----------------------------
 -- Table structure for extend_interface_logging
@@ -2573,7 +2587,7 @@ CREATE TABLE `worker_node`  (
   `created` timestamp NULL DEFAULT NULL COMMENT '创建时间',
   `is_del` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1051 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1061 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'DB;WorkerID Assigner for UID Generator' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of worker_node

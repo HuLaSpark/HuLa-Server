@@ -15,4 +15,6 @@ public class Init implements Serializable {
 	private String roomGroupId;
 	// 七牛云配置
 	private QiNiu qiNiu;
+	// ICE Server 配置
+	private IceServer iceServer;
 }

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.luohuo.flex</groupId>
     <artifactId>luohuo-cloud</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
     <packaging>pom</packaging>
     <url>https://gitee.com/HuLaSpark/HuLa-Server</url>
     <name>${project.artifactId}</name>

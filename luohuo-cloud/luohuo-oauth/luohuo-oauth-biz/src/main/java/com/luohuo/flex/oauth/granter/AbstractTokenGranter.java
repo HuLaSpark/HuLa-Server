@@ -445,6 +445,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 		}
 
 		resultVO.setUid(uid);
+		obj.set(CLIENT_ID, clientId);
         resultVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
 
         log.info("用户：{} 登录成功", userInfo.getUsername());
