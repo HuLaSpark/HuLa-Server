@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  🖥️ 客户端：<a href="https://github.com/HuLaSpark/HuLa">github HuLa-client</a> | <a href="https://github.com/HuLaSpark/HuLa">gitee HuLa-client</a>
+  🖥️ 客户端：<a href="https://github.com/HuLaSpark/HuLa">github HuLa-client</a> | <a href="https://gitee.com/HuLaSpark/HuLa">gitee HuLa-client</a>
 </p>
 
 <p align="center"><a href="README.en.md">English</a> | 中文</p>
