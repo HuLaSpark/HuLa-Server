@@ -49,16 +49,11 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 		return session.receive()
 				.timeout(Duration.ofSeconds(HEARTBEAT_TIMEOUT))
 				.onBackpressureBuffer(1000, // 消息背压策略，缓冲1000条消息
-				buffer -> log.warn("消息堆积超过阈值: {}", buffer))
+						buffer -> log.warn("消息堆积超过阈值: {}", buffer))
 //				.mergeWith(Flux.interval(Duration.ofSeconds(10)) // 双心跳机制，先关闭
 //						.map(i -> session.textMessage("{\"type\":\"2\"}")))
 				.doOnNext(msg -> messageService.handleMessage(session, uid, msg))
-				.doFinally(signal -> {
-					sessionManager.cleanupSession(session);
-					if (session.isOpen()) {
-						session.close(SESSION_NOT_RELIABLE).subscribe();
-					}
-				})
+				.doFinally(signal -> sessionManager.cleanupSession(session, SESSION_NOT_RELIABLE))
 				.then();
 	}
 
