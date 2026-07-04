@@ -2,19 +2,19 @@
   <img width="350px" height="150px" src="preview/hula.png" />
 </p>
 
-<p align="center">An instant messaging system server built with SpringBoot3, Netty, MyBatis-Plus and RocketMQ</p>
+<p align="center">An instant messaging system server built with Spring Cloud, Spring Boot 4, Netty, MyBatis-Plus and RocketMQ</p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/spring-boot3-brightgreen?logo=springboot
-">
-  <img src="https://img.shields.io/badge/Netty-343434?logo=netty&logoColor=white">
-  <img src="https://img.shields.io/badge/MyBatis--Plus-00A1E9?logo=mybatis&logoColor=white">
-  <img src="https://img.shields.io/badge/RocketMQ-D77310?logo=apacherocketmq&logoColor=white">
-  <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white">
-  <img src="https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/WebSocket-010101?logo=websocket&logoColor=white">
-  <img src="https://img.shields.io/badge/Java21-FF0000?logo=openjdk&logoColor=white">
-  <img src="https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring%20Cloud-2025.1.2-6DB33F?style=flat-square&logo=spring&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?style=flat-square&logo=springboot&logoColor=white">
+  <img src="https://img.shields.io/badge/Netty-4.2.15.Final-343434?style=flat-square&logo=netty&logoColor=white">
+  <img src="https://img.shields.io/badge/MyBatis--Plus-3.5.16-00A1E9?style=flat-square&logo=mybatis&logoColor=white">
+  <img src="https://img.shields.io/badge/RocketMQ%20Spring-2.3.6-D77310?style=flat-square&logo=apacherocketmq&logoColor=white">
+  <img src="https://img.shields.io/badge/Redisson-4.6.1-DC382D?style=flat-square&logo=redis&logoColor=white">
+  <img src="https://img.shields.io/badge/MySQL-8.0.30-4479A1?style=flat-square&logo=mysql&logoColor=white">
+  <img src="https://img.shields.io/badge/WebSocket-Reactive-010101?style=flat-square&logo=websocket&logoColor=white">
+  <img src="https://img.shields.io/badge/Java-25-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
+  <img src="https://img.shields.io/badge/Maven-3.9.16-C71A36?style=flat-square&logo=apachemaven&logoColor=white">
 </div>
 
 <p align="center">
@@ -34,11 +34,15 @@
 
 ## Project Introduction
 
-HuLa-Server is an instant messaging system server built with SpringBoot3, Netty, MyBatis-Plus and RocketMQ. It adopts a microservice architecture design, providing high-performance real-time communication capabilities, supporting core features such as private chat, group chat, and message push. The system has high scalability and reliability, suitable for various instant messaging scenarios.
+HuLa-Server is a high-performance instant messaging system server built with Spring Cloud, Spring Boot 4, Netty, MyBatis-Plus and RocketMQ. It adopts a microservice architecture design, providing high-performance real-time communication capabilities, supporting core features such as private chat, group chat, and message push. The system has high scalability and reliability, suitable for various instant messaging scenarios.
 
 ## Technology Stack
 
-- **SpringBoot 3**: The latest version of the Spring Boot framework, providing a more modern Java development experience, supporting GraalVM native images, using Jakarta EE API, with better performance and lower memory consumption.
+- **Spring Boot 4.1.0**: Core application framework for WebMVC, WebFlux, Actuator and other service capabilities.
+
+- **Spring Cloud 2025.1.2 / Spring Cloud Alibaba 2025.1.0.0**: Microservice foundation for service governance, discovery, configuration and gateway integration.
+
+- **Java 25**: Current compile and runtime baseline, controlled by Maven through `maven.compiler.release=25`.
 
 - **Netty**: A high-performance asynchronous event-driven network application framework, used to implement WebSocket long connection services, ensuring message real-time and reliability. Netty's high concurrent processing capability and excellent network programming model enable the system to support a large number of simultaneous online clients.
 

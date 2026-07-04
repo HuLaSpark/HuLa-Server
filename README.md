@@ -2,19 +2,19 @@
   <img width="350px" height="150px" src="preview/hula.png" />
 </p>
 
-<p align="center">一款基于SpringCloud、SpringBoot3、Netty、MyBatis-Plus和RocketMQ构建的即时通讯系统服务端</p>
+<p align="center">一款基于 Spring Cloud、Spring Boot 4、Netty、MyBatis-Plus 和 RocketMQ 构建的即时通讯系统服务端</p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Spring_Cloud-2024-blue?logo=springcloud&logoColor=white">
-  <img src="https://img.shields.io/badge/spring-boot3-brightgreen?logo=spring">
-  <img src="https://img.shields.io/badge/Netty-343434?logo=netty&logoColor=white">
-  <img src="https://img.shields.io/badge/MyBatis--Plus-00A1E9?logo=mybatis&logoColor=white">
-  <img src="https://img.shields.io/badge/RocketMQ-D77310?logo=apacherocketmq&logoColor=white">
-  <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=white">
-  <img src="https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/WebSocket-010101?logo=websocket&logoColor=white">
-  <img src="https://img.shields.io/badge/Java21-FF0000?logo=openjdk&logoColor=white">
-  <img src="https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring%20Cloud-2025.1.2-6DB33F?style=flat-square&logo=spring&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?style=flat-square&logo=springboot&logoColor=white">
+  <img src="https://img.shields.io/badge/Netty-4.2.15.Final-343434?style=flat-square&logo=netty&logoColor=white">
+  <img src="https://img.shields.io/badge/MyBatis--Plus-3.5.16-00A1E9?style=flat-square&logo=mybatis&logoColor=white">
+  <img src="https://img.shields.io/badge/RocketMQ%20Spring-2.3.6-D77310?style=flat-square&logo=apacherocketmq&logoColor=white">
+  <img src="https://img.shields.io/badge/Redisson-4.6.1-DC382D?style=flat-square&logo=redis&logoColor=white">
+  <img src="https://img.shields.io/badge/MySQL-8.0.30-4479A1?style=flat-square&logo=mysql&logoColor=white">
+  <img src="https://img.shields.io/badge/WebSocket-Reactive-010101?style=flat-square&logo=websocket&logoColor=white">
+  <img src="https://img.shields.io/badge/Java-25-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
+  <img src="https://img.shields.io/badge/Maven-3.9.16-C71A36?style=flat-square&logo=apachemaven&logoColor=white">
 </div>
 
 <p align="center">
@@ -34,17 +34,23 @@
 
 ## 项目介绍
 
-HuLa-Server 是一款基于 SpringCloud、SpringBoot3、Netty、MyBatis-Plus 和 RocketMQ 构建的高性能即时通讯系统服务端。它采用了微服务架构设计，提供高性能的实时通信能力，支持单聊、群聊、消息推送等核心功能。系统具有高可扩展性和可靠性，适用于各类即时通讯场景。
+HuLa-Server 是一款基于 Spring Cloud、Spring Boot 4、Netty、MyBatis-Plus 和 RocketMQ 构建的高性能即时通讯系统服务端。它采用了微服务架构设计，提供高性能的实时通信能力，支持单聊、群聊、消息推送等核心功能。系统具有高可扩展性和可靠性，适用于各类即时通讯场景。
 
 ## 核心优势
 
 - **模块化与高内聚**: 服务按功能拆分为独立模块（网关、认证、IM、AI、ws、base、system、presence等），通过<modules>清晰隔离，降低耦合度，提升开发与维护效率。
 
-- **弹性扩展能力**: webflux异步架构，基于Spring Cloud 2024 & Spring Boot 3.x构建，支持动态扩缩容。如luohuo-gateway可通过增加节点应对高并发流量。
+- **弹性扩展能力**: WebFlux异步架构，基于 Spring Cloud 2025.1.x & Spring Boot 4.x 构建，支持动态扩缩容。如luohuo-gateway可通过增加节点应对高并发流量。
 
 - **技术栈统一管理**: luohuo-dependencies-parent集中管控依赖版本，避免冲突，提升协作效率。
 
 ## 技术栈
+
+- **Spring Boot 4.1.0**: 核心应用框架，统一支撑 WebMVC、WebFlux、Actuator 等服务能力。
+
+- **Spring Cloud 2025.1.2 / Spring Cloud Alibaba 2025.1.0.0**: 微服务治理、服务发现、配置中心与网关生态基础。
+
+- **Java 25**: 当前项目编译与运行基线，Maven 通过 `maven.compiler.release=25` 管控。
 
 - **Redis**: 高性能的内存数据库，用于存储用户会话信息、消息缓存等数据，提供了高速的数据访问能力。
 
