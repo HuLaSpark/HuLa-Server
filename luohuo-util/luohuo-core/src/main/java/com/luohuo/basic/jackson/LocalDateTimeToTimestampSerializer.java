@@ -1,23 +1,29 @@
 package com.luohuo.basic.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
- * LocalDateTime 转时间戳
+ * LocalDateTime 序列化为毫秒时间戳。
  */
-public class LocalDateTimeToTimestampSerializer extends JsonSerializer<LocalDateTime> {
+public class LocalDateTimeToTimestampSerializer extends StdSerializer<LocalDateTime> {
+    public LocalDateTimeToTimestampSerializer() {
+        super(LocalDateTime.class);
+    }
+
     @Override
-    public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(LocalDateTime value, JsonGenerator generator, SerializationContext context)
+            throws JacksonException {
         if (value == null) {
-            gen.writeNull();
-        } else {
-            long timestamp = value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-            gen.writeNumber(timestamp);
+            generator.writeNull();
+            return;
         }
+        long timestamp = value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        generator.writeNumber(timestamp);
     }
 }

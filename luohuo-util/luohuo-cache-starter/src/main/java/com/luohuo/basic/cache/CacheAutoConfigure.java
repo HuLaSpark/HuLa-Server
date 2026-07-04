@@ -16,7 +16,7 @@ import com.luohuo.basic.utils.StrPool;
 @Slf4j
 @EnableCaching
 @Import({
-        CaffeineAutoConfigure.class, RedisAutoConfigure.class
+        CaffeineAutoConfigure.class, RedisAutoConfigure.class, RedissonAutoConfigure.class
 })
 public class CacheAutoConfigure {
 

@@ -176,4 +176,3 @@ CREATE TABLE `permissions` (
                                `action` varchar(8) NOT NULL COMMENT 'action',
                                UNIQUE INDEX `uk_role_permission` (`role`,`resource`,`action`) USING BTREE
 );
-

@@ -1,6 +1,7 @@
 package com.luohuo.basic.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +19,6 @@ import com.luohuo.basic.jackson.JsonUtil;
 @Accessors(chain = true)
 @SuppressWarnings("ALL")
 public class R<T> {
-	@Schema(description ="成功标识。true/false")
-	private Boolean success;
     public static final String DEF_ERROR_MESSAGE = "系统繁忙，请稍候再试";
     public static final String HYSTRIX_ERROR_MESSAGE = "请求超时，请稍候再试";
     public static final int SUCCESS_CODE = 200;
@@ -80,7 +79,6 @@ public class R<T> {
         this.msg = msg;
         this.defExec = false;
 		this.version = baseVersion;
-		this.success = code ==  SUCCESS_CODE;
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -103,11 +101,7 @@ public class R<T> {
     }
 
 	public static <T> R<T> success() {
-		R<T> result = new R<>();
-		result.setData(null);
-		result.setCode(SUCCESS_CODE);
-		result.setSuccess(Boolean.TRUE);
-		return result;
+		return new R<>(SUCCESS_CODE, null, "");
 	}
 
 	public static R returnResult(Boolean b){
@@ -211,8 +205,10 @@ public class R<T> {
      *
      * @return 是否成功
      */
+	@Schema(description = "成功标识。true/false")
+	@JsonProperty("success")
     public Boolean getsuccess() {
-        return this.code == SUCCESS_CODE || this.code == 200;
+        return this.code == SUCCESS_CODE;
     }
 
     @Override

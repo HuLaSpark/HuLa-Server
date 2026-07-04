@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-util</artifactId>
         <groupId>com.luohuo.basic</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -28,7 +28,7 @@
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
@@ -57,6 +57,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jackson</artifactId>
+        </dependency>
 
 
         <!-- 必须有这个jar 才能提示 -->
@@ -69,3 +73,4 @@
 
     </dependencies>
 </project>
+

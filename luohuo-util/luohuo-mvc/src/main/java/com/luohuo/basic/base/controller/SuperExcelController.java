@@ -3,7 +3,6 @@ package com.luohuo.basic.base.controller;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.exception.ExcelDataConvertException;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import com.luohuo.basic.base.R;
+import com.luohuo.basic.jackson.JsonUtil;
 import com.luohuo.basic.base.entity.SuperEntity;
 import com.luohuo.basic.base.request.PageParams;
 import com.luohuo.basic.base.service.SuperCacheService;
@@ -90,7 +90,7 @@ public abstract class SuperExcelController<S extends SuperCacheService<Id, Entit
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             R error = R.fail("下载文件失败");
-            response.getWriter().println(JSONUtil.toJsonStr(error));
+            response.getWriter().println(JsonUtil.toJson(error));
         }
     }
 

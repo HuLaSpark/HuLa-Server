@@ -4,14 +4,13 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.collect.Iterables;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,14 +41,13 @@ public abstract class AbstractLocalCache<IN, OUT> implements BatchCache<IN, OUT>
                 .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
                 .maximumSize(maxSize)
                 .build(new CacheLoader<IN, OUT>() {
-                    @Nullable
                     @Override
-                    public OUT load(@NonNull IN in) throws Exception {
+                    public OUT load(IN in) throws Exception {
                         return AbstractLocalCache.this.load(Collections.singletonList(in)).get(in);
                     }
 
                     @Override
-                    public @NonNull Map<IN, OUT> loadAll(@NonNull Iterable<? extends IN> keys) throws Exception {
+                    public Map<IN, OUT> loadAll(Set<? extends IN> keys) throws Exception {
                         IN[] ins = Iterables.toArray(keys, inClass);
                         return AbstractLocalCache.this.load(Arrays.asList(ins));
                     }

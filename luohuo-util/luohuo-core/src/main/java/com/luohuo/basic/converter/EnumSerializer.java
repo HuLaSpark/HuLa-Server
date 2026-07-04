@@ -1,19 +1,14 @@
 package com.luohuo.basic.converter;
 
 import cn.hutool.core.util.StrUtil;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.luohuo.basic.interfaces.BaseEnum;
-
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 /**
- * 继承了BaseEnum接口的枚举值，将会统一按照以下格式序列化
- * {
- * "code": "XX",
- * "desc": "xxx"
- * }
+ * 继承了BaseEnum接口的枚举值，将会统一按照以下格式序列化。
  *
  * @author 乾乾
  * @date 2020/5/4 下午6:45
@@ -31,15 +26,15 @@ public class EnumSerializer extends StdSerializer<BaseEnum> {
     }
 
     @Override
-    public void serialize(BaseEnum distance, JsonGenerator generator, SerializerProvider provider)
-            throws IOException {
+    public void serialize(BaseEnum distance, JsonGenerator generator, SerializationContext context)
+            throws JacksonException {
         generator.writeStartObject();
-        generator.writeFieldName(ALL_ENUM_KEY_FIELD);
+        generator.writeName(ALL_ENUM_KEY_FIELD);
         generator.writeString(distance.getCode());
-        generator.writeFieldName(ALL_ENUM_DESC_FIELD);
+        generator.writeName(ALL_ENUM_DESC_FIELD);
         generator.writeString(distance.getDesc());
         if (StrUtil.isNotEmpty(distance.getExtra())) {
-            generator.writeFieldName(ALL_ENUM_EXTRA_FIELD);
+            generator.writeName(ALL_ENUM_EXTRA_FIELD);
             generator.writeString(distance.getExtra());
         }
         generator.writeEndObject();

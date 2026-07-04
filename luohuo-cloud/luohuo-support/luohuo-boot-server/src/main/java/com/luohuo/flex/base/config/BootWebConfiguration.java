@@ -71,7 +71,11 @@ public class BootWebConfiguration extends BaseConfig implements WebMvcConfigurer
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/");
+        registry.addResourceHandler("/**").addResourceLocations(
+                "classpath:/META-INF/resources/",
+                "classpath:/resources/",
+                "classpath:/static/",
+                "classpath:/public/");
     }
 
     @Override

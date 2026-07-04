@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.exception.BizException;
+import com.luohuo.basic.jackson.JsonUtil;
 import com.luohuo.flex.base.service.tenant.DefUserService;
 import com.luohuo.flex.oauth.enumeration.GrantType;
 import com.luohuo.flex.oauth.granter.RefreshTokenGranter;
@@ -45,6 +46,7 @@ import com.luohuo.flex.oauth.vo.result.LoginResultVO;
 import org.springframework.beans.factory.annotation.Value;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -108,9 +110,7 @@ public class RootController {
 		}
 		GrantType grantType = GrantType.get(pv);
 		if (grantType == null || !(grantType == GrantType.GITEE || grantType == GrantType.GITHUB || grantType == GrantType.GITCODE)) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.setContentType("application/json;charset=UTF-8");
-			response.getWriter().write("{\"success\":false,\"msg\":\"不支持的回调类型\"}");
+			writeJson(response, HttpServletResponse.SC_BAD_REQUEST, callbackError("不支持的回调类型"));
 			return;
 		}
 		LoginParamVO login = LoginParamVO.builder()
@@ -122,9 +122,7 @@ public class RootController {
 				.build();
 		R<LoginResultVO> result = tokenGranterBuilder.getGranter(login.getGrantType()).login(login);
 		if (!result.getsuccess()) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.setContentType("application/json;charset=UTF-8");
-			response.getWriter().write("{\"success\":false,\"msg\":\"" + result.getMsg() + "\"}");
+			writeJson(response, HttpServletResponse.SC_BAD_REQUEST, callbackError(result.getMsg()));
 			return;
 		}
 		LoginResultVO vo = result.getData();
@@ -136,8 +134,7 @@ public class RootController {
 			response.setStatus(HttpServletResponse.SC_FOUND);
 			response.setHeader("Location", location);
 		} else {
-			response.setContentType("application/json;charset=UTF-8");
-			response.getWriter().write("{\"success\":true,\"token\":\"" + vo.getToken() + "\",\"refreshToken\":\"" + vo.getRefreshToken() + "\",\"uid\":\"" + vo.getUid() + "\"}");
+			writeJson(response, HttpServletResponse.SC_OK, callbackSuccess(vo));
 		}
 	}
 
@@ -165,6 +162,28 @@ public class RootController {
 		}
 		log.info("Generated {} Auth URL: {}, redirectUri used: {}", pv, url, redirectUri);
 		return R.success(url);
+	}
+
+	private void writeJson(HttpServletResponse response, int status, Object body) throws IOException {
+		response.setStatus(status);
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().write(JsonUtil.toJson(body));
+	}
+
+	private LinkedHashMap<String, Object> callbackError(String msg) {
+		LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+		body.put("success", false);
+		body.put("msg", msg);
+		return body;
+	}
+
+	private LinkedHashMap<String, Object> callbackSuccess(LoginResultVO vo) {
+		LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+		body.put("success", true);
+		body.put("token", vo.getToken());
+		body.put("refreshToken", vo.getRefreshToken());
+		body.put("uid", String.valueOf(vo.getUid()));
+		return body;
 	}
 
 	private String normalizeRedirectUri(String redirectUri) {

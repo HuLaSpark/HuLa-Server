@@ -284,3 +284,17 @@ p6spy:
   config:
     # comma separated list of strings to exclude
     exclude: secure_invoke_record
+gitee:
+  client-id: ${GITEE_CLIENT_ID:}
+  client-secret: ${GITEE_CLIENT_SECRET:}
+  redirect-uri: ${GITEE_REDIRECT_URI:}
+
+github:
+  client-id: ${GITHUB_CLIENT_ID:}
+  client-secret: ${GITHUB_CLIENT_SECRET:}
+  redirect-uri: ${GITHUB_REDIRECT_URI:}
+
+gitcode:
+  client-id: ${GITCODE_CLIENT_ID:}
+  client-secret: ${GITCODE_CLIENT_SECRET:}
+  redirect-uri: ${GITCODE_REDIRECT_URI:}

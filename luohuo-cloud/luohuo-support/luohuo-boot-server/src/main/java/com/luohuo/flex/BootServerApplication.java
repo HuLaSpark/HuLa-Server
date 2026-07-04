@@ -1,12 +1,13 @@
 package com.luohuo.flex;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
 import com.luohuo.basic.validator.annotation.EnableFormValidator;
 import com.luohuo.flex.common.ServerApplication;
 
@@ -21,12 +22,19 @@ import static com.luohuo.flex.common.constant.BizConstant.UTIL_PACKAGE;
  * @author 乾乾
  * @date 2021-10-08
  */
-@SpringBootApplication
+@SpringBootConfiguration
+@EnableAutoConfiguration
 @EnableDiscoveryClient
-@Configuration
-@ComponentScan({
-        UTIL_PACKAGE, BUSINESS_PACKAGE
-})
+@ComponentScan(
+        basePackages = {UTIL_PACKAGE, BUSINESS_PACKAGE},
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.REGEX,
+                pattern = {
+                        "com\\.luohuo\\.flex\\.im\\.facade\\.impl\\..*",
+                        "com\\.luohuo\\.flex\\.oauth\\.facade\\.impl\\..*"
+                }
+        )
+)
 @EnableFeignClients(value = {
         UTIL_PACKAGE, BUSINESS_PACKAGE
 })

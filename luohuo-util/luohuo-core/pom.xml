@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-util</artifactId>
         <groupId>com.luohuo.basic</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -28,17 +28,8 @@
             <artifactId>jsoup</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <!-- jdk8 Time-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-parameter-names</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -54,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -62,3 +53,4 @@
         </dependency>
     </dependencies>
 </project>
+

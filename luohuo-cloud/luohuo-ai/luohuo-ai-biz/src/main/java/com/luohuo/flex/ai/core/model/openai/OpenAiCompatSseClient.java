@@ -1,7 +1,7 @@
 package com.luohuo.flex.ai.core.model.openai;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
@@ -28,7 +28,7 @@ public class OpenAiCompatSseClient {
 
     private final String baseUrl;
     private final String apiKey;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final JsonMapper mapper = JsonMapper.builderWithJackson2Defaults().build();
 
     public OpenAiCompatSseClient(String baseUrl, String apiKey) {
         this.baseUrl = baseUrl == null || baseUrl.isBlank() ? "https://api.openai.com" : baseUrl;

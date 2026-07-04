@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-generator</artifactId>
         <groupId>com.luohuo.flex</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot3-starter</artifactId>
+            <artifactId>sa-token-spring-boot4-starter</artifactId>
         </dependency>
 
         <dependency>

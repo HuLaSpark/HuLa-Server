@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.luohuo.basic</groupId>
         <artifactId>luohuo-parent</artifactId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath/>
     </parent>
 
     <groupId>com.luohuo.flex</groupId>
     <artifactId>luohuo-dependencies-parent</artifactId>
-    <version>3.0.6</version>
+    <version>3.0.9</version>
 
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -21,14 +21,72 @@
     <description>luohuo项目业务父pom</description>
     <url>https://gitee.com/HuLaSpark/HuLa-Server</url>
     <properties>
-        <luohuo-util.version>3.0.6</luohuo-util.version>
-        <luohuo-project.version>3.0.6</luohuo-project.version>
+        <luohuo-util.version>3.0.9</luohuo-util.version>
+        <luohuo-project.version>3.0.9</luohuo-project.version>
         <docker.image.prefix>hula</docker.image.prefix>
+        <java.version>25</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <spring-boot.run.jvmArguments>--sun-misc-unsafe-memory-access=allow</spring-boot.run.jvmArguments>
+
+        <spring-boot.version>4.1.0</spring-boot.version>
+        <spring-boot-admin.version>4.1.1</spring-boot-admin.version>
+        <spring-cloud-dependencies.version>2025.1.2</spring-cloud-dependencies.version>
+        <spring-cloud-alibaba-dependencies.version>2025.1.0.0</spring-cloud-alibaba-dependencies.version>
+        <nacos.version>3.2.2</nacos.version>
+
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <lombok.version>1.18.46</lombok.version>
+        <mybatis-plus.version>3.5.16</mybatis-plus.version>
+        <mybatis-plus-join.version>1.5.7</mybatis-plus-join.version>
+        <mybatis-spring.version>4.1.0</mybatis-spring.version>
+        <redisson.version>4.6.1</redisson.version>
+        <jetbrains.annotations.version>26.1.0</jetbrains.annotations.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
+        <javax.jws-api.version>1.1</javax.jws-api.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.yulichang</groupId>
+                <artifactId>mybatis-plus-join-boot-starter</artifactId>
+                <version>${mybatis-plus-join.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.luohuo.basic</groupId>
                 <artifactId>luohuo-tenant</artifactId>
@@ -149,6 +207,11 @@
                 <artifactId>transmittable-thread-local</artifactId> <!-- 解决 ThreadLocal 父子线程的传值问题 -->
                 <version>${transmittable-thread-local.version}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>javax.jws-api</artifactId>
+                <version>${javax.jws-api.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -221,9 +284,16 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.target}</target>
+                        <release>${maven.compiler.release}</release>
+                        <proc>full</proc>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -243,6 +313,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
                     <executions>
                         <execution>
                             <goals>

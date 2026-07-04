@@ -212,7 +212,6 @@ public class AiVideoServiceImpl implements AiVideoService {
 	}
 
 	@Override
-	@Async
 	public Long recoverIncompleteVideos() {
 		ContextUtil.setTenantId(DefValConstants.DEF_TENANT_ID);
 		List<AiVideoDO> incompleteVideos = videoMapper.selectListByStatusWithTaskId(AiVideoStatusEnum.IN_PROGRESS.getStatus());

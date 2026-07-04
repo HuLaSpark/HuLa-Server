@@ -111,7 +111,7 @@ import org.springframework.ai.zhipuai.api.ZhiPuAiApi;
 import org.springframework.ai.zhipuai.api.ZhiPuAiImageApi;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
 import org.springframework.web.client.RestClient;
 import redis.clients.jedis.JedisPooled;
 
@@ -687,7 +687,7 @@ public class AiModelFactoryImpl implements AiModelFactory {
     private RedisVectorStore buildRedisVectorStore(EmbeddingModel embeddingModel,
                                                    Map<String, Class<?>> metadataFields) {
         // 创建 JedisPooled 对象
-        RedisProperties redisProperties = SpringUtil.getBean(RedisProperties.class);
+        DataRedisProperties redisProperties = SpringUtil.getBean(DataRedisProperties.class);
         JedisPooled jedisPooled = new JedisPooled(redisProperties.getHost(), redisProperties.getPort());
         // 创建 RedisVectorStoreProperties 对象
         RedisVectorStoreAutoConfiguration configuration = new RedisVectorStoreAutoConfiguration();

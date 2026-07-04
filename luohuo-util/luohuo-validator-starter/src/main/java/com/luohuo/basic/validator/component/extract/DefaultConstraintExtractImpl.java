@@ -4,15 +4,6 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Validator;
-import jakarta.validation.metadata.PropertyDescriptor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.engine.ValidatorImpl;
-import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
-import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
-import org.hibernate.validator.internal.metadata.core.MetaConstraint;
-import org.hibernate.validator.internal.metadata.location.ConstraintLocation;
 import com.luohuo.basic.utils.StrPool;
 import com.luohuo.basic.validator.mateconstraint.IConstraintConverter;
 import com.luohuo.basic.validator.mateconstraint.impl.DigitsConstraintConverter;
@@ -24,6 +15,11 @@ import com.luohuo.basic.validator.mateconstraint.impl.RegExConstraintConverter;
 import com.luohuo.basic.validator.model.ConstraintInfo;
 import com.luohuo.basic.validator.model.FieldValidatorDesc;
 import com.luohuo.basic.validator.model.ValidConstraint;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Validator;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.metadata.PropertyDescriptor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -80,7 +76,6 @@ public class DefaultConstraintExtractImpl implements IConstraintExtract {
     private final Map<String, Map<String, FieldValidatorDesc>> CACHE = new HashMap<>();
 
     private final Validator validator;
-    private BeanMetaDataManager beanMetaDataManager;
     private List<IConstraintConverter> constraintConverters;
 
     public DefaultConstraintExtractImpl(final Validator validator) {
@@ -89,20 +84,13 @@ public class DefaultConstraintExtractImpl implements IConstraintExtract {
     }
 
     public final void init() {
-        try {
-            Field beanMetaDataManagerField = ValidatorImpl.class.getDeclaredField("beanMetaDataManager");
-            beanMetaDataManagerField.setAccessible(true);
-            beanMetaDataManager = (BeanMetaDataManager) beanMetaDataManagerField.get(validator);
-            constraintConverters = new ArrayList<>(10);
-            constraintConverters.add(new MaxMinConstraintConverter());
-            constraintConverters.add(new NotNullConstraintConverter());
-            constraintConverters.add(new RangeConstraintConverter());
-            constraintConverters.add(new DigitsConstraintConverter());
-            constraintConverters.add(new RegExConstraintConverter());
-            constraintConverters.add(new OtherConstraintConverter());
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            log.error("初始化验证器失败", e);
-        }
+        constraintConverters = new ArrayList<>(10);
+        constraintConverters.add(new MaxMinConstraintConverter());
+        constraintConverters.add(new NotNullConstraintConverter());
+        constraintConverters.add(new RangeConstraintConverter());
+        constraintConverters.add(new DigitsConstraintConverter());
+        constraintConverters.add(new RegExConstraintConverter());
+        constraintConverters.add(new OtherConstraintConverter());
     }
 
     @Override
@@ -118,41 +106,35 @@ public class DefaultConstraintExtractImpl implements IConstraintExtract {
         return fieldValidatorDesc.values();
     }
 
-
     private void doExtract(ValidConstraint constraint, Map<String, FieldValidatorDesc> fieldValidatorDesc) throws Exception {
         Class<?> targetClazz = constraint.getTarget();
         Class<?>[] groups = constraint.getGroups();
 
         String key = targetClazz.getName() + StrPool.COLON +
-                     Arrays.stream(groups).map(Class::getName).collect(Collectors.joining(StrPool.COLON));
+                Arrays.stream(groups).map(Class::getName).collect(Collectors.joining(StrPool.COLON));
         if (CACHE.containsKey(key)) {
             fieldValidatorDesc.putAll(CACHE.get(key));
             return;
         }
 
-        //测试一下这个方法
-        //validator.getConstraintsForClass(targetClazz).getConstrainedProperties()
-
-        BeanMetaData<?> res = beanMetaDataManager.getBeanMetaData(targetClazz);
-        Set<MetaConstraint<?>> r = res.getMetaConstraints();
-        Set<PropertyDescriptor> constrainedProperties = res.getBeanDescriptor().getConstrainedProperties();
-        for (MetaConstraint<?> metaConstraint : r) {
-            builderFieldValidatorDesc(metaConstraint, constrainedProperties, groups, fieldValidatorDesc);
+        Set<PropertyDescriptor> constrainedProperties = validator.getConstraintsForClass(targetClazz).getConstrainedProperties();
+        for (PropertyDescriptor propertyDescriptor : constrainedProperties) {
+            for (ConstraintDescriptor<?> constraintDescriptor : propertyDescriptor.getConstraintDescriptors()) {
+                builderFieldValidatorDesc(targetClazz, propertyDescriptor, constraintDescriptor, groups, fieldValidatorDesc);
+            }
         }
 
         CACHE.put(key, fieldValidatorDesc);
     }
 
-
-    private void builderFieldValidatorDesc(MetaConstraint<?> metaConstraint,
-                                           Set<PropertyDescriptor> constraintDescriptors,
+    private void builderFieldValidatorDesc(Class<?> targetClazz,
+                                           PropertyDescriptor propertyDescriptor,
+                                           ConstraintDescriptor<?> constraintDescriptor,
                                            Class<?>[] groups,
                                            Map<String, FieldValidatorDesc> fieldValidatorDesc) throws Exception {
-        //字段上的组
-        Set<Class<?>> groupsMeta = metaConstraint.getGroupList();
+        Set<Class<?>> groupsMeta = constraintDescriptor.getGroups();
         boolean isContainsGroup = false;
 
-        //需要验证的组
         for (Class<?> group : groups) {
             if (groupsMeta.contains(group)) {
                 isContainsGroup = true;
@@ -169,26 +151,14 @@ public class DefaultConstraintExtractImpl implements IConstraintExtract {
             return;
         }
 
-        ConstraintLocation con = metaConstraint.getLocation();
-        String domainName = con.getDeclaringClass().getSimpleName();
-        String fieldName = con.getConstrainable().getName();
+        String domainName = targetClazz.getSimpleName();
+        String fieldName = propertyDescriptor.getPropertyName();
         String key = domainName + fieldName;
 
-
-        boolean flag = false;
-        for (PropertyDescriptor constraintDescriptor : constraintDescriptors) {
-            if (constraintDescriptor.getPropertyName().equals(fieldName)) {
-                flag = true;
-                break;
-            }
-        }
-        if (!flag) {
-            return;
-        }
         FieldValidatorDesc desc = fieldValidatorDesc.get(key);
         if (desc == null) {
             desc = new FieldValidatorDesc();
-            Field field = ReflectUtil.getField(con.getDeclaringClass(), fieldName);
+            Field field = ReflectUtil.getField(targetClazz, fieldName);
             if (field != null) {
                 Schema schema = field.getAnnotation(Schema.class);
                 String name = schema != null && StrUtil.isNotEmpty(schema.description()) ? schema.description() : fieldName;
@@ -197,14 +167,14 @@ public class DefaultConstraintExtractImpl implements IConstraintExtract {
                 desc.setName(fieldName);
             }
             desc.setField(fieldName);
-            desc.setFieldType(getType(con.getConstrainable().getType().getTypeName()));
+            desc.setFieldType(getType(propertyDescriptor.getElementClass().getTypeName()));
             desc.setConstraints(new ArrayList<>());
             fieldValidatorDesc.put(key, desc);
         }
-        ConstraintInfo constraint = builderConstraint(metaConstraint.getDescriptor().getAnnotation());
+        ConstraintInfo constraint = builderConstraint(constraintDescriptor.getAnnotation());
         desc.getConstraints().add(constraint);
 
-        if (PATTERN.equals(metaConstraint.getDescriptor().getAnnotationType().getSimpleName())) {
+        if (PATTERN.equals(constraintDescriptor.getAnnotation().annotationType().getSimpleName())) {
             ConstraintInfo notNull = new ConstraintInfo();
             notNull.setType(NOT_NULL);
             Map<String, Object> attrs = MapUtil.newHashMap();
@@ -213,7 +183,6 @@ public class DefaultConstraintExtractImpl implements IConstraintExtract {
             desc.getConstraints().add(notNull);
         }
     }
-
 
     private String getType(String typeName) {
         if (StrUtil.startWithAny(typeName, SET_TYPE_NAME, LIST_TYPE_NAME, COLLECTION_TYPE_NAME, BASE_CHAR_TYPE_NAME)) {

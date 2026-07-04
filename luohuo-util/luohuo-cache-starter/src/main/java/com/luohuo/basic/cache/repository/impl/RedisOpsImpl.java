@@ -1,8 +1,5 @@
 package com.luohuo.basic.cache.repository.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.luohuo.basic.jackson.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Range;
@@ -37,8 +34,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class RedisOpsImpl implements CacheOps, CachePlusOps {
-
-	private static final ObjectMapper mapper = JsonUtil.newInstance();
 
     /**
      * Spring Redis Template
@@ -327,7 +322,7 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
 		List<T> result = new ArrayList<>(list.size());
 		for (Object obj : list) {
 			try {
-				T convertedObj = mapper.convertValue(obj, tClass);
+				T convertedObj = JsonUtil.parse(JsonUtil.toJson(obj), tClass);
 				result.add(convertedObj);
 			} catch (Exception e) {
 				log.error("Failed to convert object to type {}: {}", tClass.getSimpleName(), e.getMessage());
@@ -447,3 +442,4 @@ public class RedisOpsImpl implements CacheOps, CachePlusOps {
 		redisOps.ZSetAddAndExpire(key, start, length, current);
 	}
 }
+

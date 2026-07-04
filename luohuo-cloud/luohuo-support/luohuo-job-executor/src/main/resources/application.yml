@@ -141,7 +141,7 @@ spring:
     # 优雅停机宽限期时间
     timeout-per-shutdown-phase: 30s
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    exclude: org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
   datasource:
     dynamic:
       enabled: false  # 这里一定要写成false，无论是什么模式

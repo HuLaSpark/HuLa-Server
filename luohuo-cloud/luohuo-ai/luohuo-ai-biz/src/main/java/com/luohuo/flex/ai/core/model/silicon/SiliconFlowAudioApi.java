@@ -1,7 +1,7 @@
 package com.luohuo.flex.ai.core.model.silicon;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,8 +47,8 @@ public class SiliconFlowAudioApi {
         headers.set("Authorization", "Bearer " + apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // 使用 ObjectMapper 将请求对象序列化为 JSON 字符串
-        ObjectMapper objectMapper = new ObjectMapper();
+        // 使用 JsonMapper 将请求对象序列化为 JSON 字符串
+        JsonMapper objectMapper = JsonMapper.builderWithJackson2Defaults().build();
         String jsonBody;
         try {
             jsonBody = objectMapper.writeValueAsString(request);

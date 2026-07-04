@@ -3,10 +3,10 @@ luohuo:
     type: REDIS
     serializer-type: JACK_SON
   redis:
-    ip: 192.168.1.37
-    port: 16379
-    password: luo.123456
-    database: 1
+    ip: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:16379}
+    password: ${REDIS_PASSWORD:luo.123456}
+    database: ${REDIS_DATABASE:1}
 spring:
   cache:
     type: GENERIC

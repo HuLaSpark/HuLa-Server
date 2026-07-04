@@ -42,7 +42,7 @@ public class MySwaggerXForwardedHeadersFilter implements HttpHeadersFilter, Orde
         HttpHeaders original = input;
         HttpHeaders updated = new HttpHeaders();
 
-        original.entrySet().stream()
+        original.headerSet().stream()
                 .forEach(entry -> updated.addAll(entry.getKey(), entry.getValue()));
 
         LinkedHashSet<URI> originalUris = exchange.getAttribute(GATEWAY_ORIGINAL_REQUEST_URL_ATTR);

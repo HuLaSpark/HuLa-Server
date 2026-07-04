@@ -3,7 +3,7 @@ package com.luohuo.flex.flex.storage.engine;
 import com.alibaba.fastjson.JSONObject;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
-import io.minio.http.Method;
+import io.minio.Http.Method;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

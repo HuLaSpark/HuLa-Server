@@ -65,7 +65,7 @@ public class GiteeAiVideoApi {
 						h.setBearerAuth(apiKey.getValue());
 					}
 					h.setContentType(MediaType.APPLICATION_JSON);
-					h.addAll(headers);
+					headers.forEach(h::addAll);
 				})
 				.defaultStatusHandler(responseErrorHandler)
 				.build();

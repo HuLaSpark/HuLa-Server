@@ -2,11 +2,10 @@ package com.luohuo.flex.ws.websocket;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONUtil;
-import com.google.common.util.concurrent.Striped;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.luohuo.basic.cache.repository.CachePlusOps;
 import com.luohuo.basic.model.cache.CacheKey;
+import com.luohuo.basic.jackson.JsonUtil;
 import com.luohuo.basic.utils.TimeUtils;
 import com.luohuo.flex.common.cache.FriendCacheKeyBuilder;
 import com.luohuo.flex.common.cache.PresenceCacheKeyBuilder;
@@ -36,7 +35,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -72,8 +70,6 @@ public class SessionManager {
 	public final ConcurrentHashMap<String, Long> SESSION_USER_MAP = new ConcurrentHashMap<>();
 	// uid → (clientId → 会话集合) 管理的是单个用户在此服务上所有ws链接，CopyOnWriteArrayList 频繁写入性能较差 所以用Set
 	private final ConcurrentHashMap<Long, Map<String, Set<WebSocketSession>>> USER_DEVICE_SESSION_MAP = new ConcurrentHashMap<>();
-	// 同一 uid + clientId 的注册/清理必须串行，避免在线状态与本地会话出现竞态
-	private final Striped<Lock> deviceLifecycleStripes = Striped.lazyWeakLock(1024);
 
 	public void setAcceptingNewConnections(boolean accepting) {
 		acceptingNewConnections.set(accepting);
@@ -115,43 +111,38 @@ public class SessionManager {
 
 	// 注册会话
 	public void registerSession(WebSocketSession session, String clientId, Long uid) {
-		Lock deviceLock = deviceLifecycleLock(uid, clientId);
-		deviceLock.lock();
-		try {
-			AtomicBoolean firstSessionForDevice = new AtomicBoolean(false);
-
-			// 1. 设备级会话注册
-			USER_DEVICE_SESSION_MAP.compute(uid, (key, deviceMap) -> {
-				Map<String, Set<WebSocketSession>> currentDeviceMap = deviceMap;
-				if (currentDeviceMap == null) {
-					currentDeviceMap = new ConcurrentHashMap<>();
-				}
-				currentDeviceMap.compute(clientId, (k, sessions) -> {
-					Set<WebSocketSession> currentSessions = sessions;
-					if (currentSessions == null) {
-						currentSessions = newSessionSet();
-					}
-					firstSessionForDevice.set(currentSessions.isEmpty());
-					currentSessions.add(session);
-					return currentSessions;
-				});
-				return currentDeviceMap;
+		// 1. 设备级会话注册
+		USER_DEVICE_SESSION_MAP.compute(uid, (key, deviceMap) -> {
+			if (deviceMap == null) deviceMap = new ConcurrentHashMap<>();
+			deviceMap.compute(clientId, (k, sessions) -> {
+				if (sessions == null) sessions = new HashSet<>();
+				sessions.add(session);
+				return sessions;
 			});
+			return deviceMap;
+		});
 
-			// 2. 反向索引更新 (会话 → 用户+设备)
-			SESSION_USER_MAP.put(session.getId(), uid);
-			SESSION_CLIENT_MAP.put(session.getId(), clientId);
+		// 2. 反向索引更新 (会话 → 用户+设备)
+		SESSION_USER_MAP.put(session.getId(), uid);
+		SESSION_CLIENT_MAP.put(session.getId(), clientId);
 
-			// 3. 首次连接设备时触发路由注册
-			if (firstSessionForDevice.get()) {
-				nacosSessionRegistry.addUserRoute(uid, clientId);
-				syncOnline(uid, clientId, true); // 同步设备在线状态
-				log.info("会话注册: clientId={}, uid={},  客户端映射={}, 用户会话={}", clientId, uid, getClientNum(uid, clientId), getUserSessions(uid).size());
-			} else {
-				log.info("新增会话: clientId={}, uid={}, 当前客户端映射会话数={}, 用户会话={}", clientId, uid, getClientNum(uid, clientId), getUserSessions(uid).size());
+		// 3. 首次连接设备时触发路由注册
+		boolean isFirstSession = USER_DEVICE_SESSION_MAP.get(uid).compute(clientId, (k, sessions) -> {
+			if (sessions == null) {
+				sessions = new HashSet<>();
+				sessions.add(session);
+				return sessions;
 			}
-		} finally {
-			deviceLock.unlock();
+			sessions.add(session);
+			return sessions;
+		}).size() == 1;
+
+		if (isFirstSession) {
+			nacosSessionRegistry.addUserRoute(uid, clientId);
+			syncOnline(uid, clientId, true); // 同步设备在线状态
+			log.info("会话注册: clientId={}, uid={},  客户端映射={}, 用户会话={}", clientId, uid, getClientNum(uid, clientId), getUserSessions(uid).size());
+		} else {
+			log.info("新增会话: clientId={}, uid={}, 当前客户端映射会话数={}, 用户会话={}", clientId, uid, getClientNum(uid, clientId), getUserSessions(uid).size());
 		}
 	}
 
@@ -360,7 +351,7 @@ public class SessionManager {
 			return Flux.fromIterable(sessions)
 					.filter(WebSocketSession::isOpen)
 					.flatMap(session ->
-							session.send(Mono.just(session.textMessage(JSONUtil.toJsonStr(resp)))
+							session.send(Mono.just(session.textMessage(JsonUtil.toJson(resp)))
 									.onErrorResume(e -> {
 										log.error("发送失败: uid={}, clientId={}, sessionId={}", uid, clientId, session.getId(), e);
 										return Mono.empty();
@@ -416,16 +407,16 @@ public class SessionManager {
 	 *
 	 * @param uid       用户id
 	 * @param clientId  用户指纹
-	 * @param session 当前绑定的会话
+	 * @param sessionId 当前绑定的会话
 	 * @return
 	 */
-	private boolean cleanDeviceSession(Long uid, String clientId, WebSocketSession session) {
+	private boolean cleanDeviceSession(Long uid, String clientId, String sessionId) {
 		AtomicBoolean isLastSession = new AtomicBoolean(false);
 		USER_DEVICE_SESSION_MAP.compute(uid, (u, deviceMap) -> {
 			if (deviceMap == null) return null;
 			deviceMap.compute(clientId, (c, sessions) -> {
 				if (sessions != null) {
-					sessions.remove(session);
+					sessions.removeIf(s -> s.getId().equals(sessionId));
 					if (sessions.isEmpty()) {
 						// 标记为最后会话
 						isLastSession.set(true);
@@ -444,55 +435,35 @@ public class SessionManager {
 	 * 清理会话
 	 * @param session 当前会话
 	 */
-	public void cleanupSession(WebSocketSession session, CloseStatus closeStatus) {
-		if (session == null) {
-			return;
+	public void cleanupSession(WebSocketSession session) {
+		if (session != null && !session.isOpen()) {
+			session.close(CloseStatus.GOING_AWAY)
+					.subscribeOn(Schedulers.boundedElastic())
+					.doAfterTerminate(() -> {
+						String sessionId = session.getId();
+
+						// 1. 获取反向索引
+						String clientId = SESSION_CLIENT_MAP.remove(sessionId);
+						Long uid = SESSION_USER_MAP.remove(sessionId);
+
+						if (clientId != null && uid != null) {
+							// 2. 原子化清理设备指纹级核心映射
+							boolean isLastSession = cleanDeviceSession(uid, clientId, sessionId);
+
+							// 3. 若设备无会话，清理路由
+							if (isLastSession) {
+								nacosSessionRegistry.removeDeviceRoute(uid, clientId);
+								syncOnline(uid, clientId, false); // 通知下线
+							}
+
+							Set<WebSocketSession> clientSessions = Optional.ofNullable(USER_DEVICE_SESSION_MAP.get(uid)).map(deviceMap -> deviceMap.get(clientId)).orElse(Collections.emptySet());
+							Set<WebSocketSession> sessions = getUserSessions(uid);
+							log.info("清理会话: sessionId={}, clientId={}, uid={}, 客户端映射={}, 用户会话={}", sessionId, clientId, uid, CollUtil.isEmpty(clientSessions) ? 0 : clientSessions.size(), CollUtil.isEmpty(sessions) ? 0 : sessions.size());
+						}
+					})
+					.doOnSuccess(v -> log.debug("会话关闭成功: {}", session.getId()))
+					.doOnError(e -> log.error("会话关闭失败", e)).subscribe();
 		}
-
-		Mono<Void> closeAction = session.isOpen() ? session.close(closeStatus) : Mono.empty();
-		closeAction
-				.subscribeOn(Schedulers.boundedElastic())
-				.doAfterTerminate(() -> cleanupClosedSession(session))
-				.doOnSuccess(v -> log.debug("会话关闭成功: {}", session.getId()))
-				.doOnError(e -> log.error("会话关闭失败", e))
-				.subscribe();
-	}
-
-	private void cleanupClosedSession(WebSocketSession session) {
-		String sessionId = session.getId();
-
-		// 1. 获取反向索引
-		String clientId = SESSION_CLIENT_MAP.remove(sessionId);
-		Long uid = SESSION_USER_MAP.remove(sessionId);
-
-		if (clientId != null && uid != null) {
-			Lock deviceLock = deviceLifecycleLock(uid, clientId);
-			deviceLock.lock();
-			try {
-				// 2. 原子化清理设备指纹级核心映射
-				boolean isLastSession = cleanDeviceSession(uid, clientId, session);
-
-				// 3. 若设备无会话，清理路由
-				if (isLastSession) {
-					nacosSessionRegistry.removeDeviceRoute(uid, clientId);
-					syncOnline(uid, clientId, false); // 通知下线
-				}
-
-				Set<WebSocketSession> clientSessions = Optional.ofNullable(USER_DEVICE_SESSION_MAP.get(uid)).map(deviceMap -> deviceMap.get(clientId)).orElse(Collections.emptySet());
-				Set<WebSocketSession> sessions = getUserSessions(uid);
-				log.info("清理会话: sessionId={}, clientId={}, uid={}, 客户端映射={}, 用户会话={}", sessionId, clientId, uid, CollUtil.isEmpty(clientSessions) ? 0 : clientSessions.size(), CollUtil.isEmpty(sessions) ? 0 : sessions.size());
-			} finally {
-				deviceLock.unlock();
-			}
-		}
-	}
-
-	private Lock deviceLifecycleLock(Long uid, String clientId) {
-		return deviceLifecycleStripes.get(uid + ":" + clientId);
-	}
-
-	private Set<WebSocketSession> newSessionSet() {
-		return ConcurrentHashMap.newKeySet();
 	}
 
 	@PostConstruct

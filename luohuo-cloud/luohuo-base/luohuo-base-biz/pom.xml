@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-base</artifactId>
         <groupId>com.luohuo.flex</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -46,26 +46,10 @@
             <groupId>com.luohuo.basic</groupId>
             <artifactId>luohuo-mvc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-                    <groupId>org.jboss.spec.javax.annotation</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
         <!-- @RefreshScope 需要使用 -->
@@ -148,7 +132,7 @@
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
+            <artifactId>okhttp-jvm</artifactId>
         </dependency>
 
         <!-- groovy-all -->

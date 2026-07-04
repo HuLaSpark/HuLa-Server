@@ -16,6 +16,13 @@ luohuo:
   sentinel:
     dashboard: ${SENTINEL_DASHBOARD:@sentinel.dashboard@}
 spring:
+  config:
+    import:
+      - "nacos:common.yml"
+      - "nacos:redis.yml"
+      - "nacos:@database.type@"
+      - "nacos:rocketmq.yml"
+      - "nacos:@project.artifactId@.yml"
   main:
     web-application-type: reactive
     allow-bean-definition-overriding: true
@@ -36,15 +43,6 @@ spring:
         server-addr: ${luohuo.nacos.ip}:${luohuo.nacos.port}
         file-extension: yml
         namespace: ${luohuo.nacos.namespace}
-        shared-configs:
-          - dataId: common.yml
-            refresh: true
-          - dataId: redis.yml
-            refresh: false
-          - dataId: '@database.type@'
-            refresh: true
-          - dataId: rocketmq.yml
-            refresh: false
         enabled: true
         username: ${luohuo.nacos.username}
         password: ${luohuo.nacos.password}
@@ -58,7 +56,7 @@ spring:
           management.context-path: ${server.servlet.context-path:}${spring.mvc.servlet.path:}${management.endpoints.web.base-path:}
           gray_version: qianqian
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    exclude: org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 # 只能配置在bootstrap.yml ，否则会生成 log.path_IS_UNDEFINED 文件夹
 # window会自动在 代码所在盘 根目录下自动创建文件夹，  如： D:/data/projects/logs
 logging:

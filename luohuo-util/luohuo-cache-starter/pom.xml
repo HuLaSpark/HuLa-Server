@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-util</artifactId>
         <groupId>com.luohuo.basic</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,6 +31,10 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>

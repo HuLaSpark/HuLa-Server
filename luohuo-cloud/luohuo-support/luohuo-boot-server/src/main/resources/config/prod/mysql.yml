@@ -30,6 +30,10 @@ luohuo:
     filters: stat,wall
     init:
       separator: GO
+  boot:
+    im-schema-routing:
+      enabled: true
+      schema: ${IM_SCHEMA:luohuo_im_01}
   database: # 字段介绍参考 DatabaseProperties
     # 4.x 需要写死 column， 其他模式需要使用其他项目，而非改变此参数
     multiTenantType: NONE
@@ -55,7 +59,7 @@ luohuo:
 # mysql 通用配置
 spring:
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    exclude: org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
   datasource:
     dynamic:
       enabled: false

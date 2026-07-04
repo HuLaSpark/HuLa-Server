@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.luohuo.flex</groupId>
         <artifactId>luohuo-public</artifactId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot-autoconfig</artifactId>
+            <artifactId>sa-token-spring-boot-webmvc-v3v4-common</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>

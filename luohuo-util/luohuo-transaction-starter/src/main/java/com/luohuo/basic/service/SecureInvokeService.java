@@ -2,7 +2,7 @@ package com.luohuo.basic.service;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.luohuo.basic.utils.JsonUtils;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -146,3 +146,4 @@ public class SecureInvokeService {
         }).collect(Collectors.toList());
     }
 }
+

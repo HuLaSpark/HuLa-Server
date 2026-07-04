@@ -17,6 +17,13 @@ luohuo:
     dashboard: ${SENTINEL_DASHBOARD:@sentinel.dashboard@}
 
 spring:
+  config:
+    import:
+      - "nacos:common.yml"
+      - "nacos:redis.yml"
+      - "nacos:@database.type@"
+      - "nacos:rocketmq.yml"
+      - "nacos:@project.artifactId@.yml"
   main:
     allow-bean-definition-overriding: true
   application:
@@ -38,15 +45,6 @@ spring:
         server-addr: ${luohuo.nacos.ip}:${luohuo.nacos.port}
         file-extension: yml
         namespace: ${luohuo.nacos.namespace}
-        shared-configs:
-          - dataId: common.yml
-            refresh: true
-          - dataId: redis.yml
-            refresh: false
-          - dataId: @database.type@
-            refresh: true
-          - dataId: rocketmq.yml
-            refresh: false
         enabled: true
         username: ${luohuo.nacos.username}
         password: ${luohuo.nacos.password}

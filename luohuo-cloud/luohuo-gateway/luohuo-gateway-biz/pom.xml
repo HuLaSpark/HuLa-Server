@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-gateway</artifactId>
         <groupId>com.luohuo.flex</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -53,7 +53,7 @@
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
+            <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
             <optional>true</optional>
             <scope>provided</scope>
         </dependency>
@@ -61,7 +61,7 @@
         <!-- Sa-Token 响应式版本（用于 StpInterfaceServiceImpl） -->
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+            <artifactId>sa-token-reactor-spring-boot4-starter</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

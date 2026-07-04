@@ -35,6 +35,6 @@ public class WebSocketHeaderFilter extends AbstractGatewayFilterFactory<Object> 
 
     private boolean isWebSocketRequest(HttpHeaders headers) {
         return "websocket".equalsIgnoreCase(headers.getUpgrade()) ||
-               headers.containsKey("Sec-WebSocket-Key");
+               headers.containsHeader("Sec-WebSocket-Key");
     }
 }

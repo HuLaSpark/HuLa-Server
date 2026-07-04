@@ -2,8 +2,8 @@ luohuo:
   rocketmq:
     # 若系统中有除了zipkin之外的地方使用了mq ，则一定不能设置成false
     enabled: true
-    ip: 192.168.1.37
-    port: 9876
+    ip: ${ROCKETMQ_HOST:127.0.0.1}
+    port: ${ROCKETMQ_PORT:9876}
     access-key: 'earthearth'
     secret-key: 'mq000000'
 

@@ -35,11 +35,11 @@
     <springProperty scope="context" name="server.port" source="server.port" defaultValue="0000"/>
     <!-- 彩色日志 -->
     <!-- 彩色日志依赖的渲染类 -->
-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="clr" class="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
-                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+                    class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
     <conversionRule conversionWord="wEx"
-                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+                    class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
 
     <!-- 彩色日志格式 -->
     <springProperty scope="context" name="common-pattern-color" source="logging.common-pattern-color"
@@ -50,7 +50,6 @@
     <contextName>${spring.application.name}-logback</contextName>
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <jmxConfigurator/>
 
 
     <!-- 控制台实时输出，采用高亮语法，用于开发环境 -->
@@ -240,3 +239,4 @@
     </appender>
 
 </included>
+

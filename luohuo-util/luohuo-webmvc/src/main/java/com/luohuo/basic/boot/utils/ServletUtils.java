@@ -26,10 +26,10 @@ public class ServletUtils {
      * @param response 响应
      * @param object   对象，会序列化成 JSON 字符串
      */
-    @SuppressWarnings("deprecation") // 必须使用 APPLICATION_JSON_UTF8_VALUE，否则会乱码
     public static void writeJSON(HttpServletResponse response, Object object) {
         String content = JsonUtils.toStr(object);
-        JakartaServletUtil.write(response, content, MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setCharacterEncoding(java.nio.charset.StandardCharsets.UTF_8.name());
+        JakartaServletUtil.write(response, content, MediaType.APPLICATION_JSON_VALUE);
     }
 
     /**

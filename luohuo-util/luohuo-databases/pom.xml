@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luohuo-util</artifactId>
         <groupId>com.luohuo.basic</groupId>
-        <version>3.0.6</version>
+        <version>3.0.9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-3-starter</artifactId>
+            <artifactId>druid-spring-boot-4-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>HikariCP</artifactId>
@@ -66,3 +66,4 @@
     </dependencies>
 
 </project>
+

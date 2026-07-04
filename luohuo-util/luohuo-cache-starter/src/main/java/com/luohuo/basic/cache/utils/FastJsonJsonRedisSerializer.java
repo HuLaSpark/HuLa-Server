@@ -27,8 +27,7 @@ public class FastJsonJsonRedisSerializer<T> implements RedisSerializer<T> {
 		SAFE_CONFIG.addAccept("com.luohuo.flex.im.domain.");
 		// 3. 启用ASM加速（非Android环境）
 		SAFE_CONFIG.setAsmEnable(true);
-		// 4. 开启安全模式（FastJSON 1.2.68+）
-		SAFE_CONFIG.setSafeMode(true);
+		// FastJSON 2.x 兼容包不再支持 setSafeMode(boolean)，保留白名单和关闭全局 AutoType。
 	}
 
 	public FastJsonJsonRedisSerializer(Class<T> clazz) {

@@ -5,7 +5,7 @@
 ```bash
 # 授权目录
 
-mkdir /home/docker/rocketmq/broker/conf/ /home/docker/rocketmq/broker/logs/ /home/docker/rocketmq/broker/store/ -p
+mkdir /home/docker/rocketmq/broker/conf/ /home/docker/rocketmq/broker/logs/ /home/docker/rocketmq/timerwheel/ /home/docker/rocketmq/broker/store/ -p
 
 chmod 777 /home/docker/rocketmq/broker/conf/
 chmod 777 /home/docker/rocketmq/broker/logs/

@@ -4,71 +4,69 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
     <groupId>com.luohuo.basic</groupId>
     <artifactId>luohuo-parent</artifactId>
-    <version>3.0.6</version>
+    <version>3.0.9</version>
     <packaging>pom</packaging>
 
     <modelVersion>4.0.0</modelVersion>
     <name>${project.artifactId}</name>
-    <description>Spring Boot 3.x项目依赖管理</description>
+    <description>Spring Boot 4.1.0项目依赖管理</description>
     <url>https://gitee.com/HuLaSpark/HuLa-Server</url>
 
     <properties>
-        <!--
-         1. spring-cloud-alibaba 2023.0.1.2 和 seata 2.2.0 不兼容
-         2. spring-cloud-alibaba 2023.0.3.2 的日志存在问题，配置方式变动很大
-         -->
-        <springdoc.version>2.8.5</springdoc.version>
-        <knife4j-swagger-models-v3.version>2.2.28</knife4j-swagger-models-v3.version>
+        <springdoc.version>3.0.3</springdoc.version>
+        <knife4j-swagger-models-v3.version>2.2.52</knife4j-swagger-models-v3.version>
 
-        <spring-cloud-dependencies.version>2024.0.1</spring-cloud-dependencies.version>
-        <spring-cloud-alibaba-dependencies.version>2023.0.1.2</spring-cloud-alibaba-dependencies.version>
-        <spring-framework.version>6.2.5</spring-framework.version>
+        <spring-cloud-dependencies.version>2025.1.2</spring-cloud-dependencies.version>
+        <spring-cloud-alibaba-dependencies.version>2025.1.0.0</spring-cloud-alibaba-dependencies.version>
+        <spring-framework.version>7.0.8</spring-framework.version>
         <seata.version>2.0.0</seata.version>
-        <nacos.version>2.5.1</nacos.version>
+        <nacos.version>3.2.2</nacos.version>
         <sentinel.version>1.8.6</sentinel.version>
-        <spring-boot-admin.version>3.4.5</spring-boot-admin.version>
+        <spring-boot-admin.version>4.1.1</spring-boot-admin.version>
         <dockerfile-maven-plugin.version>1.4.12</dockerfile-maven-plugin.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <java.version>25</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 消息队列 -->
-        <rocketmq-spring.version>2.3.0</rocketmq-spring.version>
+        <rocketmq-spring.version>2.3.6</rocketmq-spring.version>
         <weixin-java.version>4.6.0</weixin-java.version>
         <spring-ai.version>1.0.0-M6</spring-ai.version>
         <easy-trans.version>3.0.6</easy-trans.version>
-        <!--    全面支持springboot3，兼容最新版mybatis-plus    -->
-        <mybatis-plus-join.version>1.5.4</mybatis-plus-join.version>
+        <mybatis-plus-join.version>1.5.7</mybatis-plus-join.version>
         <tinyflow.version>1.0.2</tinyflow.version>
-        <redisson.version>3.50.0</redisson.version>
+        <redisson.version>4.6.1</redisson.version>
 
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <dm.version>8.1.3.140</dm.version>
-        <hutool.version>5.8.37</hutool.version>
-        <lombok.version>1.18.36</lombok.version>
-        <sa-token.version>1.42.0</sa-token.version>
+        <hutool.version>5.8.46</hutool.version>
+        <lombok.version>1.18.46</lombok.version>
+        <sa-token.version>1.45.0</sa-token.version>
         <magic-api.version>2.1.1</magic-api.version>
         <oshi.version>6.6.4</oshi.version>
-        <druid.version>1.2.24</druid.version>
+        <druid.version>1.2.28</druid.version>
         <mybatis.version>3.5.19</mybatis.version>
-        <mybatis-spring.version>3.0.4</mybatis-spring.version>
+        <mybatis-spring.version>4.1.0</mybatis-spring.version>
         <mybatis.typehandlers.version>1.0.2</mybatis.typehandlers.version>
-        <mybatis-plus.version>3.5.11</mybatis-plus.version>
-        <dynamic.datasource.version>4.3.1</dynamic.datasource.version>
+        <mybatis-plus.version>3.5.16</mybatis-plus.version>
+        <dynamic.datasource.version>4.5.0</dynamic.datasource.version>
         <jasypt.version>3.0.5</jasypt.version>
         <p6spy.version>3.9.1</p6spy.version>
-        <fastjson.version>1.2.83</fastjson.version>
+        <fastjson.version>2.0.62</fastjson.version>
         <easyexcel.version>4.0.3</easyexcel.version>
-        <poi.version>5.2.5</poi.version>
-        <transmittable-thread-local.version>2.12.2</transmittable-thread-local.version>
+        <poi.version>5.5.1</poi.version>
+        <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <knife4j.version>4.5.0</knife4j.version>
         <aviator.version>5.1.4</aviator.version>
         <groovy.version>4.0.0</groovy.version>
-        <guava.version>33.4.6-jre</guava.version>
+        <guava.version>33.6.0-jre</guava.version>
         <commons-exec.version>1.3</commons-exec.version>
         <commons-email.version>1.5</commons-email.version>
         <commons.collections4.version>4.4</commons.collections4.version>
@@ -80,23 +78,23 @@
         <tobato-fastdfs-client.version>1.27.3-SNAPSHOT</tobato-fastdfs-client.version>
         <tencentcloud-sdk-java.version>4.0.11</tencentcloud-sdk-java.version>
         <aliyun-dysmsapi.version>3.0.0</aliyun-dysmsapi.version>
-        <aliyun-sdk-oss.version>3.18.1</aliyun-sdk-oss.version>
+        <aliyun-sdk-oss.version>3.18.5</aliyun-sdk-oss.version>
         <bce-java-sdk.version>0.10.336</bce-java-sdk.version>
         <esdk-obs-java.version>3.24.3</esdk-obs-java.version>
-        <qiniu-java-sdk.version>7.15.1</qiniu-java-sdk.version>
-        <minio.version>8.5.12</minio.version>
+        <qiniu-java-sdk.version>7.19.0</qiniu-java-sdk.version>
+        <minio.version>9.0.3</minio.version>
         <javassist.version>3.25.0-GA</javassist.version>
         <antisamy.version>1.6.7</antisamy.version>
-        <caffeine.version>2.9.3</caffeine.version>
+        <caffeine.version>3.2.4</caffeine.version>
         <protostuff.version>1.7.4</protostuff.version>
         <ip2region.version>2.7.0</ip2region.version>
         <bitwalker.version>1.21</bitwalker.version>
-        <gson.version>2.8.9</gson.version>
-        <jsoup.version>1.17.2</jsoup.version>
-        <JustAuth.version>1.16.5</JustAuth.version>
-        <sun-jaxb.version>2.3.0.1</sun-jaxb.version>
-        <okio.version>2.10.0</okio.version>
-        <okhttp3.version>4.10.0</okhttp3.version>
+        <gson.version>2.14.0</gson.version>
+        <jsoup.version>1.22.2</jsoup.version>
+        <JustAuth.version>1.16.7</JustAuth.version>
+        <sun-jaxb.version>4.0.9</sun-jaxb.version>
+        <okio.version>3.17.0</okio.version>
+        <okhttp3.version>5.4.0</okhttp3.version>
     </properties>
     <licenses>
         <license>
@@ -120,6 +118,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -268,7 +273,7 @@
             </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+                <artifactId>dynamic-datasource-spring-boot4-starter</artifactId>
                 <version>${dynamic.datasource.version}</version>
             </dependency>
 
@@ -289,7 +294,7 @@
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-3-starter</artifactId>
+                <artifactId>druid-spring-boot-4-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
             <dependency>
@@ -518,10 +523,20 @@
                 <artifactId>okio</artifactId>
                 <version>${okio.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio-jvm</artifactId>
+                <version>${okio.version}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
+                <version>${okhttp3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp-jvm</artifactId>
                 <version>${okhttp3.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor -->
@@ -603,7 +618,7 @@
                 <version>${spring-ai.version}</version>
             </dependency>
             <dependency>
-                <artifactId>redisson-spring-boot-starter</artifactId>
+                <artifactId>redisson</artifactId>
                 <groupId>org.redisson</groupId>
                 <version>${redisson.version}</version>
             </dependency>
@@ -727,9 +742,15 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.target}</target>
+                        <release>${maven.compiler.release}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                         <!--                        <compilerArgs>-Xlint:deprecation</compilerArgs>-->
                         <!--                        <compilerArgs>-Xlint:unchecked</compilerArgs>-->
                     </configuration>
@@ -840,3 +861,4 @@
         </profile>
     </profiles>
 </project>
+

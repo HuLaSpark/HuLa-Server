@@ -1,3 +1,2 @@
 com.luohuo.basic.cloud.config.OpenFeignAutoConfiguration
-com.luohuo.basic.cloud.config.RestTemplateConfiguration
 com.luohuo.basic.cloud.config.GrayscaleConfig

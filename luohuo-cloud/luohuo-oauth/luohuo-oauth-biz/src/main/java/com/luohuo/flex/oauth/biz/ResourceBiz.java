@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.luohuo.basic.database.mybatis.conditions.Wraps;
 import com.luohuo.basic.jackson.JsonUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luohuo.basic.utils.BeanPlusUtil;
 import com.luohuo.basic.utils.CollHelper;
 import com.luohuo.basic.utils.StrPool;
@@ -42,7 +41,6 @@ public class ResourceBiz {
     private final DefResourceService defResourceService;
     private final DefApplicationService defApplicationService;
     private final BaseRoleService baseRoleService;
-    private final ObjectMapper objectMapper;
 
     /**
      * 是否所有的子都是视图

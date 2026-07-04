@@ -2,9 +2,9 @@ package com.luohuo.flex.im.common.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.ContentType;
-import cn.hutool.json.JSONUtil;
 import com.luohuo.basic.base.R;
 import com.luohuo.basic.context.ContextUtil;
+import com.luohuo.basic.jackson.JsonUtil;
 import com.luohuo.flex.im.core.user.service.cache.UserSummaryCache;
 import com.luohuo.flex.im.domain.enums.BlackTypeEnum;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,14 +35,14 @@ public class BlackInterceptor implements HandlerInterceptor {
 			response.setStatus(HttpStatus.OK.value());
 			R<Object> responseData = R.fail("你已被拉黑");
 			response.setContentType(ContentType.JSON.toString(Charset.forName("UTF-8")));
-			response.getWriter().write(JSONUtil.toJsonStr(responseData));
+			response.getWriter().write(JsonUtil.toJson(responseData));
             return false;
         }
         if (isBlackList(ContextUtil.getIP(), blackMap.get(BlackTypeEnum.IP.getType()))) {
 			response.setStatus(HttpStatus.OK.value());
 			R<Object> responseData = R.fail("你已被拉黑");
 			response.setContentType(ContentType.JSON.toString(Charset.forName("UTF-8")));
-			response.getWriter().write(JSONUtil.toJsonStr(responseData));
+			response.getWriter().write(JsonUtil.toJson(responseData));
             return false;
         }
         return true;
