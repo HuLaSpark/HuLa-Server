@@ -179,9 +179,10 @@ public final class JsonUtil {
             if (!StrUtil.startWith(content, StrPool.LEFT_SQ_BRACKET)) {
                 content = StrPool.LEFT_SQ_BRACKET + content + StrPool.RIGHT_SQ_BRACKET;
             }
-            List<Map<String, Object>> list = getInstance().readValue(content, new TypeReference<>() {
+            // 元素可能是对象，也可能是字符串、数字等简单值（如 SecureInvoke 的参数类型列表）
+            List<Object> list = getInstance().readValue(content, new TypeReference<>() {
             });
-            return list.stream().map((map) -> toPojo(map, valueTypeRef)).toList();
+            return list.stream().map((item) -> item instanceof Map ? toPojo(item, valueTypeRef) : getInstance().convertValue(item, valueTypeRef)).toList();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
