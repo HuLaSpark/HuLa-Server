@@ -117,6 +117,17 @@ Under continuous development...
 ## Sponsor HuLa
 If you find HuLa helpful, welcome to sponsor HuLa. Your support is our motivation to keep moving forward
 
+## 🚀 Application Upgrade Sponsor
+
+<a href="https://infistar.cc/register?aff=R5GA55AM&amp;ref_source=link"><img src="preview/infistar-banner-en.svg" alt="HuLa × Infistar.cc" width="100%" /></a>
+
+**Sponsored: HuLa × Infistar.cc | Claude, GPT, Gemini, Grok, DeepSeek &amp; more with one key, at a fraction of official prices**<br>
+💥 Up to 99% off; ✅ official channels and genuine models; ⚡ 1,000+ redundant routes with automatic failover; 🧩 200+ models from 16 brands; 🏆 recommended by 100+ top open-source projects.<br>
+🎯 Try Claude and GPT in HuLa AI Chat with one key; 🎁 HuLa users who [sign up through this link](https://infistar.cc/register?aff=R5GA55AM&amp;ref_source=link) receive CNY 5 in credit.
+
+> **Sponsored (AI Chat recommendation, disabled by default)**<br>
+> [Infistar.cc | Use Claude, GPT, Gemini &amp; more with one key. Sign up for CNY 5 in credit](https://infistar.cc/register?aff=R5GA55AM&amp;ref_source=link)
+
 <div style="display: flex;">
 <img src="preview/zs.jpg" width="260" height="280" alt="赞助码" style="border-radius: 12px;" />
 

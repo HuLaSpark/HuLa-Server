@@ -294,6 +294,17 @@ HuLa-Server 是一款基于 Spring Cloud、Spring Boot 4、Netty、MyBatis-Plus 
 ## 赞助HuLa
 如果您觉得HuLa对您有帮助，欢迎赞助HuLa，您的支持是我们不断前进的动力
 
+## 🚀 应用升级赞助商
+
+<a href="https://infistar.cc/register?aff=R5GA55AM&amp;ref_source=link"><img src="preview/infistar-banner-zh.svg" alt="HuLa × Infistar.cc 无限星河" width="100%" /></a>
+
+**赞助推荐：HuLa × Infistar.cc 无限星河｜Claude、GPT、Gemini、Grok、DeepSeek 等，一个 Key，官方价的零头**<br>
+💥 低至官方 0.1 折，省 99%；✅ 官方渠道，100% 官方纯血模型；⚡ 上千线路安全冗余自动切换；🧩 200+ 个模型、16 个品牌；🏆 100+ 顶级开源项目推荐。<br>
+🎯 在 HuLa AI 聊天里，用一个 Key 试 Claude、GPT 等模型；🎁 HuLa 用户通过[专属链接](https://infistar.cc/register?aff=R5GA55AM&amp;ref_source=link)注册直接送人民币 5 元。
+
+> **Sponsored（AI 聊天推荐，默认不配置）**<br>
+> [Infistar.cc｜一个 Key 用 Claude、GPT、Gemini 等模型，注册领人民币 5 元](https://infistar.cc/register?aff=R5GA55AM&amp;ref_source=link)
+
 <div style="display: flex;">
 <img src="preview/zs.jpg" width="260" height="280" alt="赞助码" style="border-radius: 12px;" />
 
